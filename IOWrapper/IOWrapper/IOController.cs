@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IOWrapper
 {
-    //public enum InputTypes { Button, Axis };
+    public enum InputTypes { Button, Axis };
 
     public class IOController
     {
@@ -15,19 +15,19 @@ namespace IOWrapper
             var dr = new DeviceReport();
             dr.Devices.Add("VID1234/PIDBEAD/0", new Device(){
                 DeviceHandle = "VID1234/PIDBEAD/0",
-                Provider = "SharpDX_DirectInput",
+                PluginName = "SharpDX_DirectInput",
                 API = "DirectInput",
                 ButtonCount = 128
             });
             dr.Devices.Add("VID1234/PIDBEAD/1", new Device(){
                 DeviceHandle = "VID1234/PIDBEAD/1",
-                Provider = "SharpDX_DirectInput",
+                PluginName = "SharpDX_DirectInput",
                 API = "DirectInput",
                 ButtonCount = 32
             });
             dr.Devices.Add("VID9999/PID9999/0", new Device(){
                 DeviceHandle = "0",
-                Provider = "SharpDX_XInput",
+                PluginName = "SharpDX_XInput",
                 API = "XInput",
                 ButtonCount = 11,
                 ButtonNames = new List<string>() { "A", "B", "X", "Y", "LB", "RB", "LS", "RS", "Back", "Start", "Xbox"}
@@ -50,7 +50,7 @@ namespace IOWrapper
         /// The API implementation that handles this input
         /// This should be unique
         /// </summary>
-        public string Provider { get; internal set; }
+        public string PluginName { get; internal set; }
 
         /// <summary>
         /// The underlying API that handles this input
