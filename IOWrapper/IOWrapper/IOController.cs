@@ -14,16 +14,19 @@ namespace IOWrapper
         {
             var dr = new DeviceReport();
             dr.Devices.Add("VID1234/PIDBEAD/0", new Device(){
+                DeviceHandle = "VID1234/PIDBEAD/0",
                 Provider = "SharpDX_DirectInput",
                 API = "DirectInput",
                 ButtonCount = 128
             });
             dr.Devices.Add("VID1234/PIDBEAD/1", new Device(){
+                DeviceHandle = "VID1234/PIDBEAD/1",
                 Provider = "SharpDX_DirectInput",
                 API = "DirectInput",
                 ButtonCount = 32
             });
             dr.Devices.Add("VID9999/PID9999/0", new Device(){
+                DeviceHandle = "0",
                 Provider = "SharpDX_XInput",
                 API = "XInput",
                 ButtonCount = 11,
@@ -35,6 +38,14 @@ namespace IOWrapper
 
     public class Device
     {
+        /// <summary>
+        /// A way to uniquely identify a device instance via it's API
+        /// Note that ideally all providers implementing the same API should ideally generate the same device handles
+        /// For something like RawInput or DirectInput, this would likely be based on VID/PID
+        /// For an ordered API like XInput, this would just be controller number
+        /// </summary>
+        public string DeviceHandle { get; set; }
+
         /// <summary>
         /// The API implementation that handles this input
         /// This should be unique
