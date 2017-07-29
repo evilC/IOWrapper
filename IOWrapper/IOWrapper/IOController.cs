@@ -13,19 +13,19 @@ namespace IOWrapper
         public DeviceReport GetInputList()
         {
             var dr = new DeviceReport();
-            dr.Devices.Add("VID1234/PIDBEAD/0", new Device(){
+            dr.Devices.Add(new Device(){
                 DeviceHandle = "VID1234/PIDBEAD/0",
                 PluginName = "SharpDX_DirectInput",
                 API = "DirectInput",
                 ButtonCount = 128
             });
-            dr.Devices.Add("VID1234/PIDBEAD/1", new Device(){
+            dr.Devices.Add(new Device(){
                 DeviceHandle = "VID1234/PIDBEAD/1",
                 PluginName = "SharpDX_DirectInput",
                 API = "DirectInput",
                 ButtonCount = 32
             });
-            dr.Devices.Add("VID9999/PID9999/0", new Device(){
+            dr.Devices.Add(new Device(){
                 DeviceHandle = "0",
                 PluginName = "SharpDX_XInput",
                 API = "XInput",
@@ -72,7 +72,7 @@ namespace IOWrapper
 
     public class DeviceReport
     {
-        public Dictionary<string, Device> Devices { get; internal set; }
-            = new Dictionary<string, Device>(StringComparer.OrdinalIgnoreCase);
+        public List<Device> Devices { get; internal set; }
+            = new List<Device>();
     }
 }
