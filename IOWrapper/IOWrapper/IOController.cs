@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PluginContracts;
 
 namespace IOWrapper
 {
@@ -10,6 +11,19 @@ namespace IOWrapper
 
     public class IOController
     {
+        Dictionary<string, IPlugin> _Plugins;
+
+        public IOController()
+        {
+            GenericMEFPluginLoader<IPlugin> loader = new GenericMEFPluginLoader<IPlugin>("Plugins");
+            _Plugins = new Dictionary<string, IPlugin>();
+            IEnumerable<IPlugin> plugins = loader.Plugins;
+            foreach (var item in plugins)
+            {
+                item.Do();
+            }
+        }
+
         public DeviceReport GetInputList()
         {
             var dr = new DeviceReport();
