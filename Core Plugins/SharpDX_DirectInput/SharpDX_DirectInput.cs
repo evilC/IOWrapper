@@ -189,7 +189,7 @@ namespace SharpDX_DirectInput
 
             public void ProcessPollData(JoystickUpdate state)
             {
-                bindingCallback(state.Value);
+                bindingCallback(state.Value == 128);
             }
 
             //public bool HasSubscription(Guid subscriptionGuid)

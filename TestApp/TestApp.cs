@@ -31,12 +31,12 @@ namespace TestApp
             //stickGuid = "{ad0496c0-4de8-11e7-8003-444553540000}";   // evilC vJoy 1
             //stickGuid = "{da2e2e00-19ea-11e6-8002-444553540000}";   // evilC vJoy 2
 
-            var sub1 = iow.SubscribeButton("SharpDX_DirectInput", deviceHandle, 0, new Action<int>((value) => {
+            var sub1 = iow.SubscribeButton("SharpDX_DirectInput", deviceHandle, 0, new Action<bool>((value) => {
                     Console.WriteLine("Button 1 Value: " + value);
                 }));
             //iow.UnsubscribeButton("SharpDX_DirectInput", (Guid)sub1);
 
-            var sub2 = iow.SubscribeButton("SharpDX_DirectInput", deviceHandle, 1, new Action<int>((value) => {
+            var sub2 = iow.SubscribeButton("SharpDX_DirectInput", deviceHandle, 1, new Action<bool>((value) => {
                     Console.WriteLine("Button 2 Value: " + value);
                 }));
             while (true)
