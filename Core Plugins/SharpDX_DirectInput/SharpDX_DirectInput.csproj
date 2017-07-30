@@ -55,8 +55,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not exist "$(SolutionDir)..\Built Plugins\$(ProjectName)" mkdir "$(SolutionDir)..\Built Plugins\$(ProjectName)"
-xcopy /Y "$(TargetDir)*.dll" "$(SolutionDir)..\Built Plugins\$(ProjectName)"</PostBuildEvent>
+    <PostBuildEvent>if exist "$(SolutionDir)..\Built Plugins\$(ProjectName)" rmdir "$(SolutionDir)..\Built Plugins\$(ProjectName)" /s /q
+mkdir "$(SolutionDir)..\Built Plugins\$(ProjectName)"
+xcopy /Y "$(TargetDir)*.dll" "$(SolutionDir)..\Built Plugins\$(ProjectName)"
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
