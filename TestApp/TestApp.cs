@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace TestApp
 {
-    class Program
+    class TestApp
     {
         static void Main(string[] args)
         {
             var iow = new IOWrapper.IOController();
+            var list = iow.GetInputList();
         }
     }
 }

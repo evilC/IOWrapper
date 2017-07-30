@@ -1,31 +1,44 @@
-﻿using System.ComponentModel.Composition;
+﻿using SharpDX.DirectInput;
+using System.ComponentModel.Composition;
 using PluginContracts;
 using System;
+using System.Collections.Generic;
 
 namespace SharpDX_DirectInput
 {
     [Export(typeof(IPlugin))]
     public class SharpDX_DirectInput : IPlugin
     {
+        static private DirectInput directInput;
+
+        public SharpDX_DirectInput()
+        {
+            directInput = new DirectInput();
+        }
+
         #region IPlugin Members
 
-        public string PluginName
+        public string PluginName { get { return typeof(SharpDX_DirectInput).Namespace; } }
+
+        public DeviceReport GetInputList()
         {
-            get
+            var dr = new DeviceReport();
+            dr.Devices.Add(new IOWrapperDevice()
             {
-                //Type myType = typeof(SharpDX_DirectInput);
-                //return myType.Namespace;
-                return "SharpDX_DirectInput";
-                //System.Reflection.Assembly.GetExecutingAssembly().EntryPoint.DeclaringType.Namespace;
-            }
+                DeviceHandle = "VID1234/PIDBEAD/0",
+                PluginName = PluginName,
+                API = "DirectInput",
+                ButtonCount = 128
+            });
+            dr.Devices.Add(new IOWrapperDevice()
+            {
+                DeviceHandle = "VID1234/PIDBEAD/1",
+                PluginName = PluginName,
+                API = "DirectInput",
+                ButtonCount = 32
+            });
+            return dr;
         }
-
-        public void Do()
-        {
-            var a = 1;
-            //System.Windows.MessageBox.Show("Do Something in First Plugin");
-        }
-
         #endregion
     }
 }
