@@ -29,14 +29,17 @@ namespace SharpDX_DirectInput
             {
                 if (!IsStickType(deviceInstance))
                     continue;
+                var joystick = new Joystick(directInput, deviceInstance.InstanceGuid);
+                joystick.Acquire();
                 dr.Devices.Add(new IOWrapperDevice()
                 {
                     DeviceHandle = deviceInstance.InstanceGuid.ToString(),
                     DeviceName = deviceInstance.ProductName,
                     PluginName = PluginName,
                     API = "DirectInput",
-                    ButtonCount = 128
+                    ButtonCount = (uint)joystick.Capabilities.ButtonCount
                 });
+                joystick.Unacquire();
             }
             return dr;
         }
