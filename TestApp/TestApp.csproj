@@ -60,7 +60,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>if not exist "$(TargetDir)Plugins" mkdir "$(TargetDir)Plugins"
+    <PreBuildEvent>del "$(TargetDir)*.dll"
+if exist "$(TargetDir)Plugins" rmdir "$(TargetDir)Plugins" /s /q
+mkdir "$(TargetDir)Plugins"
 xcopy /S /Y "$(SolutionDir)..\Built Plugins\*" "$(TargetDir)Plugins"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
