@@ -191,11 +191,6 @@ namespace SharpDX_DirectInput
             {
                 bindingCallback(state.Value == 128 ? 1 : 0);
             }
-
-            //public bool HasSubscription(Guid subscriptionGuid)
-            //{
-            //    return 
-            //}
         }
         #endregion
         #endregion
