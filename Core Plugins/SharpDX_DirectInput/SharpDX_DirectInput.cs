@@ -47,7 +47,6 @@ namespace SharpDX_DirectInput
             return dr;
         }
 
-        //public Guid? SubscribeButton(string deviceHandle, uint buttonId, dynamic callback)
         public Guid? SubscribeButton(SubscriptionRequest subReq)
         {
             try
