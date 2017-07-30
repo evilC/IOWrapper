@@ -14,6 +14,8 @@ namespace PluginContracts
         //bool SubscribeAxis(string deviceHandle, uint axisId, dynamic callback);
     }
 
+    public enum InputType { AXIS, BUTTON, POV };
+
     public class IOWrapperDevice
     {
         /// <summary>
