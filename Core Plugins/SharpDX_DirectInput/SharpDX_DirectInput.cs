@@ -56,7 +56,11 @@ namespace SharpDX_DirectInput
                 {
                     MonitoredSticks.Add(deviceGuid, new StickMonitor(deviceGuid));
                 }
-                var bindingGuid = MonitoredSticks[deviceGuid].AddBinding(subReq);
+                Guid bindingGuid;
+                lock (MonitoredSticks)
+                {
+                    bindingGuid = MonitoredSticks[deviceGuid].AddBinding(subReq);
+                }
                 if (!monitorThreadRunning)
                 {
                     MonitorSticks();
@@ -65,9 +69,20 @@ namespace SharpDX_DirectInput
             }
             catch
             {
-
+                return null;
             }
-            return null;
+        }
+
+        public bool UnsubscribeButton(Guid subscriptionGuid)
+        {
+            foreach (var stick in MonitoredSticks.Values)
+            {
+                if (stick.RemoveBinding(subscriptionGuid))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         #endregion
 
@@ -80,9 +95,12 @@ namespace SharpDX_DirectInput
                 //Debug.WriteLine("InputWrapper| MonitorSticks starting");
                 while (monitorThreadRunning)
                 {
-                    foreach (var stick in MonitoredSticks.Values)
+                    lock (MonitoredSticks)
                     {
-                        stick.Poll();
+                        foreach (var stick in MonitoredSticks.Values)
+                        {
+                            stick.Poll();
+                        }
                     }
                     Thread.Sleep(1);
                 }
@@ -117,9 +135,12 @@ namespace SharpDX_DirectInput
                 {
                     foreach (var stickBinding in stickBindings.Values)
                     {
-                        if (state.Offset == stickBinding.joystickOffset)
+                        lock (stickBinding)
                         {
-                            stickBinding.ProcessPollData(state);
+                            if (state.Offset == stickBinding.joystickOffset)
+                            {
+                                stickBinding.ProcessPollData(state);
+                            }
                         }
                     }
                 }
@@ -130,6 +151,22 @@ namespace SharpDX_DirectInput
                 var binding = new Binding(subReq);
                 stickBindings.Add(binding.bindingGuid, binding);
                 return binding.bindingGuid;
+            }
+
+            public bool RemoveBinding(Guid subscriptionGuid)
+            {
+                foreach (var binding in stickBindings.Values)
+                {
+                    if (binding.bindingGuid == subscriptionGuid)
+                    {
+                        lock (stickBindings)
+                        {
+                            stickBindings.Remove(subscriptionGuid);
+                        }
+                        return true;
+                    }
+                }
+                return false;
             }
         }
         #endregion
@@ -154,11 +191,17 @@ namespace SharpDX_DirectInput
             {
                 bindingCallback(state.Value);
             }
+
+            //public bool HasSubscription(Guid subscriptionGuid)
+            //{
+            //    return 
+            //}
         }
         #endregion
         #endregion
 
         #region Helper Methods
+
         private bool IsStickType(DeviceInstance deviceInstance)
         {
             return deviceInstance.Type == SharpDX.DirectInput.DeviceType.Joystick

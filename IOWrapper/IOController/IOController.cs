@@ -40,18 +40,32 @@ namespace IOWrapper
 
         public Guid? SubscribeButton(string pluginName, string deviceHandle, uint buttonId, dynamic callback)
         {
+            var subReq = new SubscriptionRequest()
+            {
+                PluginName = pluginName,
+                InputType = InputType.BUTTON,
+                DeviceHandle = deviceHandle,
+                InputIndex = buttonId,
+                Callback = callback
+            };
+            return GetPlugin(pluginName).SubscribeButton(subReq);
+        }
+
+        public bool UnsubscribeButton(string pluginName, Guid subscriptionGuid)
+        {
+            return GetPlugin(pluginName).UnsubscribeButton(subscriptionGuid);
+        }
+
+        private IPlugin GetPlugin(string pluginName)
+        {
             if (_Plugins.ContainsKey(pluginName))
             {
-                var subReq = new SubscriptionRequest() {
-                    PluginName = pluginName,
-                    InputType = InputType.BUTTON,
-                    DeviceHandle = deviceHandle,
-                    InputIndex = buttonId,
-                    Callback = callback
-                };
-                return _Plugins[pluginName].SubscribeButton(subReq);
+                return _Plugins[pluginName];
             }
-            return null;
+            else
+            {
+                return null;
+            }
         }
     }
 }

@@ -30,6 +30,12 @@ namespace SharpDX_XInput
         {
             return null;
         }
+
+        public bool UnsubscribeButton(Guid subscriptionGuid)
+        {
+
+            return false;
+        }
         #endregion
     }
 }

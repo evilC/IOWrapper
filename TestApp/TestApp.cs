@@ -34,6 +34,8 @@ namespace TestApp
             var sub1 = iow.SubscribeButton("SharpDX_DirectInput", deviceHandle, 1, new Action<int>((value) => {
                     Console.WriteLine("Button 1 Value: " + value);
                 }));
+            iow.UnsubscribeButton("SharpDX_DirectInput", (Guid)sub1);
+
             var sub2 = iow.SubscribeButton("SharpDX_DirectInput", deviceHandle, 2, new Action<int>((value) => {
                     Console.WriteLine("Button 2 Value: " + value);
                 }));

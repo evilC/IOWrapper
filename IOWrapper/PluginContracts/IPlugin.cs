@@ -11,6 +11,7 @@ namespace PluginContracts
         string PluginName { get; }
         DeviceReport GetInputList();
         Guid? SubscribeButton(SubscriptionRequest subReq);
+        bool UnsubscribeButton(Guid subscriptionGuid);
         //bool SubscribeAxis(string deviceHandle, uint axisId, dynamic callback);
     }
 
