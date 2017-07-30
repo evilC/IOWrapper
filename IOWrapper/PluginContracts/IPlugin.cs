@@ -10,11 +10,25 @@ namespace PluginContracts
     {
         string PluginName { get; }
         DeviceReport GetInputList();
-        bool SubscribeButton(string deviceHandle, uint buttonId, dynamic callback);
+        Guid? SubscribeButton(SubscriptionRequest subReq);
         //bool SubscribeAxis(string deviceHandle, uint axisId, dynamic callback);
     }
 
     public enum InputType { AXIS, BUTTON, POV };
+
+    #region Subscriptions
+    public class SubscriptionRequest
+    {
+        public InputType InputType { get; set; }
+        //public string SubscriberId { get; set; }
+        public string PluginName { get; set; }
+        public string DeviceHandle { get; set; }
+        public uint InputIndex { get; set; }
+        public dynamic Callback { get; set; }
+        // used, eg, for DirectInput POV number
+        public int InputSubId { get; set; } = 0;
+    }
+    #endregion
 
     public class IOWrapperDevice
     {

@@ -12,9 +12,7 @@ namespace SharpDX_DirectInput
     {
         static private DirectInput directInput;
         private bool monitorThreadRunning = false;
-        private dynamic tmpCallback;
-        private uint tmpButtonId;
-        private string tmpDeviceHandle;
+        private Dictionary<Guid, StickMonitor> MonitoredSticks = new Dictionary<Guid, StickMonitor>();
 
         public SharpDX_DirectInput()
         {
@@ -49,16 +47,28 @@ namespace SharpDX_DirectInput
             return dr;
         }
 
-        public bool SubscribeButton(string deviceHandle, uint buttonId, dynamic callback)
+        //public Guid? SubscribeButton(string deviceHandle, uint buttonId, dynamic callback)
+        public Guid? SubscribeButton(SubscriptionRequest subReq)
         {
-            tmpButtonId = buttonId;
-            tmpDeviceHandle = deviceHandle;
-            tmpCallback = callback;
-            if (!monitorThreadRunning)
+            try
             {
-                MonitorSticks();
+                var deviceGuid = new Guid(subReq.DeviceHandle);
+                if (!MonitoredSticks.ContainsKey(deviceGuid))
+                {
+                    MonitoredSticks.Add(deviceGuid, new StickMonitor(deviceGuid));
+                }
+                var bindingGuid = MonitoredSticks[deviceGuid].AddBinding(subReq);
+                if (!monitorThreadRunning)
+                {
+                    MonitorSticks();
+                }
+                return bindingGuid;
             }
-            return false;
+            catch
+            {
+
+            }
+            return null;
         }
         #endregion
 
@@ -69,26 +79,84 @@ namespace SharpDX_DirectInput
             {
                 monitorThreadRunning = true;
                 //Debug.WriteLine("InputWrapper| MonitorSticks starting");
-                var joystick = new Joystick(directInput, new Guid(tmpDeviceHandle));
-                joystick.Properties.BufferSize = 128;
-                joystick.Acquire();
                 while (monitorThreadRunning)
                 {
-                    var data = joystick.GetBufferedData();
-                    foreach (var state in data)
+                    foreach (var stick in MonitoredSticks.Values)
                     {
-                        if (state.Offset == directInputMappings[InputType.BUTTON][(int)tmpButtonId - 1])
-                        {
-                            tmpCallback(state.Value);
-                        }
+                        stick.Poll();
                     }
                     Thread.Sleep(1);
                 }
-                joystick.Unacquire();
-                //Debug.WriteLine("InputWrapper| MonitorSticks stopping");
             }));
             t.Start();
         }
+
+        #region Stick
+        public class StickMonitor
+        {
+            private Joystick joystick;
+            private Guid stickGuid;
+            private Dictionary<Guid, Binding> stickBindings = new Dictionary<Guid, Binding>();
+
+            public StickMonitor(Guid passedStickGuid)
+            {
+                stickGuid = passedStickGuid;
+                joystick = new Joystick(directInput, stickGuid);
+                joystick.Properties.BufferSize = 128;
+                joystick.Acquire();
+            }
+
+            ~StickMonitor()
+            {
+                joystick.Unacquire();
+            }
+
+            public void Poll()
+            {
+                var data = joystick.GetBufferedData();
+                foreach (var state in data)
+                {
+                    foreach (var stickBinding in stickBindings.Values)
+                    {
+                        if (state.Offset == stickBinding.joystickOffset)
+                        {
+                            stickBinding.ProcessPollData(state);
+                        }
+                    }
+                }
+            }
+
+            public Guid AddBinding(SubscriptionRequest subReq)
+            {
+                var binding = new Binding(subReq);
+                stickBindings.Add(binding.bindingGuid, binding);
+                return binding.bindingGuid;
+            }
+        }
+        #endregion
+
+        #region Input
+        public class Binding
+        {
+            private InputType inputType;
+            public JoystickOffset joystickOffset;
+            private dynamic bindingCallback;
+            public Guid bindingGuid;
+
+            public Binding(SubscriptionRequest subReq)
+            {
+                bindingGuid = Guid.NewGuid();
+                inputType = subReq.InputType;
+                joystickOffset = directInputMappings[subReq.InputType][(int)subReq.InputIndex - 1];
+                bindingCallback = subReq.Callback;
+            }
+
+            public void ProcessPollData(JoystickUpdate state)
+            {
+                bindingCallback(state.Value);
+            }
+        }
+        #endregion
         #endregion
 
         #region Helper Methods

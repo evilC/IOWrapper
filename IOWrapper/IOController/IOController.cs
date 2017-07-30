@@ -38,13 +38,20 @@ namespace IOWrapper
             return list;
         }
 
-        public bool SubscribeButton(string pluginName, string deviceHandle, uint buttonId, dynamic callback)
+        public Guid? SubscribeButton(string pluginName, string deviceHandle, uint buttonId, dynamic callback)
         {
             if (_Plugins.ContainsKey(pluginName))
             {
-                return _Plugins[pluginName].SubscribeButton(deviceHandle, buttonId, callback);
+                var subReq = new SubscriptionRequest() {
+                    PluginName = pluginName,
+                    InputType = InputType.BUTTON,
+                    DeviceHandle = deviceHandle,
+                    InputIndex = buttonId,
+                    Callback = callback
+                };
+                return _Plugins[pluginName].SubscribeButton(subReq);
             }
-            return false;
+            return null;
         }
     }
 }

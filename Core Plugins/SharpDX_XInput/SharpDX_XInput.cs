@@ -26,9 +26,9 @@ namespace SharpDX_XInput
             return dr;
         }
 
-        public bool SubscribeButton(string deviceHandle, uint buttonId, dynamic callback)
+        public Guid? SubscribeButton(SubscriptionRequest subReq)
         {
-            return false;
+            return null;
         }
         #endregion
     }
