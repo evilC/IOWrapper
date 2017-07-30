@@ -23,21 +23,34 @@ namespace SharpDX_DirectInput
         public DeviceReport GetInputList()
         {
             var dr = new DeviceReport();
-            dr.Devices.Add(new IOWrapperDevice()
+
+            var devices = directInput.GetDevices();
+            foreach (var deviceInstance in devices)
             {
-                DeviceHandle = "VID1234/PIDBEAD/0",
-                PluginName = PluginName,
-                API = "DirectInput",
-                ButtonCount = 128
-            });
-            dr.Devices.Add(new IOWrapperDevice()
-            {
-                DeviceHandle = "VID1234/PIDBEAD/1",
-                PluginName = PluginName,
-                API = "DirectInput",
-                ButtonCount = 32
-            });
+                if (!IsStickType(deviceInstance))
+                    continue;
+                dr.Devices.Add(new IOWrapperDevice()
+                {
+                    DeviceHandle = deviceInstance.InstanceGuid.ToString(),
+                    DeviceName = deviceInstance.ProductName,
+                    PluginName = PluginName,
+                    API = "DirectInput",
+                    ButtonCount = 128
+                });
+            }
             return dr;
+        }
+        #endregion
+
+        #region Helper Methods
+        private bool IsStickType(DeviceInstance deviceInstance)
+        {
+            return deviceInstance.Type == SharpDX.DirectInput.DeviceType.Joystick
+                    || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Gamepad
+                    || deviceInstance.Type == SharpDX.DirectInput.DeviceType.FirstPerson
+                    || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Flight
+                    || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Driving
+                    || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Supplemental;
         }
         #endregion
     }

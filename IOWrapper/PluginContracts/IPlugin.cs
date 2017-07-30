@@ -16,6 +16,11 @@ namespace PluginContracts
     public class IOWrapperDevice
     {
         /// <summary>
+        /// The human-friendly name of the device
+        /// </summary>
+        public string DeviceName { get; set; }
+
+        /// <summary>
         /// A way to uniquely identify a device instance via it's API
         /// Note that ideally all providers implementing the same API should ideally generate the same device handles
         /// For something like RawInput or DirectInput, this would likely be based on VID/PID
