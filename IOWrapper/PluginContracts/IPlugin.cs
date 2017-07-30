@@ -10,7 +10,8 @@ namespace PluginContracts
     {
         string PluginName { get; }
         DeviceReport GetInputList();
-        //bool SubscribeAxis(string deviceHandle, int axisId, dynamic callback);
+        bool SubscribeButton(string deviceHandle, uint buttonId, dynamic callback);
+        //bool SubscribeAxis(string deviceHandle, uint axisId, dynamic callback);
     }
 
     public class IOWrapperDevice

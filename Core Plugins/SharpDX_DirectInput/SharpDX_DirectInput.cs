@@ -10,6 +10,7 @@ namespace SharpDX_DirectInput
     public class SharpDX_DirectInput : IPlugin
     {
         static private DirectInput directInput;
+        private dynamic tmpCallback;
 
         public SharpDX_DirectInput()
         {
@@ -42,6 +43,11 @@ namespace SharpDX_DirectInput
                 joystick.Unacquire();
             }
             return dr;
+        }
+
+        public bool SubscribeButton(string deviceHandle, uint buttonId, dynamic callback)
+        {
+            return false;
         }
         #endregion
 

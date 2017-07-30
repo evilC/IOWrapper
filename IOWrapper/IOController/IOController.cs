@@ -37,5 +37,14 @@ namespace IOWrapper
             }
             return list;
         }
+
+        public bool SubscribeButton(string pluginName, string deviceHandle, uint buttonId, dynamic callback)
+        {
+            if (_Plugins.ContainsKey(pluginName))
+            {
+                return _Plugins[pluginName].SubscribeButton(deviceHandle, buttonId, callback);
+            }
+            return false;
+        }
     }
 }

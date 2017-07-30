@@ -25,6 +25,11 @@ namespace SharpDX_XInput
             });
             return dr;
         }
+
+        public bool SubscribeButton(string deviceHandle, uint buttonId, dynamic callback)
+        {
+            return false;
+        }
         #endregion
     }
 }
