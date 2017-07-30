@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.Composition;
 using PluginContracts;
+using System;
 
-namespace FirstPlugin
+namespace SharpDX_DirectInput
 {
     [Export(typeof(IPlugin))]
-    public class FirstPlugin : IPlugin
+    public class SharpDX_DirectInput : IPlugin
     {
         #region IPlugin Members
 
@@ -12,7 +13,10 @@ namespace FirstPlugin
         {
             get
             {
-                return "First Plugin";
+                //Type myType = typeof(SharpDX_DirectInput);
+                //return myType.Namespace;
+                return "SharpDX_DirectInput";
+                //System.Reflection.Assembly.GetExecutingAssembly().EntryPoint.DeclaringType.Namespace;
             }
         }
 
