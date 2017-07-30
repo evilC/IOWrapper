@@ -18,6 +18,7 @@ namespace FirstPlugin
 
         public void Do()
         {
+            var a = 1;
             //System.Windows.MessageBox.Show("Do Something in First Plugin");
         }
 

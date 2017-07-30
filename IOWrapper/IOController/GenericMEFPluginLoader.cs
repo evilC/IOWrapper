@@ -17,6 +17,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.IO;
 
 namespace IOWrapper
 {
@@ -31,18 +32,20 @@ namespace IOWrapper
             set;
         }
 
-        public GenericMEFPluginLoader(string path)
+        public GenericMEFPluginLoader(string basePath)
         {
-            //DirectoryCatalog directoryCatalog = new DirectoryCatalog(path);
-            DirectoryCatalog directoryCatalog = new DirectoryCatalog(@"D:\Data\code\Github\IOWrapper\IOWrapper\IOWrapper\Plugins");
+            var catalog = new AggregateCatalog();
 
-            //An aggregate catalog that combines multiple catalogs
-            var catalog = new AggregateCatalog(directoryCatalog);
+            foreach (var path in Directory.EnumerateDirectories(@".\" + basePath, "*", SearchOption.TopDirectoryOnly))
+            {
+                var folderName = path.Remove(0, path.LastIndexOf(Path.DirectorySeparatorChar) + 1);
+                if (File.Exists(Path.Combine(path, folderName + ".dll")))
+                {
+                    catalog.Catalogs.Add(new DirectoryCatalog(path));
+                }
+            }
 
-            // Create the CompositionContainer with all parts in the catalog (links Exports and Imports)
             _Container = new CompositionContainer(catalog);
-
-            //Fill the imports of this object
             _Container.ComposeParts(this);
         }
     }

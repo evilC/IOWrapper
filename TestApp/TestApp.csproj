@@ -50,12 +50,16 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IOWrapper\IOWrapper.csproj">
+    <ProjectReference Include="..\IOWrapper\IOController\IOController.csproj">
       <Project>{d9447b59-4b62-4bd8-be91-5f5ab1d8f1bd}</Project>
-      <Name>IOWrapper</Name>
+      <Name>IOController</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>if not exist "$(TargetDir)Plugins" mkdir "$(TargetDir)Plugins"
+xcopy /S /Y "$(SolutionDir)..\Built Plugins\*" "$(TargetDir)Plugins"</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
