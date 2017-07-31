@@ -14,35 +14,28 @@ namespace SharpDX_DirectInput
         private bool monitorThreadRunning = false;
         private Dictionary<Guid, StickMonitor> MonitoredSticks = new Dictionary<Guid, StickMonitor>();
 
+        //private Dictionary<Guid, string> guidToHandle;
+        private Dictionary<string, Guid> handleToInstanceGuid;
+        private List<IOWrapperDevice> deviceList;
+        
         public SharpDX_DirectInput()
         {
             directInput = new DirectInput();
+            queryDevices();
         }
 
         #region IPlugin Members
 
+        // ToDo: Need better way to handle this. MEF meta-data?
         public string PluginName { get { return typeof(SharpDX_DirectInput).Namespace; } }
 
         public DeviceReport GetInputList()
         {
             var dr = new DeviceReport();
 
-            var devices = directInput.GetDevices();
-            foreach (var deviceInstance in devices)
+            foreach (var device in deviceList)
             {
-                if (!IsStickType(deviceInstance))
-                    continue;
-                var joystick = new Joystick(directInput, deviceInstance.InstanceGuid);
-                joystick.Acquire();
-                dr.Devices.Add(new IOWrapperDevice()
-                {
-                    DeviceHandle = deviceInstance.InstanceGuid.ToString(),
-                    DeviceName = deviceInstance.ProductName,
-                    PluginName = PluginName,
-                    API = "DirectInput",
-                    ButtonCount = (uint)joystick.Capabilities.ButtonCount
-                });
-                joystick.Unacquire();
+                dr.Devices.Add(device);
             }
             return dr;
         }
@@ -51,7 +44,7 @@ namespace SharpDX_DirectInput
         {
             try
             {
-                var deviceGuid = new Guid(subReq.DeviceHandle);
+                var deviceGuid = handleToInstanceGuid[subReq.DeviceHandle];
                 if (!MonitoredSticks.ContainsKey(deviceGuid))
                 {
                     MonitoredSticks.Add(deviceGuid, new StickMonitor(deviceGuid));
@@ -85,6 +78,57 @@ namespace SharpDX_DirectInput
             return false;
         }
         #endregion
+
+        private void queryDevices()
+        {
+            deviceList = new List<IOWrapperDevice>();
+            handleToInstanceGuid = new Dictionary<string, Guid>();
+
+            var devices = directInput.GetDevices();
+            foreach (var deviceInstance in devices)
+            {
+                if (!IsStickType(deviceInstance))
+                    continue;
+                var joystick = new Joystick(directInput, deviceInstance.InstanceGuid);
+                joystick.Acquire();
+
+                var handle = string.Format("VID{0}/PID{1}/"
+                    , joystick.Properties.VendorId.ToString("X")
+                    , joystick.Properties.ProductId.ToString("X"));
+                var index = 0;
+                while (true)
+                {
+                    if (!handleToInstanceGuid.ContainsKey(handle + index))
+                    {
+                        handle += index;
+                        deviceList.Add(new IOWrapperDevice()
+                        {
+                            //DeviceHandle = deviceInstance.InstanceGuid.ToString(),
+                            DeviceHandle = handle,
+                            DeviceName = deviceInstance.ProductName,
+                            PluginName = PluginName,
+                            API = "DirectInput",
+                            ButtonCount = (uint)joystick.Capabilities.ButtonCount
+                        });
+                        handleToInstanceGuid.Add(handle, deviceInstance.InstanceGuid);
+                        break;
+                    }
+                    index++;
+                }
+                joystick.Unacquire();
+            }
+            //return dr;
+        }
+
+        class Test
+        {
+            public int MyProperty { get; set; } = 3;
+        }
+
+        class Test2 : Test
+        {
+            public int MyProperty2 { get; set; } = 4;
+        }
 
         #region Stick Monitoring
         private void MonitorSticks()

@@ -14,6 +14,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IOController", "IOControlle
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "..\TestApp\TestApp.csproj", "{5127F99D-BEFF-45AC-A52C-9C0BE6DE1F70}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AA825875-9CB0-4973-BB5C-CFC53962D1C2} = {AA825875-9CB0-4973-BB5C-CFC53962D1C2}
+		{2072B5A7-8069-433C-B4DB-E150C26E9A49} = {2072B5A7-8069-433C-B4DB-E150C26E9A49}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpDX_DirectInput", "..\Core Plugins\SharpDX_DirectInput\SharpDX_DirectInput.csproj", "{AA825875-9CB0-4973-BB5C-CFC53962D1C2}"
 EndProject

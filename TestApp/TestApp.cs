@@ -28,8 +28,9 @@ namespace TestApp
             {
                 return;
             }
-            //stickGuid = "{ad0496c0-4de8-11e7-8003-444553540000}";   // evilC vJoy 1
-            //stickGuid = "{da2e2e00-19ea-11e6-8002-444553540000}";   // evilC vJoy 2
+            //deviceHandle = "{ad0496c0-4de8-11e7-8003-444553540000}";   // evilC vJoy 1 OLD
+            //deviceHandle = "{da2e2e00-19ea-11e6-8002-444553540000}";   // evilC vJoy 2 OLD
+            //deviceHandle = "VID1234/PIDBEAD/0";    // vJoy 1
 
             var sub1 = iow.SubscribeButton("SharpDX_DirectInput", deviceHandle, 0, new Action<int>((value) => {
                     Console.WriteLine("Button 1 Value: " + value);
