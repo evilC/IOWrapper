@@ -111,6 +111,7 @@ namespace SharpDX_DirectInput
                             ButtonCount = (uint)joystick.Capabilities.ButtonCount
                         });
                         handleToInstanceGuid.Add(handle, deviceInstance.InstanceGuid);
+                        Console.WriteLine(String.Format("{0} #{1} = {2}", deviceInstance.ProductName, index, deviceInstance.InstanceGuid));
                         break;
                     }
                     index++;
