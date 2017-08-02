@@ -56,6 +56,17 @@ namespace IOWrapper
             return GetPlugin(pluginName).UnsubscribeButton(subscriptionGuid);
         }
 
+        public Guid? SubscribeOutputDevice(string pluginName, string deviceHandle)
+        {
+            var subReq = new SubscriptionRequest()
+            {
+                PluginName = pluginName,
+                InputType = InputType.BUTTON,
+                DeviceHandle = deviceHandle
+            };
+            return GetPlugin(pluginName).SubscribeOutputDevice(subReq);
+        }
+
         private IPlugin GetPlugin(string pluginName)
         {
             if (_Plugins.ContainsKey(pluginName))

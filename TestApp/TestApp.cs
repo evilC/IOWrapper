@@ -30,7 +30,7 @@ namespace TestApp
             }
             //deviceHandle = "{ad0496c0-4de8-11e7-8003-444553540000}";   // evilC vJoy 1 OLD
             //deviceHandle = "{da2e2e00-19ea-11e6-8002-444553540000}";   // evilC vJoy 2 OLD
-            deviceHandle = "VID1234/PIDBEAD/1";    // vJoy
+            deviceHandle = "VID1234/PIDBEAD/0";    // vJoy
             //deviceHandle = "VIDC45/PID7403/0";   // XBox
 
             var sub1 = iow.SubscribeButton("SharpDX_DirectInput", deviceHandle, 0, new Action<int>((value) => {
@@ -41,6 +41,9 @@ namespace TestApp
             var sub2 = iow.SubscribeButton("SharpDX_DirectInput", deviceHandle, 1, new Action<int>((value) => {
                     Console.WriteLine("Button 2 Value: " + value);
                 }));
+
+            var sub3 = iow.SubscribeOutputDevice("Core_vJoyInterfaceWrap", "0");
+
             while (true)
             {
                 Console.ReadLine();
