@@ -122,7 +122,7 @@ namespace SharpDX_DirectInput
                         });
                         handleToInstanceGuid.Add(handle, deviceInstance.InstanceGuid);
                         //Console.WriteLine(String.Format("{0} #{1} GUID: {2} Handle: {3} NativePointer: {4}"
-                            , deviceInstance.ProductName, index, deviceInstance.InstanceGuid, handle, joystick.NativePointer));
+                        //    , deviceInstance.ProductName, index, deviceInstance.InstanceGuid, handle, joystick.NativePointer));
                         break;
                     }
                     index++;
