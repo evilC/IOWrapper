@@ -12,6 +12,7 @@ namespace PluginContracts
         DeviceReport GetInputList();
         Guid? SubscribeButton(SubscriptionRequest subReq);
         bool UnsubscribeButton(Guid subscriptionGuid);
+        Guid? SubscribeOutputDevice(SubscriptionRequest subReq);
         //bool SubscribeAxis(string deviceHandle, uint axisId, dynamic callback);
     }
 

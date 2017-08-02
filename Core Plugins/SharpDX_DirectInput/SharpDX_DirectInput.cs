@@ -77,6 +77,11 @@ namespace SharpDX_DirectInput
             }
             return false;
         }
+
+        public Guid? SubscribeOutputDevice(SubscriptionRequest subReq)
+        {
+            return null;
+        }
         #endregion
 
         private void queryDevices()
@@ -120,16 +125,6 @@ namespace SharpDX_DirectInput
                 joystick.Unacquire();
             }
             //return dr;
-        }
-
-        class Test
-        {
-            public int MyProperty { get; set; } = 3;
-        }
-
-        class Test2 : Test
-        {
-            public int MyProperty2 { get; set; } = 4;
         }
 
         #region Stick Monitoring

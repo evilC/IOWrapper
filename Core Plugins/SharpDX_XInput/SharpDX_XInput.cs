@@ -36,6 +36,11 @@ namespace SharpDX_XInput
 
             return false;
         }
+
+        public Guid? SubscribeOutputDevice(SubscriptionRequest subReq)
+        {
+            return null;
+        }
         #endregion
     }
 }
