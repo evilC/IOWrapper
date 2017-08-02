@@ -16,7 +16,10 @@ namespace Core_vJoyInterfaceWrap
 
         public Core_vJoyInterfaceWrap()
         {
-            var a = 1;
+            for (uint i = 0; i < 16; i++)
+            {
+                deviceSubscriptions[i] = new List<Guid>();
+            }
         }
 
         ~Core_vJoyInterfaceWrap()
@@ -53,12 +56,19 @@ namespace Core_vJoyInterfaceWrap
         {
             var devId = DevIdFromHandle(subReq.DeviceHandle);
             var guid = Guid.NewGuid();
-            //deviceSubscriptions[devId].Add(guid);
-            vJ.AcquireVJD(devId);
-            vJ.SetAxis(30000, 1, HID_USAGES.HID_USAGE_X);
-            vJ.SetAxis(0, 1, HID_USAGES.HID_USAGE_X);
+            deviceSubscriptions[devId].Add(guid);
+            var ret = vJ.AcquireVJD(devId);
+            //vJ.SetAxis(30000, 1, HID_USAGES.HID_USAGE_X);
+            //vJ.SetAxis(0, 1, HID_USAGES.HID_USAGE_X);
             return guid;
             //return null;
+        }
+
+        public bool SetOutputButton(string dev, uint button, bool state)
+        {
+            var devId = DevIdFromHandle(dev);
+            var ret = vJ.SetBtn(state, devId, button);
+            return true;
         }
 
         private uint DevIdFromHandle(string handle)

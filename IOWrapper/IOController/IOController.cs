@@ -67,6 +67,11 @@ namespace IOWrapper
             return GetPlugin(pluginName).SubscribeOutputDevice(subReq);
         }
 
+        public bool SetOutputButton(string pluginName, string deviceHandle, uint button, bool state)
+        {
+            return GetPlugin(pluginName).SetOutputButton(deviceHandle, button, state);
+        }
+
         private IPlugin GetPlugin(string pluginName)
         {
             if (_Plugins.ContainsKey(pluginName))

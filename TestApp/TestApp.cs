@@ -33,16 +33,21 @@ namespace TestApp
             deviceHandle = "VID1234/PIDBEAD/0";    // vJoy
             //deviceHandle = "VIDC45/PID7403/0";   // XBox
 
-            var sub1 = iow.SubscribeButton("SharpDX_DirectInput", deviceHandle, 0, new Action<int>((value) => {
-                    Console.WriteLine("Button 1 Value: " + value);
-                }));
+            // Acquire vJoy stick 2
+            var sub3 = iow.SubscribeOutputDevice("Core_vJoyInterfaceWrap", "1");
+
+            // Subscribe to the found stick
+            var sub1 = iow.SubscribeButton("SharpDX_DirectInput", deviceHandle, 0, new Action<int>((value) =>
+            {
+                Console.WriteLine("Button 1 Value: " + value);
+                iow.SetOutputButton("Core_vJoyInterfaceWrap", "1", 1, value == 1);
+            }));
             //iow.UnsubscribeButton("SharpDX_DirectInput", (Guid)sub1);
 
-            var sub2 = iow.SubscribeButton("SharpDX_DirectInput", deviceHandle, 1, new Action<int>((value) => {
-                    Console.WriteLine("Button 2 Value: " + value);
-                }));
-
-            var sub3 = iow.SubscribeOutputDevice("Core_vJoyInterfaceWrap", "0");
+            var sub2 = iow.SubscribeButton("SharpDX_DirectInput", deviceHandle, 1, new Action<int>((value) =>
+            {
+                Console.WriteLine("Button 2 Value: " + value);
+            }));
 
             while (true)
             {

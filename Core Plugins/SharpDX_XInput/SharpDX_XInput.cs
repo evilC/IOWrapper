@@ -41,6 +41,11 @@ namespace SharpDX_XInput
         {
             return null;
         }
+
+        public bool SetOutputButton(string dev, uint button, bool state)
+        {
+            return false;
+        }
         #endregion
     }
 }
