@@ -58,18 +58,18 @@ namespace Core_vJoyInterfaceWrap
             var devId = DevIdFromHandle(subReq.DeviceHandle);
             var guid = Guid.NewGuid();
             deviceSubscriptions[devId].Add(guid);
-            var ret = vJ.AcquireVJD(devId);
+            var ret = vJ.AcquireVJD(devId + 1);
             subscriptionToDevice.Add(guid, devId);
             return guid;
         }
 
         public bool UnSubscribeOutputDevice(Guid deviceSubscription)
         {
-            uint devId = subscriptionToDevice[deviceSubscription] - 1;
+            uint devId = subscriptionToDevice[deviceSubscription];
             deviceSubscriptions[devId].Remove(deviceSubscription);
             if (deviceSubscriptions[devId].Count == 0)
             {
-                vJ.RelinquishVJD(devId);
+                vJ.RelinquishVJD(devId + 1);
             }
             subscriptionToDevice.Remove(deviceSubscription);
             return true;
@@ -78,18 +78,18 @@ namespace Core_vJoyInterfaceWrap
         public bool SetOutputButton(Guid deviceSubscription, uint button, bool state)
         {
             var devId = subscriptionToDevice[deviceSubscription];
-            return vJ.SetBtn(state, devId, button);
+            return vJ.SetBtn(state, devId + 1, button);
         }
 
         //public bool SetOutputAxis(Guid deviceSubscription, int axis, int state)
         //{
         //    var devId = subscriptionToDevice[deviceSubscription];
-        //    return vJ.SetAxis(state, devId, AxisIdToUsage[axis]);
+        //    return vJ.SetAxis(state, devId + 1, AxisIdToUsage[axis]);
         //}
 
         private uint DevIdFromHandle(string handle)
         {
-            return Convert.ToUInt32(handle) + 1;
+            return Convert.ToUInt32(handle);
         }
         #endregion
 
