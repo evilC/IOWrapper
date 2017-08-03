@@ -66,6 +66,18 @@ namespace Core_vJoyInterfaceWrap
             //return null;
         }
 
+        public bool UnSubscribeOutputDevice(Guid deviceSubscription)
+        {
+            uint devId = subscriptionToDevice[deviceSubscription] - 1;
+            deviceSubscriptions[devId].Remove(deviceSubscription);
+            if (deviceSubscriptions[devId].Count == 0)
+            {
+                vJ.RelinquishVJD(devId);
+            }
+            subscriptionToDevice.Remove(deviceSubscription);
+            return true;
+        }
+
         //public bool SetOutputButton(string dev, uint button, bool state)
         public bool SetOutputButton(Guid deviceSubscription, uint button, bool state)
         {
