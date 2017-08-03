@@ -60,10 +60,7 @@ namespace Core_vJoyInterfaceWrap
             deviceSubscriptions[devId].Add(guid);
             var ret = vJ.AcquireVJD(devId);
             subscriptionToDevice.Add(guid, devId);
-            //vJ.SetAxis(30000, 1, HID_USAGES.HID_USAGE_X);
-            //vJ.SetAxis(0, 1, HID_USAGES.HID_USAGE_X);
             return guid;
-            //return null;
         }
 
         public bool UnSubscribeOutputDevice(Guid deviceSubscription)
@@ -78,14 +75,17 @@ namespace Core_vJoyInterfaceWrap
             return true;
         }
 
-        //public bool SetOutputButton(string dev, uint button, bool state)
         public bool SetOutputButton(Guid deviceSubscription, uint button, bool state)
         {
-            //var devId = DevIdFromHandle(dev);
             var devId = subscriptionToDevice[deviceSubscription];
-            var ret = vJ.SetBtn(state, devId, button);
-            return true;
+            return vJ.SetBtn(state, devId, button);
         }
+
+        //public bool SetOutputAxis(Guid deviceSubscription, int axis, int state)
+        //{
+        //    var devId = subscriptionToDevice[deviceSubscription];
+        //    return vJ.SetAxis(state, devId, AxisIdToUsage[axis]);
+        //}
 
         private uint DevIdFromHandle(string handle)
         {
@@ -93,5 +93,9 @@ namespace Core_vJoyInterfaceWrap
         }
         #endregion
 
+        private static List<HID_USAGES> AxisIdToUsage = new List<HID_USAGES>() {
+            HID_USAGES.HID_USAGE_X, HID_USAGES.HID_USAGE_Y, HID_USAGES.HID_USAGE_Z,
+            HID_USAGES.HID_USAGE_RX, , HID_USAGES.HID_USAGE_RY, HID_USAGES.HID_USAGE_RZ,
+            HID_USAGES.HID_USAGE_SL0, HID_USAGES.HID_USAGE_SL1 };
     }
 }
