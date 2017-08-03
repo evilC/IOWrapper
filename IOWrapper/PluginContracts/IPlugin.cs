@@ -13,7 +13,8 @@ namespace PluginContracts
         Guid? SubscribeButton(SubscriptionRequest subReq);
         bool UnsubscribeButton(Guid subscriptionGuid);
         Guid? SubscribeOutputDevice(SubscriptionRequest subReq);
-        bool SetOutputButton(string dev, uint button, bool state);
+        //bool SetOutputButton(string dev, uint button, bool state);
+        bool SetOutputButton(Guid deviceSubscription, uint button, bool state);
         //bool SubscribeAxis(string deviceHandle, uint axisId, dynamic callback);
     }
 

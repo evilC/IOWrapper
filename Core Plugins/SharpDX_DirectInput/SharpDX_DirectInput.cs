@@ -83,7 +83,7 @@ namespace SharpDX_DirectInput
             return null;
         }
 
-        public bool SetOutputButton(string dev, uint button, bool state)
+        public bool SetOutputButton(Guid deviceSubscription, uint button, bool state)
         {
             return false;
         }

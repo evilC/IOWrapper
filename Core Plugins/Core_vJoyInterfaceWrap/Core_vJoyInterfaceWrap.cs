@@ -13,6 +13,7 @@ namespace Core_vJoyInterfaceWrap
     {
         public static vJoyInterfaceWrap.vJoy vJ = new vJoyInterfaceWrap.vJoy();
         private List<Guid>[] deviceSubscriptions = new List<Guid>[16];
+        private Dictionary<Guid, uint> subscriptionToDevice = new Dictionary<Guid, uint>();
 
         public Core_vJoyInterfaceWrap()
         {
@@ -58,15 +59,18 @@ namespace Core_vJoyInterfaceWrap
             var guid = Guid.NewGuid();
             deviceSubscriptions[devId].Add(guid);
             var ret = vJ.AcquireVJD(devId);
+            subscriptionToDevice.Add(guid, devId);
             //vJ.SetAxis(30000, 1, HID_USAGES.HID_USAGE_X);
             //vJ.SetAxis(0, 1, HID_USAGES.HID_USAGE_X);
             return guid;
             //return null;
         }
 
-        public bool SetOutputButton(string dev, uint button, bool state)
+        //public bool SetOutputButton(string dev, uint button, bool state)
+        public bool SetOutputButton(Guid deviceSubscription, uint button, bool state)
         {
-            var devId = DevIdFromHandle(dev);
+            //var devId = DevIdFromHandle(dev);
+            var devId = subscriptionToDevice[deviceSubscription];
             var ret = vJ.SetBtn(state, devId, button);
             return true;
         }
