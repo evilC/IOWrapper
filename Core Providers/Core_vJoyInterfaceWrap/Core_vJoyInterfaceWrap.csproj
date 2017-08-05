@@ -40,7 +40,7 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="vJoyInterfaceWrap">
-      <HintPath>.\vJoyInterfaceWrap.dll</HintPath>
+      <HintPath>..\..\Core Plugins\Core_vJoyInterfaceWrap\vJoyInterfaceWrap.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
