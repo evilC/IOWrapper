@@ -10,7 +10,6 @@ namespace SharpDX_XInput
     [Export(typeof(IProvider))]
     public class SharpDX_XInput : IProvider
     {
-        private Controller[] controllers = new[] { new Controller(UserIndex.One), new Controller(UserIndex.Two), new Controller(UserIndex.Three), new Controller(UserIndex.Four) };
         private bool monitorThreadRunning = false;
         private Dictionary<int, StickMonitor> MonitoredSticks = new Dictionary<int, StickMonitor>();
 
@@ -42,15 +41,14 @@ namespace SharpDX_XInput
 
         private void QueryDevices()
         {
-            var i = 0;
             providerReport = new ProviderReport();
-            foreach (var ctrlr in controllers)
+            for (int i = 0; i < 5; i++)
             {
+                var ctrlr = new Controller((UserIndex)i);
                 if (ctrlr.IsConnected)
                 {
                     providerReport.Devices.Add(i.ToString(), BuildXInputDevice(i));
                 }
-                i++;
             }
         }
 
