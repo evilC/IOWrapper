@@ -4,6 +4,9 @@ using PluginContracts;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Microsoft.Win32;
+using System.Linq;
+using System.Diagnostics;
 
 namespace SharpDX_DirectInput
 {
@@ -99,6 +102,7 @@ namespace SharpDX_DirectInput
             deviceList = new List<IOWrapperDevice>();
             handleToInstanceGuid = new Dictionary<string, Guid>();
 
+            // ToDo: device list should be returned in handle order for duplicate devices
             var devices = directInput.GetDevices();
             foreach (var deviceInstance in devices)
             {
@@ -107,31 +111,28 @@ namespace SharpDX_DirectInput
                 var joystick = new Joystick(directInput, deviceInstance.InstanceGuid);
                 joystick.Acquire();
 
-                var handle = string.Format("VID{0}/PID{1}/"
-                    , joystick.Properties.VendorId.ToString("X")
-                    , joystick.Properties.ProductId.ToString("X"));
-                var index = 0;
-                while (true)
+                var vidpid = string.Format("VID_{0}&PID_{1}"
+                    , joystick.Properties.VendorId.ToString("X4")
+                    , joystick.Properties.ProductId.ToString("X4"));
+
+                string handle = vidpid + "/";
+                var index = GetDeviceOrder(vidpid, deviceInstance.InstanceGuid);
+
+                handle += index;
+                deviceList.Add(new IOWrapperDevice()
                 {
-                    if (!handleToInstanceGuid.ContainsKey(handle + index))
-                    {
-                        handle += index;
-                        deviceList.Add(new IOWrapperDevice()
-                        {
-                            //DeviceHandle = deviceInstance.InstanceGuid.ToString(),
-                            DeviceHandle = handle,
-                            DeviceName = deviceInstance.ProductName,
-                            PluginName = PluginName,
-                            API = "DirectInput",
-                            ButtonCount = (uint)joystick.Capabilities.ButtonCount
-                        });
-                        handleToInstanceGuid.Add(handle, deviceInstance.InstanceGuid);
-                        //Console.WriteLine(String.Format("{0} #{1} GUID: {2} Handle: {3} NativePointer: {4}"
-                        //    , deviceInstance.ProductName, index, deviceInstance.InstanceGuid, handle, joystick.NativePointer));
-                        break;
-                    }
-                    index++;
-                }
+                    //DeviceHandle = deviceInstance.InstanceGuid.ToString(),
+                    DeviceHandle = handle,
+                    DeviceName = deviceInstance.ProductName,
+                    PluginName = PluginName,
+                    API = "DirectInput",
+                    ButtonCount = (uint)joystick.Capabilities.ButtonCount
+                });
+                handleToInstanceGuid.Add(handle, deviceInstance.InstanceGuid);
+
+                Debug.WriteLine(String.Format("{0} #{1} GUID: {2} Handle: {3} NativePointer: {4}"
+                    , deviceInstance.ProductName, index, deviceInstance.InstanceGuid, handle, joystick.NativePointer));
+
                 joystick.Unacquire();
             }
             //return dr;
@@ -256,6 +257,54 @@ namespace SharpDX_DirectInput
                     || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Flight
                     || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Driving
                     || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Supplemental;
+        }
+
+        // In SharpDX, when you call GetDevices(), the order that devices comes back is not always in a useful order
+        // This code aims to match each stick with a "Joystick ID" from the registry via VID/PID.
+        // Joystick IDs in the registry do not always start with 0
+        // The joystick with the lowest "Joystick Id" key in the registry is considered the first stick...
+        // ... regardless of the order that SharpDX sees them or the number of the key that they are in
+        // TL/DR: As long as vJoy Stick #1 has a lower Joystick Id than vJoy stick #2...
+        // ... then this code should return a DI handle that is in the same order as the vJoy stick order.
+        private int GetDeviceOrder(string vidpid, Guid guid)
+        {
+            var bytearray = guid.ToByteArray();
+            var deviceOrders = new SortedDictionary<int, byte[]>();
+            using (RegistryKey hkcu = Registry.CurrentUser)
+            {
+                var keyname = String.Format(@"System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{0}\Calibration", vidpid);
+                using (RegistryKey calibkey = hkcu.OpenSubKey(keyname))
+                {
+                    foreach (string key in calibkey.GetSubKeyNames())
+                    {
+                        using (RegistryKey orderkey = calibkey.OpenSubKey(key))
+                        {
+                            byte[] reg_guid = (byte[])orderkey.GetValue("GUID");
+                            byte[] reg_id = (byte[])orderkey.GetValue("Joystick Id");
+                            int id = BitConverter.ToInt32(reg_id, 0);
+                            deviceOrders.Add(id, reg_guid);
+                        }
+                    }
+                }
+            }
+
+            var i = 0;
+            foreach (var device in deviceOrders.Values)
+            {
+                try
+                {
+                    if (device.SequenceEqual(bytearray))
+                    {
+                        return i;
+                    }
+                }
+                catch
+                {
+
+                }
+                i++;
+            }
+            return -1;
         }
         #endregion
 

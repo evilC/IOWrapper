@@ -43,8 +43,8 @@ class Tester
         {
             return;
         }
-        deviceHandle = "VID1234/PIDBEAD/0";    // vJoy
-        //deviceHandle = "VIDC45/PID7403/0";   // XBox
+        deviceHandle = "VID_1234&PID_BEAD/0";    // vJoy
+        //deviceHandle = "VID_0C45&PID_7403/0";   // XBox
 
         // Acquire vJoy stick 2
         outputSubscription = iow.SubscribeOutputDevice("Core_vJoyInterfaceWrap", "1");
@@ -53,7 +53,6 @@ class Tester
         var sub1 = iow.SubscribeButton("SharpDX_DirectInput", deviceHandle, 0, new Action<int>((value) =>
         {
             Console.WriteLine("Button 1 Value: " + value);
-            //iow.SetOutputButton("Core_vJoyInterfaceWrap", "1", 1, value == 1);
             iow.SetOutputButton("Core_vJoyInterfaceWrap", (Guid)outputSubscription, 1, value == 1);
         }));
         //iow.UnsubscribeButton("SharpDX_DirectInput", (Guid)sub1);
