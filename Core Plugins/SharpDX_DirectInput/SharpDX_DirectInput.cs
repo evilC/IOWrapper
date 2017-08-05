@@ -38,7 +38,7 @@ namespace SharpDX_DirectInput
 
             foreach (var device in deviceList)
             {
-                dr.Devices.Add(device);
+                dr.Devices.Add(device.DeviceHandle, device);
             }
             return dr;
         }

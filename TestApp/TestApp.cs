@@ -26,24 +26,11 @@ class Tester
     public Tester()
     {
         var iow = new IOWrapper.IOController();
-        var list = iow.GetInputList();
+        var deviceList = iow.GetInputList();
         string deviceHandle = null;
-        for (var i = 0; i < list.Count && deviceHandle == null; i++)
-        {
-            foreach (var device in list[i].Devices)
-            {
-                if (device.PluginName == "SharpDX_DirectInput")
-                {
-                    deviceHandle = device.DeviceHandle;
-                    break;
-                }
-            }
-        }
-        if (deviceHandle == null)
-        {
-            return;
-        }
-        deviceHandle = "VID_1234&PID_BEAD/0";    // vJoy
+        try { deviceHandle = deviceList["SharpDX_DirectInput"].Devices.FirstOrDefault().Key; }
+        catch { return; }
+        //deviceHandle = "VID_1234&PID_BEAD/0";    // vJoy
         //deviceHandle = "VID_0C45&PID_7403/0";   // XBox
 
         // Acquire vJoy stick 2

@@ -76,7 +76,7 @@ namespace PluginContracts
 
     public class DeviceReport
     {
-        public List<IOWrapperDevice> Devices { get; set; }
-            = new List<IOWrapperDevice>();
+        public SortedDictionary<string, IOWrapperDevice> Devices { get; set; }
+            = new SortedDictionary<string, IOWrapperDevice>();
     }
 }

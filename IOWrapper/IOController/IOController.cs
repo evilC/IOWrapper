@@ -24,15 +24,15 @@ namespace IOWrapper
             }
         }
 
-        public List<DeviceReport> GetInputList()
+        public SortedDictionary<string, DeviceReport> GetInputList()
         {
-            var list = new List<DeviceReport>();
+            var list = new SortedDictionary<string, DeviceReport>();
             foreach (var plugin in _Plugins.Values)
             {
                 var report = plugin.GetInputList();
                 if (report != null)
                 {
-                    list.Add(report);
+                    list.Add(plugin.PluginName, report);
                 }
             }
             return list;

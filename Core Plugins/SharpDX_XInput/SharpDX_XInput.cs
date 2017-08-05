@@ -15,7 +15,7 @@ namespace SharpDX_XInput
         public DeviceReport GetInputList()
         {
             var dr = new DeviceReport();
-            dr.Devices.Add(new IOWrapperDevice()
+            dr.Devices.Add("0", new IOWrapperDevice()
             {
                 DeviceHandle = "0",
                 PluginName = PluginName,
