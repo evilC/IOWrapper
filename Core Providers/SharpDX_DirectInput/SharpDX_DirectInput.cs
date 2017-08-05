@@ -274,7 +274,14 @@ namespace SharpDX_DirectInput
                         {
                             byte[] reg_guid = (byte[])orderkey.GetValue("GUID");
                             byte[] reg_id = (byte[])orderkey.GetValue("Joystick Id");
+                            if (reg_id == null)
+                                continue;
                             int id = BitConverter.ToInt32(reg_id, 0);
+                            // Two duplicates can share the same JoystickID - use next ID in this case
+                            while (deviceOrders.ContainsKey(id))
+                            {
+                                id++;
+                            }
                             deviceOrders.Add(id, reg_guid);
                         }
                     }
