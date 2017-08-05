@@ -1,6 +1,6 @@
 ﻿using SharpDX.DirectInput;
 using System.ComponentModel.Composition;
-using PluginContracts;
+using Providers;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -10,8 +10,8 @@ using System.Diagnostics;
 
 namespace SharpDX_DirectInput
 {
-    [Export(typeof(IPlugin))]
-    public class SharpDX_DirectInput : IPlugin
+    [Export(typeof(IProvider))]
+    public class SharpDX_DirectInput : IProvider
     {
         static private DirectInput directInput;
         private bool monitorThreadRunning = false;
@@ -26,10 +26,10 @@ namespace SharpDX_DirectInput
             queryDevices();
         }
 
-        #region IPlugin Members
+        #region IProvider Members
 
         // ToDo: Need better way to handle this. MEF meta-data?
-        public string PluginName { get { return typeof(SharpDX_DirectInput).Namespace; } }
+        public string ProviderName { get { return typeof(SharpDX_DirectInput).Namespace; } }
 
         public ProviderReport GetInputList()
         {
@@ -117,7 +117,7 @@ namespace SharpDX_DirectInput
                     //DeviceHandle = deviceInstance.InstanceGuid.ToString(),
                     DeviceHandle = handle,
                     DeviceName = deviceInstance.ProductName,
-                    PluginName = PluginName,
+                    ProviderName = ProviderName,
                     API = "DirectInput",
                     ButtonCount = (uint)joystick.Capabilities.ButtonCount
                 });

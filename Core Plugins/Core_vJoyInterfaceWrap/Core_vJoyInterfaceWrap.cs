@@ -1,4 +1,4 @@
-﻿using PluginContracts;
+﻿using Providers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace Core_vJoyInterfaceWrap
 {
-    [Export(typeof(IPlugin))]
-    public class Core_vJoyInterfaceWrap : IPlugin
+    [Export(typeof(IProvider))]
+    public class Core_vJoyInterfaceWrap : IProvider
     {
         public static vJoyInterfaceWrap.vJoy vJ = new vJoyInterfaceWrap.vJoy();
         private List<Guid>[] deviceSubscriptions = new List<Guid>[16];
@@ -33,10 +33,10 @@ namespace Core_vJoyInterfaceWrap
             }
         }
 
-        #region IPlugin Members
+        #region IProvider Members
 
         // ToDo: Need better way to handle this. MEF meta-data?
-        public string PluginName { get { return typeof(Core_vJoyInterfaceWrap).Namespace; } }
+        public string ProviderName { get { return typeof(Core_vJoyInterfaceWrap).Namespace; } }
 
         public ProviderReport GetInputList()
         {

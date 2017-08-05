@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core Plugins", "Core Plugins", "{4F0B7CB7-EEFC-4ED4-BD4E-9D2301C1526C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginContracts", "PluginContracts\PluginContracts.csproj", "{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Providers", "PluginContracts\Providers.csproj", "{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IOController", "IOController\IOController.csproj", "{D9447B59-4B62-4BD8-BE91-5F5AB1D8F1BD}"
 	ProjectSection(ProjectDependencies) = postProject

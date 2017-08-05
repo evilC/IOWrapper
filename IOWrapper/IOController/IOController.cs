@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PluginContracts;
+using Providers;
 
 namespace IOWrapper
 {
@@ -11,73 +11,73 @@ namespace IOWrapper
 
     public class IOController
     {
-        Dictionary<string, IPlugin> _Plugins;
+        Dictionary<string, IProvider> _Providers;
 
         public IOController()
         {
-            GenericMEFPluginLoader<IPlugin> loader = new GenericMEFPluginLoader<IPlugin>("Plugins");
-            _Plugins = new Dictionary<string, IPlugin>();
-            IEnumerable<IPlugin> plugins = loader.Plugins;
-            foreach (var item in plugins)
+            GenericMEFPluginLoader<IProvider> loader = new GenericMEFPluginLoader<IProvider>("Plugins");
+            _Providers = new Dictionary<string, IProvider>();
+            IEnumerable<IProvider> providers = loader.Plugins;
+            foreach (var item in providers)
             {
-                _Plugins[item.PluginName] = item;
+                _Providers[item.ProviderName] = item;
             }
         }
 
         public SortedDictionary<string, ProviderReport> GetInputList()
         {
             var list = new SortedDictionary<string, ProviderReport>();
-            foreach (var plugin in _Plugins.Values)
+            foreach (var provider in _Providers.Values)
             {
-                var report = plugin.GetInputList();
+                var report = provider.GetInputList();
                 if (report != null)
                 {
-                    list.Add(plugin.PluginName, report);
+                    list.Add(provider.ProviderName, report);
                 }
             }
             return list;
         }
 
-        public Guid? SubscribeButton(string pluginName, string deviceHandle, uint buttonId, dynamic callback)
+        public Guid? SubscribeButton(string providerName, string deviceHandle, uint buttonId, dynamic callback)
         {
             var subReq = new SubscriptionRequest()
             {
-                PluginName = pluginName,
+                ProviderName = providerName,
                 InputType = InputType.BUTTON,
                 DeviceHandle = deviceHandle,
                 InputIndex = buttonId,
                 Callback = callback
             };
-            return GetPlugin(pluginName).SubscribeButton(subReq);
+            return GetProvider(providerName).SubscribeButton(subReq);
         }
 
-        public bool UnsubscribeButton(string pluginName, Guid subscriptionGuid)
+        public bool UnsubscribeButton(string providerName, Guid subscriptionGuid)
         {
-            return GetPlugin(pluginName).UnsubscribeButton(subscriptionGuid);
+            return GetProvider(providerName).UnsubscribeButton(subscriptionGuid);
         }
 
-        public Guid? SubscribeOutputDevice(string pluginName, string deviceHandle)
+        public Guid? SubscribeOutputDevice(string providerName, string deviceHandle)
         {
             var subReq = new SubscriptionRequest()
             {
-                PluginName = pluginName,
+                ProviderName = providerName,
                 InputType = InputType.BUTTON,
                 DeviceHandle = deviceHandle
             };
-            return GetPlugin(pluginName).SubscribeOutputDevice(subReq);
+            return GetProvider(providerName).SubscribeOutputDevice(subReq);
         }
 
-        //public bool SetOutputButton(string pluginName, string deviceHandle, uint button, bool state)
-        public bool SetOutputButton(string pluginName, Guid deviceSubscription, uint button, bool state)
+        //public bool SetOutputButton(string providerName, string deviceHandle, uint button, bool state)
+        public bool SetOutputButton(string providerName, Guid deviceSubscription, uint button, bool state)
         {
-            return GetPlugin(pluginName).SetOutputButton(deviceSubscription, button, state);
+            return GetProvider(providerName).SetOutputButton(deviceSubscription, button, state);
         }
 
-        private IPlugin GetPlugin(string pluginName)
+        private IProvider GetProvider(string providerName)
         {
-            if (_Plugins.ContainsKey(pluginName))
+            if (_Providers.ContainsKey(providerName))
             {
-                return _Plugins[pluginName];
+                return _Providers[providerName];
             }
             else
             {

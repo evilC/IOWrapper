@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PluginContracts
+namespace Providers
 {
-    public interface IPlugin
+    public interface IProvider
     {
-        string PluginName { get; }
+        string ProviderName { get; }
         ProviderReport GetInputList();
         Guid? SubscribeButton(SubscriptionRequest subReq);
         bool UnsubscribeButton(Guid subscriptionGuid);
@@ -26,7 +26,7 @@ namespace PluginContracts
     {
         public InputType InputType { get; set; }
         //public string SubscriberId { get; set; }
-        public string PluginName { get; set; }
+        public string ProviderName { get; set; }
         public string DeviceHandle { get; set; }
         public uint InputIndex { get; set; }
         public dynamic Callback { get; set; }
@@ -54,7 +54,7 @@ namespace PluginContracts
         /// The API implementation that handles this input
         /// This should be unique
         /// </summary>
-        public string PluginName { get; set; }
+        public string ProviderName { get; set; }
 
         /// <summary>
         /// The underlying API that handles this input

@@ -1,16 +1,16 @@
 ﻿using System;
 using System.ComponentModel.Composition;
-using PluginContracts;
+using Providers;
 using System.Collections.Generic;
 
 namespace SharpDX_XInput
 {
-    [Export(typeof(IPlugin))]
-    public class SharpDX_XInput : IPlugin
+    [Export(typeof(IProvider))]
+    public class SharpDX_XInput : IProvider
     {
-        #region IPlugin Members
+        #region IProvider Members
 
-        public string PluginName { get { return typeof(SharpDX_XInput).Namespace; } }
+        public string ProviderName { get { return typeof(SharpDX_XInput).Namespace; } }
 
         public ProviderReport GetInputList()
         {
@@ -18,7 +18,7 @@ namespace SharpDX_XInput
             dr.Devices.Add("0", new IOWrapperDevice()
             {
                 DeviceHandle = "0",
-                PluginName = PluginName,
+                ProviderName = ProviderName,
                 API = "XInput",
                 ButtonCount = 11,
                 ButtonNames = new List<string>() { "A", "B", "X", "Y", "LB", "RB", "LS", "RS", "Back", "Start", "Xbox" }
