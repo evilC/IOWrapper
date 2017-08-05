@@ -44,6 +44,7 @@ class Tester
         };
         iow.SubscribeOutputDevice(outputSubscription);
 
+        Console.WriteLine("Binding input to handle " + deviceHandle);
         // Subscribe to the found stick
         var sub1 = new InputSubscriptionRequest()
         {
@@ -72,6 +73,21 @@ class Tester
             {
                 Console.WriteLine("Button 2 Value: " + value);
                 iow.SetOutputButton(outputSubscription, 2, value == 1);
+            })
+        };
+        iow.SubscribeButton(sub2);
+
+        var sub3 = new InputSubscriptionRequest()
+        {
+            SubscriberGuid = Guid.NewGuid(),
+            ProviderName = "SharpDX_XInput",
+            InputType = InputType.BUTTON,
+            DeviceHandle = "0",
+            InputIndex = 1,
+            Callback = new Action<int>((value) =>
+            {
+                Console.WriteLine("XInput Button 1 Value: " + value);
+                iow.SetOutputButton(outputSubscription, 1, value == 1);
             })
         };
         iow.SubscribeButton(sub2);
