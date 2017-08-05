@@ -61,7 +61,7 @@ namespace SharpDX_XInput
                 {
                     MonitoredSticks.Add(stickId, new StickMonitor(stickId));
                 }
-                var result =MonitoredSticks[stickId].Add(subReq);
+                var result = MonitoredSticks[stickId].Add(subReq);
                 if (result)
                 {
                     if (!monitorThreadRunning)
