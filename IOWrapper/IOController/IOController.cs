@@ -38,40 +38,28 @@ namespace IOWrapper
             return list;
         }
 
-        //public Guid? SubscribeButton(string providerName, string deviceHandle, uint buttonId, dynamic callback)
-        public Guid? SubscribeButton(SubscriptionRequest subReq)
+        public bool SubscribeButton(InputSubscriptionRequest subReq)
         {
-            //var subReq = new SubscriptionRequest()
-            //{
-            //    ProviderName = providerName,
-            //    InputType = InputType.BUTTON,
-            //    DeviceHandle = deviceHandle,
-            //    InputIndex = buttonId,
-            //    Callback = callback
-            //};
-            return GetProvider(subReq.ProviderName).SubscribeButton(subReq);
+            return GetProvider(subReq.ProviderName)
+                .SubscribeButton(subReq);
         }
 
-        public bool UnsubscribeButton(string providerName, Guid subscriptionGuid)
+        public bool UnsubscribeButton(InputSubscriptionRequest subReq)
         {
-            return GetProvider(providerName).UnsubscribeButton(subscriptionGuid);
+            return GetProvider(subReq.ProviderName)
+                .UnsubscribeButton(subReq);
         }
 
-        public Guid? SubscribeOutputDevice(string providerName, string deviceHandle)
+        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            var subReq = new SubscriptionRequest()
-            {
-                ProviderName = providerName,
-                InputType = InputType.BUTTON,
-                DeviceHandle = deviceHandle
-            };
-            return GetProvider(providerName).SubscribeOutputDevice(subReq);
+            return GetProvider(subReq.ProviderName)
+                .SubscribeOutputDevice(subReq);
         }
 
-        //public bool SetOutputButton(string providerName, string deviceHandle, uint button, bool state)
-        public bool SetOutputButton(string providerName, Guid deviceSubscription, uint button, bool state)
+        public bool SetOutputButton(OutputSubscriptionRequest subReq, uint button, bool state)
         {
-            return GetProvider(providerName).SetOutputButton(deviceSubscription, button, state);
+            return GetProvider(subReq.ProviderName)
+                .SetOutputButton(subReq, button, state);
         }
 
         private IProvider GetProvider(string providerName)

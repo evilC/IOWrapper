@@ -36,7 +36,7 @@ namespace SharpDX_DirectInput
             return providerReport;
         }
 
-        public Guid? SubscribeButton(SubscriptionRequest subReq)
+        public bool SubscribeButton(InputSubscriptionRequest subReq)
         {
             try
             {
@@ -54,19 +54,19 @@ namespace SharpDX_DirectInput
                 {
                     MonitorSticks();
                 }
-                return bindingGuid;
+                return true;
             }
             catch
             {
-                return null;
+                return false;
             }
         }
 
-        public bool UnsubscribeButton(Guid subscriptionGuid)
+        public bool UnsubscribeButton(InputSubscriptionRequest subReq)
         {
             foreach (var stick in MonitoredSticks.Values)
             {
-                if (stick.RemoveBinding(subscriptionGuid))
+                if (stick.RemoveBinding(subReq.SubscriberGuid))
                 {
                     return true;
                 }
@@ -74,17 +74,17 @@ namespace SharpDX_DirectInput
             return false;
         }
 
-        public Guid? SubscribeOutputDevice(SubscriptionRequest subReq)
-        {
-            return null;
-        }
-
-        public bool UnSubscribeOutputDevice(Guid deviceSubscription)
+        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
             return false;
         }
 
-        public bool SetOutputButton(Guid deviceSubscription, uint button, bool state)
+        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        {
+            return false;
+        }
+
+        public bool SetOutputButton(OutputSubscriptionRequest subReq, uint button, bool state)
         {
             return false;
         }
@@ -191,7 +191,7 @@ namespace SharpDX_DirectInput
                 }
             }
 
-            public Guid AddBinding(SubscriptionRequest subReq)
+            public Guid AddBinding(InputSubscriptionRequest subReq)
             {
                 var binding = new Binding(subReq);
                 stickBindings.Add(binding.bindingGuid, binding);
@@ -224,7 +224,7 @@ namespace SharpDX_DirectInput
             private dynamic bindingCallback;
             public Guid bindingGuid;
 
-            public Binding(SubscriptionRequest subReq)
+            public Binding(InputSubscriptionRequest subReq)
             {
                 bindingGuid = subReq.SubscriberGuid;
                 inputType = subReq.InputType;

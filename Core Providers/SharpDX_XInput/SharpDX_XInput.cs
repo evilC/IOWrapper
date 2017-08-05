@@ -26,28 +26,28 @@ namespace SharpDX_XInput
             return dr;
         }
 
-        public Guid? SubscribeButton(SubscriptionRequest subReq)
+        public bool SubscribeButton(InputSubscriptionRequest subReq)
         {
-            return null;
+            return false;
         }
 
-        public bool UnsubscribeButton(Guid subscriptionGuid)
+        public bool UnsubscribeButton(InputSubscriptionRequest subReq)
         {
 
             return false;
         }
 
-        public Guid? SubscribeOutputDevice(SubscriptionRequest subReq)
-        {
-            return null;
-        }
-
-        public bool UnSubscribeOutputDevice(Guid deviceSubscription)
+        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
             return false;
         }
 
-        public bool SetOutputButton(Guid deviceSubscription, uint button, bool state)
+        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        {
+            return false;
+        }
+
+        public bool SetOutputButton(OutputSubscriptionRequest subReq, uint button, bool state)
         {
             return false;
         }

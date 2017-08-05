@@ -10,19 +10,19 @@ namespace Providers
     {
         string ProviderName { get; }
         ProviderReport GetInputList();
-        Guid? SubscribeButton(SubscriptionRequest subReq);
-        bool UnsubscribeButton(Guid subscriptionGuid);
-        Guid? SubscribeOutputDevice(SubscriptionRequest subReq);
-        bool UnSubscribeOutputDevice(Guid deviceSubscription);
+        bool SubscribeButton(InputSubscriptionRequest subReq);
+        bool UnsubscribeButton(InputSubscriptionRequest subReq);
+        bool SubscribeOutputDevice(OutputSubscriptionRequest subReq);
+        bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq);
         //bool SetOutputButton(string dev, uint button, bool state);
-        bool SetOutputButton(Guid deviceSubscription, uint button, bool state);
+        bool SetOutputButton(OutputSubscriptionRequest subReq, uint button, bool state);
         //bool SubscribeAxis(string deviceHandle, uint axisId, dynamic callback);
     }
 
     public enum InputType { AXIS, BUTTON, POV };
 
     #region Subscriptions
-    public class SubscriptionRequest
+    public class InputSubscriptionRequest
     {
         public Guid SubscriberGuid { get; set; }
         public InputType InputType { get; set; }
@@ -33,6 +33,13 @@ namespace Providers
         public dynamic Callback { get; set; }
         // used, eg, for DirectInput POV number
         public int InputSubId { get; set; } = 0;
+    }
+
+    public class OutputSubscriptionRequest
+    {
+        public Guid SubscriberGuid { get; set; }
+        public string ProviderName { get; set; }
+        public string DeviceHandle { get; set; }
     }
     #endregion
 

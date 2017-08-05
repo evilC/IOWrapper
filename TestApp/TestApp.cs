@@ -22,7 +22,8 @@ namespace TestApp
 
 class Tester
 {
-    private Guid? outputSubscription;
+    //private Guid? outputSubscription;
+    private OutputSubscriptionRequest outputSubscription;
 
     public Tester()
     {
@@ -35,10 +36,16 @@ class Tester
         //deviceHandle = "VID_0C45&PID_7403/0";   // XBox
 
         // Acquire vJoy stick 2
-        outputSubscription = iow.SubscribeOutputDevice("Core_vJoyInterfaceWrap", "1");
+        outputSubscription = new OutputSubscriptionRequest()
+        {
+            SubscriberGuid = Guid.NewGuid(),
+            ProviderName = "Core_vJoyInterfaceWrap",
+            DeviceHandle = "1"
+        };
+        iow.SubscribeOutputDevice(outputSubscription);
 
         // Subscribe to the found stick
-        var sub1 = new SubscriptionRequest()
+        var sub1 = new InputSubscriptionRequest()
         {
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_DirectInput",
@@ -48,13 +55,13 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 1 Value: " + value);
-                iow.SetOutputButton("Core_vJoyInterfaceWrap", (Guid)outputSubscription, 1, value == 1);
+                iow.SetOutputButton(outputSubscription, 1, value == 1);
             })
         };
         iow.SubscribeButton(sub1);
-        //iow.UnsubscribeButton("SharpDX_DirectInput", sub1.SubscriberGuid);
+        //iow.UnsubscribeButton(sub1);
 
-        var sub2 = new SubscriptionRequest()
+        var sub2 = new InputSubscriptionRequest()
         {
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_DirectInput",
@@ -64,7 +71,7 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 2 Value: " + value);
-                iow.SetOutputButton("Core_vJoyInterfaceWrap", (Guid)outputSubscription, 1, value == 1);
+                iow.SetOutputButton(outputSubscription, 2, value == 1);
             })
         };
         iow.SubscribeButton(sub2);

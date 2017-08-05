@@ -43,41 +43,40 @@ namespace Core_vJoyInterfaceWrap
             return null;
         }
 
-        public Guid? SubscribeButton(SubscriptionRequest subReq)
-        {
-            return null;
-        }
-
-        public bool UnsubscribeButton(Guid subscriptionGuid)
+        public bool SubscribeButton(InputSubscriptionRequest subReq)
         {
             return false;
         }
 
-        public Guid? SubscribeOutputDevice(SubscriptionRequest subReq)
+        public bool UnsubscribeButton(InputSubscriptionRequest subReq)
         {
-            var devId = DevIdFromHandle(subReq.DeviceHandle);
-            var guid = Guid.NewGuid();
-            deviceSubscriptions[devId].Add(guid);
-            var ret = vJ.AcquireVJD(devId + 1);
-            subscriptionToDevice.Add(guid, devId);
-            return guid;
+            return false;
         }
 
-        public bool UnSubscribeOutputDevice(Guid deviceSubscription)
+        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            uint devId = subscriptionToDevice[deviceSubscription];
-            deviceSubscriptions[devId].Remove(deviceSubscription);
+            var devId = DevIdFromHandle(subReq.DeviceHandle);
+            deviceSubscriptions[devId].Add(subReq.SubscriberGuid);
+            var ret = vJ.AcquireVJD(devId + 1);
+            subscriptionToDevice.Add(subReq.SubscriberGuid, devId);
+            return true;
+        }
+
+        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        {
+            uint devId = subscriptionToDevice[subReq.SubscriberGuid];
+            deviceSubscriptions[devId].Remove(subReq.SubscriberGuid);
             if (deviceSubscriptions[devId].Count == 0)
             {
                 vJ.RelinquishVJD(devId + 1);
             }
-            subscriptionToDevice.Remove(deviceSubscription);
+            subscriptionToDevice.Remove(subReq.SubscriberGuid);
             return true;
         }
 
-        public bool SetOutputButton(Guid deviceSubscription, uint button, bool state)
+        public bool SetOutputButton(OutputSubscriptionRequest subReq, uint button, bool state)
         {
-            var devId = subscriptionToDevice[deviceSubscription];
+            var devId = subscriptionToDevice[subReq.SubscriberGuid];
             return vJ.SetBtn(state, devId + 1, button);
         }
 
