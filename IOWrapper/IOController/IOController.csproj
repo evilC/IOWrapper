@@ -50,6 +50,18 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\..\Core Providers\Core_vJoyInterfaceWrap\Core_vJoyInterfaceWrap.csproj">
+      <Project>{10a9a35a-9cec-4271-ad68-65a9661638f6}</Project>
+      <Name>Core_vJoyInterfaceWrap</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core Providers\SharpDX_DirectInput\SharpDX_DirectInput.csproj">
+      <Project>{aa825875-9cb0-4973-bb5c-cfc53962d1c2}</Project>
+      <Name>SharpDX_DirectInput</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core Providers\SharpDX_XInput\SharpDX_XInput.csproj">
+      <Project>{2072b5a7-8069-433c-b4db-e150c26e9a49}</Project>
+      <Name>SharpDX_XInput</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PluginContracts\Providers.csproj">
       <Project>{f6eaf2bc-f362-4ecd-94e5-617ca37a4210}</Project>
       <Name>Providers</Name>
