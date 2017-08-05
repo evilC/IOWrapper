@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Providers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,17 +38,33 @@ class Tester
         outputSubscription = iow.SubscribeOutputDevice("Core_vJoyInterfaceWrap", "1");
 
         // Subscribe to the found stick
-        var sub1 = iow.SubscribeButton("SharpDX_DirectInput", deviceHandle, 0, new Action<int>((value) =>
+        var sub1 = new SubscriptionRequest()
         {
-            Console.WriteLine("Button 1 Value: " + value);
-            iow.SetOutputButton("Core_vJoyInterfaceWrap", (Guid)outputSubscription, 1, value == 1);
-        }));
+            ProviderName = "SharpDX_DirectInput",
+            InputType = InputType.BUTTON,
+            DeviceHandle = deviceHandle,
+            InputIndex = 0,
+            Callback = new Action<int>((value) =>
+            {
+                Console.WriteLine("Button 1 Value: " + value);
+                iow.SetOutputButton("Core_vJoyInterfaceWrap", (Guid)outputSubscription, 1, value == 1);
+            })
+        };
+        iow.SubscribeButton(sub1);
+
+        var sub2 = new SubscriptionRequest()
+        {
+            ProviderName = "SharpDX_DirectInput",
+            InputType = InputType.BUTTON,
+            DeviceHandle = deviceHandle,
+            InputIndex = 1,
+            Callback = new Action<int>((value) =>
+            {
+                Console.WriteLine("Button 2 Value: " + value);
+                iow.SetOutputButton("Core_vJoyInterfaceWrap", (Guid)outputSubscription, 1, value == 1);
+            })
+        };
+        iow.SubscribeButton(sub2);
         //iow.UnsubscribeButton("SharpDX_DirectInput", (Guid)sub1);
-
-        var sub2 = iow.SubscribeButton("SharpDX_DirectInput", deviceHandle, 1, new Action<int>((value) =>
-        {
-            Console.WriteLine("Button 2 Value: " + value);
-        }));
-
     }
 }

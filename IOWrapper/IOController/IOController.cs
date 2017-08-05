@@ -38,17 +38,18 @@ namespace IOWrapper
             return list;
         }
 
-        public Guid? SubscribeButton(string providerName, string deviceHandle, uint buttonId, dynamic callback)
+        //public Guid? SubscribeButton(string providerName, string deviceHandle, uint buttonId, dynamic callback)
+        public Guid? SubscribeButton(SubscriptionRequest subReq)
         {
-            var subReq = new SubscriptionRequest()
-            {
-                ProviderName = providerName,
-                InputType = InputType.BUTTON,
-                DeviceHandle = deviceHandle,
-                InputIndex = buttonId,
-                Callback = callback
-            };
-            return GetProvider(providerName).SubscribeButton(subReq);
+            //var subReq = new SubscriptionRequest()
+            //{
+            //    ProviderName = providerName,
+            //    InputType = InputType.BUTTON,
+            //    DeviceHandle = deviceHandle,
+            //    InputIndex = buttonId,
+            //    Callback = callback
+            //};
+            return GetProvider(subReq.ProviderName).SubscribeButton(subReq);
         }
 
         public bool UnsubscribeButton(string providerName, Guid subscriptionGuid)
