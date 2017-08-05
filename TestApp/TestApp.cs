@@ -90,6 +90,6 @@ class Tester
                 iow.SetOutputButton(outputSubscription, 1, value == 1);
             })
         };
-        iow.SubscribeButton(sub2);
+        iow.SubscribeButton(sub3);
     }
 }
