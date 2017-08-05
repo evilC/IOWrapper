@@ -15,7 +15,7 @@ namespace IOWrapper
 
         public IOController()
         {
-            GenericMEFPluginLoader<IProvider> loader = new GenericMEFPluginLoader<IProvider>("Plugins");
+            GenericMEFPluginLoader<IProvider> loader = new GenericMEFPluginLoader<IProvider>("Providers");
             _Providers = new Dictionary<string, IProvider>();
             IEnumerable<IProvider> providers = loader.Plugins;
             foreach (var item in providers)
