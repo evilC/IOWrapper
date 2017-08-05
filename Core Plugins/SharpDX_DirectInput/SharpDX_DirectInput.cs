@@ -17,9 +17,8 @@ namespace SharpDX_DirectInput
         private bool monitorThreadRunning = false;
         private Dictionary<Guid, StickMonitor> MonitoredSticks = new Dictionary<Guid, StickMonitor>();
 
-        //private Dictionary<Guid, string> guidToHandle;
         private Dictionary<string, Guid> handleToInstanceGuid;
-        private List<IOWrapperDevice> deviceList;
+        private ProviderReport providerReport;
         
         public SharpDX_DirectInput()
         {
@@ -32,15 +31,9 @@ namespace SharpDX_DirectInput
         // ToDo: Need better way to handle this. MEF meta-data?
         public string PluginName { get { return typeof(SharpDX_DirectInput).Namespace; } }
 
-        public DeviceReport GetInputList()
+        public ProviderReport GetInputList()
         {
-            var dr = new DeviceReport();
-
-            foreach (var device in deviceList)
-            {
-                dr.Devices.Add(device.DeviceHandle, device);
-            }
-            return dr;
+            return providerReport;
         }
 
         public Guid? SubscribeButton(SubscriptionRequest subReq)
@@ -99,7 +92,7 @@ namespace SharpDX_DirectInput
 
         private void queryDevices()
         {
-            deviceList = new List<IOWrapperDevice>();
+            providerReport = new ProviderReport();
             handleToInstanceGuid = new Dictionary<string, Guid>();
 
             // ToDo: device list should be returned in handle order for duplicate devices
@@ -119,7 +112,7 @@ namespace SharpDX_DirectInput
                 var index = GetDeviceOrder(vidpid, deviceInstance.InstanceGuid);
 
                 handle += index;
-                deviceList.Add(new IOWrapperDevice()
+                providerReport.Devices.Add(handle, new IOWrapperDevice()
                 {
                     //DeviceHandle = deviceInstance.InstanceGuid.ToString(),
                     DeviceHandle = handle,

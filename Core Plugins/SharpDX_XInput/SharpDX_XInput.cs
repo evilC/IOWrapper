@@ -12,9 +12,9 @@ namespace SharpDX_XInput
 
         public string PluginName { get { return typeof(SharpDX_XInput).Namespace; } }
 
-        public DeviceReport GetInputList()
+        public ProviderReport GetInputList()
         {
-            var dr = new DeviceReport();
+            var dr = new ProviderReport();
             dr.Devices.Add("0", new IOWrapperDevice()
             {
                 DeviceHandle = "0",

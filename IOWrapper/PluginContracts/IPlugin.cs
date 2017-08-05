@@ -9,7 +9,7 @@ namespace PluginContracts
     public interface IPlugin
     {
         string PluginName { get; }
-        DeviceReport GetInputList();
+        ProviderReport GetInputList();
         Guid? SubscribeButton(SubscriptionRequest subReq);
         bool UnsubscribeButton(Guid subscriptionGuid);
         Guid? SubscribeOutputDevice(SubscriptionRequest subReq);
@@ -74,7 +74,7 @@ namespace PluginContracts
         public List<string> ButtonNames { get; set; }
     }
 
-    public class DeviceReport
+    public class ProviderReport
     {
         public SortedDictionary<string, IOWrapperDevice> Devices { get; set; }
             = new SortedDictionary<string, IOWrapperDevice>();

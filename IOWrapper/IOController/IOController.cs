@@ -24,9 +24,9 @@ namespace IOWrapper
             }
         }
 
-        public SortedDictionary<string, DeviceReport> GetInputList()
+        public SortedDictionary<string, ProviderReport> GetInputList()
         {
-            var list = new SortedDictionary<string, DeviceReport>();
+            var list = new SortedDictionary<string, ProviderReport>();
             foreach (var plugin in _Plugins.Values)
             {
                 var report = plugin.GetInputList();

@@ -38,7 +38,7 @@ namespace Core_vJoyInterfaceWrap
         // ToDo: Need better way to handle this. MEF meta-data?
         public string PluginName { get { return typeof(Core_vJoyInterfaceWrap).Namespace; } }
 
-        public DeviceReport GetInputList()
+        public ProviderReport GetInputList()
         {
             return null;
         }
