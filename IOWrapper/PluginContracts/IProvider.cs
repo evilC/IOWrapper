@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Providers
 {
@@ -22,20 +19,19 @@ namespace Providers
     public enum InputType { AXIS, BUTTON, POV };
 
     #region Subscriptions
-    public class InputSubscriptionRequest
+    public class InputSubscriptionRequest : SubscriptionRequest
     {
-        public Guid SubscriberGuid { get; set; }
         public InputType InputType { get; set; }
         //public string SubscriberId { get; set; }
-        public string ProviderName { get; set; }
-        public string DeviceHandle { get; set; }
         public uint InputIndex { get; set; }
         public dynamic Callback { get; set; }
         // used, eg, for DirectInput POV number
         public int InputSubId { get; set; } = 0;
     }
 
-    public class OutputSubscriptionRequest
+    public class OutputSubscriptionRequest : SubscriptionRequest { }
+
+    public class SubscriptionRequest
     {
         public Guid SubscriberGuid { get; set; }
         public string ProviderName { get; set; }
