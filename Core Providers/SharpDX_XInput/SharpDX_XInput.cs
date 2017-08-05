@@ -76,6 +76,18 @@ namespace SharpDX_XInput
 
         public bool UnsubscribeButton(InputSubscriptionRequest subReq)
         {
+            var stickId = Convert.ToInt32(subReq.DeviceHandle);
+            lock (MonitoredSticks)
+            {
+                if (MonitoredSticks.ContainsKey(stickId))
+                {
+                    MonitoredSticks[stickId].Remove(subReq);
+                    if (!MonitoredSticks[stickId].HasSubscriptions())
+                    {
+                        MonitoredSticks.Remove(stickId);
+                    }
+                }
+            }
             return false;
         }
 
@@ -155,6 +167,37 @@ namespace SharpDX_XInput
                 return monitor[inputId].Add(subReq);
             }
 
+            public bool Remove(InputSubscriptionRequest subReq)
+            {
+                var inputId = Convert.ToUInt32(subReq.DeviceHandle);
+                var monitor = monitors[subReq.InputType];
+                if (monitor.ContainsKey(inputId))
+                {
+                    var ret = monitor[inputId].Remove(subReq);
+                    if (!monitor[inputId].HasSubscriptions())
+                    {
+                        monitor.Remove(inputId);
+                    }
+                    return ret;
+                }
+                return false;
+            }
+
+            public bool HasSubscriptions()
+            {
+                foreach (var monitorSet in monitors)
+                {
+                    foreach (var monitor in monitorSet.Value)
+                    {
+                        if (monitor.Value.HasSubscriptions())
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
             public void Poll()
             {
                 var state = controller.GetState();
@@ -185,7 +228,7 @@ namespace SharpDX_XInput
             {
                 if (subscriptions.ContainsKey(subReq.SubscriberGuid))
                 {
-                    return subscriptions.Remove(subReq.Callback);
+                    return subscriptions.Remove(subReq.SubscriberGuid);
                 }
                 return false;
             }

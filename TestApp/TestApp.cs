@@ -22,7 +22,6 @@ namespace TestApp
 
 class Tester
 {
-    //private Guid? outputSubscription;
     private OutputSubscriptionRequest outputSubscription;
 
     public Tester()
@@ -91,5 +90,6 @@ class Tester
             })
         };
         iow.SubscribeButton(sub3);
+        //iow.UnsubscribeButton(sub3);
     }
 }
