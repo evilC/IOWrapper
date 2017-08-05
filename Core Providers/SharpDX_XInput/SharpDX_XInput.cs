@@ -76,7 +76,6 @@ namespace SharpDX_XInput
 
         public bool UnsubscribeButton(InputSubscriptionRequest subReq)
         {
-
             return false;
         }
 
@@ -95,11 +94,6 @@ namespace SharpDX_XInput
             return false;
         }
         #endregion
-
-        private uint HandleToInt(string handle)
-        {
-            return Convert.ToUInt32(handle);
-        }
 
         private IOWrapperDevice BuildXInputDevice(int id)
         {
