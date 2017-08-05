@@ -24,6 +24,7 @@ namespace Providers
     #region Subscriptions
     public class SubscriptionRequest
     {
+        public Guid SubscriberGuid { get; set; }
         public InputType InputType { get; set; }
         //public string SubscriberId { get; set; }
         public string ProviderName { get; set; }

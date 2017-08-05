@@ -40,6 +40,7 @@ class Tester
         // Subscribe to the found stick
         var sub1 = new SubscriptionRequest()
         {
+            SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_DirectInput",
             InputType = InputType.BUTTON,
             DeviceHandle = deviceHandle,
@@ -51,9 +52,11 @@ class Tester
             })
         };
         iow.SubscribeButton(sub1);
+        //iow.UnsubscribeButton("SharpDX_DirectInput", sub1.SubscriberGuid);
 
         var sub2 = new SubscriptionRequest()
         {
+            SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_DirectInput",
             InputType = InputType.BUTTON,
             DeviceHandle = deviceHandle,
@@ -65,6 +68,5 @@ class Tester
             })
         };
         iow.SubscribeButton(sub2);
-        //iow.UnsubscribeButton("SharpDX_DirectInput", (Guid)sub1);
     }
 }

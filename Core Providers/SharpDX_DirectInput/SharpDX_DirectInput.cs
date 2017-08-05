@@ -226,7 +226,7 @@ namespace SharpDX_DirectInput
 
             public Binding(SubscriptionRequest subReq)
             {
-                bindingGuid = Guid.NewGuid();
+                bindingGuid = subReq.SubscriberGuid;
                 inputType = subReq.InputType;
                 joystickOffset = directInputMappings[subReq.InputType][(int)subReq.InputIndex];
                 bindingCallback = subReq.Callback;
