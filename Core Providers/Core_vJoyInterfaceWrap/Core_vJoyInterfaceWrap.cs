@@ -43,6 +43,28 @@ namespace Core_vJoyInterfaceWrap
             return null;
         }
 
+        public ProviderReport GetOutputList()
+        {
+            var pr = new ProviderReport();
+            for (uint i = 0; i < 16; i++)
+            {
+                var id = i + 1;
+                if (vJ.isVJDExists(id))
+                {
+                    var handle = i.ToString();
+                    pr.Devices.Add(handle, new IOWrapperDevice()
+                    {
+                        DeviceHandle = handle,
+                        DeviceName = String.Format("vJoy Stick {0}", id),
+                        ProviderName = ProviderName,
+                        API = "vJoy",
+                        ButtonCount = (uint)vJ.GetVJDButtonNumber(id)
+                    });
+                }
+            }
+            return pr;
+        }
+
         public bool SubscribeButton(InputSubscriptionRequest subReq)
         {
             return false;

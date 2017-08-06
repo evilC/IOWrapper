@@ -27,30 +27,39 @@ class Tester
     public Tester()
     {
         var iow = new IOWrapper.IOController();
-        var deviceList = iow.GetInputList();
-        string deviceHandle = null;
-        try { deviceHandle = deviceList["SharpDX_DirectInput"].Devices.FirstOrDefault().Key; }
-        catch { return; }
-        //deviceHandle = "VID_1234&PID_BEAD/0";    // vJoy
-        //deviceHandle = "VID_0C45&PID_7403/0";   // XBox
+        var inputList = iow.GetInputList();
+        var outputList = iow.GetOutputList();
+        string inputHandle = null;
 
-        // Acquire vJoy stick 2
+        // Get handle to 1st DirectInput device
+        string outputHandle = null;
+        try { inputHandle = inputList["SharpDX_DirectInput"].Devices.FirstOrDefault().Key; }
+        catch { return; }
+
+        // Get handle to 1st vJoy device
+        try { outputHandle = outputList["Core_vJoyInterfaceWrap"].Devices.FirstOrDefault().Key; }
+        catch { return; }
+
+        //inputHandle = "VID_1234&PID_BEAD/0";    // vJoy
+        //inputHandle = "VID_0C45&PID_7403/0";   // XBox
+
+        // Acquire vJoy stick
         outputSubscription = new OutputSubscriptionRequest()
         {
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "Core_vJoyInterfaceWrap",
-            DeviceHandle = "1"
+            DeviceHandle = outputHandle
         };
         iow.SubscribeOutputDevice(outputSubscription);
 
-        Console.WriteLine("Binding input to handle " + deviceHandle);
+        Console.WriteLine("Binding input to handle " + inputHandle);
         // Subscribe to the found stick
         var sub1 = new InputSubscriptionRequest()
         {
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_DirectInput",
             InputType = InputType.BUTTON,
-            DeviceHandle = deviceHandle,
+            DeviceHandle = inputHandle,
             InputIndex = 0,
             Callback = new Action<int>((value) =>
             {
@@ -66,7 +75,7 @@ class Tester
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_DirectInput",
             InputType = InputType.BUTTON,
-            DeviceHandle = deviceHandle,
+            DeviceHandle = inputHandle,
             InputIndex = 1,
             Callback = new Action<int>((value) =>
             {

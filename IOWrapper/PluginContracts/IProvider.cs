@@ -7,6 +7,7 @@ namespace Providers
     {
         string ProviderName { get; }
         ProviderReport GetInputList();
+        ProviderReport GetOutputList();
         bool SubscribeButton(InputSubscriptionRequest subReq);
         bool UnsubscribeButton(InputSubscriptionRequest subReq);
         bool SubscribeOutputDevice(OutputSubscriptionRequest subReq);

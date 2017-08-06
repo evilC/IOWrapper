@@ -36,6 +36,11 @@ namespace SharpDX_DirectInput
             return providerReport;
         }
 
+        public ProviderReport GetOutputList()
+        {
+            return null;
+        }
+
         public bool SubscribeButton(InputSubscriptionRequest subReq)
         {
             try

@@ -39,6 +39,11 @@ namespace SharpDX_XInput
             return providerReport;
         }
 
+        public ProviderReport GetOutputList()
+        {
+            return null;
+        }
+
         private void QueryDevices()
         {
             providerReport = new ProviderReport();

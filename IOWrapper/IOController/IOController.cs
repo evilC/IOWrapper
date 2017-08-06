@@ -34,6 +34,20 @@ namespace IOWrapper
             return list;
         }
 
+        public SortedDictionary<string, ProviderReport> GetOutputList()
+        {
+            var list = new SortedDictionary<string, ProviderReport>();
+            foreach (var provider in _Providers.Values)
+            {
+                var report = provider.GetOutputList();
+                if (report != null)
+                {
+                    list.Add(provider.ProviderName, report);
+                }
+            }
+            return list;
+        }
+
         public bool SubscribeButton(InputSubscriptionRequest subReq)
         {
             return GetProvider(subReq.ProviderName)
