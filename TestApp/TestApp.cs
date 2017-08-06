@@ -99,6 +99,22 @@ class Tester
             })
         };
         iow.SubscribeInput(sub3);
+
+        var sub4 = new InputSubscriptionRequest()
+        {
+            SubscriberGuid = Guid.NewGuid(),
+            ProviderName = "SharpDX_XInput",
+            InputType = InputType.AXIS,
+            DeviceHandle = "0",
+            InputIndex = 1,
+            Callback = new Action<int>((value) =>
+            {
+                Console.WriteLine("XInput Axis 1 Value: " + value);
+                //iow.SetOutputButton(outputSubscription, 1, value == 1);
+            })
+        };
+        iow.SubscribeInput(sub4);
+
         //iow.UnsubscribeButton(sub3);
     }
 }

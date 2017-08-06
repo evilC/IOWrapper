@@ -18,6 +18,11 @@ namespace SharpDX_XInput
         private readonly static List<string> buttonNames = new List<string>()
             { "A", "B", "X", "Y", "LB", "RB", "LS", "RS", "Back", "Start", "Xbox" };
 
+        private static List<string> xinputAxisIdentifiers = new List<string>()
+        {
+            "LeftThumbX", "LeftThumbY", "LeftTrigger", "RightThumbX", "RightThumbY", "RightTrigger"
+        };
+
         private static List<GamepadButtonFlags> xinputButtonIdentifiers = new List<GamepadButtonFlags>()
         {
             GamepadButtonFlags.A, GamepadButtonFlags.B, GamepadButtonFlags.X, GamepadButtonFlags.Y
@@ -151,13 +156,17 @@ namespace SharpDX_XInput
         {
             private int controllerId;
             private Controller controller;
+
+            private Dictionary<uint, InputMonitor> axisMonitors = new Dictionary<uint, InputMonitor>();
             private Dictionary<uint, InputMonitor> buttonMonitors = new Dictionary<uint, InputMonitor>();
+
             Dictionary<InputType, Dictionary<uint, InputMonitor>> monitors = new Dictionary<InputType, Dictionary<uint, InputMonitor>>();
 
             public StickMonitor(int cid)
             {
                 controllerId = cid;
                 controller = new Controller((UserIndex)controllerId);
+                monitors.Add(InputType.AXIS, axisMonitors);
                 monitors.Add(InputType.BUTTON, buttonMonitors);
             }
 
@@ -206,6 +215,12 @@ namespace SharpDX_XInput
             public void Poll()
             {
                 var state = controller.GetState();
+
+                foreach (var monitor in axisMonitors)
+                {
+                    var value = Convert.ToInt32(state.Gamepad.GetType().GetField(xinputAxisIdentifiers[(int)monitor.Key]).GetValue(state.Gamepad));
+                    monitor.Value.ProcessPollResult(value);
+                }
 
                 foreach (var monitor in buttonMonitors)
                 {
