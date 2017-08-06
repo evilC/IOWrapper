@@ -66,10 +66,10 @@ namespace IOWrapper
                 .SubscribeOutputDevice(subReq);
         }
 
-        public bool SetOutputButton(OutputSubscriptionRequest subReq, uint button, int state)
+        public bool SetOutputButton(OutputSubscriptionRequest subReq, uint inputIndex, int state)
         {
             return GetProvider(subReq.ProviderName)
-                .SetOutputState(subReq, button, state);
+                .SetOutputState(subReq, inputIndex, state);
         }
 
         private IProvider GetProvider(string providerName)
