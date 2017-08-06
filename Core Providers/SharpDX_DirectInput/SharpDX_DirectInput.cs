@@ -19,7 +19,10 @@ namespace SharpDX_DirectInput
 
         private static Dictionary<string, Guid> handleToInstanceGuid;
         private ProviderReport providerReport;
-        
+
+        static private List<string> axisNames = new List<string>()
+            { "X", "Y", "Z", "Rx", "Ry", "Rz", "Sl0", "Sl1" };
+
         public SharpDX_DirectInput()
         {
             directInput = new DirectInput();
@@ -115,6 +118,18 @@ namespace SharpDX_DirectInput
                 var index = GetDeviceOrder(vidpid, deviceInstance.InstanceGuid);
 
                 handle += index;
+
+                var sa = new List<int>();
+                for (int i = 0; i < directInputMappings[InputType.AXIS].Count; i++)
+                {
+                    try
+                    {
+                        var mightGoBoom = joystick.GetObjectInfoByName(directInputMappings[InputType.AXIS][i].ToString());
+                        sa.Add(i + 1);
+                    }
+                    catch { }
+                }
+
                 providerReport.Devices.Add(handle, new IOWrapperDevice()
                 {
                     //DeviceHandle = deviceInstance.InstanceGuid.ToString(),
@@ -122,7 +137,9 @@ namespace SharpDX_DirectInput
                     DeviceName = deviceInstance.ProductName,
                     ProviderName = ProviderName,
                     API = "DirectInput",
-                    ButtonCount = (uint)joystick.Capabilities.ButtonCount
+                    ButtonCount = (uint)joystick.Capabilities.ButtonCount,
+                    AxisList = sa,
+                    AxisNames = axisNames
                 });
                 handleToInstanceGuid.Add(handle, deviceInstance.InstanceGuid);
 
