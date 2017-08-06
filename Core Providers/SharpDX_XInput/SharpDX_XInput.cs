@@ -111,7 +111,7 @@ namespace SharpDX_XInput
             return false;
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, uint inputIndex, int state)
+        public bool SetOutputState(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state)
         {
             return false;
         }
@@ -172,7 +172,7 @@ namespace SharpDX_XInput
 
             public bool Add(InputSubscriptionRequest subReq)
             {
-                var inputId = Convert.ToUInt32(subReq.DeviceHandle);
+                var inputId = subReq.InputIndex;
                 var monitor = monitors[subReq.InputType];
                 if (!monitor.ContainsKey(inputId))
                 {

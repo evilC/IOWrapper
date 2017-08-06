@@ -63,8 +63,8 @@ class Tester
             InputIndex = 0,
             Callback = new Action<int>((value) =>
             {
-                Console.WriteLine("Button 1 Value: " + value);
-                iow.SetOutputButton(outputSubscription, 1, value);
+                Console.WriteLine("Button 0 Value: " + value);
+                iow.SetOutputstate(outputSubscription, InputType.BUTTON, 0, value);
             })
         };
         iow.SubscribeInput(sub1);
@@ -79,8 +79,8 @@ class Tester
             InputIndex = 1,
             Callback = new Action<int>((value) =>
             {
-                Console.WriteLine("Button 2 Value: " + value);
-                iow.SetOutputButton(outputSubscription, 2, value);
+                Console.WriteLine("Button 1 Value: " + value);
+                iow.SetOutputstate(outputSubscription, InputType.BUTTON, 1, value);
             })
         };
         iow.SubscribeInput(sub2);
@@ -94,8 +94,8 @@ class Tester
             InputIndex = 1,
             Callback = new Action<int>((value) =>
             {
-                Console.WriteLine("XInput Button 1 Value: " + value);
-                iow.SetOutputButton(outputSubscription, 1, value);
+                Console.WriteLine("XInput Button 0 Value: " + value);
+                iow.SetOutputstate(outputSubscription, InputType.BUTTON, 0, value);
             })
         };
         iow.SubscribeInput(sub3);
@@ -109,8 +109,8 @@ class Tester
             InputIndex = 1,
             Callback = new Action<int>((value) =>
             {
-                Console.WriteLine("XInput Axis 1 Value: " + value);
-                //iow.SetOutputButton(outputSubscription, 1, value == 1);
+                Console.WriteLine("XInput Axis 0 Value: " + value);
+                iow.SetOutputstate(outputSubscription, InputType.AXIS, 0, value);
             })
         };
         iow.SubscribeInput(sub4);

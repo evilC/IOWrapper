@@ -96,10 +96,24 @@ namespace Core_vJoyInterfaceWrap
             return true;
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, uint inputIndex, int state)
+        public bool SetOutputState(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state)
         {
             var devId = subscriptionToDevice[subReq.SubscriberGuid];
-            return vJ.SetBtn(state == 1, devId + 1, inputIndex);
+            switch (inputType)
+            {
+                case InputType.AXIS:
+                    return vJ.SetAxis(state + 32768, devId + 1, AxisIdToUsage[(int)inputIndex + 1]);
+
+                case InputType.BUTTON:
+                    return vJ.SetBtn(state == 1, devId + 1, inputIndex + 1);
+
+                case InputType.POV:
+                    break;
+
+                default:
+                    break;
+            }
+            return false;
         }
 
         //public bool SetOutputAxis(Guid deviceSubscription, int axis, int state)
