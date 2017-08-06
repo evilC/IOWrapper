@@ -65,12 +65,12 @@ namespace Core_vJoyInterfaceWrap
             return pr;
         }
 
-        public bool SubscribeButton(InputSubscriptionRequest subReq)
+        public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
             return false;
         }
 
-        public bool UnsubscribeButton(InputSubscriptionRequest subReq)
+        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
             return false;
         }

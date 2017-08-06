@@ -50,7 +50,7 @@ class Tester
             ProviderName = "Core_vJoyInterfaceWrap",
             DeviceHandle = outputHandle
         };
-        iow.SubscribeOutputDevice(outputSubscription);
+        iow.SubscribeOutput(outputSubscription);
 
         Console.WriteLine("Binding input to handle " + inputHandle);
         // Subscribe to the found stick
@@ -67,7 +67,7 @@ class Tester
                 iow.SetOutputButton(outputSubscription, 1, value == 1);
             })
         };
-        iow.SubscribeButton(sub1);
+        iow.SubscribeInput(sub1);
         //iow.UnsubscribeButton(sub1);
 
         var sub2 = new InputSubscriptionRequest()
@@ -83,7 +83,7 @@ class Tester
                 iow.SetOutputButton(outputSubscription, 2, value == 1);
             })
         };
-        iow.SubscribeButton(sub2);
+        iow.SubscribeInput(sub2);
 
         var sub3 = new InputSubscriptionRequest()
         {
@@ -98,7 +98,7 @@ class Tester
                 iow.SetOutputButton(outputSubscription, 1, value == 1);
             })
         };
-        iow.SubscribeButton(sub3);
+        iow.SubscribeInput(sub3);
         //iow.UnsubscribeButton(sub3);
     }
 }

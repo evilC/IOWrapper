@@ -57,7 +57,7 @@ namespace SharpDX_XInput
             }
         }
 
-        public bool SubscribeButton(InputSubscriptionRequest subReq)
+        public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
             var stickId = Convert.ToInt32(subReq.DeviceHandle);
             lock (MonitoredSticks)
@@ -79,7 +79,7 @@ namespace SharpDX_XInput
             return false;
         }
 
-        public bool UnsubscribeButton(InputSubscriptionRequest subReq)
+        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
             var stickId = Convert.ToInt32(subReq.DeviceHandle);
             lock (MonitoredSticks)

@@ -41,7 +41,7 @@ namespace SharpDX_DirectInput
             return null;
         }
 
-        public bool SubscribeButton(InputSubscriptionRequest subReq)
+        public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace SharpDX_DirectInput
             }
         }
 
-        public bool UnsubscribeButton(InputSubscriptionRequest subReq)
+        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
             foreach (var stick in MonitoredSticks.Values)
             {

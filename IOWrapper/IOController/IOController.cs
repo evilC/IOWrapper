@@ -48,19 +48,19 @@ namespace IOWrapper
             return list;
         }
 
-        public bool SubscribeButton(InputSubscriptionRequest subReq)
+        public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
             return GetProvider(subReq.ProviderName)
-                .SubscribeButton(subReq);
+                .SubscribeInput(subReq);
         }
 
-        public bool UnsubscribeButton(InputSubscriptionRequest subReq)
+        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
             return GetProvider(subReq.ProviderName)
-                .UnsubscribeButton(subReq);
+                .UnsubscribeInput(subReq);
         }
 
-        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        public bool SubscribeOutput(OutputSubscriptionRequest subReq)
         {
             return GetProvider(subReq.ProviderName)
                 .SubscribeOutputDevice(subReq);
