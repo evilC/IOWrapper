@@ -116,12 +116,6 @@ namespace Core_vJoyInterfaceWrap
             return false;
         }
 
-        //public bool SetOutputAxis(Guid deviceSubscription, int axis, int state)
-        //{
-        //    var devId = subscriptionToDevice[deviceSubscription];
-        //    return vJ.SetAxis(state, devId + 1, AxisIdToUsage[axis]);
-        //}
-
         private uint DevIdFromHandle(string handle)
         {
             return Convert.ToUInt32(handle);
