@@ -91,7 +91,7 @@ class Tester
             ProviderName = "SharpDX_XInput",
             InputType = InputType.BUTTON,
             DeviceHandle = "0",
-            InputIndex = 1,
+            InputIndex = 0,
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("XInput Button 0 Value: " + value);
@@ -106,7 +106,7 @@ class Tester
             ProviderName = "SharpDX_XInput",
             InputType = InputType.AXIS,
             DeviceHandle = "0",
-            InputIndex = 1,
+            InputIndex = 0,
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("XInput Axis 0 Value: " + value);

@@ -102,7 +102,7 @@ namespace Core_vJoyInterfaceWrap
             switch (inputType)
             {
                 case InputType.AXIS:
-                    return vJ.SetAxis(state + 32768, devId + 1, AxisIdToUsage[(int)inputIndex + 1]);
+                    return vJ.SetAxis((state + 32768) / 2, devId + 1, AxisIdToUsage[(int)inputIndex]);
 
                 case InputType.BUTTON:
                     return vJ.SetBtn(state == 1, devId + 1, inputIndex + 1);
