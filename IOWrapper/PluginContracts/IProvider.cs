@@ -13,7 +13,7 @@ namespace Providers
         bool SubscribeOutputDevice(OutputSubscriptionRequest subReq);
         bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq);
         //bool SetOutputButton(string dev, uint button, bool state);
-        bool SetOutputButton(OutputSubscriptionRequest subReq, uint button, int state);
+        bool SetOutputState(OutputSubscriptionRequest subReq, uint button, int state);
         //bool SubscribeAxis(string deviceHandle, uint axisId, dynamic callback);
     }
 

@@ -69,7 +69,7 @@ namespace IOWrapper
         public bool SetOutputButton(OutputSubscriptionRequest subReq, uint button, int state)
         {
             return GetProvider(subReq.ProviderName)
-                .SetOutputButton(subReq, button, state);
+                .SetOutputState(subReq, button, state);
         }
 
         private IProvider GetProvider(string providerName)

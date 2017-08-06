@@ -111,7 +111,7 @@ namespace SharpDX_XInput
             return false;
         }
 
-        public bool SetOutputButton(OutputSubscriptionRequest subReq, uint button, int state)
+        public bool SetOutputState(OutputSubscriptionRequest subReq, uint button, int state)
         {
             return false;
         }
