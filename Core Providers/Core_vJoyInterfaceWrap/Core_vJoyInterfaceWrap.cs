@@ -29,7 +29,7 @@ namespace Core_vJoyInterfaceWrap
             {
                 if (deviceSubscriptions[i].Count == 0)
                     continue;
-                //vJ.RelinquishVJD(i);
+                vJ.RelinquishVJD(i + 1);
             }
         }
 
