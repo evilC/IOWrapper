@@ -77,6 +77,10 @@ namespace Providers
         /// If ommitted, buttons numbers will be communicated to the user
         /// </summary>
         public List<string> ButtonNames { get; set; }
+
+        public List<int> AxisList { get; set; }
+
+        public List<string> AxisNames { get; set; }
     }
 
     public class ProviderReport

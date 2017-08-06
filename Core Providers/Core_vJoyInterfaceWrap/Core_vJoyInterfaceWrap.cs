@@ -14,6 +14,8 @@ namespace Core_vJoyInterfaceWrap
         public static vJoyInterfaceWrap.vJoy vJ = new vJoyInterfaceWrap.vJoy();
         private List<Guid>[] deviceSubscriptions = new List<Guid>[16];
         private Dictionary<Guid, uint> subscriptionToDevice = new Dictionary<Guid, uint>();
+        static private List<string> axisNames = new List<string>()
+            { "X", "Y", "Z", "Rx", "Ry", "Rz", "Sl0", "Sl1" };
 
         public Core_vJoyInterfaceWrap()
         {
@@ -51,6 +53,15 @@ namespace Core_vJoyInterfaceWrap
                 var id = i + 1;
                 if (vJ.isVJDExists(id))
                 {
+                    var axes = new List<int>();
+
+                    for (int ax = 0; ax < 8; ax++)
+                    {
+                        if (vJ.GetVJDAxisExist(id, AxisIdToUsage[ax]))
+                        {
+                            axes.Add(ax);
+                        }
+                    }
                     var handle = i.ToString();
                     pr.Devices.Add(handle, new IOWrapperDevice()
                     {
@@ -58,7 +69,9 @@ namespace Core_vJoyInterfaceWrap
                         DeviceName = String.Format("vJoy Stick {0}", id),
                         ProviderName = ProviderName,
                         API = "vJoy",
-                        ButtonCount = (uint)vJ.GetVJDButtonNumber(id)
+                        ButtonCount = (uint)vJ.GetVJDButtonNumber(id),
+                        AxisList = axes,
+                        AxisNames = axisNames
                     });
                 }
             }
