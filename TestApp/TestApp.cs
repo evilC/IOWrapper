@@ -68,19 +68,19 @@ class Tester
             })
         };
         iow.SubscribeInput(sub1);
-        //iow.UnsubscribeButton(sub1);
+        //iow.UnsubscribeInput(sub1);
 
         var sub2 = new InputSubscriptionRequest()
         {
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_DirectInput",
-            InputType = InputType.BUTTON,
+            InputType = InputType.AXIS,
             DeviceHandle = inputHandle,
-            InputIndex = 1,
+            InputIndex = 0,
             Callback = new Action<int>((value) =>
             {
-                Console.WriteLine("Button 1 Value: " + value);
-                iow.SetOutputstate(outputSubscription, InputType.BUTTON, 1, value);
+                Console.WriteLine("Axis 0 Value: " + value);
+                iow.SetOutputstate(outputSubscription, InputType.AXIS, 0, value);
             })
         };
         iow.SubscribeInput(sub2);
@@ -95,7 +95,7 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("XInput Button 0 Value: " + value);
-                iow.SetOutputstate(outputSubscription, InputType.BUTTON, 0, value);
+                iow.SetOutputstate(outputSubscription, InputType.BUTTON, 1, value);
             })
         };
         iow.SubscribeInput(sub3);
@@ -115,6 +115,6 @@ class Tester
         };
         iow.SubscribeInput(sub4);
 
-        //iow.UnsubscribeButton(sub3);
+        //iow.UnsubscribeInput(sub3);
     }
 }

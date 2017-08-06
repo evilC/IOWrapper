@@ -43,36 +43,35 @@ namespace SharpDX_DirectInput
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            try
+            var deviceGuid = handleToInstanceGuid[subReq.DeviceHandle];
+            if (!MonitoredSticks.ContainsKey(deviceGuid))
             {
-                var deviceGuid = handleToInstanceGuid[subReq.DeviceHandle];
-                if (!MonitoredSticks.ContainsKey(deviceGuid))
-                {
-                    MonitoredSticks.Add(deviceGuid, new StickMonitor(deviceGuid));
-                }
-                Guid bindingGuid;
-                lock (MonitoredSticks)
-                {
-                    bindingGuid = MonitoredSticks[deviceGuid].AddBinding(subReq);
-                }
+                MonitoredSticks.Add(deviceGuid, new StickMonitor(subReq, deviceGuid));
+            }
+            var success =  MonitoredSticks[deviceGuid].Add(subReq);
+            if (success)
+            {
                 if (!monitorThreadRunning)
                 {
                     MonitorSticks();
                 }
                 return true;
             }
-            catch
-            {
-                return false;
-            }
+            return false;
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            foreach (var stick in MonitoredSticks.Values)
+            var deviceGuid = handleToInstanceGuid[subReq.DeviceHandle];
+            if (MonitoredSticks.ContainsKey(deviceGuid))
             {
-                if (stick.RemoveBinding(subReq.SubscriberGuid))
+                lock (MonitoredSticks)
                 {
+                    var ret = MonitoredSticks[deviceGuid].Remove(subReq);
+                    if (!MonitoredSticks[deviceGuid].HasSubscriptions())
+                    {
+                        MonitoredSticks.Remove(deviceGuid);
+                    }
                     return true;
                 }
             }
@@ -163,11 +162,11 @@ namespace SharpDX_DirectInput
         {
             private Joystick joystick;
             private Guid stickGuid;
-            private Dictionary<Guid, Binding> stickBindings = new Dictionary<Guid, Binding>();
+            private Dictionary<JoystickOffset, InputMonitor> monitors = new Dictionary<JoystickOffset, InputMonitor>();
 
-            public StickMonitor(Guid passedStickGuid)
+            public StickMonitor(InputSubscriptionRequest subReq, Guid deviceGuid)
             {
-                stickGuid = passedStickGuid;
+                stickGuid = deviceGuid;
                 joystick = new Joystick(directInput, stickGuid);
                 joystick.Properties.BufferSize = 128;
                 joystick.Acquire();
@@ -178,50 +177,122 @@ namespace SharpDX_DirectInput
                 joystick.Unacquire();
             }
 
-            public void Poll()
+            public bool Add(InputSubscriptionRequest subReq)
             {
-                var data = joystick.GetBufferedData();
-                foreach (var state in data)
+                var inputId = GetInputIdentifier(subReq.InputType, (int)subReq.InputIndex);
+                if (!monitors.ContainsKey(inputId))
                 {
-                    foreach (var stickBinding in stickBindings.Values)
-                    {
-                        lock (stickBinding)
-                        {
-                            if (state.Offset == stickBinding.joystickOffset)
-                            {
-                                stickBinding.ProcessPollData(state);
-                            }
-                        }
-                    }
+                    monitors.Add(inputId, new InputMonitor());
                 }
+                return monitors[inputId].Add(subReq);
             }
 
-            public Guid AddBinding(InputSubscriptionRequest subReq)
+            public bool Remove(InputSubscriptionRequest subReq)
             {
-                var binding = new Binding(subReq);
-                stickBindings.Add(binding.bindingGuid, binding);
-                return binding.bindingGuid;
-            }
-
-            public bool RemoveBinding(Guid subscriptionGuid)
-            {
-                foreach (var binding in stickBindings.Values)
+                var inputId = GetInputIdentifier(subReq.InputType, (int)subReq.InputIndex);
+                if (monitors.ContainsKey(inputId))
                 {
-                    if (binding.bindingGuid == subscriptionGuid)
+                    var ret = monitors[inputId].Remove(subReq);
+                    if (!monitors[inputId].HasSubscriptions())
                     {
-                        lock (stickBindings)
-                        {
-                            stickBindings.Remove(subscriptionGuid);
-                        }
+                        monitors.Remove(inputId);
+                    }
+                    return ret;
+                }
+                return false;
+            }
+
+            public bool HasSubscriptions()
+            {
+                foreach (var monitor in monitors)
+                {
+                    if (monitor.Value.HasSubscriptions())
+                    {
                         return true;
                     }
                 }
                 return false;
             }
+
+            public void Poll()
+            {
+                var data = joystick.GetBufferedData();
+                foreach (var state in data)
+                {
+                    if (monitors.ContainsKey(state.Offset))
+                    {
+                        monitors[state.Offset].ProcessPollResult(state.Value);
+                    }
+                }
+                Thread.Sleep(1);
+            }
         }
         #endregion
 
         #region Input
+        public class InputMonitor
+        {
+            private Dictionary<Guid, dynamic> subscriptions = new Dictionary<Guid, dynamic>();
+            private InputType inputType;
+
+            public bool Add(InputSubscriptionRequest subReq)
+            {
+                inputType = subReq.InputType;
+                subscriptions.Add(subReq.SubscriberGuid, subReq.Callback);
+                return true;
+            }
+
+            public bool Remove(InputSubscriptionRequest subReq)
+            {
+                if (subscriptions.ContainsKey(subReq.SubscriberGuid))
+                {
+                    subscriptions.Remove(subReq.SubscriberGuid);
+                    return true;
+                }
+                return false;
+            }
+
+            public bool HasSubscriptions()
+            {
+                if (subscriptions.Count > 0)
+                {
+                    return true;
+                }
+                return false;
+            }
+
+            public void ProcessPollResult(int value)
+            {
+                foreach (var subscription in subscriptions.Values)
+                {
+                    int reportedValue = value;
+                    switch (inputType)
+                    {
+                        case InputType.AXIS:
+                            // DirectInput reports as 0..65535 with center of 32767
+                            // All axes are normalized for now to int16 (-32768...32767) with center being 0
+                            // So for now, this means flipping the axis.
+                            reportedValue = (reportedValue - 32767) * - 1;
+                            break;
+                        case InputType.BUTTON:
+                            // DirectInput reports as 0..128 for buttons
+                            // PS controllers can report in an analog fashion, so supporting this at some point may be cool
+                            // However, these could be handled like axes
+                            // For now, a button is a digital device, so convert to 1 or 0
+                            reportedValue /= 128;
+                            break;
+                        case InputType.POV:
+                            break;
+                        default:
+                            break;
+                    }
+                    subscription(reportedValue);
+                }
+            }
+        }
+
+
+        /*
         public class Binding
         {
             private InputType inputType;
@@ -242,10 +313,22 @@ namespace SharpDX_DirectInput
                 bindingCallback(state.Value == 128 ? 1 : 0);
             }
         }
+        */
         #endregion
         #endregion
 
         #region Helper Methods
+        
+        /// <summary>
+        /// Converts index (eg button 0, axis 1) into DirectX Offsets
+        /// </summary>
+        /// <param name="inputType">The type of input (Axis, Button etc)</param>
+        /// <param name="inputId">The index of the input. 0 based</param>
+        /// <returns></returns>
+        private static JoystickOffset GetInputIdentifier(InputType inputType, int inputId)
+        {
+            return directInputMappings[inputType][inputId];
+        }
 
         private bool IsStickType(DeviceInstance deviceInstance)
         {
