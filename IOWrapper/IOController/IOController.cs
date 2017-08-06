@@ -66,7 +66,7 @@ namespace IOWrapper
                 .SubscribeOutputDevice(subReq);
         }
 
-        public bool SetOutputButton(OutputSubscriptionRequest subReq, uint button, bool state)
+        public bool SetOutputButton(OutputSubscriptionRequest subReq, uint button, int state)
         {
             return GetProvider(subReq.ProviderName)
                 .SetOutputButton(subReq, button, state);

@@ -64,7 +64,7 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 1 Value: " + value);
-                iow.SetOutputButton(outputSubscription, 1, value == 1);
+                iow.SetOutputButton(outputSubscription, 1, value);
             })
         };
         iow.SubscribeInput(sub1);
@@ -80,7 +80,7 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 2 Value: " + value);
-                iow.SetOutputButton(outputSubscription, 2, value == 1);
+                iow.SetOutputButton(outputSubscription, 2, value);
             })
         };
         iow.SubscribeInput(sub2);
@@ -95,7 +95,7 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("XInput Button 1 Value: " + value);
-                iow.SetOutputButton(outputSubscription, 1, value == 1);
+                iow.SetOutputButton(outputSubscription, 1, value);
             })
         };
         iow.SubscribeInput(sub3);

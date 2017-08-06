@@ -96,10 +96,10 @@ namespace Core_vJoyInterfaceWrap
             return true;
         }
 
-        public bool SetOutputButton(OutputSubscriptionRequest subReq, uint button, bool state)
+        public bool SetOutputButton(OutputSubscriptionRequest subReq, uint button, int state)
         {
             var devId = subscriptionToDevice[subReq.SubscriberGuid];
-            return vJ.SetBtn(state, devId + 1, button);
+            return vJ.SetBtn(state == 1, devId + 1, button);
         }
 
         //public bool SetOutputAxis(Guid deviceSubscription, int axis, int state)
