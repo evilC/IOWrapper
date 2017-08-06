@@ -18,6 +18,9 @@ namespace SharpDX_XInput
         private readonly static List<string> buttonNames = new List<string>()
             { "A", "B", "X", "Y", "LB", "RB", "LS", "RS", "Back", "Start", "Xbox" };
 
+        private readonly static List<string> axisNames = new List<string>()
+            { "LX", "LY", "RX", "RY", "LT", "RT" };
+
         private static List<string> xinputAxisIdentifiers = new List<string>()
         {
             "LeftThumbX", "LeftThumbY", "LeftTrigger", "RightThumbX", "RightThumbY", "RightTrigger"
@@ -125,7 +128,9 @@ namespace SharpDX_XInput
                 ProviderName = ProviderName,
                 API = "XInput",
                 ButtonCount = 11,
-                ButtonNames = buttonNames
+                ButtonNames = buttonNames,
+                AxisList = new List<int>() { 0, 1, 2, 3, 4, 5 },
+                AxisNames = axisNames
             };
         }
 
