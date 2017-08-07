@@ -78,8 +78,15 @@ namespace Providers
         /// </summary>
         public List<string> ButtonNames { get; set; }
 
+        /// <summary>
+        /// A List of Axis IDs that this axis supports, eg [1,3,5]
+        /// This is basically a look-up table to AxisNames
+        /// </summary>
         public List<int> AxisList { get; set; }
 
+        /// <summary>
+        /// A list of the names of each axis that this API reports
+        /// </summary>
         public List<string> AxisNames { get; set; }
     }
 
