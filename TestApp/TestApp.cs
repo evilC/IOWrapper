@@ -42,6 +42,7 @@ class Tester
 
         //inputHandle = "VID_1234&PID_BEAD/0";    // vJoy
         //inputHandle = "VID_0C45&PID_7403/0";   // XBox
+        inputHandle = "VID_054C&PID_09CC/0";   // DS4
 
         // Acquire vJoy stick
         outputSubscription = new OutputSubscriptionRequest()
@@ -85,35 +86,35 @@ class Tester
         };
         iow.SubscribeInput(sub2);
 
-        var sub3 = new InputSubscriptionRequest()
-        {
-            SubscriberGuid = Guid.NewGuid(),
-            ProviderName = "SharpDX_XInput",
-            InputType = InputType.BUTTON,
-            DeviceHandle = "0",
-            InputIndex = 0,
-            Callback = new Action<int>((value) =>
-            {
-                Console.WriteLine("XInput Button 0 Value: " + value);
-                iow.SetOutputstate(outputSubscription, InputType.BUTTON, 1, value);
-            })
-        };
-        iow.SubscribeInput(sub3);
+        //var sub3 = new InputSubscriptionRequest()
+        //{
+        //    SubscriberGuid = Guid.NewGuid(),
+        //    ProviderName = "SharpDX_XInput",
+        //    InputType = InputType.BUTTON,
+        //    DeviceHandle = "0",
+        //    InputIndex = 0,
+        //    Callback = new Action<int>((value) =>
+        //    {
+        //        Console.WriteLine("XInput Button 0 Value: " + value);
+        //        iow.SetOutputstate(outputSubscription, InputType.BUTTON, 1, value);
+        //    })
+        //};
+        //iow.SubscribeInput(sub3);
 
-        var sub4 = new InputSubscriptionRequest()
-        {
-            SubscriberGuid = Guid.NewGuid(),
-            ProviderName = "SharpDX_XInput",
-            InputType = InputType.AXIS,
-            DeviceHandle = "0",
-            InputIndex = 0,
-            Callback = new Action<int>((value) =>
-            {
-                Console.WriteLine("XInput Axis 0 Value: " + value);
-                iow.SetOutputstate(outputSubscription, InputType.AXIS, 0, value);
-            })
-        };
-        iow.SubscribeInput(sub4);
+        //var sub4 = new InputSubscriptionRequest()
+        //{
+        //    SubscriberGuid = Guid.NewGuid(),
+        //    ProviderName = "SharpDX_XInput",
+        //    InputType = InputType.AXIS,
+        //    DeviceHandle = "0",
+        //    InputIndex = 0,
+        //    Callback = new Action<int>((value) =>
+        //    {
+        //        Console.WriteLine("XInput Axis 0 Value: " + value);
+        //        iow.SetOutputstate(outputSubscription, InputType.AXIS, 0, value);
+        //    })
+        //};
+        //iow.SubscribeInput(sub4);
 
         //iow.UnsubscribeInput(sub3);
     }

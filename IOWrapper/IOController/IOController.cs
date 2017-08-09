@@ -7,7 +7,7 @@ namespace IOWrapper
 
     public class IOController
     {
-        Dictionary<string, IProvider> _Providers;
+        private Dictionary<string, IProvider> _Providers;
 
         public IOController()
         {
