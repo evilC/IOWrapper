@@ -42,7 +42,7 @@ class Tester
 
         //inputHandle = "VID_1234&PID_BEAD/0";    // vJoy
         //inputHandle = "VID_0C45&PID_7403/0";   // XBox
-        inputHandle = "VID_054C&PID_09CC/0";   // DS4
+        //inputHandle = "VID_054C&PID_09CC/0";   // DS4
 
         // Acquire vJoy stick
         outputSubscription = new OutputSubscriptionRequest()
@@ -61,13 +61,16 @@ class Tester
             ProviderName = "SharpDX_DirectInput",
             InputType = InputType.BUTTON,
             DeviceHandle = inputHandle,
-            InputIndex = 0,
+            InputIndex = 1,
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 0 Value: " + value);
                 iow.SetOutputstate(outputSubscription, InputType.BUTTON, 0, value);
             })
         };
+        // Test update subscription
+        iow.SubscribeInput(sub1);
+        sub1.InputIndex = 0;
         iow.SubscribeInput(sub1);
         //iow.UnsubscribeInput(sub1);
 

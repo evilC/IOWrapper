@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Providers;
+using System;
 
 namespace IOWrapper
 {
@@ -8,6 +9,7 @@ namespace IOWrapper
     public class IOController
     {
         private Dictionary<string, IProvider> _Providers;
+        private Dictionary<Guid, InputSubscriptionRequest> ActiveInputSubscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
 
         public IOController()
         {
@@ -50,14 +52,34 @@ namespace IOWrapper
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            return GetProvider(subReq.ProviderName)
-                .SubscribeInput(subReq);
+            if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriberGuid))
+            {
+                // If this Subscriber has an existing subscription...
+                // ... then remove the old subscription first.
+                var oldSub = ActiveInputSubscriptions[subReq.SubscriberGuid];
+                UnsubscribeInput(oldSub);
+            }
+            var ret = GetProvider(subReq.ProviderName).SubscribeInput(subReq);
+            if (ret)
+            {
+                ActiveInputSubscriptions.Add(subReq.SubscriberGuid, subReq.Clone());
+            }
+            return ret;
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            return GetProvider(subReq.ProviderName)
-                .UnsubscribeInput(subReq);
+            var ret = false;
+            if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriberGuid))
+            {
+                var prov = GetProvider(subReq.ProviderName);
+                ret = prov.UnsubscribeInput(subReq);
+                if (ret)
+                {
+                    ActiveInputSubscriptions.Remove(subReq.SubscriberGuid);
+                }
+            }
+            return ret;
         }
 
         public bool SubscribeOutput(OutputSubscriptionRequest subReq)

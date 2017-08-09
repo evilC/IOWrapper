@@ -8,6 +8,7 @@ namespace Providers
         string ProviderName { get; }
         ProviderReport GetInputList();
         ProviderReport GetOutputList();
+
         bool SubscribeInput(InputSubscriptionRequest subReq);
         bool UnsubscribeInput(InputSubscriptionRequest subReq);
         bool SubscribeOutputDevice(OutputSubscriptionRequest subReq);
@@ -28,6 +29,11 @@ namespace Providers
         public dynamic Callback { get; set; }
         // used, eg, for DirectInput POV number
         public int InputSubId { get; set; } = 0;
+
+        public InputSubscriptionRequest Clone()
+        {
+            return (InputSubscriptionRequest)this.MemberwiseClone();
+        }
     }
 
     public class OutputSubscriptionRequest : SubscriptionRequest { }
