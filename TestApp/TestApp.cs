@@ -25,10 +25,11 @@ class Tester
     private OutputSubscriptionRequest outputSubscription;
     bool profileState = false;
     Guid profileGuid = Guid.NewGuid();
+    IOWrapper.IOController iow;
 
     public Tester()
     {
-        var iow = new IOWrapper.IOController();
+        iow = new IOWrapper.IOController();
         var inputList = iow.GetInputList();
         var outputList = iow.GetOutputList();
         string inputHandle = null;
@@ -46,6 +47,8 @@ class Tester
         //inputHandle = "VID_1234&PID_BEAD/0";    // vJoy
         //inputHandle = "VID_0C45&PID_7403/0";   // XBox
         //inputHandle = "VID_054C&PID_09CC/0";   // DS4
+
+        ToggleProfileState();
 
         // Acquire vJoy stick
         outputSubscription = new OutputSubscriptionRequest()
@@ -72,8 +75,7 @@ class Tester
                 iow.SetOutputstate(outputSubscription, InputType.BUTTON, 0, value);
                 if (value == 1)
                 {
-                    profileState = !profileState;
-                    iow.SetProfileState(profileGuid, profileState);
+                    ToggleProfileState();
                 }
             })
         };
@@ -130,5 +132,11 @@ class Tester
         iow.SubscribeInput(sub4);
 
         //iow.UnsubscribeInput(sub3);
+    }
+
+    void ToggleProfileState()
+    {
+        profileState = !profileState;
+        iow.SetProfileState(profileGuid, profileState);
     }
 }
