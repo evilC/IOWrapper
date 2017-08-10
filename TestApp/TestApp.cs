@@ -23,6 +23,8 @@ namespace TestApp
 class Tester
 {
     private OutputSubscriptionRequest outputSubscription;
+    bool profileState = false;
+    Guid profileGuid = Guid.NewGuid();
 
     public Tester()
     {
@@ -30,6 +32,7 @@ class Tester
         var inputList = iow.GetInputList();
         var outputList = iow.GetOutputList();
         string inputHandle = null;
+        bool ret;
 
         // Get handle to 1st DirectInput device
         string outputHandle = null;
@@ -57,25 +60,30 @@ class Tester
         // Subscribe to the found stick
         var sub1 = new InputSubscriptionRequest()
         {
+            ProfileGuid = Guid.NewGuid(),
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_DirectInput",
             InputType = InputType.BUTTON,
             DeviceHandle = inputHandle,
-            InputIndex = 1,
+            InputIndex = 0,
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 0 Value: " + value);
                 iow.SetOutputstate(outputSubscription, InputType.BUTTON, 0, value);
+                if (value == 1)
+                {
+                    profileState = !profileState;
+                    iow.SetProfileState(profileGuid, profileState);
+                }
             })
         };
-        // Test update subscription
         iow.SubscribeInput(sub1);
-        sub1.InputIndex = 0;
-        iow.SubscribeInput(sub1);
+        iow.SetProfileState(sub1.ProfileGuid, true);
         //iow.UnsubscribeInput(sub1);
 
         var sub2 = new InputSubscriptionRequest()
         {
+            ProfileGuid = profileGuid,
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_DirectInput",
             InputType = InputType.AXIS,
@@ -89,35 +97,37 @@ class Tester
         };
         iow.SubscribeInput(sub2);
 
-        //var sub3 = new InputSubscriptionRequest()
-        //{
-        //    SubscriberGuid = Guid.NewGuid(),
-        //    ProviderName = "SharpDX_XInput",
-        //    InputType = InputType.BUTTON,
-        //    DeviceHandle = "0",
-        //    InputIndex = 0,
-        //    Callback = new Action<int>((value) =>
-        //    {
-        //        Console.WriteLine("XInput Button 0 Value: " + value);
-        //        iow.SetOutputstate(outputSubscription, InputType.BUTTON, 1, value);
-        //    })
-        //};
-        //iow.SubscribeInput(sub3);
+        var sub3 = new InputSubscriptionRequest()
+        {
+            ProfileGuid = profileGuid,
+            SubscriberGuid = Guid.NewGuid(),
+            ProviderName = "SharpDX_XInput",
+            InputType = InputType.BUTTON,
+            DeviceHandle = "0",
+            InputIndex = 0,
+            Callback = new Action<int>((value) =>
+            {
+                Console.WriteLine("XInput Button 0 Value: " + value);
+                iow.SetOutputstate(outputSubscription, InputType.BUTTON, 1, value);
+            })
+        };
+        ret = iow.SubscribeInput(sub3);
 
-        //var sub4 = new InputSubscriptionRequest()
-        //{
-        //    SubscriberGuid = Guid.NewGuid(),
-        //    ProviderName = "SharpDX_XInput",
-        //    InputType = InputType.AXIS,
-        //    DeviceHandle = "0",
-        //    InputIndex = 0,
-        //    Callback = new Action<int>((value) =>
-        //    {
-        //        Console.WriteLine("XInput Axis 0 Value: " + value);
-        //        iow.SetOutputstate(outputSubscription, InputType.AXIS, 0, value);
-        //    })
-        //};
-        //iow.SubscribeInput(sub4);
+        var sub4 = new InputSubscriptionRequest()
+        {
+            ProfileGuid = profileGuid,
+            SubscriberGuid = Guid.NewGuid(),
+            ProviderName = "SharpDX_XInput",
+            InputType = InputType.AXIS,
+            DeviceHandle = "0",
+            InputIndex = 0,
+            Callback = new Action<int>((value) =>
+            {
+                Console.WriteLine("XInput Axis 0 Value: " + value);
+                iow.SetOutputstate(outputSubscription, InputType.AXIS, 0, value);
+            })
+        };
+        iow.SubscribeInput(sub4);
 
         //iow.UnsubscribeInput(sub3);
     }

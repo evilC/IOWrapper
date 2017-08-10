@@ -12,6 +12,7 @@ namespace SharpDX_XInput
     {
         private bool monitorThreadRunning = false;
         private Dictionary<int, StickMonitor> MonitoredSticks = new Dictionary<int, StickMonitor>();
+        private static List<Guid> ActiveProfiles = new List<Guid>();
 
         ProviderReport providerReport;
 
@@ -41,6 +42,30 @@ namespace SharpDX_XInput
 
         #region IProvider Members
         public string ProviderName { get { return typeof(SharpDX_XInput).Namespace; } }
+
+        // This should probably be a default interface method once they get added to C#
+        // https://github.com/dotnet/csharplang/blob/master/proposals/default-interface-methods.md
+        public bool SetProfileState(Guid profileGuid, bool state)
+        {
+            lock (ActiveProfiles)
+            {
+                if (state)
+                {
+                    if (!ActiveProfiles.Contains(profileGuid))
+                    {
+                        ActiveProfiles.Add(profileGuid);
+                    }
+                }
+                else
+                {
+                    if (ActiveProfiles.Contains(profileGuid))
+                    {
+                        ActiveProfiles.Remove(profileGuid);
+                    }
+                }
+            }
+            return true;
+        }
 
         public ProviderReport GetInputList()
         {
@@ -143,7 +168,7 @@ namespace SharpDX_XInput
                 //Debug.WriteLine("InputWrapper| MonitorSticks starting");
                 while (monitorThreadRunning)
                 {
-                    lock (MonitoredSticks)
+                    lock (MonitoredSticks) lock (ActiveProfiles)
                     {
                         foreach (var monitoredStick in MonitoredSticks)
                         {
@@ -240,12 +265,12 @@ namespace SharpDX_XInput
         #region Input
         public class InputMonitor
         {
-            Dictionary<Guid, dynamic> subscriptions = new Dictionary<Guid, dynamic>();
+            Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
             private int currentValue = 0;
 
             public bool Add(InputSubscriptionRequest subReq)
             {
-                subscriptions.Add(subReq.SubscriberGuid, subReq.Callback);
+                subscriptions.Add(subReq.SubscriberGuid, subReq.Clone());
                 return true;
             }
 
@@ -269,9 +294,12 @@ namespace SharpDX_XInput
                 if (currentValue == value)
                     return;
                 currentValue = value;
-                foreach (var subscription in subscriptions)
+                foreach (var subscription in subscriptions.Values)
                 {
-                    subscription.Value(value);
+                    if (ActiveProfiles.Contains(subscription.ProfileGuid))
+                    {
+                        subscription.Callback(value);
+                    }
                 }
             }
         }

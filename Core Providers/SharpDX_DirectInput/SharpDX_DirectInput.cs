@@ -16,6 +16,7 @@ namespace SharpDX_DirectInput
         static private DirectInput directInput;
         private bool monitorThreadRunning = false;
         private Dictionary<string, StickMonitor> MonitoredSticks = new Dictionary<string, StickMonitor>();
+        private static List<Guid> ActiveProfiles = new List<Guid>();
 
         private static Dictionary<string, Guid> handleToInstanceGuid;
         private ProviderReport providerReport;
@@ -33,6 +34,30 @@ namespace SharpDX_DirectInput
 
         // ToDo: Need better way to handle this. MEF meta-data?
         public string ProviderName { get { return typeof(SharpDX_DirectInput).Namespace; } }
+
+        // This should probably be a default interface method once they get added to C#
+        // https://github.com/dotnet/csharplang/blob/master/proposals/default-interface-methods.md
+        public bool SetProfileState(Guid profileGuid, bool state)
+        {
+            lock (ActiveProfiles)
+            {
+                if (state)
+                {
+                    if (!ActiveProfiles.Contains(profileGuid))
+                    {
+                        ActiveProfiles.Add(profileGuid);
+                    }
+                }
+                else
+                {
+                    if (ActiveProfiles.Contains(profileGuid))
+                    {
+                        ActiveProfiles.Remove(profileGuid);
+                    }
+                }
+            }
+            return true;
+        }
 
         public ProviderReport GetInputList()
         {
@@ -163,7 +188,7 @@ namespace SharpDX_DirectInput
                 //Debug.WriteLine("InputWrapper| MonitorSticks starting");
                 while (monitorThreadRunning)
                 {
-                    lock (MonitoredSticks)
+                    lock (MonitoredSticks) lock (ActiveProfiles)
                     {
                         foreach (var stick in MonitoredSticks.Values)
                         {
@@ -253,13 +278,14 @@ namespace SharpDX_DirectInput
         #region Input Detection
         public class InputMonitor
         {
-            private Dictionary<Guid, dynamic> subscriptions = new Dictionary<Guid, dynamic>();
+            private Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
             private InputType inputType;
 
             public bool Add(InputSubscriptionRequest subReq)
             {
                 inputType = subReq.InputType;
-                subscriptions.Add(subReq.SubscriberGuid, subReq.Callback);
+                //subscriptions.Add(subReq.SubscriberGuid, subReq.Callback);
+                subscriptions.Add(subReq.SubscriberGuid, subReq.Clone());
                 return true;
             }
 
@@ -286,28 +312,31 @@ namespace SharpDX_DirectInput
             {
                 foreach (var subscription in subscriptions.Values)
                 {
-                    int reportedValue = value;
-                    switch (inputType)
+                    if (ActiveProfiles.Contains(subscription.ProfileGuid))
                     {
-                        case InputType.AXIS:
-                            // DirectInput reports as 0..65535 with center of 32767
-                            // All axes are normalized for now to int16 (-32768...32767) with center being 0
-                            // So for now, this means flipping the axis.
-                            reportedValue = (reportedValue - 32767) * - 1;
-                            break;
-                        case InputType.BUTTON:
-                            // DirectInput reports as 0..128 for buttons
-                            // PS controllers can report in an analog fashion, so supporting this at some point may be cool
-                            // However, these could be handled like axes
-                            // For now, a button is a digital device, so convert to 1 or 0
-                            reportedValue /= 128;
-                            break;
-                        case InputType.POV:
-                            break;
-                        default:
-                            break;
+                        int reportedValue = value;
+                        switch (inputType)
+                        {
+                            case InputType.AXIS:
+                                // DirectInput reports as 0..65535 with center of 32767
+                                // All axes are normalized for now to int16 (-32768...32767) with center being 0
+                                // So for now, this means flipping the axis.
+                                reportedValue = (reportedValue - 32767) * -1;
+                                break;
+                            case InputType.BUTTON:
+                                // DirectInput reports as 0..128 for buttons
+                                // PS controllers can report in an analog fashion, so supporting this at some point may be cool
+                                // However, these could be handled like axes
+                                // For now, a button is a digital device, so convert to 1 or 0
+                                reportedValue /= 128;
+                                break;
+                            case InputType.POV:
+                                break;
+                            default:
+                                break;
+                        }
+                        subscription.Callback(reportedValue);
                     }
-                    subscription(reportedValue);
                 }
             }
         }

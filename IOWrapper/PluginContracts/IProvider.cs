@@ -9,6 +9,7 @@ namespace Providers
         ProviderReport GetInputList();
         ProviderReport GetOutputList();
 
+        bool SetProfileState(Guid profileGuid, bool state);
         bool SubscribeInput(InputSubscriptionRequest subReq);
         bool UnsubscribeInput(InputSubscriptionRequest subReq);
         bool SubscribeOutputDevice(OutputSubscriptionRequest subReq);
@@ -29,7 +30,7 @@ namespace Providers
         public dynamic Callback { get; set; }
         // used, eg, for DirectInput POV number
         public int InputSubId { get; set; } = 0;
-
+        public Guid ProfileGuid { get; set; }
         public InputSubscriptionRequest Clone()
         {
             return (InputSubscriptionRequest)this.MemberwiseClone();
