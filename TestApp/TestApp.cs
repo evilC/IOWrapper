@@ -131,6 +131,16 @@ class Tester
         };
         iow.SubscribeInput(sub4);
 
+        var subInterception = new InputSubscriptionRequest()
+        {
+            ProfileGuid = Guid.NewGuid(),
+            SubscriberGuid = Guid.NewGuid(),
+            ProviderName = "Core_Interception",
+            InputType = InputType.BUTTON,
+            DeviceHandle = "",
+            InputIndex = 0x1,
+        };
+        iow.SubscribeInput(subInterception);
         //iow.UnsubscribeInput(sub3);
     }
 

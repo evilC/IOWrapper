@@ -5,6 +5,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Core_Interception
@@ -13,37 +14,22 @@ namespace Core_Interception
     public class Core_Interception : IProvider
     {
         private IntPtr deviceContext;
+        private ProviderReport providerReport;
+        private Thread watcherThread;
+        private Dictionary<int, KeyboardMonitor> MonitoredKeyboards = new Dictionary<int, KeyboardMonitor>();
 
         public Core_Interception()
         {
             deviceContext = CreateContext();
-            Console.WriteLine("Got DeviceContext " + deviceContext);
+            //Console.WriteLine("Got DeviceContext " + deviceContext);
             SetFilter(deviceContext, IsKeyboard, Filter.All);
             //SetFilter(deviceContext, IsMouse, Filter.MouseButton3Down | Filter.MouseButton3Up);
             //SetFilter(deviceContext, IsMouse, Filter.All);
-            string str;
-            int i = 1;
-            while (i < 21)
-            {
-                str = GetHardwareStr(deviceContext, i, 1000);
-                string t;
-                if (IsKeyboard(i) == 1)
-                {
-                    t = "Keyboard";
-                }
-                else if (IsMouse(i) == 1)
-                {
-                    t = "Mouse";
-                }
-                else
-                {
-                    //break;
-                    continue;
-                }
-                //ActiveDevices.Add(i);
-                Console.WriteLine(String.Format("{0} ({1}) = VID/PID: {2}", i, t, str));
-                i++;
-            }
+
+            MonitoredKeyboards.Add(1, new KeyboardMonitor() { });
+
+            watcherThread = new Thread(WatcherThread);
+            watcherThread.Start();
         }
 
         ~Core_Interception()
@@ -62,7 +48,42 @@ namespace Core_Interception
 
         public ProviderReport GetInputList()
         {
-            return null;
+            providerReport = new ProviderReport();
+            string handle;
+            int i = 1;
+            while (i < 21)
+            {
+                handle = GetHardwareStr(deviceContext, i, 1000);
+                string t;
+                if (handle != "" && IsKeyboard(i) == 1)
+                {
+                    t = "Keyboard";
+                }
+                else if (handle != "" && IsMouse(i) == 1)
+                {
+                    t = "Mouse";
+                }
+                else
+                {
+                    //break;
+                    i++;
+                    continue;
+                }
+                handle = t + @"\" + handle;
+                providerReport.Devices.Add(handle, new IOWrapperDevice()
+                {
+                    //DeviceHandle = deviceInstance.InstanceGuid.ToString(),
+                    DeviceHandle = handle,
+                    DeviceName = "Unknown " + t,
+                    ProviderName = ProviderName,
+                    API = "Interception",
+                    ButtonCount = 200
+                });
+                //Console.WriteLine(String.Format("{0} ({1}) = VID/PID: {2}", i, t, handle));
+                i++;
+            }
+
+            return providerReport;
         }
 
         public ProviderReport GetOutputList()
@@ -72,6 +93,7 @@ namespace Core_Interception
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
+            MonitoredKeyboards[1].Add(subReq);
             return false;
         }
 
@@ -93,6 +115,85 @@ namespace Core_Interception
         public bool SetOutputState(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state)
         {
             return false;
+        }
+        #endregion
+
+        #region Input processing
+        private class KeyboardMonitor
+        {
+            private Dictionary<ushort, KeyMonitor> monitoredKeys = new Dictionary<ushort, KeyMonitor>();
+            //private int deviceId = 0;
+            
+            public KeyboardMonitor()
+            {
+                
+            }
+
+            public void Add(InputSubscriptionRequest subReq)
+            {
+                var code = (ushort)subReq.InputIndex;
+                monitoredKeys.Add(code, new KeyMonitor() { code = code, stateDown = 0, stateUp = 1});
+                monitoredKeys[code].Add(subReq);
+            }
+
+            public void Poll(Stroke stroke)
+            {
+                foreach (var monitoredKey in monitoredKeys.Values)
+                {
+                    monitoredKey.Poll(stroke);
+                }
+            }
+        }
+
+        private class KeyMonitor
+        {
+            //public int ButtonNumber { get; set; }
+
+            public ushort code;
+            public ushort stateDown;
+            public ushort stateUp;
+
+            private Dictionary<Guid, InputSubscriptionRequest> subReqs = new Dictionary<Guid, InputSubscriptionRequest>();
+
+            public void Add(InputSubscriptionRequest subReq)
+            {
+                subReqs.Add(subReq.SubscriberGuid, subReq);
+            }
+
+            public void Poll(Stroke stroke)
+            {
+                var isDown = stateDown == stroke.key.state;
+                var isUp = stateUp == stroke.key.state;
+                if (code == stroke.key.code && ( isDown || isUp))
+                {
+                    foreach (var subscriptionRequest in subReqs.Values)
+                    {
+                        //subscriptionRequest.Callback(isDown ? 1 : 0);
+                        Console.WriteLine("State: {0}", isDown);
+                    }
+                }
+            }
+        }
+        #endregion
+
+        #region Watcher Thread
+        private void WatcherThread()
+        {
+            Stroke stroke = new Stroke();
+            //int device = Wait(deviceContext);
+            //Console.WriteLine(String.Format("Thread got device {0}", device));
+
+            while (true)
+            {
+                foreach (var monitoredKeyboard in MonitoredKeyboards)
+                {
+                    while (Receive(deviceContext, monitoredKeyboard.Key, ref stroke, 1) > 0)
+                    {
+                        monitoredKeyboard.Value.Poll(stroke);
+                    }
+                }
+                Thread.Sleep(1);
+            }
         }
         #endregion
 
