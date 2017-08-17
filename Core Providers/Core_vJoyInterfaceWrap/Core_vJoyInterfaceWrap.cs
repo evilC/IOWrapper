@@ -133,12 +133,12 @@ namespace Core_vJoyInterfaceWrap
             }
             return false;
         }
+        #endregion
 
         private uint DevIdFromHandle(string handle)
         {
             return Convert.ToUInt32(handle);
         }
-        #endregion
 
         private static List<HID_USAGES> AxisIdToUsage = new List<HID_USAGES>() {
             HID_USAGES.HID_USAGE_X, HID_USAGES.HID_USAGE_Y, HID_USAGES.HID_USAGE_Z,
