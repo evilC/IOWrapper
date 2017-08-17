@@ -168,8 +168,8 @@ namespace Core_Interception
                 {
                     foreach (var subscriptionRequest in subReqs.Values)
                     {
-                        //subscriptionRequest.Callback(isDown ? 1 : 0);
-                        Console.WriteLine("State: {0}", isDown);
+                        subscriptionRequest.Callback(isDown ? 1 : 0);
+                        //Console.WriteLine("State: {0}", isDown);
                     }
                 }
             }

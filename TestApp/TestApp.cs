@@ -139,6 +139,10 @@ class Tester
             InputType = InputType.BUTTON,
             DeviceHandle = "",
             InputIndex = 0x1,
+            Callback = new Action<int>((value) =>
+            {
+                Console.WriteLine("Keyboard Key Value: " + value);
+            })
         };
         iow.SubscribeInput(subInterception);
         //iow.UnsubscribeInput(sub3);
