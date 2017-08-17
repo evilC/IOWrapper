@@ -17,6 +17,7 @@ namespace Core_Interception
         private ProviderReport providerReport;
         private Thread watcherThread;
         private Dictionary<int, KeyboardMonitor> MonitoredKeyboards = new Dictionary<int, KeyboardMonitor>();
+        private Dictionary<string, int> deviceHandleToId;
 
         public Core_Interception()
         {
@@ -26,7 +27,10 @@ namespace Core_Interception
             //SetFilter(deviceContext, IsMouse, Filter.MouseButton3Down | Filter.MouseButton3Up);
             //SetFilter(deviceContext, IsMouse, Filter.All);
 
+            QueryDevices();
+
             MonitoredKeyboards.Add(1, new KeyboardMonitor() { });
+            MonitoredKeyboards.Add(4, new KeyboardMonitor() { });
 
             watcherThread = new Thread(WatcherThread);
             watcherThread.Start();
@@ -48,6 +52,46 @@ namespace Core_Interception
 
         public ProviderReport GetInputList()
         {
+            return providerReport;
+        }
+
+        public ProviderReport GetOutputList()
+        {
+            return null;
+        }
+
+        public bool SubscribeInput(InputSubscriptionRequest subReq)
+        {
+            var id = deviceHandleToId[subReq.DeviceHandle];
+            //MonitoredKeyboards[id].Add(subReq);
+            MonitoredKeyboards[id].Add(subReq);
+            return true;
+        }
+
+        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
+        {
+            return false;
+        }
+
+        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        {
+            return true;
+        }
+
+        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        {
+            return true;
+        }
+
+        public bool SetOutputState(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state)
+        {
+            return false;
+        }
+        #endregion
+
+        private void QueryDevices()
+        {
+            deviceHandleToId = new Dictionary<string, int>();
             providerReport = new ProviderReport();
             string handle;
             int i = 1;
@@ -79,45 +123,11 @@ namespace Core_Interception
                     API = "Interception",
                     ButtonCount = 200
                 });
-                //Console.WriteLine(String.Format("{0} ({1}) = VID/PID: {2}", i, t, handle));
+                deviceHandleToId.Add(handle, i);
+                Console.WriteLine(String.Format("{0} ({1}) = VID/PID: {2}", i, t, handle));
                 i++;
             }
-
-            return providerReport;
         }
-
-        public ProviderReport GetOutputList()
-        {
-            return null;
-        }
-
-        public bool SubscribeInput(InputSubscriptionRequest subReq)
-        {
-            MonitoredKeyboards[1].Add(subReq);
-            return false;
-        }
-
-        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
-        {
-            return false;
-        }
-
-        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
-        {
-            return true;
-        }
-
-        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
-        {
-            return true;
-        }
-
-        public bool SetOutputState(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state)
-        {
-            return false;
-        }
-        #endregion
-
         #region Input processing
         private class KeyboardMonitor
         {

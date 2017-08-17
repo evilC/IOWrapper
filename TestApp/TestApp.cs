@@ -39,14 +39,19 @@ class Tester
         string outputHandle = null;
         try { inputHandle = inputList["SharpDX_DirectInput"].Devices.FirstOrDefault().Key; }
         catch { return; }
+        //inputHandle = "VID_1234&PID_BEAD/0";    // vJoy
+        //inputHandle = "VID_0C45&PID_7403/0";   // XBox
+        //inputHandle = "VID_054C&PID_09CC/0";   // DS4
 
         // Get handle to 1st vJoy device
         try { outputHandle = outputList["Core_vJoyInterfaceWrap"].Devices.FirstOrDefault().Key; }
         catch { return; }
 
-        //inputHandle = "VID_1234&PID_BEAD/0";    // vJoy
-        //inputHandle = "VID_0C45&PID_7403/0";   // XBox
-        //inputHandle = "VID_054C&PID_09CC/0";   // DS4
+        // Get handle to Keyboard
+        string keyboardHandle = null;
+        try { keyboardHandle = inputList["Core_Interception"].Devices.FirstOrDefault().Key; }
+        catch { return; }
+        //keyboardHandle = @"Keyboard\HID\VID_04F2&PID_0112&REV_0103&MI_00";
 
         ToggleProfileState();
 
@@ -137,7 +142,7 @@ class Tester
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "Core_Interception",
             InputType = InputType.BUTTON,
-            DeviceHandle = "",
+            DeviceHandle = keyboardHandle,
             InputIndex = 0x1,
             Callback = new Action<int>((value) =>
             {
