@@ -50,6 +50,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\..\Core Providers\Core_Interception\Core_Interception.csproj">
+      <Project>{3473e273-6859-49b3-a782-e4c7a5bf51f4}</Project>
+      <Name>Core_Interception</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Core Providers\Core_vJoyInterfaceWrap\Core_vJoyInterfaceWrap.csproj">
       <Project>{10a9a35a-9cec-4271-ad68-65a9661638f6}</Project>
       <Name>Core_vJoyInterfaceWrap</Name>
