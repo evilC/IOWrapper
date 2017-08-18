@@ -15,7 +15,7 @@ namespace Core_vJoyInterfaceWrap
         private List<Guid>[] deviceSubscriptions = new List<Guid>[16];
         private Dictionary<Guid, uint> subscriptionToDevice = new Dictionary<Guid, uint>();
         static private Dictionary<int, string> axisNames = new Dictionary<int, string>()
-            { {0, "X" }, {1,"Y" }, { 2, "Z" }, { 3, "Rx" }, {4, "Ry" }, {5, "Rz" }, {6, "Sl0" }, {7, "Sl1" } };
+            { { 0, "X" }, { 1,"Y" }, { 2, "Z" }, { 3, "Rx" }, { 4, "Ry" }, { 5, "Rz" }, { 6, "Sl0" }, { 7, "Sl1" } };
 
         public Core_vJoyInterfaceWrap()
         {
@@ -68,13 +68,20 @@ namespace Core_vJoyInterfaceWrap
                         }
                     }
                     var handle = i.ToString();
+                    var length = vJ.GetVJDButtonNumber(id);
+                    var buttonList = new List<int>();
+                    for (int btn = 0; btn < length; btn++)
+                    {
+                        buttonList.Add(btn);
+                    }
                     pr.Devices.Add(handle, new IOWrapperDevice()
                     {
                         DeviceHandle = handle,
                         DeviceName = String.Format("vJoy Stick {0}", id),
                         ProviderName = ProviderName,
                         API = "vJoy",
-                        ButtonCount = (uint)vJ.GetVJDButtonNumber(id),
+                        ButtonList = buttonList,
+                        //ButtonCount = (uint)vJ.GetVJDButtonNumber(id),
                         AxisList = axes,
                         AxisNames = axisNames
                     });

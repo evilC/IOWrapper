@@ -121,7 +121,7 @@ namespace Core_Interception
                     DeviceName = "Unknown " + t,
                     ProviderName = ProviderName,
                     API = "Interception",
-                    ButtonCount = 200
+                    ButtonList = new List<int>() { }
                 });
                 deviceHandleToId.Add(handle, i);
                 Console.WriteLine(String.Format("{0} ({1}) = VID/PID: {2}", i, t, handle));

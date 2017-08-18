@@ -22,7 +22,7 @@ namespace SharpDX_DirectInput
         private ProviderReport providerReport;
 
         static private Dictionary<int, string> axisNames = new Dictionary<int, string>()
-            { {0, "X" }, {1, "Y" }, { 2, "Z" }, {3, "Rx" }, { 4, "Ry" }, { 5, "Rz" }, { 6, "Sl0" }, { 7, "Sl1" } };
+            { { 0, "X" }, { 1, "Y" }, { 2, "Z" }, { 3, "Rx" }, { 4, "Ry" }, { 5, "Rz" }, { 6, "Sl0" }, { 7, "Sl1" } };
 
         public SharpDX_DirectInput()
         {
@@ -154,6 +154,12 @@ namespace SharpDX_DirectInput
                     }
                     catch { }
                 }
+                var length = joystick.Capabilities.ButtonCount;
+                var buttonList = new List<int>();
+                for (int btn = 0; btn < length; btn++)
+                {
+                    buttonList.Add(btn);
+                }
 
                 providerReport.Devices.Add(handle, new IOWrapperDevice()
                 {
@@ -162,7 +168,8 @@ namespace SharpDX_DirectInput
                     DeviceName = deviceInstance.ProductName,
                     ProviderName = ProviderName,
                     API = "DirectInput",
-                    ButtonCount = (uint)joystick.Capabilities.ButtonCount,
+                    //ButtonCount = (uint)joystick.Capabilities.ButtonCount,
+                    ButtonList = buttonList,
                     AxisList = sa,
                     AxisNames = axisNames
                 });

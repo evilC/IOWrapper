@@ -16,11 +16,12 @@ namespace SharpDX_XInput
 
         ProviderReport providerReport;
 
-        private readonly static List<string> buttonNames = new List<string>()
-            { "A", "B", "X", "Y", "LB", "RB", "LS", "RS", "Back", "Start", "Xbox" };
+        private readonly static List<int> buttonList = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        private readonly static Dictionary<int, string> buttonNames = new Dictionary<int, string>()
+            { {0, "A" }, { 1, "B" }, { 2, "X" }, { 3, "Y" }, { 4, "LB" }, { 5, "RB" }, { 6, "LS" }, { 7, "RS" }, { 8, "Back" }, { 9, "Start" }, { 10, "Xbox" } };
 
         private readonly static Dictionary<int, string> axisNames = new Dictionary<int, string>()
-            { {0, "LX" }, { 1, "LY" }, { 2, "RX" }, { 3, "RY" }, { 4, "LT" }, {5, "RT" } };
+            { { 0, "LX" }, { 1, "LY" }, { 2, "RX" }, { 3, "RY" }, { 4, "LT" }, { 5, "RT" } };
 
         private static List<string> xinputAxisIdentifiers = new List<string>()
         {
@@ -152,7 +153,8 @@ namespace SharpDX_XInput
                 DeviceHandle = id.ToString(),
                 ProviderName = ProviderName,
                 API = "XInput",
-                ButtonCount = 11,
+                //ButtonCount = 11,
+                ButtonList = buttonList,
                 ButtonNames = buttonNames,
                 AxisList = new List<int>() { 0, 1, 2, 3, 4, 5 },
                 AxisNames = axisNames

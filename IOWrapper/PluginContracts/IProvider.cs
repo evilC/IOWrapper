@@ -75,15 +75,15 @@ namespace Providers
         public string API { get; set; }
 
         /// <summary>
-        /// How many buttons the device has
+        /// Which buttons a device has
         /// </summary>
-        public uint ButtonCount { get; set; } = 0;
+        public List<int> ButtonList { get; set; }
 
         /// <summary>
         /// The names of the buttons.
         /// If ommitted, buttons numbers will be communicated to the user
         /// </summary>
-        public List<string> ButtonNames { get; set; }
+        public Dictionary<int, string> ButtonNames { get; set; }
 
         /// <summary>
         /// A List of Axis IDs that this axis supports, eg [1,3,5]
