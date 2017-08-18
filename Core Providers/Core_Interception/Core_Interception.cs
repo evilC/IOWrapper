@@ -19,6 +19,9 @@ namespace Core_Interception
         private Dictionary<int, KeyboardMonitor> MonitoredKeyboards = new Dictionary<int, KeyboardMonitor>();
         private Dictionary<string, int> deviceHandleToId;
 
+        private static Dictionary<int, string> buttonNames;
+        private static List<int> buttonList;
+
         public Core_Interception()
         {
             deviceContext = CreateContext();
@@ -93,6 +96,7 @@ namespace Core_Interception
         {
             deviceHandleToId = new Dictionary<string, int>();
             providerReport = new ProviderReport();
+            UpdateButtonList();
             string handle;
             int i = 1;
             while (i < 21)
@@ -121,11 +125,51 @@ namespace Core_Interception
                     DeviceName = "Unknown " + t,
                     ProviderName = ProviderName,
                     API = "Interception",
-                    ButtonList = new List<int>() { }
+                    ButtonList = new List<int>() { },
+                    ButtonNames = buttonNames
                 });
                 deviceHandleToId.Add(handle, i);
                 Console.WriteLine(String.Format("{0} ({1}) = VID/PID: {2}", i, t, handle));
                 i++;
+            }
+        }
+
+        private void UpdateButtonList()
+        {
+            buttonList = new List<int>();
+            buttonNames = new Dictionary<int, string>();
+            uint lParam = 0;
+            StringBuilder sb = new StringBuilder(260);
+            string keyName;
+            string altKeyName;
+
+            for (int i = 0; i < 256; i++)
+            {
+                lParam = (uint)(i+1) << 16;
+                if (GetKeyNameTextW(lParam, sb, 260) == 0)
+                {
+                    continue;
+                }
+                keyName = sb.ToString().Trim();
+                if (keyName == "")
+                    continue;
+                Console.WriteLine("Button Index: {0}, name: '{1}'", i, keyName);
+                buttonList.Add(i);
+                buttonNames.Add(i, keyName);
+
+                // Check if this button has an extended (Right) variant
+                lParam = (0x100 | ((uint)i+1 & 0xff)) << 16;
+                if (GetKeyNameTextW(lParam, sb, 260) == 0)
+                {
+                    continue;
+                }
+                altKeyName = sb.ToString().Trim();
+                if (altKeyName == "" || altKeyName == keyName)
+                    continue;
+                Console.WriteLine("ALT Button Index: {0}, name: '{1}'", i + 256, altKeyName);
+                buttonList.Add(i + 256);
+                buttonNames.Add(i + 256, altKeyName);
+
             }
         }
         #region Input processing
