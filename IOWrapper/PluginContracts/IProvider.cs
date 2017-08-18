@@ -94,7 +94,7 @@ namespace Providers
         /// <summary>
         /// A list of the names of each axis that this API reports
         /// </summary>
-        public List<string> AxisNames { get; set; }
+        public Dictionary<int, string> AxisNames { get; set; }
     }
 
     public class ProviderReport

@@ -19,8 +19,8 @@ namespace SharpDX_XInput
         private readonly static List<string> buttonNames = new List<string>()
             { "A", "B", "X", "Y", "LB", "RB", "LS", "RS", "Back", "Start", "Xbox" };
 
-        private readonly static List<string> axisNames = new List<string>()
-            { "LX", "LY", "RX", "RY", "LT", "RT" };
+        private readonly static Dictionary<int, string> axisNames = new Dictionary<int, string>()
+            { {0, "LX" }, { 1, "LY" }, { 2, "RX" }, { 3, "RY" }, { 4, "LT" }, {5, "RT" } };
 
         private static List<string> xinputAxisIdentifiers = new List<string>()
         {

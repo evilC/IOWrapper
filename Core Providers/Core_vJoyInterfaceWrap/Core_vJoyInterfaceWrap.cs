@@ -14,8 +14,8 @@ namespace Core_vJoyInterfaceWrap
         public static vJoyInterfaceWrap.vJoy vJ = new vJoyInterfaceWrap.vJoy();
         private List<Guid>[] deviceSubscriptions = new List<Guid>[16];
         private Dictionary<Guid, uint> subscriptionToDevice = new Dictionary<Guid, uint>();
-        static private List<string> axisNames = new List<string>()
-            { "X", "Y", "Z", "Rx", "Ry", "Rz", "Sl0", "Sl1" };
+        static private Dictionary<int, string> axisNames = new Dictionary<int, string>()
+            { {0, "X" }, {1,"Y" }, { 2, "Z" }, { 3, "Rx" }, {4, "Ry" }, {5, "Rz" }, {6, "Sl0" }, {7, "Sl1" } };
 
         public Core_vJoyInterfaceWrap()
         {

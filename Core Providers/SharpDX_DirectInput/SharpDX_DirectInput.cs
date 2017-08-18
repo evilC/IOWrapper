@@ -21,8 +21,8 @@ namespace SharpDX_DirectInput
         private static Dictionary<string, Guid> handleToInstanceGuid;
         private ProviderReport providerReport;
 
-        static private List<string> axisNames = new List<string>()
-            { "X", "Y", "Z", "Rx", "Ry", "Rz", "Sl0", "Sl1" };
+        static private Dictionary<int, string> axisNames = new Dictionary<int, string>()
+            { {0, "X" }, {1, "Y" }, { 2, "Z" }, {3, "Rx" }, { 4, "Ry" }, { 5, "Rz" }, { 6, "Sl0" }, { 7, "Sl1" } };
 
         public SharpDX_DirectInput()
         {
