@@ -200,6 +200,7 @@ namespace Core_Interception
                     while (Receive(deviceContext, monitoredKeyboard.Key, ref stroke, 1) > 0)
                     {
                         monitoredKeyboard.Value.Poll(stroke);
+                        Send(deviceContext, monitoredKeyboard.Key, ref stroke, 1);
                     }
                 }
                 Thread.Sleep(1);
