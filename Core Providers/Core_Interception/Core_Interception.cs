@@ -81,7 +81,7 @@ namespace Core_Interception
             if (state && !watcherThreadRunning)
             {
                 SetFilterState(true);
-                Console.WriteLine("Starting watcher thread for {0}", ProviderName);
+                //Console.WriteLine("Starting watcher thread for {0}", ProviderName);
                 watcherThread = new Thread(WatcherThread);
                 watcherThread.Start();
                 while (!watcherThreadRunning)
@@ -92,7 +92,7 @@ namespace Core_Interception
             else if (!state && watcherThreadRunning)
             {
                 SetFilterState(false);
-                Console.WriteLine("Stopping watcher thread for {0}", ProviderName);
+                //Console.WriteLine("Stopping watcher thread for {0}", ProviderName);
                 watcherThreadStopRequested = true;
                 while (watcherThreadRunning)
                 {
@@ -187,7 +187,7 @@ namespace Core_Interception
                     ButtonNames = buttonNames
                 });
                 deviceHandleToId.Add(handle, i);
-                Console.WriteLine(String.Format("{0} ({1}) = VID/PID: {2}", i, t, handle));
+                //Console.WriteLine(String.Format("{0} ({1}) = VID/PID: {2}", i, t, handle));
                 i++;
             }
         }
@@ -211,7 +211,7 @@ namespace Core_Interception
                 keyName = sb.ToString().Trim();
                 if (keyName == "")
                     continue;
-                Console.WriteLine("Button Index: {0}, name: '{1}'", i, keyName);
+                //Console.WriteLine("Button Index: {0}, name: '{1}'", i, keyName);
                 buttonList.Add(i);
                 buttonNames.Add(i, keyName);
 
@@ -224,7 +224,7 @@ namespace Core_Interception
                 altKeyName = sb.ToString().Trim();
                 if (altKeyName == "" || altKeyName == keyName)
                     continue;
-                Console.WriteLine("ALT Button Index: {0}, name: '{1}'", i + 256, altKeyName);
+                //Console.WriteLine("ALT Button Index: {0}, name: '{1}'", i + 256, altKeyName);
                 buttonList.Add(i + 256);
                 buttonNames.Add(i + 256, altKeyName);
 

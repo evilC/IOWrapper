@@ -54,14 +54,14 @@ namespace SharpDX_DirectInput
                 SetWatcherThreadState(false);
             }
             disposed = true;
-            Console.WriteLine("Disposal complete for {0}", ProviderName);
+            //Console.WriteLine("Disposal complete for {0}", ProviderName);
         }
 
         private void SetWatcherThreadState(bool state)
         {
             if (state && !watcherThreadRunning)
             {
-                Console.WriteLine("Starting watcher thread for {0}", ProviderName);
+                //Console.WriteLine("Starting watcher thread for {0}", ProviderName);
                 watcherThread = new Thread(WatcherThread);
                 watcherThread.Start();
                 while (!watcherThreadRunning)
@@ -71,7 +71,7 @@ namespace SharpDX_DirectInput
             }
             else if (!state && watcherThreadRunning)
             {
-                Console.WriteLine("Stopping watcher thread for {0}", ProviderName);
+                //Console.WriteLine("Stopping watcher thread for {0}", ProviderName);
                 watcherThreadStopRequested = true;
                 while (watcherThreadRunning)
                 {

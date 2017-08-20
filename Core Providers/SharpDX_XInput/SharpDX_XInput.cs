@@ -66,7 +66,7 @@ namespace SharpDX_XInput
         {
             if (state && !watcherThreadRunning)
             {
-                Console.WriteLine("Starting watcher thread for {0}", ProviderName);
+                //Console.WriteLine("Starting watcher thread for {0}", ProviderName);
                 watcherThread = new Thread(WatcherThread);
                 watcherThread.Start();
                 while (!watcherThreadRunning)
@@ -76,7 +76,7 @@ namespace SharpDX_XInput
             }
             else if (!state && watcherThreadRunning)
             {
-                Console.WriteLine("Stopping watcher thread for {0}", ProviderName);
+                //Console.WriteLine("Stopping watcher thread for {0}", ProviderName);
                 watcherThreadStopRequested = true;
                 while (watcherThreadRunning)
                 {
