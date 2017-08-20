@@ -289,18 +289,39 @@ namespace SharpDX_DirectInput
         {
             bool disposed = false;
 
+            private string deviceHandle;
+            //private Guid instanceGuid;
+
             private Joystick joystick;
             private Guid stickGuid;
             private Dictionary<JoystickOffset, InputMonitor> monitors = new Dictionary<JoystickOffset, InputMonitor>();
 
             public StickMonitor(InputSubscriptionRequest subReq)
             {
-                var deviceGuid = handleToInstanceGuid[subReq.DeviceHandle];
-                stickGuid = deviceGuid;
-                joystick = new Joystick(directInput, stickGuid);
-                joystick.Properties.BufferSize = 128;
-                joystick.Acquire();
-                Log("Aquired DirectInput stick {0}", stickGuid);
+                deviceHandle = subReq.DeviceHandle;
+                if (handleToInstanceGuid.ContainsKey(deviceHandle))
+                {
+                    SetAcquireState(true);
+                }
+            }
+
+            private void SetAcquireState(bool state)
+            {
+                if (state && (joystick == null))
+                {
+                    var deviceGuid = handleToInstanceGuid[deviceHandle];
+                    stickGuid = deviceGuid;
+                    joystick = new Joystick(directInput, stickGuid);
+                    joystick.Properties.BufferSize = 128;
+                    joystick.Acquire();
+                    Log("Aquired DirectInput stick {0}", stickGuid);
+                }
+                else if (!state && (joystick != null))
+                {
+                    Log("Relinquished DirectInput stick {0}", stickGuid);
+                    joystick.Unacquire();
+                    joystick = null;
+                }
             }
 
             ~StickMonitor()
@@ -320,8 +341,7 @@ namespace SharpDX_DirectInput
                     return;
                 if (disposing)
                 {
-                    joystick.Unacquire();
-                    Log("Relinquished DirectInput stick {0}", stickGuid);
+                    SetAcquireState(false);
                 }
                 disposed = true;
             }
@@ -366,6 +386,8 @@ namespace SharpDX_DirectInput
 
             public void Poll()
             {
+                if (joystick == null)
+                    return;
                 var data = joystick.GetBufferedData();
                 foreach (var state in data)
                 {
