@@ -105,7 +105,8 @@ namespace IOWrapper
                 var oldSub = ActiveInputSubscriptions[subReq.SubscriberGuid];
                 UnsubscribeInput(oldSub);
             }
-            var ret = GetProvider(subReq.ProviderName).SubscribeInput(subReq);
+            var prov = GetProvider(subReq.ProviderName);
+            var ret = prov.SubscribeInput(subReq);
             if (ret)
             {
                 ActiveInputSubscriptions.Add(subReq.SubscriberGuid, subReq.Clone());
