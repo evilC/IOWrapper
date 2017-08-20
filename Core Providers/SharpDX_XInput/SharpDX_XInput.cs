@@ -13,9 +13,16 @@ namespace SharpDX_XInput
     {
         bool disposed = false;
 
+        // The thread which handles input detection
         private Thread pollThread;
-        private volatile bool pollThreadStopRequested = false;
+        // Is the thread currently running? This is set by the thread itself.
         private volatile bool pollThreadRunning = false;
+        // Do we want the thread to be on or off?
+        // This is independent of whether or not the thread is running...
+        // ... for example, we may be updating bindings, so the thread may be temporarily stopped
+        private bool pollThreadDesired = false;
+        // Set to true to cause the thread to stop running. When it stops, it will set pollThreadRunning to false
+        private volatile bool pollThreadStopRequested = false;
 
         private Dictionary<int, StickMonitor> MonitoredSticks = new Dictionary<int, StickMonitor>();
         private static List<Guid> ActiveProfiles = new List<Guid>();
@@ -44,6 +51,7 @@ namespace SharpDX_XInput
 
         public SharpDX_XInput()
         {
+            pollThreadDesired = true;
             QueryDevices();
         }
 
@@ -68,6 +76,7 @@ namespace SharpDX_XInput
         {
             if (state && !pollThreadRunning)
             {
+                pollThreadStopRequested = false;
                 pollThread = new Thread(PollThread);
                 pollThread.Start();
                 while (!pollThreadRunning)
@@ -97,23 +106,27 @@ namespace SharpDX_XInput
         // https://github.com/dotnet/csharplang/blob/master/proposals/default-interface-methods.md
         public bool SetProfileState(Guid profileGuid, bool state)
         {
-            lock (ActiveProfiles)
+            if (pollThreadRunning)
+                SetPollThreadState(false);
+
+            if (state)
             {
-                if (state)
+                if (!ActiveProfiles.Contains(profileGuid))
                 {
-                    if (!ActiveProfiles.Contains(profileGuid))
-                    {
-                        ActiveProfiles.Add(profileGuid);
-                    }
-                }
-                else
-                {
-                    if (ActiveProfiles.Contains(profileGuid))
-                    {
-                        ActiveProfiles.Remove(profileGuid);
-                    }
+                    ActiveProfiles.Add(profileGuid);
                 }
             }
+            else
+            {
+                if (ActiveProfiles.Contains(profileGuid))
+                {
+                    ActiveProfiles.Remove(profileGuid);
+                }
+            }
+
+            if (pollThreadDesired)
+                SetPollThreadState(true);
+
             return true;
         }
 
@@ -142,39 +155,44 @@ namespace SharpDX_XInput
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
+            if (pollThreadRunning)
+                SetPollThreadState(false);
+
             var stickId = Convert.ToInt32(subReq.DeviceHandle);
-            lock (MonitoredSticks)
+            if (!MonitoredSticks.ContainsKey(stickId))
             {
-                if (!MonitoredSticks.ContainsKey(stickId))
+                MonitoredSticks.Add(stickId, new StickMonitor(stickId));
+            }
+            var result = MonitoredSticks[stickId].Add(subReq);
+            if (result)
+            {
+                if (pollThreadDesired)
                 {
-                    MonitoredSticks.Add(stickId, new StickMonitor(stickId));
+                    SetPollThreadState(true);
                 }
-                var result = MonitoredSticks[stickId].Add(subReq);
-                if (result)
-                {
-                    if (!pollThreadRunning)
-                    {
-                        SetPollThreadState(true);
-                    }
-                    return true;
-                }
+                return true;
             }
             return false;
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
+            if (pollThreadRunning)
+                SetPollThreadState(false);
+
             var stickId = Convert.ToInt32(subReq.DeviceHandle);
-            lock (MonitoredSticks)
+            if (MonitoredSticks.ContainsKey(stickId))
             {
-                if (MonitoredSticks.ContainsKey(stickId))
+                MonitoredSticks[stickId].Remove(subReq);
+                if (!MonitoredSticks[stickId].HasSubscriptions())
                 {
-                    MonitoredSticks[stickId].Remove(subReq);
-                    if (!MonitoredSticks[stickId].HasSubscriptions())
-                    {
-                        MonitoredSticks.Remove(stickId);
-                    }
+                    MonitoredSticks.Remove(stickId);
                 }
+            }
+
+            if (pollThreadDesired)
+            {
+                SetPollThreadState(true);
             }
             return false;
         }
