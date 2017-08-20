@@ -26,6 +26,7 @@ namespace SharpDX_XInput
 
         private Dictionary<int, StickMonitor> MonitoredSticks = new Dictionary<int, StickMonitor>();
         private static List<Guid> ActiveProfiles = new List<Guid>();
+        //private static List<> PluggedInControllers
 
         ProviderReport providerReport;
 
@@ -311,6 +312,8 @@ namespace SharpDX_XInput
 
             public void Poll()
             {
+                if (!controller.IsConnected)
+                    return;
                 var state = controller.GetState();
 
                 foreach (var monitor in axisMonitors)
