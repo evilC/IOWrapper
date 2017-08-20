@@ -139,6 +139,10 @@ namespace Core_Interception
             if (pollThreadRunning)
                 SetPollThreadState(false);
 
+            if (!deviceHandleToId.ContainsKey(subReq.DeviceHandle))
+            {
+                return false;
+            }
             var id = deviceHandleToId[subReq.DeviceHandle];
             if (!MonitoredKeyboards.ContainsKey(id + 1))
             {
