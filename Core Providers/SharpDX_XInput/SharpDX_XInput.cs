@@ -13,9 +13,9 @@ namespace SharpDX_XInput
     {
         bool disposed = false;
 
-        private Thread watcherThread;
-        private volatile bool watcherThreadStopRequested = false;
-        private volatile bool watcherThreadRunning = false;
+        private Thread pollThread;
+        private volatile bool pollThreadStopRequested = false;
+        private volatile bool pollThreadRunning = false;
 
         private Dictionary<int, StickMonitor> MonitoredSticks = new Dictionary<int, StickMonitor>();
         private static List<Guid> ActiveProfiles = new List<Guid>();
@@ -58,31 +58,31 @@ namespace SharpDX_XInput
                 return;
             if (disposing)
             {
-                SetWatcherThreadState(false);
+                SetPollThreadState(false);
             }
             disposed = true;
             Log("Provider {0} was Disposed", ProviderName);
         }
 
-        private void SetWatcherThreadState(bool state)
+        private void SetPollThreadState(bool state)
         {
-            if (state && !watcherThreadRunning)
+            if (state && !pollThreadRunning)
             {
-                watcherThread = new Thread(WatcherThread);
-                watcherThread.Start();
-                while (!watcherThreadRunning)
+                pollThread = new Thread(PollThread);
+                pollThread.Start();
+                while (!pollThreadRunning)
                 {
                     Thread.Sleep(10);
                 }
             }
-            else if (!state && watcherThreadRunning)
+            else if (!state && pollThreadRunning)
             {
-                watcherThreadStopRequested = true;
-                while (watcherThreadRunning)
+                pollThreadStopRequested = true;
+                while (pollThreadRunning)
                 {
                     Thread.Sleep(10);
                 }
-                watcherThread = null;
+                pollThread = null;
             }
         }
 
@@ -152,9 +152,9 @@ namespace SharpDX_XInput
                 var result = MonitoredSticks[stickId].Add(subReq);
                 if (result)
                 {
-                    if (!watcherThreadRunning)
+                    if (!pollThreadRunning)
                     {
-                        SetWatcherThreadState(true);
+                        SetPollThreadState(true);
                     }
                     return true;
                 }
@@ -211,11 +211,11 @@ namespace SharpDX_XInput
         }
 
         #region Stick Monitoring
-        private void WatcherThread()
+        private void PollThread()
         {
-            watcherThreadRunning = true;
-            Log("Started Watcher Thread for {0}", ProviderName);
-            while (!watcherThreadStopRequested)
+            pollThreadRunning = true;
+            Log("Started PollThread for {0}", ProviderName);
+            while (!pollThreadStopRequested)
             {
                 lock (MonitoredSticks) lock (ActiveProfiles)
                     {
@@ -226,8 +226,8 @@ namespace SharpDX_XInput
                     }
                 Thread.Sleep(1);
             }
-            watcherThreadRunning = false;
-            Log("Stopped Watcher Thread for {0}", ProviderName);
+            pollThreadRunning = false;
+            Log("Stopped PollThread for {0}", ProviderName);
         }
 
         #region Stick

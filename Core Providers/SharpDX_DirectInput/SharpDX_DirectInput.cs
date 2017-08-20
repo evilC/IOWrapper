@@ -16,9 +16,9 @@ namespace SharpDX_DirectInput
         bool disposed = false;
         static private DirectInput directInput;
 
-        private Thread watcherThread;
-        private volatile bool watcherThreadStopRequested = false;
-        private volatile bool watcherThreadRunning = false;
+        private Thread pollThread;
+        private volatile bool pollThreadStopRequested = false;
+        private volatile bool pollThreadRunning = false;
 
         private Dictionary<string, StickMonitor> MonitoredSticks = new Dictionary<string, StickMonitor>();
         private static List<Guid> ActiveProfiles = new List<Guid>();
@@ -51,33 +51,33 @@ namespace SharpDX_DirectInput
                     stick.Dispose();
                 }
                 MonitoredSticks = null;
-                SetWatcherThreadState(false);
+                SetPollThreadState(false);
             }
             disposed = true;
             Log("Provider {0} was Disposed", ProviderName);
         }
 
-        private void SetWatcherThreadState(bool state)
+        private void SetPollThreadState(bool state)
         {
-            if (state && !watcherThreadRunning)
+            if (state && !pollThreadRunning)
             {
-                //Log("Starting watcher thread for {0}", ProviderName);
-                watcherThread = new Thread(WatcherThread);
-                watcherThread.Start();
-                while (!watcherThreadRunning)
+                //Log("Starting PollThread for {0}", ProviderName);
+                pollThread = new Thread(PollThread);
+                pollThread.Start();
+                while (!pollThreadRunning)
                 {
                     Thread.Sleep(10);
                 }
             }
-            else if (!state && watcherThreadRunning)
+            else if (!state && pollThreadRunning)
             {
-                //Log("Stopping watcher thread for {0}", ProviderName);
-                watcherThreadStopRequested = true;
-                while (watcherThreadRunning)
+                //Log("Stopping PollThread for {0}", ProviderName);
+                pollThreadStopRequested = true;
+                while (pollThreadRunning)
                 {
                     Thread.Sleep(10);
                 }
-                watcherThread = null;
+                pollThread = null;
             }
         }
 
@@ -134,9 +134,9 @@ namespace SharpDX_DirectInput
             var success =  MonitoredSticks[subReq.DeviceHandle].Add(subReq);
             if (success)
             {
-                if (!watcherThreadRunning)
+                if (!pollThreadRunning)
                 {
-                    SetWatcherThreadState(true);
+                    SetPollThreadState(true);
                 }
                 return true;
             }
@@ -243,11 +243,11 @@ namespace SharpDX_DirectInput
         #region Stick Monitoring
 
         #region Main Monitor Loop
-        private void WatcherThread()
+        private void PollThread()
         {
-            watcherThreadRunning = true;
-            Log("Started Watcher Thread for {0}", ProviderName);
-            while (!watcherThreadStopRequested)
+            pollThreadRunning = true;
+            Log("Started PollThread for {0}", ProviderName);
+            while (!pollThreadStopRequested)
             {
                 lock (MonitoredSticks) lock (ActiveProfiles)
                     {
@@ -258,8 +258,8 @@ namespace SharpDX_DirectInput
                     }
                 Thread.Sleep(1);
             }
-            watcherThreadRunning = false;
-            Log("Stopped Watcher Thread for {0}", ProviderName);
+            pollThreadRunning = false;
+            Log("Stopped PollThread for {0}", ProviderName);
         }
         #endregion
 
@@ -279,6 +279,7 @@ namespace SharpDX_DirectInput
                 joystick = new Joystick(directInput, stickGuid);
                 joystick.Properties.BufferSize = 128;
                 joystick.Acquire();
+                Log("Aquired DirectInput stick {0}", stickGuid);
             }
 
             ~StickMonitor()
@@ -299,6 +300,7 @@ namespace SharpDX_DirectInput
                 if (disposing)
                 {
                     joystick.Unacquire();
+                    Log("Relinquished DirectInput stick {0}", stickGuid);
                 }
                 disposed = true;
             }

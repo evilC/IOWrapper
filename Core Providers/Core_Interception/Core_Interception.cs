@@ -18,9 +18,9 @@ namespace Core_Interception
         private IntPtr deviceContext;
         private ProviderReport providerReport;
 
-        private Thread watcherThread;
-        private volatile bool watcherThreadRunning = false;
-        private volatile bool watcherThreadStopRequested = false;
+        private Thread pollThread;
+        private volatile bool pollThreadRunning = false;
+        private volatile bool pollThreadStopRequested = false;
         private bool filterState = false;
 
         private Dictionary<int, KeyboardMonitor> MonitoredKeyboards = new Dictionary<int, KeyboardMonitor>();
@@ -38,7 +38,7 @@ namespace Core_Interception
             MonitoredKeyboards.Add(1, new KeyboardMonitor() { });
             MonitoredKeyboards.Add(4, new KeyboardMonitor() { });
 
-            //SetWatcherThreadState(true);
+            //SetPollThreadState(true);
         }
 
         ~Core_Interception()
@@ -57,7 +57,7 @@ namespace Core_Interception
                 return;
             if (disposing)
             {
-                SetWatcherThreadState(false);
+                SetPollThreadState(false);
             }
             disposed = true;
             Log("Provider {0} was Disposed", ProviderName);
@@ -78,29 +78,29 @@ namespace Core_Interception
             }
         }
 
-        private void SetWatcherThreadState(bool state)
+        private void SetPollThreadState(bool state)
         {
-            if (state && !watcherThreadRunning)
+            if (state && !pollThreadRunning)
             {
                 SetFilterState(true);
-                watcherThread = new Thread(WatcherThread);
-                watcherThread.Start();
-                while (!watcherThreadRunning)
+                pollThread = new Thread(PollThread);
+                pollThread.Start();
+                while (!pollThreadRunning)
                 {
                     Thread.Sleep(10);
                 }
-                Log("Started Watcher Thread for {0}", ProviderName);
+                Log("Started PollThread for {0}", ProviderName);
             }
-            else if (!state && watcherThreadRunning)
+            else if (!state && pollThreadRunning)
             {
                 SetFilterState(false);
-                watcherThreadStopRequested = true;
-                while (watcherThreadRunning)
+                pollThreadStopRequested = true;
+                while (pollThreadRunning)
                 {
                     Thread.Sleep(10);
                 }
-                watcherThread = null;
-                Log("Stopped Watcher Thread for {0}", ProviderName);
+                pollThread = null;
+                Log("Stopped PollThread for {0}", ProviderName);
             }
         }
 
@@ -295,16 +295,16 @@ namespace Core_Interception
         }
         #endregion
 
-        #region Watcher Thread
-        private void WatcherThread()
+        #region PollThread
+        private void PollThread()
         {
-            watcherThreadRunning = true;
+            pollThreadRunning = true;
 
             Stroke stroke = new Stroke();
             //int device = Wait(deviceContext);
             //Log(String.Format("Thread got device {0}", device));
 
-            while (!watcherThreadStopRequested)
+            while (!pollThreadStopRequested)
             {
                 foreach (var monitoredKeyboard in MonitoredKeyboards)
                 {
@@ -316,7 +316,7 @@ namespace Core_Interception
                 }
                 Thread.Sleep(1);
             }
-            watcherThreadRunning = false;
+            pollThreadRunning = false;
         }
         #endregion
 
