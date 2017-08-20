@@ -40,6 +40,7 @@ class Tester
         //inputHandle = "VID_1234&PID_BEAD/0";    // vJoy
         //inputHandle = "VID_0C45&PID_7403/0";   // XBox
         //inputHandle = "VID_054C&PID_09CC/0";   // DS4
+        //inputHandle = "VID_044F&PID_B10A/0";   // T.16000M
 
         // Get handle to 1st vJoy device
         try { outputHandle = outputList["Core_vJoyInterfaceWrap"].Devices.FirstOrDefault().Key; }
@@ -149,8 +150,6 @@ class Tester
         };
         //iow.SubscribeInput(subInterception);
         //iow.UnsubscribeInput(sub3);
-
-        iow.Dispose();
     }
 
     void ToggleProfileState()
