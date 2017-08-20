@@ -53,7 +53,6 @@ class Tester
         try { keyboardHandle = inputList["Core_Interception"].Devices.FirstOrDefault().Key; }
         catch { return; }
         //keyboardHandle = @"Keyboard\HID\VID_04F2&PID_0112&REV_0103&MI_00";
-        keyboardHandle = @"Keyboard\HID\VID_04F2&PID_0112&REV_0103&MI_00xxxxxx";
 
         ToggleDefaultProfileState();
 
