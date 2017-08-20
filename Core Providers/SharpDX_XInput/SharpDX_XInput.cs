@@ -107,8 +107,8 @@ namespace SharpDX_XInput
         // https://github.com/dotnet/csharplang/blob/master/proposals/default-interface-methods.md
         public bool SetProfileState(Guid profileGuid, bool state)
         {
-            if (pollThreadRunning)
-                SetPollThreadState(false);
+            //if (pollThreadRunning)
+            //    SetPollThreadState(false);
 
             if (state)
             {
@@ -125,8 +125,8 @@ namespace SharpDX_XInput
                 }
             }
 
-            if (pollThreadDesired)
-                SetPollThreadState(true);
+            //if (pollThreadDesired)
+            //    SetPollThreadState(true);
 
             return true;
         }
