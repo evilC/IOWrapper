@@ -18,9 +18,17 @@ namespace Core_Interception
         private IntPtr deviceContext;
         private ProviderReport providerReport;
 
+        // The thread which handles input detection
         private Thread pollThread;
+        // Is the thread currently running? This is set by the thread itself.
         private volatile bool pollThreadRunning = false;
+        // Do we want the thread to be on or off?
+        // This is independent of whether or not the thread is running...
+        // ... for example, we may be updating bindings, so the thread may be temporarily stopped
+        private bool pollThreadDesired = false;
+        // Set to true to cause the thread to stop running. When it stops, it will set pollThreadRunning to false
         private volatile bool pollThreadStopRequested = false;
+
         private bool filterState = false;
 
         private Dictionary<int, KeyboardMonitor> MonitoredKeyboards = new Dictionary<int, KeyboardMonitor>();
@@ -35,10 +43,7 @@ namespace Core_Interception
 
             QueryDevices();
 
-            MonitoredKeyboards.Add(1, new KeyboardMonitor() { });
-            MonitoredKeyboards.Add(4, new KeyboardMonitor() { });
-
-            //SetPollThreadState(true);
+            pollThreadDesired = true;
         }
 
         ~Core_Interception()
@@ -83,6 +88,7 @@ namespace Core_Interception
             if (state && !pollThreadRunning)
             {
                 SetFilterState(true);
+                pollThreadStopRequested = false;
                 pollThread = new Thread(PollThread);
                 pollThread.Start();
                 while (!pollThreadRunning)
@@ -130,9 +136,19 @@ namespace Core_Interception
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
+            if (pollThreadRunning)
+                SetPollThreadState(false);
+
             var id = deviceHandleToId[subReq.DeviceHandle];
-            //MonitoredKeyboards[id].Add(subReq);
-            MonitoredKeyboards[id].Add(subReq);
+            if (!MonitoredKeyboards.ContainsKey(id + 1))
+            {
+                MonitoredKeyboards.Add(id + 1, new KeyboardMonitor() { });
+            }
+            MonitoredKeyboards[id+1].Add(subReq);
+            if (pollThreadDesired)
+            {
+                SetPollThreadState(true);
+            }
             return true;
         }
 
@@ -193,7 +209,7 @@ namespace Core_Interception
                     ButtonList = new List<int>() { },
                     ButtonNames = buttonNames
                 });
-                deviceHandleToId.Add(handle, i);
+                deviceHandleToId.Add(handle, i - 1);
                 //Log(String.Format("{0} ({1}) = VID/PID: {2}", i, t, handle));
                 i++;
             }
@@ -306,12 +322,21 @@ namespace Core_Interception
 
             while (!pollThreadStopRequested)
             {
-                foreach (var monitoredKeyboard in MonitoredKeyboards)
+                for (int i = 1; i < 21; i++)
                 {
-                    while (Receive(deviceContext, monitoredKeyboard.Key, ref stroke, 1) > 0)
+                    bool isMonitoredKeyboard = MonitoredKeyboards.ContainsKey(i);
+
+                    while (Receive(deviceContext, i, ref stroke, 1) > 0)
                     {
-                        monitoredKeyboard.Value.Poll(stroke);
-                        Send(deviceContext, monitoredKeyboard.Key, ref stroke, 1);
+                        bool block = false;
+                        if (isMonitoredKeyboard)
+                        {
+                            MonitoredKeyboards[i].Poll(stroke);
+                        }
+                        if (!block)
+                        {
+                            Send(deviceContext, i, ref stroke, 1);
+                        }
                     }
                 }
                 Thread.Sleep(1);
