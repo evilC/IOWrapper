@@ -12,10 +12,8 @@ namespace TestApp
         static void Main(string[] args)
         {
             var t = new Tester();
-            while (true)
-            {
-                Console.ReadLine();
-            }
+            Console.ReadLine();
+            t.Dispose();
         }
     }
 }
@@ -149,13 +147,20 @@ class Tester
                 Console.WriteLine("Keyboard Key Value: " + value);
             })
         };
-        iow.SubscribeInput(subInterception);
+        //iow.SubscribeInput(subInterception);
         //iow.UnsubscribeInput(sub3);
+
+        iow.Dispose();
     }
 
     void ToggleProfileState()
     {
         profileState = !profileState;
         iow.SetProfileState(profileGuid, profileState);
+    }
+
+    public void Dispose()
+    {
+        iow.Dispose();
     }
 }
