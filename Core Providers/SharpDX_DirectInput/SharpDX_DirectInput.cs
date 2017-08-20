@@ -141,9 +141,8 @@ namespace SharpDX_DirectInput
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
             if (pollThreadRunning)
-            {
                 SetPollThreadState(false);
-            }
+
             if (!MonitoredSticks.ContainsKey(subReq.DeviceHandle))
             {
                 MonitoredSticks.Add(subReq.DeviceHandle, new StickMonitor(subReq));
@@ -164,9 +163,8 @@ namespace SharpDX_DirectInput
         {
             var ret = false;
             if (pollThreadRunning)
-            {
                 SetPollThreadState(false);
-            }
+
             if (MonitoredSticks.ContainsKey(subReq.DeviceHandle))
             {
                 ret = MonitoredSticks[subReq.DeviceHandle].Remove(subReq);
