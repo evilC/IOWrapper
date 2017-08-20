@@ -54,14 +54,14 @@ namespace SharpDX_DirectInput
                 SetWatcherThreadState(false);
             }
             disposed = true;
-            //Console.WriteLine("Disposal complete for {0}", ProviderName);
+            Log("Provider {0} was Disposed", ProviderName);
         }
 
         private void SetWatcherThreadState(bool state)
         {
             if (state && !watcherThreadRunning)
             {
-                //Console.WriteLine("Starting watcher thread for {0}", ProviderName);
+                //Log("Starting watcher thread for {0}", ProviderName);
                 watcherThread = new Thread(WatcherThread);
                 watcherThread.Start();
                 while (!watcherThreadRunning)
@@ -71,7 +71,7 @@ namespace SharpDX_DirectInput
             }
             else if (!state && watcherThreadRunning)
             {
-                //Console.WriteLine("Stopping watcher thread for {0}", ProviderName);
+                //Log("Stopping watcher thread for {0}", ProviderName);
                 watcherThreadStopRequested = true;
                 while (watcherThreadRunning)
                 {
@@ -79,6 +79,11 @@ namespace SharpDX_DirectInput
                 }
                 watcherThread = null;
             }
+        }
+
+        private static void Log(string formatStr, params object[] arguments)
+        {
+            Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
         }
 
         #region IProvider Members
@@ -226,8 +231,8 @@ namespace SharpDX_DirectInput
                 });
                 handleToInstanceGuid.Add(handle, deviceInstance.InstanceGuid);
 
-                Debug.WriteLine(String.Format("{0} #{1} GUID: {2} Handle: {3} NativePointer: {4}"
-                    , deviceInstance.ProductName, index, deviceInstance.InstanceGuid, handle, joystick.NativePointer));
+                //Log(String.Format("{0} #{1} GUID: {2} Handle: {3} NativePointer: {4}"
+                //    , deviceInstance.ProductName, index, deviceInstance.InstanceGuid, handle, joystick.NativePointer));
 
                 joystick.Unacquire();
             }
@@ -241,7 +246,7 @@ namespace SharpDX_DirectInput
         private void WatcherThread()
         {
             watcherThreadRunning = true;
-            //Debug.WriteLine("InputWrapper| MonitorSticks starting");
+            Log("Started Watcher Thread for {0}", ProviderName);
             while (!watcherThreadStopRequested)
             {
                 lock (MonitoredSticks) lock (ActiveProfiles)
@@ -254,6 +259,7 @@ namespace SharpDX_DirectInput
                 Thread.Sleep(1);
             }
             watcherThreadRunning = false;
+            Log("Stopped Watcher Thread for {0}", ProviderName);
         }
         #endregion
 

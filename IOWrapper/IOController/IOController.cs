@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Providers;
 using System;
+using System.Diagnostics;
 
 namespace IOWrapper
 {
@@ -17,10 +18,13 @@ namespace IOWrapper
             GenericMEFPluginLoader<IProvider> loader = new GenericMEFPluginLoader<IProvider>("Providers");
             _Providers = new Dictionary<string, IProvider>();
             IEnumerable<IProvider> providers = loader.Plugins;
+            Log("IOController is initializing...");
             foreach (var provider in providers)
             {
                 _Providers[provider.ProviderName] = provider;
+                Log("Initialized Provider {0}", provider.ProviderName);
             }
+            Log("IOController initialization complete");
         }
 
         ~IOController()
@@ -46,6 +50,12 @@ namespace IOWrapper
                 _Providers = null;
             }
             disposed = true;
+            Log("IOController Disposed");
+        }
+
+        private static void Log(string formatStr, params object[] arguments)
+        {
+            Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
         }
 
         public bool SetProfileState(Guid profileGuid, bool state)

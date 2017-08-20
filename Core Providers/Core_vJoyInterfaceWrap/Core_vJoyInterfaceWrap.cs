@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -56,6 +57,7 @@ namespace Core_vJoyInterfaceWrap
                 vJ = null;
             }
             disposed = true;
+            Log("Provider {0} was Disposed", ProviderName);
         }
 
         private bool SetAcquireState(uint devId, bool state)
@@ -67,6 +69,7 @@ namespace Core_vJoyInterfaceWrap
                 {
                     ret = vJ.AcquireVJD(devId + 1);
                     acquiredDevices[devId] = true;
+                    Log("Aquired vJoy device {0}", devId + 1);
                 }
                 catch
                 {
@@ -87,6 +90,7 @@ namespace Core_vJoyInterfaceWrap
                         vJ.RelinquishVJD(devId + 1);
                         acquiredDevices[devId] = false;
                         ret = true;
+                        Log("Relinquished vJoy device {0}", devId + 1);
                     }
                 }
                 catch
@@ -95,6 +99,11 @@ namespace Core_vJoyInterfaceWrap
                 }
             }
             return ret;
+        }
+
+        private static void Log(string formatStr, params object[] arguments)
+        {
+            Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
         }
 
         #region IProvider Members

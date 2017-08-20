@@ -4,6 +4,7 @@ using Providers;
 using System.Collections.Generic;
 using SharpDX.XInput;
 using System.Threading;
+using System.Diagnostics;
 
 namespace SharpDX_XInput
 {
@@ -60,13 +61,13 @@ namespace SharpDX_XInput
                 SetWatcherThreadState(false);
             }
             disposed = true;
+            Log("Provider {0} was Disposed", ProviderName);
         }
 
         private void SetWatcherThreadState(bool state)
         {
             if (state && !watcherThreadRunning)
             {
-                //Console.WriteLine("Starting watcher thread for {0}", ProviderName);
                 watcherThread = new Thread(WatcherThread);
                 watcherThread.Start();
                 while (!watcherThreadRunning)
@@ -76,7 +77,6 @@ namespace SharpDX_XInput
             }
             else if (!state && watcherThreadRunning)
             {
-                //Console.WriteLine("Stopping watcher thread for {0}", ProviderName);
                 watcherThreadStopRequested = true;
                 while (watcherThreadRunning)
                 {
@@ -86,6 +86,10 @@ namespace SharpDX_XInput
             }
         }
 
+        private static void Log(string formatStr, params object[] arguments)
+        {
+            Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
+        }
         #region IProvider Members
         public string ProviderName { get { return typeof(SharpDX_XInput).Namespace; } }
 
@@ -210,7 +214,7 @@ namespace SharpDX_XInput
         private void WatcherThread()
         {
             watcherThreadRunning = true;
-            //Debug.WriteLine("InputWrapper| MonitorSticks starting");
+            Log("Started Watcher Thread for {0}", ProviderName);
             while (!watcherThreadStopRequested)
             {
                 lock (MonitoredSticks) lock (ActiveProfiles)
@@ -223,6 +227,7 @@ namespace SharpDX_XInput
                 Thread.Sleep(1);
             }
             watcherThreadRunning = false;
+            Log("Stopped Watcher Thread for {0}", ProviderName);
         }
 
         #region Stick

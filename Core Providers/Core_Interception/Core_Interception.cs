@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -59,13 +60,14 @@ namespace Core_Interception
                 SetWatcherThreadState(false);
             }
             disposed = true;
+            Log("Provider {0} was Disposed", ProviderName);
         }
 
         private void SetFilterState(bool state)
         {
             if (state && !filterState)
             {
-                //Console.WriteLine("Got DeviceContext " + deviceContext);
+                //Log("Got DeviceContext " + deviceContext);
                 SetFilter(deviceContext, IsKeyboard, Filter.All);
                 //SetFilter(deviceContext, IsMouse, Filter.MouseButton3Down | Filter.MouseButton3Up);
                 //SetFilter(deviceContext, IsMouse, Filter.All);
@@ -81,25 +83,30 @@ namespace Core_Interception
             if (state && !watcherThreadRunning)
             {
                 SetFilterState(true);
-                //Console.WriteLine("Starting watcher thread for {0}", ProviderName);
                 watcherThread = new Thread(WatcherThread);
                 watcherThread.Start();
                 while (!watcherThreadRunning)
                 {
                     Thread.Sleep(10);
                 }
+                Log("Started Watcher Thread for {0}", ProviderName);
             }
             else if (!state && watcherThreadRunning)
             {
                 SetFilterState(false);
-                //Console.WriteLine("Stopping watcher thread for {0}", ProviderName);
                 watcherThreadStopRequested = true;
                 while (watcherThreadRunning)
                 {
                     Thread.Sleep(10);
                 }
                 watcherThread = null;
+                Log("Stopped Watcher Thread for {0}", ProviderName);
             }
+        }
+
+        private static void Log(string formatStr, params object[] arguments)
+        {
+            Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
         }
 
         #region IProvider Members
@@ -187,7 +194,7 @@ namespace Core_Interception
                     ButtonNames = buttonNames
                 });
                 deviceHandleToId.Add(handle, i);
-                //Console.WriteLine(String.Format("{0} ({1}) = VID/PID: {2}", i, t, handle));
+                //Log(String.Format("{0} ({1}) = VID/PID: {2}", i, t, handle));
                 i++;
             }
         }
@@ -211,7 +218,7 @@ namespace Core_Interception
                 keyName = sb.ToString().Trim();
                 if (keyName == "")
                     continue;
-                //Console.WriteLine("Button Index: {0}, name: '{1}'", i, keyName);
+                //Log("Button Index: {0}, name: '{1}'", i, keyName);
                 buttonList.Add(i);
                 buttonNames.Add(i, keyName);
 
@@ -224,7 +231,7 @@ namespace Core_Interception
                 altKeyName = sb.ToString().Trim();
                 if (altKeyName == "" || altKeyName == keyName)
                     continue;
-                //Console.WriteLine("ALT Button Index: {0}, name: '{1}'", i + 256, altKeyName);
+                //Log("ALT Button Index: {0}, name: '{1}'", i + 256, altKeyName);
                 buttonList.Add(i + 256);
                 buttonNames.Add(i + 256, altKeyName);
 
@@ -281,7 +288,7 @@ namespace Core_Interception
                     foreach (var subscriptionRequest in subReqs.Values)
                     {
                         subscriptionRequest.Callback(isDown ? 1 : 0);
-                        //Console.WriteLine("State: {0}", isDown);
+                        //Log("State: {0}", isDown);
                     }
                 }
             }
@@ -295,7 +302,7 @@ namespace Core_Interception
 
             Stroke stroke = new Stroke();
             //int device = Wait(deviceContext);
-            //Console.WriteLine(String.Format("Thread got device {0}", device));
+            //Log(String.Format("Thread got device {0}", device));
 
             while (!watcherThreadStopRequested)
             {
