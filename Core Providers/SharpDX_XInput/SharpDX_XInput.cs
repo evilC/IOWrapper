@@ -21,8 +21,8 @@ namespace SharpDX_XInput
         // This is independent of whether or not the thread is running...
         // ... for example, we may be updating bindings, so the thread may be temporarily stopped
         private bool pollThreadDesired = false;
-        // Set to true to cause the thread to stop running. When it stops, it will set pollThreadRunning to false
-        private volatile bool pollThreadStopRequested = false;
+        // Is the thread in an Active or Inactive state?
+        private bool pollThreadActive = false;
 
         private Dictionary<int, StickMonitor> MonitoredSticks = new Dictionary<int, StickMonitor>();
         private static List<Guid> ActiveProfiles = new List<Guid>();
@@ -54,6 +54,8 @@ namespace SharpDX_XInput
         {
             pollThreadDesired = true;
             QueryDevices();
+            pollThread = new Thread(PollThread);
+            pollThread.Start();
         }
 
         public void Dispose()
@@ -67,7 +69,9 @@ namespace SharpDX_XInput
                 return;
             if (disposing)
             {
-                SetPollThreadState(false);
+                pollThread.Abort();
+                pollThreadRunning = false;
+                Log("Stopped PollThread for {0}", ProviderName);
             }
             disposed = true;
             Log("Provider {0} was Disposed", ProviderName);
@@ -75,24 +79,26 @@ namespace SharpDX_XInput
 
         private void SetPollThreadState(bool state)
         {
-            if (state && !pollThreadRunning)
+            if (!pollThreadRunning)
+                return;
+
+            if (state && !pollThreadActive)
             {
-                pollThreadStopRequested = false;
-                pollThread = new Thread(PollThread);
-                pollThread.Start();
-                while (!pollThreadRunning)
+                pollThreadDesired = true;
+                while (!pollThreadActive)
                 {
                     Thread.Sleep(10);
                 }
+                Log("PollThread for {0} Activated", ProviderName);
             }
-            else if (!state && pollThreadRunning)
+            else if (!state && pollThreadActive)
             {
-                pollThreadStopRequested = true;
-                while (pollThreadRunning)
+                pollThreadDesired = false;
+                while (pollThreadActive)
                 {
                     Thread.Sleep(10);
                 }
-                pollThread = null;
+                Log("PollThread for {0} De-Activated", ProviderName);
             }
         }
 
@@ -156,7 +162,8 @@ namespace SharpDX_XInput
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            if (pollThreadRunning)
+            var prev_state = pollThreadActive;
+            if (pollThreadActive)
                 SetPollThreadState(false);
 
             var stickId = Convert.ToInt32(subReq.DeviceHandle);
@@ -167,7 +174,7 @@ namespace SharpDX_XInput
             var result = MonitoredSticks[stickId].Add(subReq);
             if (result)
             {
-                if (pollThreadDesired)
+                if (prev_state)
                 {
                     SetPollThreadState(true);
                 }
@@ -178,7 +185,8 @@ namespace SharpDX_XInput
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            if (pollThreadRunning)
+            var prev_state = pollThreadActive;
+            if (pollThreadActive)
                 SetPollThreadState(false);
 
             var stickId = Convert.ToInt32(subReq.DeviceHandle);
@@ -191,7 +199,7 @@ namespace SharpDX_XInput
                 }
             }
 
-            if (pollThreadDesired)
+            if (prev_state)
             {
                 SetPollThreadState(true);
             }
@@ -234,19 +242,29 @@ namespace SharpDX_XInput
         {
             pollThreadRunning = true;
             Log("Started PollThread for {0}", ProviderName);
-            while (!pollThreadStopRequested)
+            while (true)
             {
-                lock (MonitoredSticks) lock (ActiveProfiles)
+                if (pollThreadDesired)
+                {
+                    pollThreadActive = true;
+                    while (pollThreadDesired)
                     {
                         foreach (var monitoredStick in MonitoredSticks)
                         {
                             monitoredStick.Value.Poll();
                         }
+                        Thread.Sleep(1);
                     }
-                Thread.Sleep(1);
+                }
+                else
+                {
+                    pollThreadActive = false;
+                    while (!pollThreadDesired)
+                    {
+                        Thread.Sleep(1);
+                    }
+                }
             }
-            pollThreadRunning = false;
-            Log("Stopped PollThread for {0}", ProviderName);
         }
 
         #region Stick
