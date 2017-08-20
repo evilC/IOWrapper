@@ -122,6 +122,7 @@ class Tester
             })
         };
         ret = iow.SubscribeInput(sub3);
+        //iow.UnsubscribeInput(sub3);
 
         var sub4 = new InputSubscriptionRequest()
         {
@@ -153,7 +154,6 @@ class Tester
             })
         };
         iow.SubscribeInput(subInterception);
-        //iow.UnsubscribeInput(sub3);
     }
 
     void ToggleProfileState()
