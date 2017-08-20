@@ -24,8 +24,8 @@ namespace SharpDX_DirectInput
         // This is independent of whether or not the thread is running...
         // ... for example, we may be updating bindings, so the thread may be temporarily stopped
         private bool pollThreadDesired = false;
-        // Set to true to cause the thread to stop running. When it stops, it will set pollThreadRunning to false
-        private volatile bool pollThreadStopRequested = false;
+        // Is the thread in an Active or Inactive state?
+        private bool pollThreadActive = false;
 
         private Dictionary<string, StickMonitor> MonitoredSticks = new Dictionary<string, StickMonitor>();
         private static List<Guid> ActiveProfiles = new List<Guid>();
@@ -41,6 +41,9 @@ namespace SharpDX_DirectInput
             directInput = new DirectInput();
             queryDevices();
             pollThreadDesired = true;
+            pollThread = new Thread(PollThread);
+            pollThread.Start();
+            SetPollThreadState(true);
         }
 
         public void Dispose()
@@ -54,12 +57,14 @@ namespace SharpDX_DirectInput
                 return;
             if (disposing)
             {
+                pollThread.Abort();
+                pollThreadRunning = false;
+                Log("Stopped PollThread for {0}", ProviderName);
                 foreach (var stick in MonitoredSticks.Values)
                 {
                     stick.Dispose();
                 }
                 MonitoredSticks = null;
-                SetPollThreadState(false);
             }
             disposed = true;
             Log("Provider {0} was Disposed", ProviderName);
@@ -67,26 +72,32 @@ namespace SharpDX_DirectInput
 
         private void SetPollThreadState(bool state)
         {
-            if (state && !pollThreadRunning)
+            if (!pollThreadRunning)
+                return;
+
+            if (state && !pollThreadActive)
             {
                 //Log("Starting PollThread for {0}", ProviderName);
-                pollThreadStopRequested = false;
-                pollThread = new Thread(PollThread);
-                pollThread.Start();
-                while (!pollThreadRunning)
+                pollThreadDesired = true;
+                while (!pollThreadActive)
                 {
+                    //Log("Waiting for poll thread to activate");
                     Thread.Sleep(10);
                 }
+                Log("PollThread for {0} Activated", ProviderName);
             }
-            else if (!state && pollThreadRunning)
+            else if (!state && pollThreadActive)
             {
                 //Log("Stopping PollThread for {0}", ProviderName);
-                pollThreadStopRequested = true;
-                while (pollThreadRunning)
+                //pollThreadStopRequested = true;
+                pollThreadDesired = false;
+                while (pollThreadActive)
                 {
+                    //Log("Waiting for poll thread to de-activate");
                     Thread.Sleep(10);
                 }
-                pollThread = null;
+                Log("PollThread for {0} De-Activated", ProviderName);
+                //pollThread = null;
             }
         }
 
@@ -104,8 +115,9 @@ namespace SharpDX_DirectInput
         // https://github.com/dotnet/csharplang/blob/master/proposals/default-interface-methods.md
         public bool SetProfileState(Guid profileGuid, bool state)
         {
-            if (pollThreadRunning)
-                SetPollThreadState(false);
+            var prev_state = pollThreadActive;
+            //if (pollThreadActive)
+            //    SetPollThreadState(false);
 
             if (state)
             {
@@ -122,8 +134,8 @@ namespace SharpDX_DirectInput
                 }
             }
 
-            if (pollThreadDesired)
-                SetPollThreadState(true);
+            //if (prev_state)
+            //    SetPollThreadState(true);
 
             return true;
         }
@@ -140,7 +152,8 @@ namespace SharpDX_DirectInput
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            if (pollThreadRunning)
+            var prev_state = pollThreadActive;
+            if (pollThreadActive)
                 SetPollThreadState(false);
 
             if (!MonitoredSticks.ContainsKey(subReq.DeviceHandle))
@@ -150,7 +163,7 @@ namespace SharpDX_DirectInput
             var success =  MonitoredSticks[subReq.DeviceHandle].Add(subReq);
             if (success)
             {
-                if (pollThreadDesired)
+                if (prev_state)
                 {
                     SetPollThreadState(true);
                 }
@@ -162,7 +175,8 @@ namespace SharpDX_DirectInput
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
             var ret = false;
-            if (pollThreadRunning)
+            var prev_state = pollThreadActive;
+            if (pollThreadActive)
                 SetPollThreadState(false);
 
             if (MonitoredSticks.ContainsKey(subReq.DeviceHandle))
@@ -177,7 +191,7 @@ namespace SharpDX_DirectInput
                     }
                 }
             }
-            if (pollThreadDesired)
+            if (prev_state)
             {
                 SetPollThreadState(true);
             }
@@ -271,16 +285,33 @@ namespace SharpDX_DirectInput
         {
             pollThreadRunning = true;
             Log("Started PollThread for {0}", ProviderName);
-            while (!pollThreadStopRequested)
+            while (true)
             {
-                foreach (var stick in MonitoredSticks.Values)
+                if (pollThreadDesired)
                 {
-                    stick.Poll();
+                    pollThreadActive = true;
+                    //pollThreadActive = true;
+                    while (pollThreadDesired)
+                    {
+                        //Log("Active");
+                        foreach (var stick in MonitoredSticks.Values)
+                        {
+                            stick.Poll();
+                        }
+                        Thread.Sleep(1);
+                    }
                 }
-                Thread.Sleep(1);
+                else
+                {
+                    //Log("De-Activating Poll Thread");
+                    pollThreadActive = false;
+                    while (!pollThreadDesired)
+                    {
+                        //Log("In-Active");
+                        Thread.Sleep(1);
+                    }
+                }
             }
-            pollThreadRunning = false;
-            Log("Stopped PollThread for {0}", ProviderName);
         }
         #endregion
 
