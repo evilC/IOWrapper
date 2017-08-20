@@ -1,6 +1,7 @@
 ﻿using Providers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace TestApp
     {
         static void Main(string[] args)
         {
+            Debug.WriteLine("DBGVIEWCLEAR");
             var t = new Tester();
             Console.ReadLine();
             t.Dispose();
@@ -102,6 +104,8 @@ class Tester
             })
         };
         iow.SubscribeInput(sub2);
+        //iow.UnsubscribeInput(sub2);
+        //iow.SubscribeInput(sub2);
 
         var sub3 = new InputSubscriptionRequest()
         {
@@ -142,13 +146,13 @@ class Tester
             ProviderName = "Core_Interception",
             InputType = InputType.BUTTON,
             DeviceHandle = keyboardHandle,
-            InputIndex = 0x1,
+            InputIndex = 2, // 1 key on keyboard
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Keyboard Key Value: " + value);
             })
         };
-        //iow.SubscribeInput(subInterception);
+        iow.SubscribeInput(subInterception);
         //iow.UnsubscribeInput(sub3);
     }
 
