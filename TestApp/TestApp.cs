@@ -23,8 +23,8 @@ namespace TestApp
 class Tester
 {
     private OutputSubscriptionRequest outputSubscription;
-    bool profileState = false;
-    Guid profileGuid = Guid.NewGuid();
+    bool defaultProfileState = false;
+    Guid defaultProfileGuid = Guid.NewGuid();
     IOWrapper.IOController iow;
 
     public Tester()
@@ -53,8 +53,9 @@ class Tester
         try { keyboardHandle = inputList["Core_Interception"].Devices.FirstOrDefault().Key; }
         catch { return; }
         //keyboardHandle = @"Keyboard\HID\VID_04F2&PID_0112&REV_0103&MI_00";
+        keyboardHandle = @"Keyboard\HID\VID_04F2&PID_0112&REV_0103&MI_00xxxxxx";
 
-        ToggleProfileState();
+        ToggleDefaultProfileState();
 
         // Acquire vJoy stick
         outputSubscription = new OutputSubscriptionRequest()
@@ -67,9 +68,9 @@ class Tester
 
         Console.WriteLine("Binding input to handle " + inputHandle);
         // Subscribe to the found stick
-        var sub1 = new InputSubscriptionRequest()
+        var diSub1 = new InputSubscriptionRequest()
         {
-            ProfileGuid = Guid.NewGuid(),
+            ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_DirectInput",
             InputType = InputType.BUTTON,
@@ -79,20 +80,38 @@ class Tester
             {
                 Console.WriteLine("Button 0 Value: " + value);
                 iow.SetOutputstate(outputSubscription, InputType.BUTTON, 0, value);
+            })
+        };
+        iow.SubscribeInput(diSub1);
+
+        Console.WriteLine("Binding input to handle " + inputHandle);
+        // Subscribe to the found stick
+        var diSub2 = new InputSubscriptionRequest()
+        {
+            ProfileGuid = Guid.NewGuid(),
+            SubscriberGuid = Guid.NewGuid(),
+            ProviderName = "SharpDX_DirectInput",
+            InputType = InputType.BUTTON,
+            DeviceHandle = inputHandle,
+            InputIndex = 1,
+            Callback = new Action<int>((value) =>
+            {
+                Console.WriteLine("Button 1 Value: " + value);
+                iow.SetOutputstate(outputSubscription, InputType.BUTTON, 0, value);
                 if (value == 1)
                 {
-                    ToggleProfileState();
+                    ToggleDefaultProfileState();
                 }
             })
         };
-        iow.SubscribeInput(sub1);
-        iow.SetProfileState(sub1.ProfileGuid, true);
+        iow.SubscribeInput(diSub2);
+        iow.SetProfileState(diSub2.ProfileGuid, true);
         //iow.UnsubscribeInput(sub1);
 
         var sub2 = new InputSubscriptionRequest()
         {
-            ProfileGuid = profileGuid,
-            SubscriberGuid = Guid.NewGuid(),
+            ProfileGuid = defaultProfileGuid,
+            SubscriberGuid = defaultProfileGuid,
             ProviderName = "SharpDX_DirectInput",
             InputType = InputType.AXIS,
             DeviceHandle = inputHandle,
@@ -109,7 +128,7 @@ class Tester
 
         var sub3 = new InputSubscriptionRequest()
         {
-            ProfileGuid = profileGuid,
+            ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_XInput",
             InputType = InputType.BUTTON,
@@ -126,7 +145,7 @@ class Tester
 
         var sub4 = new InputSubscriptionRequest()
         {
-            ProfileGuid = profileGuid,
+            ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_XInput",
             InputType = InputType.AXIS,
@@ -154,12 +173,13 @@ class Tester
             })
         };
         iow.SubscribeInput(subInterception);
+
     }
 
-    void ToggleProfileState()
+    void ToggleDefaultProfileState()
     {
-        profileState = !profileState;
-        iow.SetProfileState(profileGuid, profileState);
+        defaultProfileState = !defaultProfileState;
+        iow.SetProfileState(defaultProfileGuid, defaultProfileState);
     }
 
     public void Dispose()
