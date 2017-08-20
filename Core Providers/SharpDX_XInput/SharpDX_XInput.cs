@@ -294,6 +294,7 @@ namespace SharpDX_XInput
                 {
                     monitor.Add(inputId, new InputMonitor());
                 }
+                Log("Adding subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.InputType.ToString(), subReq.InputIndex);
                 return monitor[inputId].Add(subReq);
             }
 
@@ -303,6 +304,7 @@ namespace SharpDX_XInput
                 var monitor = monitors[subReq.InputType];
                 if (monitor.ContainsKey(inputId))
                 {
+                    Log("Removing subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.InputType.ToString(), subReq.InputIndex);
                     var ret = monitor[inputId].Remove(subReq);
                     if (!monitor[inputId].HasSubscriptions())
                     {

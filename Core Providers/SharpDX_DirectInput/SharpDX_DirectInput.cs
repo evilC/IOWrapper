@@ -385,6 +385,7 @@ namespace SharpDX_DirectInput
                 {
                     monitors.Add(inputId, new InputMonitor());
                 }
+                Log("Adding subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.InputType.ToString(), subReq.InputIndex);
                 return monitors[inputId].Add(subReq);
             }
 
@@ -398,6 +399,7 @@ namespace SharpDX_DirectInput
                     {
                         monitors.Remove(inputId);
                     }
+                    Log("Removing subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.InputType.ToString(), subReq.InputIndex);
                     return ret;
                 }
                 return false;
