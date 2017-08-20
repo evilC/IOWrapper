@@ -10,7 +10,12 @@ namespace SharpDX_XInput
     [Export(typeof(IProvider))]
     public class SharpDX_XInput : IProvider
     {
-        private bool monitorThreadRunning = false;
+        bool disposed = false;
+
+        private Thread watcherThread;
+        private volatile bool watcherThreadStopRequested = false;
+        private volatile bool watcherThreadRunning = false;
+
         private Dictionary<int, StickMonitor> MonitoredSticks = new Dictionary<int, StickMonitor>();
         private static List<Guid> ActiveProfiles = new List<Guid>();
 
@@ -39,6 +44,46 @@ namespace SharpDX_XInput
         public SharpDX_XInput()
         {
             QueryDevices();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+            if (disposing)
+            {
+                SetWatcherThreadState(false);
+            }
+            disposed = true;
+        }
+
+        private void SetWatcherThreadState(bool state)
+        {
+            if (state && !watcherThreadRunning)
+            {
+                Console.WriteLine("Starting watcher thread for {0}", ProviderName);
+                watcherThread = new Thread(WatcherThread);
+                watcherThread.Start();
+                while (!watcherThreadRunning)
+                {
+                    Thread.Sleep(10);
+                }
+            }
+            else if (!state && watcherThreadRunning)
+            {
+                Console.WriteLine("Stopping watcher thread for {0}", ProviderName);
+                watcherThreadStopRequested = true;
+                while (watcherThreadRunning)
+                {
+                    Thread.Sleep(10);
+                }
+                watcherThread = null;
+            }
         }
 
         #region IProvider Members
@@ -103,9 +148,9 @@ namespace SharpDX_XInput
                 var result = MonitoredSticks[stickId].Add(subReq);
                 if (result)
                 {
-                    if (!monitorThreadRunning)
+                    if (!watcherThreadRunning)
                     {
-                        MonitorSticks();
+                        SetWatcherThreadState(true);
                     }
                     return true;
                 }
@@ -162,25 +207,22 @@ namespace SharpDX_XInput
         }
 
         #region Stick Monitoring
-        private void MonitorSticks()
+        private void WatcherThread()
         {
-            var t = new Thread(new ThreadStart(() =>
+            watcherThreadRunning = true;
+            //Debug.WriteLine("InputWrapper| MonitorSticks starting");
+            while (!watcherThreadStopRequested)
             {
-                monitorThreadRunning = true;
-                //Debug.WriteLine("InputWrapper| MonitorSticks starting");
-                while (monitorThreadRunning)
-                {
-                    lock (MonitoredSticks) lock (ActiveProfiles)
+                lock (MonitoredSticks) lock (ActiveProfiles)
                     {
                         foreach (var monitoredStick in MonitoredSticks)
                         {
                             monitoredStick.Value.Poll();
                         }
                     }
-                    Thread.Sleep(1);
-                }
-            }));
-            t.Start();
+                Thread.Sleep(1);
+            }
+            watcherThreadRunning = false;
         }
 
         #region Stick

@@ -13,8 +13,13 @@ namespace SharpDX_DirectInput
     [Export(typeof(IProvider))]
     public class SharpDX_DirectInput : IProvider
     {
+        bool disposed = false;
         static private DirectInput directInput;
-        private bool monitorThreadRunning = false;
+
+        private Thread watcherThread;
+        private volatile bool watcherThreadStopRequested = false;
+        private volatile bool watcherThreadRunning = false;
+
         private Dictionary<string, StickMonitor> MonitoredSticks = new Dictionary<string, StickMonitor>();
         private static List<Guid> ActiveProfiles = new List<Guid>();
 
@@ -28,6 +33,52 @@ namespace SharpDX_DirectInput
         {
             directInput = new DirectInput();
             queryDevices();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+            if (disposing)
+            {
+                foreach (var stick in MonitoredSticks.Values)
+                {
+                    stick.Dispose();
+                }
+                MonitoredSticks = null;
+                SetWatcherThreadState(false);
+            }
+            disposed = true;
+            Console.WriteLine("Disposal complete for {0}", ProviderName);
+        }
+
+        private void SetWatcherThreadState(bool state)
+        {
+            if (state && !watcherThreadRunning)
+            {
+                Console.WriteLine("Starting watcher thread for {0}", ProviderName);
+                watcherThread = new Thread(WatcherThread);
+                watcherThread.Start();
+                while (!watcherThreadRunning)
+                {
+                    Thread.Sleep(10);
+                }
+            }
+            else if (!state && watcherThreadRunning)
+            {
+                Console.WriteLine("Stopping watcher thread for {0}", ProviderName);
+                watcherThreadStopRequested = true;
+                while (watcherThreadRunning)
+                {
+                    Thread.Sleep(10);
+                }
+                watcherThread = null;
+            }
         }
 
         #region IProvider Members
@@ -78,9 +129,9 @@ namespace SharpDX_DirectInput
             var success =  MonitoredSticks[subReq.DeviceHandle].Add(subReq);
             if (success)
             {
-                if (!monitorThreadRunning)
+                if (!watcherThreadRunning)
                 {
-                    MonitorSticks();
+                    SetWatcherThreadState(true);
                 }
                 return true;
             }
@@ -187,31 +238,30 @@ namespace SharpDX_DirectInput
         #region Stick Monitoring
 
         #region Main Monitor Loop
-        private void MonitorSticks()
+        private void WatcherThread()
         {
-            var t = new Thread(new ThreadStart(() =>
+            watcherThreadRunning = true;
+            //Debug.WriteLine("InputWrapper| MonitorSticks starting");
+            while (!watcherThreadStopRequested)
             {
-                monitorThreadRunning = true;
-                //Debug.WriteLine("InputWrapper| MonitorSticks starting");
-                while (monitorThreadRunning)
-                {
-                    lock (MonitoredSticks) lock (ActiveProfiles)
+                lock (MonitoredSticks) lock (ActiveProfiles)
                     {
                         foreach (var stick in MonitoredSticks.Values)
                         {
                             stick.Poll();
                         }
                     }
-                    Thread.Sleep(1);
-                }
-            }));
-            t.Start();
+                Thread.Sleep(1);
+            }
+            watcherThreadRunning = false;
         }
         #endregion
 
         #region Stick Poller
-        public class StickMonitor
+        public class StickMonitor : IDisposable
         {
+            bool disposed = false;
+
             private Joystick joystick;
             private Guid stickGuid;
             private Dictionary<JoystickOffset, InputMonitor> monitors = new Dictionary<JoystickOffset, InputMonitor>();
@@ -227,8 +277,26 @@ namespace SharpDX_DirectInput
 
             ~StickMonitor()
             {
-                joystick.Unacquire();
+                Dispose();
             }
+
+            #region IDisposable Members
+            public void Dispose()
+            {
+                Dispose(true);
+            }
+
+            protected virtual void Dispose(bool disposing)
+            {
+                if (disposed)
+                    return;
+                if (disposing)
+                {
+                    joystick.Unacquire();
+                }
+                disposed = true;
+            }
+            #endregion
 
             public bool Add(InputSubscriptionRequest subReq)
             {

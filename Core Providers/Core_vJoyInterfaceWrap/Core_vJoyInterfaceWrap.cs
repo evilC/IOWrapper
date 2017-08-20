@@ -11,9 +11,11 @@ namespace Core_vJoyInterfaceWrap
     [Export(typeof(IProvider))]
     public class Core_vJoyInterfaceWrap : IProvider
     {
+        bool disposed = false;
         public static vJoyInterfaceWrap.vJoy vJ = new vJoyInterfaceWrap.vJoy();
         private List<Guid>[] deviceSubscriptions = new List<Guid>[16];
         private Dictionary<Guid, uint> subscriptionToDevice = new Dictionary<Guid, uint>();
+        private bool[] acquiredDevices = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
         static private Dictionary<int, string> axisNames = new Dictionary<int, string>()
             { { 0, "X" }, { 1,"Y" }, { 2, "Z" }, { 3, "Rx" }, { 4, "Ry" }, { 5, "Rz" }, { 6, "Sl0" }, { 7, "Sl1" } };
 
@@ -27,12 +29,72 @@ namespace Core_vJoyInterfaceWrap
 
         ~Core_vJoyInterfaceWrap()
         {
-            for (uint i = 0; i < 16; i++)
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+            if (disposing)
             {
-                if (deviceSubscriptions[i].Count == 0)
-                    continue;
-                vJ.RelinquishVJD(i + 1);
+                // Set deviceSubscriptions to null, so that SetAcquireState() will allow relinquishing of stick with subscriptions
+                deviceSubscriptions = null;
+                //foreach (var devId in acquiredDevices)
+                for (uint devId = 0; devId < 16; devId++)
+                {
+                    if (acquiredDevices[devId])
+                    {
+                        SetAcquireState(devId, false);
+                    }
+                }
+                vJ = null;
             }
+            disposed = true;
+        }
+
+        private bool SetAcquireState(uint devId, bool state)
+        {
+            bool ret = false;
+            if (state && !acquiredDevices[devId])
+            {
+                try
+                {
+                    ret = vJ.AcquireVJD(devId + 1);
+                    acquiredDevices[devId] = true;
+                }
+                catch
+                {
+                    ret = false;
+                }
+            }
+            else if (!state && acquiredDevices[devId])
+            {
+                try
+                {
+                    // Do not allow Relinquishing of a stick if it has active subscriptions
+                    if (deviceSubscriptions != null && deviceSubscriptions[devId].Count > 0)
+                    {
+                        ret = false;
+                    }
+                    else
+                    {
+                        vJ.RelinquishVJD(devId + 1);
+                        acquiredDevices[devId] = false;
+                        ret = true;
+                    }
+                }
+                catch
+                {
+                    ret = false;
+                }
+            }
+            return ret;
         }
 
         #region IProvider Members
@@ -104,7 +166,7 @@ namespace Core_vJoyInterfaceWrap
         {
             var devId = DevIdFromHandle(subReq.DeviceHandle);
             deviceSubscriptions[devId].Add(subReq.SubscriberGuid);
-            var ret = vJ.AcquireVJD(devId + 1);
+            SetAcquireState(devId, true);
             subscriptionToDevice.Add(subReq.SubscriberGuid, devId);
             return true;
         }
@@ -115,7 +177,7 @@ namespace Core_vJoyInterfaceWrap
             deviceSubscriptions[devId].Remove(subReq.SubscriberGuid);
             if (deviceSubscriptions[devId].Count == 0)
             {
-                vJ.RelinquishVJD(devId + 1);
+                SetAcquireState(devId, false);
             }
             subscriptionToDevice.Remove(subReq.SubscriberGuid);
             return true;
@@ -124,6 +186,10 @@ namespace Core_vJoyInterfaceWrap
         public bool SetOutputState(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state)
         {
             var devId = subscriptionToDevice[subReq.SubscriberGuid];
+            if (!acquiredDevices[devId])
+            {
+                return false;
+            }
             switch (inputType)
             {
                 case InputType.AXIS:

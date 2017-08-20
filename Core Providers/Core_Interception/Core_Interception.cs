@@ -13,9 +13,15 @@ namespace Core_Interception
     [Export(typeof(IProvider))]
     public class Core_Interception : IProvider
     {
+        bool disposed = false;
         private IntPtr deviceContext;
         private ProviderReport providerReport;
+
         private Thread watcherThread;
+        private volatile bool watcherThreadRunning = false;
+        private volatile bool watcherThreadStopRequested = false;
+        private bool filterState = false;
+
         private Dictionary<int, KeyboardMonitor> MonitoredKeyboards = new Dictionary<int, KeyboardMonitor>();
         private Dictionary<string, int> deviceHandleToId;
 
@@ -25,23 +31,75 @@ namespace Core_Interception
         public Core_Interception()
         {
             deviceContext = CreateContext();
-            //Console.WriteLine("Got DeviceContext " + deviceContext);
-            SetFilter(deviceContext, IsKeyboard, Filter.All);
-            //SetFilter(deviceContext, IsMouse, Filter.MouseButton3Down | Filter.MouseButton3Up);
-            //SetFilter(deviceContext, IsMouse, Filter.All);
 
             QueryDevices();
 
             MonitoredKeyboards.Add(1, new KeyboardMonitor() { });
             MonitoredKeyboards.Add(4, new KeyboardMonitor() { });
 
-            watcherThread = new Thread(WatcherThread);
-            watcherThread.Start();
+            //SetWatcherThreadState(true);
         }
 
         ~Core_Interception()
         {
+            Dispose();
+        }
 
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+            if (disposing)
+            {
+                SetWatcherThreadState(false);
+            }
+            disposed = true;
+        }
+
+        private void SetFilterState(bool state)
+        {
+            if (state && !filterState)
+            {
+                //Console.WriteLine("Got DeviceContext " + deviceContext);
+                SetFilter(deviceContext, IsKeyboard, Filter.All);
+                //SetFilter(deviceContext, IsMouse, Filter.MouseButton3Down | Filter.MouseButton3Up);
+                //SetFilter(deviceContext, IsMouse, Filter.All);
+            }
+            else if (!state && filterState)
+            {
+                SetFilter(deviceContext, IsKeyboard, Filter.None);
+            }
+        }
+
+        private void SetWatcherThreadState(bool state)
+        {
+            if (state && !watcherThreadRunning)
+            {
+                SetFilterState(true);
+                Console.WriteLine("Starting watcher thread for {0}", ProviderName);
+                watcherThread = new Thread(WatcherThread);
+                watcherThread.Start();
+                while (!watcherThreadRunning)
+                {
+                    Thread.Sleep(10);
+                }
+            }
+            else if (!state && watcherThreadRunning)
+            {
+                SetFilterState(false);
+                Console.WriteLine("Stopping watcher thread for {0}", ProviderName);
+                watcherThreadStopRequested = true;
+                while (watcherThreadRunning)
+                {
+                    Thread.Sleep(10);
+                }
+                watcherThread = null;
+            }
         }
 
         #region IProvider Members
@@ -233,11 +291,13 @@ namespace Core_Interception
         #region Watcher Thread
         private void WatcherThread()
         {
+            watcherThreadRunning = true;
+
             Stroke stroke = new Stroke();
             //int device = Wait(deviceContext);
             //Console.WriteLine(String.Format("Thread got device {0}", device));
 
-            while (true)
+            while (!watcherThreadStopRequested)
             {
                 foreach (var monitoredKeyboard in MonitoredKeyboards)
                 {
@@ -249,6 +309,7 @@ namespace Core_Interception
                 }
                 Thread.Sleep(1);
             }
+            watcherThreadRunning = false;
         }
         #endregion
 

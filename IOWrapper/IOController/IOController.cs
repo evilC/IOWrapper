@@ -6,8 +6,9 @@ namespace IOWrapper
 {
     public enum InputTypes { Button, Axis };
 
-    public class IOController
+    public class IOController : IDisposable
     {
+        bool disposed = false;
         private Dictionary<string, IProvider> _Providers;
         private Dictionary<Guid, InputSubscriptionRequest> ActiveInputSubscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
 
@@ -16,10 +17,35 @@ namespace IOWrapper
             GenericMEFPluginLoader<IProvider> loader = new GenericMEFPluginLoader<IProvider>("Providers");
             _Providers = new Dictionary<string, IProvider>();
             IEnumerable<IProvider> providers = loader.Plugins;
-            foreach (var item in providers)
+            foreach (var provider in providers)
             {
-                _Providers[item.ProviderName] = item;
+                _Providers[provider.ProviderName] = provider;
             }
+        }
+
+        ~IOController()
+        {
+            Dispose(true);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+            if (disposing)
+            {
+                foreach (var provider in _Providers.Values)
+                {
+                    provider.Dispose();
+                }
+                _Providers = null;
+            }
+            disposed = true;
         }
 
         public bool SetProfileState(Guid profileGuid, bool state)

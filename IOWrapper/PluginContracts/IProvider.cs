@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Providers
 {
-    public interface IProvider
+    public interface IProvider : IDisposable
     {
         string ProviderName { get; }
         ProviderReport GetInputList();
