@@ -244,7 +244,7 @@ namespace SharpDX_DirectInput
                     try
                     {
                         var mightGoBoom = joystick.GetObjectInfoByName(directInputMappings[InputType.AXIS][i].ToString());
-                        sa.Add(i + 1);
+                        sa.Add(i);
                     }
                     catch { }
                 }
