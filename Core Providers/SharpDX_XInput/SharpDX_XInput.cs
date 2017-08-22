@@ -321,7 +321,7 @@ namespace SharpDX_XInput
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
-                var inputId = Convert.ToUInt32(subReq.InputIndex);
+                var inputId = subReq.InputIndex;
                 var monitor = monitors[subReq.InputType];
                 if (monitor.ContainsKey(inputId))
                 {
