@@ -238,21 +238,29 @@ namespace SharpDX_DirectInput
 
                 handle += index;
 
-                var sa = new List<int>();
+                var sa = new List<AxisInfo>();
                 for (int i = 0; i < directInputMappings[InputType.AXIS].Count; i++)
                 {
                     try
                     {
                         var mightGoBoom = joystick.GetObjectInfoByName(directInputMappings[InputType.AXIS][i].ToString());
-                        sa.Add(i);
+                        sa.Add(new AxisInfo() {
+                            Index = i,
+                            Name = axisNames[i],
+                            IsUnsigned = false
+                        });
                     }
                     catch { }
                 }
                 var length = joystick.Capabilities.ButtonCount;
-                var buttonList = new List<int>();
+                var buttonList = new List<ButtonInfo>();
                 for (int btn = 0; btn < length; btn++)
                 {
-                    buttonList.Add(btn);
+                    buttonList.Add(new ButtonInfo() {
+                        Index = btn,
+                        Name = (btn + 1).ToString(),
+                        IsEvent = false
+                    });
                 }
 
                 providerReport.Devices.Add(handle, new IOWrapperDevice()
@@ -265,7 +273,6 @@ namespace SharpDX_DirectInput
                     //ButtonCount = (uint)joystick.Capabilities.ButtonCount,
                     ButtonList = buttonList,
                     AxisList = sa,
-                    AxisNames = axisNames
                 });
                 handleToInstanceGuid.Add(handle, deviceInstance.InstanceGuid);
 

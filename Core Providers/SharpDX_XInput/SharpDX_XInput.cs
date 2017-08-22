@@ -30,12 +30,30 @@ namespace SharpDX_XInput
 
         ProviderReport providerReport;
 
-        private readonly static List<int> buttonList = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-        private readonly static Dictionary<int, string> buttonNames = new Dictionary<int, string>()
-            { {0, "A" }, { 1, "B" }, { 2, "X" }, { 3, "Y" }, { 4, "LB" }, { 5, "RB" }, { 6, "LS" }, { 7, "RS" }, { 8, "Back" }, { 9, "Start" }, { 10, "Xbox" } };
+        private readonly static List<ButtonInfo> buttonInfo = new List<ButtonInfo>()
+        {
+            new ButtonInfo() { Index = 0, Name = "A", IsEvent = false },
+            new ButtonInfo() { Index = 1, Name = "B", IsEvent = false },
+            new ButtonInfo() { Index = 2, Name = "X", IsEvent = false },
+            new ButtonInfo() { Index = 3, Name = "Y", IsEvent = false },
+            new ButtonInfo() { Index = 4, Name = "LB", IsEvent = false },
+            new ButtonInfo() { Index = 5, Name = "RB", IsEvent = false },
+            new ButtonInfo() { Index = 6, Name = "LS", IsEvent = false },
+            new ButtonInfo() { Index = 7, Name = "RS", IsEvent = false },
+            new ButtonInfo() { Index = 8, Name = "Back", IsEvent = false },
+            new ButtonInfo() { Index = 9, Name = "Start", IsEvent = false },
+            new ButtonInfo() { Index = 10, Name = "Xbox", IsEvent = false },
+        };
 
-        private readonly static Dictionary<int, string> axisNames = new Dictionary<int, string>()
-            { { 0, "LX" }, { 1, "LY" }, { 2, "RX" }, { 3, "RY" }, { 4, "LT" }, { 5, "RT" } };
+        private readonly static List<AxisInfo> axisInfo = new List<AxisInfo>()
+        {
+            new AxisInfo() { Index = 0, Name = "LX", IsUnsigned = false },
+            new AxisInfo() { Index = 1, Name = "LY", IsUnsigned = false },
+            new AxisInfo() { Index = 2, Name = "RX", IsUnsigned = false },
+            new AxisInfo() { Index = 3, Name = "RY", IsUnsigned = false },
+            new AxisInfo() { Index = 4, Name = "LT", IsUnsigned = true },
+            new AxisInfo() { Index = 5, Name = "RT", IsUnsigned = true },
+        };
 
         private static List<string> xinputAxisIdentifiers = new List<string>()
         {
@@ -230,10 +248,8 @@ namespace SharpDX_XInput
                 ProviderName = ProviderName,
                 API = "XInput",
                 //ButtonCount = 11,
-                ButtonList = buttonList,
-                ButtonNames = buttonNames,
-                AxisList = new List<int>() { 0, 1, 2, 3, 4, 5 },
-                AxisNames = axisNames
+                ButtonList = buttonInfo,
+                AxisList = axisInfo,
             };
         }
 

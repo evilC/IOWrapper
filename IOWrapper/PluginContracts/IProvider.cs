@@ -75,26 +75,48 @@ namespace Providers
         public string API { get; set; }
 
         /// <summary>
-        /// Which buttons a device has
+        /// A list of the device's buttons.
+        /// Note that for some devices (eg keyboard), the indexes of the buttons may not be contiguous
+        /// ie it may have index 1,3,5
         /// </summary>
-        public List<int> ButtonList { get; set; }
+        public List<ButtonInfo> ButtonList { get; set; }
 
         /// <summary>
-        /// The names of the buttons.
-        /// If ommitted, buttons numbers will be communicated to the user
+        /// A List of Axes IDs that this axis supports
         /// </summary>
-        public Dictionary<int, string> ButtonNames { get; set; }
+        public List<AxisInfo> AxisList { get; set; }
+    }
+
+    public class InputInfo
+    {
+        /// <summary>
+        /// The index (zero based) of this input
+        /// </summary>
+        public int Index { get; set; }
 
         /// <summary>
-        /// A List of Axis IDs that this axis supports, eg [1,3,5]
-        /// This is basically a look-up table to AxisNames
+        /// The name of this input.
+        /// If purely a button number, then the first button (Index 0) should be called "1"
         /// </summary>
-        public List<int> AxisList { get; set; }
+        public string Name { get; set; }
+    }
 
+    public class ButtonInfo : InputInfo
+    {
         /// <summary>
-        /// A list of the names of each axis that this API reports
+        /// Buttons with this property set to true only have one state
+        /// eg Mouse Wheel, which has no "press" or "release" event
         /// </summary>
-        public Dictionary<int, string> AxisNames { get; set; }
+        public bool IsEvent { get; set; }
+    }
+
+    public class AxisInfo : InputInfo
+    {
+        /// <summary>
+        /// Axes with this property set to true do not rest in the middle
+        /// eg a Pedal or a Trigger on an Xbox controller
+        /// </summary>
+        public bool IsUnsigned { get; set; }
     }
 
     public class ProviderReport

@@ -129,21 +129,29 @@ namespace Core_vJoyInterfaceWrap
                 var id = i + 1;
                 if (vJ.isVJDExists(id))
                 {
-                    var axes = new List<int>();
+                    var axes = new List<AxisInfo>();
 
                     for (int ax = 0; ax < 8; ax++)
                     {
                         if (vJ.GetVJDAxisExist(id, AxisIdToUsage[ax]))
                         {
-                            axes.Add(ax);
+                            axes.Add(new AxisInfo() {
+                                Index = ax,
+                                Name = axisNames[ax],
+                                IsUnsigned = false
+                            });
                         }
                     }
                     var handle = i.ToString();
                     var length = vJ.GetVJDButtonNumber(id);
-                    var buttonList = new List<int>();
+                    var buttonList = new List<ButtonInfo>();
                     for (int btn = 0; btn < length; btn++)
                     {
-                        buttonList.Add(btn);
+                        buttonList.Add(new ButtonInfo() {
+                            Index = btn,
+                            Name = (btn + 1).ToString(),
+                            IsEvent = false
+                        });
                     }
                     pr.Devices.Add(handle, new IOWrapperDevice()
                     {
@@ -154,7 +162,6 @@ namespace Core_vJoyInterfaceWrap
                         ButtonList = buttonList,
                         //ButtonCount = (uint)vJ.GetVJDButtonNumber(id),
                         AxisList = axes,
-                        AxisNames = axisNames
                     });
                 }
             }
