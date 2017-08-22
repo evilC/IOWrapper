@@ -245,6 +245,7 @@ namespace SharpDX_XInput
             return new IOWrapperDevice()
             {
                 DeviceHandle = id.ToString(),
+                DeviceName = "Xbox Controller " + (id + 1),
                 ProviderName = ProviderName,
                 API = "XInput",
                 //ButtonCount = 11,
