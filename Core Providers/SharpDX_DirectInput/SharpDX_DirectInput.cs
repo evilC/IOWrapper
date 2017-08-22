@@ -187,7 +187,7 @@ namespace SharpDX_DirectInput
                     if (!MonitoredSticks[subReq.DeviceHandle].HasSubscriptions())
                     {
                         MonitoredSticks[subReq.DeviceHandle].Dispose();
-                        ret = MonitoredSticks.Remove(subReq.DeviceHandle);
+                        MonitoredSticks.Remove(subReq.DeviceHandle);
                     }
                 }
             }

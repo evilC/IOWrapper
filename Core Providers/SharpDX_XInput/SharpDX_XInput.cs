@@ -207,21 +207,25 @@ namespace SharpDX_XInput
             if (pollThreadActive)
                 SetPollThreadState(false);
 
+            bool ret = false;
             var stickId = Convert.ToInt32(subReq.DeviceHandle);
             if (MonitoredSticks.ContainsKey(stickId))
             {
+                // Remove from monitor lookup table
                 MonitoredSticks[stickId].Remove(subReq);
+                // If this was the last thing monitored on this stick...
+                ///...remove the stick from the monitor lookup table
                 if (!MonitoredSticks[stickId].HasSubscriptions())
                 {
                     MonitoredSticks.Remove(stickId);
                 }
+                ret = true;
             }
-
             if (prev_state)
             {
                 SetPollThreadState(true);
             }
-            return false;
+            return ret;
         }
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
