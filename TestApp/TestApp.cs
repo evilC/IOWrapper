@@ -105,7 +105,6 @@ class Tester
         };
         iow.SubscribeInput(diSub2);
         iow.SetProfileState(diSub2.ProfileGuid, true);
-        //iow.UnsubscribeInput(sub1);
 
         var sub2 = new InputSubscriptionRequest()
         {
@@ -125,24 +124,7 @@ class Tester
         //iow.UnsubscribeInput(sub2);
         //iow.SubscribeInput(sub2);
 
-        var sub3 = new InputSubscriptionRequest()
-        {
-            ProfileGuid = defaultProfileGuid,
-            SubscriberGuid = Guid.NewGuid(),
-            ProviderName = "SharpDX_XInput",
-            InputType = InputType.BUTTON,
-            DeviceHandle = "0",
-            InputIndex = 0,
-            Callback = new Action<int>((value) =>
-            {
-                Console.WriteLine("XInput Button 0 Value: " + value);
-                iow.SetOutputstate(outputSubscription, InputType.BUTTON, 1, value);
-            })
-        };
-        ret = iow.SubscribeInput(sub3);
-        //iow.UnsubscribeInput(sub3);
-
-        var sub4 = new InputSubscriptionRequest()
+        var xinputAxis = new InputSubscriptionRequest()
         {
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
@@ -156,7 +138,25 @@ class Tester
                 iow.SetOutputstate(outputSubscription, InputType.AXIS, 0, value);
             })
         };
-        iow.SubscribeInput(sub4);
+        iow.SubscribeInput(xinputAxis);
+
+
+        var xinputButton = new InputSubscriptionRequest()
+        {
+            ProfileGuid = defaultProfileGuid,
+            SubscriberGuid = Guid.NewGuid(),
+            ProviderName = "SharpDX_XInput",
+            InputType = InputType.BUTTON,
+            DeviceHandle = "0",
+            InputIndex = 0,
+            Callback = new Action<int>((value) =>
+            {
+                Console.WriteLine("XInput Button 0 Value: " + value);
+                iow.SetOutputstate(outputSubscription, InputType.BUTTON, 1, value);
+            })
+        };
+        ret = iow.SubscribeInput(xinputButton);
+        //iow.UnsubscribeInput(xinputButton);
 
         var subInterception = new InputSubscriptionRequest()
         {
