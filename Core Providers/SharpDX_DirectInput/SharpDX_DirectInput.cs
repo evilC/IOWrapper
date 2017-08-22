@@ -33,8 +33,8 @@ namespace SharpDX_DirectInput
         private static Dictionary<string, Guid> handleToInstanceGuid;
         private ProviderReport providerReport;
 
-        static private Dictionary<int, string> axisNames = new Dictionary<int, string>()
-            { { 0, "X" }, { 1, "Y" }, { 2, "Z" }, { 3, "Rx" }, { 4, "Ry" }, { 5, "Rz" }, { 6, "Sl0" }, { 7, "Sl1" } };
+        //static private Dictionary<int, string> axisNames = new Dictionary<int, string>()
+        //    { { 0, "X" }, { 1, "Y" }, { 2, "Z" }, { 3, "Rx" }, { 4, "Ry" }, { 5, "Rz" }, { 6, "Sl0" }, { 7, "Sl1" } };
 
         public SharpDX_DirectInput()
         {
@@ -243,11 +243,12 @@ namespace SharpDX_DirectInput
                 {
                     try
                     {
-                        var mightGoBoom = joystick.GetObjectInfoByName(directInputMappings[InputType.AXIS][i].ToString());
+                        var deviceInfo = joystick.GetObjectInfoByName(directInputMappings[InputType.AXIS][i].ToString());
                         sa.Add(new AxisInfo() {
                             Index = i,
-                            Name = axisNames[i],
-                            IsUnsigned = false
+                            //Name = axisNames[i],
+                            Name = deviceInfo.Name,
+                            IsUnsigned = false  // ToDo: Can we detect this from axis info?
                         });
                     }
                     catch { }
