@@ -12,6 +12,7 @@ namespace IOWrapper
         bool disposed = false;
         private Dictionary<string, IProvider> _Providers;
         private Dictionary<Guid, InputSubscriptionRequest> ActiveInputSubscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
+        private Dictionary<Guid, OutputSubscriptionRequest> ActiveOutputSubscriptions = new Dictionary<Guid, OutputSubscriptionRequest>();
 
         public IOController()
         {
@@ -134,6 +135,12 @@ namespace IOWrapper
 
         public bool SubscribeOutput(OutputSubscriptionRequest subReq)
         {
+            if (ActiveOutputSubscriptions.ContainsKey(subReq.SubscriberGuid))
+            {
+                // If this Subscriber has an existing subscription...
+                // ... then remove the old subscription first.
+                // unsub output here
+            }
             return GetProvider(subReq.ProviderName)
                 .SubscribeOutputDevice(subReq);
         }
