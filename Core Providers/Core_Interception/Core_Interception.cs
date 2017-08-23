@@ -34,8 +34,8 @@ namespace Core_Interception
         private Dictionary<int, KeyboardMonitor> MonitoredKeyboards = new Dictionary<int, KeyboardMonitor>();
         private Dictionary<string, int> deviceHandleToId;
 
-        private static Dictionary<int, string> buttonNames;
-        private static List<int> buttonList;
+        //private static Dictionary<int, string> buttonNames;
+        private static List<ButtonInfo> buttonList;
 
         public Core_Interception()
         {
@@ -210,7 +210,7 @@ namespace Core_Interception
                     DeviceName = "Unknown " + t,
                     ProviderName = ProviderName,
                     API = "Interception",
-                    ButtonList = new List<ButtonInfo>() { },
+                    ButtonList = buttonList,
                 });
                 deviceHandleToId.Add(handle, i - 1);
                 //Log(String.Format("{0} ({1}) = VID/PID: {2}", i, t, handle));
@@ -220,8 +220,8 @@ namespace Core_Interception
 
         private void UpdateButtonList()
         {
-            buttonList = new List<int>();
-            buttonNames = new Dictionary<int, string>();
+            buttonList = new List<ButtonInfo>();
+            //buttonNames = new Dictionary<int, string>();
             uint lParam = 0;
             StringBuilder sb = new StringBuilder(260);
             string keyName;
@@ -237,9 +237,13 @@ namespace Core_Interception
                 keyName = sb.ToString().Trim();
                 if (keyName == "")
                     continue;
-                //Log("Button Index: {0}, name: '{1}'", i, keyName);
-                buttonList.Add(i);
-                buttonNames.Add(i, keyName);
+                Log("Button Index: {0}, name: '{1}'", i, keyName);
+                buttonList.Add(new ButtonInfo() {
+                    Index = i,
+                    Name = keyName,
+                    IsEvent = false
+                });
+                //buttonNames.Add(i, keyName);
 
                 // Check if this button has an extended (Right) variant
                 lParam = (0x100 | ((uint)i+1 & 0xff)) << 16;
@@ -251,8 +255,13 @@ namespace Core_Interception
                 if (altKeyName == "" || altKeyName == keyName)
                     continue;
                 //Log("ALT Button Index: {0}, name: '{1}'", i + 256, altKeyName);
-                buttonList.Add(i + 256);
-                buttonNames.Add(i + 256, altKeyName);
+                buttonList.Add(new ButtonInfo() {
+                    Index = i + 256,
+                    Name = altKeyName,
+                    IsEvent = false
+                });
+                Log("Button Index: {0}, name: '{1}'", i + 256, altKeyName);
+                //buttonNames.Add(i + 256, altKeyName);
 
             }
         }

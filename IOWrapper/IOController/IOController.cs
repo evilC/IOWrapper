@@ -98,6 +98,7 @@ namespace IOWrapper
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
+            Log("Received subreq for provider {0}, Device {1}, Input {2}", subReq.ProviderName, subReq.DeviceHandle, subReq.InputIndex);
             if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriberGuid))
             {
                 // If this Subscriber has an existing subscription...
@@ -116,6 +117,7 @@ namespace IOWrapper
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
+            Log("Received unsubreq for provider {0}, Device {1}, Input {2}", subReq.ProviderName, subReq.DeviceHandle, subReq.InputIndex);
             var ret = false;
             if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriberGuid))
             {
