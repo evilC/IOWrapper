@@ -381,12 +381,14 @@ namespace SharpDX_XInput
 
             public bool Add(InputSubscriptionRequest subReq)
             {
+                Log("XI adding subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceHandle, subReq.InputIndex, subReq.SubscriberGuid);
                 subscriptions.Add(subReq.SubscriberGuid, subReq.Clone());
                 return true;
             }
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
+                Log("XI removing subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceHandle, subReq.InputIndex, subReq.SubscriberGuid);
                 if (subscriptions.ContainsKey(subReq.SubscriberGuid))
                 {
                     return subscriptions.Remove(subReq.SubscriberGuid);
