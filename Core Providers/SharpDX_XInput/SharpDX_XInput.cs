@@ -42,7 +42,7 @@ namespace SharpDX_XInput
             new ButtonInfo() { Index = 7, Name = "RS", IsEvent = false },
             new ButtonInfo() { Index = 8, Name = "Back", IsEvent = false },
             new ButtonInfo() { Index = 9, Name = "Start", IsEvent = false },
-            new ButtonInfo() { Index = 10, Name = "Xbox", IsEvent = false },
+            //new ButtonInfo() { Index = 10, Name = "Xbox", IsEvent = false },
         };
 
         private readonly static List<AxisInfo> axisInfo = new List<AxisInfo>()
@@ -63,8 +63,9 @@ namespace SharpDX_XInput
         private static List<GamepadButtonFlags> xinputButtonIdentifiers = new List<GamepadButtonFlags>()
         {
             GamepadButtonFlags.A, GamepadButtonFlags.B, GamepadButtonFlags.X, GamepadButtonFlags.Y
-            , GamepadButtonFlags.LeftShoulder, GamepadButtonFlags.RightShoulder, GamepadButtonFlags.Back, GamepadButtonFlags.Start
+            , GamepadButtonFlags.LeftShoulder, GamepadButtonFlags.RightShoulder
             , GamepadButtonFlags.LeftThumb, GamepadButtonFlags.RightThumb
+            , GamepadButtonFlags.Back, GamepadButtonFlags.Start
         };
 
 
