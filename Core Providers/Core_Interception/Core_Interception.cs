@@ -37,6 +37,8 @@ namespace Core_Interception
 
         //private static Dictionary<int, string> buttonNames;
         private static BindingInfo keyboardList;
+        private static BindingInfo mouseButtonList;
+        private static List<string> mouseButtonNames = new List<string>() { "Left Mouse", "Right Mouse", "Middle Mouse", "Side Button 1", "Side Button 2" };
 
         public Core_Interception()
         {
@@ -220,41 +222,72 @@ namespace Core_Interception
             deviceHandleToId = new Dictionary<string, int>();
             providerReport = new ProviderReport();
             UpdateKeyList();
+            UpdateMouseButtonList();
             string handle;
             int i = 1;
+            while (i < 11)
+            {
+                handle = GetHardwareStr(deviceContext, i, 1000);
+                string titleSingular;
+                if (handle != "" && IsKeyboard(i) == 1)
+                {
+                    handle = @"Keyboard\" + handle;
+                    providerReport.Devices.Add(handle, new IOWrapperDevice()
+                    {
+                        //DeviceHandle = deviceInstance.InstanceGuid.ToString(),
+                        DeviceHandle = handle,
+                        DeviceName = "Unknown Keyboard",
+                        ProviderName = ProviderName,
+                        API = "Interception",
+                        Bindings = { keyboardList }
+                        //ButtonList = keyboardList,
+                    });
+                    deviceHandleToId.Add(handle, i - 1);
+                    Log(String.Format("{0} (Keyboard) = VID/PID: {1}", i, handle));
+                }
+                i++;
+            }
             while (i < 21)
             {
                 handle = GetHardwareStr(deviceContext, i, 1000);
-                string t;
-                if (handle != "" && IsKeyboard(i) == 1)
+                if (handle != "" && IsMouse(i) == 1)
                 {
-                    t = "Keyboard";
+                    handle = @"Mouse\" + handle;
+                    providerReport.Devices.Add(handle, new IOWrapperDevice()
+                    {
+                        //DeviceHandle = deviceInstance.InstanceGuid.ToString(),
+                        DeviceHandle = handle,
+                        DeviceName = "Unknown Mouse",
+                        ProviderName = ProviderName,
+                        API = "Interception",
+                        Bindings = { mouseButtonList }
+                        //ButtonList = keyboardList,
+                    });
+                    deviceHandleToId.Add(handle, i - 1);
+                    Log(String.Format("{0} (Mouse) = VID/PID: {1}", i, handle));
                 }
-                else if (handle != "" && IsMouse(i) == 1)
-                {
-                    t = "Mouse";
-                }
-                else
-                {
-                    //break;
-                    i++;
-                    continue;
-                }
-                handle = t + @"\" + handle;
-                providerReport.Devices.Add(handle, new IOWrapperDevice()
-                {
-                    //DeviceHandle = deviceInstance.InstanceGuid.ToString(),
-                    DeviceHandle = handle,
-                    DeviceName = "Unknown " + t,
-                    ProviderName = ProviderName,
-                    API = "Interception",
-                    Bindings = { keyboardList }
-                    //ButtonList = keyboardList,
-                });
-                deviceHandleToId.Add(handle, i - 1);
-                Log(String.Format("{0} ({1}) = VID/PID: {2}", i, t, handle));
                 i++;
             }
+        }
+
+        private void UpdateMouseButtonList()
+        {
+            mouseButtonList = new BindingInfo()
+            {
+                Title = "Buttons",
+                IsBinding = false
+            };
+            for (int i = 0; i < 5; i++)
+            {
+                mouseButtonList.SubBindings.Add(new BindingInfo()
+                {
+                    InputIndex = i,
+                    Title = mouseButtonNames[i],
+                    InputType = InputType.BUTTON,
+                    Category = BindingInfo.InputCategory.Button
+                });
+            }
+            
         }
 
         private void UpdateKeyList()
