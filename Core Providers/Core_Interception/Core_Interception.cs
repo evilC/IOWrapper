@@ -35,7 +35,6 @@ namespace Core_Interception
         private Dictionary<int, MouseMonitor> MonitoredMice = new Dictionary<int, MouseMonitor>();
         private Dictionary<string, int> deviceHandleToId;
 
-        //private static Dictionary<int, string> buttonNames;
         private static BindingInfo keyboardList;
         private static BindingInfo mouseButtonList;
         private static List<string> mouseButtonNames = new List<string>() { "Left Mouse", "Right Mouse", "Middle Mouse", "Side Button 1", "Side Button 2" };
@@ -77,7 +76,6 @@ namespace Core_Interception
             {
                 //Log("Got DeviceContext " + deviceContext);
                 //SetFilter(deviceContext, IsKeyboard, Filter.All);
-                //SetFilter(deviceContext, IsMouse, Filter.MouseButton3Down | Filter.MouseButton3Up);
                 SetFilter(deviceContext, IsMouse, Filter.All);
             }
             else if (!state && filterState)
@@ -210,7 +208,6 @@ namespace Core_Interception
                     bit += 1;
                 stroke.mouse.state = (ushort)(1 << bit);
             }
-            //Send(deviceContext, Convert.ToInt32(subReq.DeviceHandle), ref stroke, 1);
             Send(deviceContext, devId, ref stroke, 1);
             return true;
         }
@@ -228,19 +225,16 @@ namespace Core_Interception
             while (i < 11)
             {
                 handle = GetHardwareStr(deviceContext, i, 1000);
-                string titleSingular;
                 if (handle != "" && IsKeyboard(i) == 1)
                 {
                     handle = @"Keyboard\" + handle;
                     providerReport.Devices.Add(handle, new IOWrapperDevice()
                     {
-                        //DeviceHandle = deviceInstance.InstanceGuid.ToString(),
                         DeviceHandle = handle,
                         DeviceName = "Unknown Keyboard",
                         ProviderName = ProviderName,
                         API = "Interception",
                         Bindings = { keyboardList }
-                        //ButtonList = keyboardList,
                     });
                     deviceHandleToId.Add(handle, i - 1);
                     Log(String.Format("{0} (Keyboard) = VID/PID: {1}", i, handle));
@@ -255,13 +249,11 @@ namespace Core_Interception
                     handle = @"Mouse\" + handle;
                     providerReport.Devices.Add(handle, new IOWrapperDevice()
                     {
-                        //DeviceHandle = deviceInstance.InstanceGuid.ToString(),
                         DeviceHandle = handle,
                         DeviceName = "Unknown Mouse",
                         ProviderName = ProviderName,
                         API = "Interception",
                         Bindings = { mouseButtonList }
-                        //ButtonList = keyboardList,
                     });
                     deviceHandleToId.Add(handle, i - 1);
                     Log(String.Format("{0} (Mouse) = VID/PID: {1}", i, handle));
@@ -348,7 +340,6 @@ namespace Core_Interception
         private class KeyboardMonitor
         {
             private Dictionary<ushort, KeyboardKeyMonitor> monitoredKeys = new Dictionary<ushort, KeyboardKeyMonitor>();
-            //private int deviceId = 0;
             
             public void Add(InputSubscriptionRequest subReq)
             {
@@ -376,8 +367,6 @@ namespace Core_Interception
 
         private class KeyboardKeyMonitor
         {
-            //public int ButtonNumber { get; set; }
-
             public ushort code;
             public ushort stateDown;
             public ushort stateUp;
@@ -409,7 +398,6 @@ namespace Core_Interception
         private class MouseMonitor
         {
             private Dictionary<ushort, MouseButtonMonitor> monitoredStates = new Dictionary<ushort, MouseButtonMonitor>();
-            //private int deviceId = 0;
 
             public void Add(InputSubscriptionRequest subReq)
             {
@@ -475,8 +463,6 @@ namespace Core_Interception
             pollThreadRunning = true;
 
             Stroke stroke = new Stroke();
-            //int device = Wait(deviceContext);
-            //Log(String.Format("Thread got device {0}", device));
 
             while (!pollThreadStopRequested)
             {
