@@ -174,8 +174,15 @@ namespace Core_Interception
         public bool SetOutputState(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state)
         {
             Stroke stroke = new Stroke();
-            stroke.key.code = (ushort)inputIndex;
-            stroke.key.state = (ushort)(1 - state);
+            ushort st = (ushort)(1 - state);
+            ushort code = (ushort)(inputIndex+1);
+            if (code > 255)
+            {
+                st += 2;
+                code -= 256;
+            }
+            stroke.key.code = code;
+            stroke.key.state = st;
             Send(deviceContext, Convert.ToInt32(subReq.DeviceHandle), ref stroke, 1);
             return true;
         }
