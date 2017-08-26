@@ -294,8 +294,16 @@ namespace Core_Interception
 
             public void Add(InputSubscriptionRequest subReq)
             {
-                var code = (ushort)subReq.InputIndex;
-                monitoredKeys.Add(code, new KeyMonitor() { code = code, stateDown = 0, stateUp = 1});
+                var code = (ushort)(subReq.InputIndex + 1);
+                ushort stateDown = 0;
+                ushort stateUp = 1;
+                if (code > 256)
+                {
+                    code -= 256;
+                    stateDown = 2;
+                    stateUp = 3;
+                }
+                monitoredKeys.Add(code, new KeyMonitor() { code = code, stateDown = stateDown, stateUp = stateUp});
                 monitoredKeys[code].Add(subReq);
             }
 
