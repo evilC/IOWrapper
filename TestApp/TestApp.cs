@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TestApp
@@ -22,7 +23,8 @@ namespace TestApp
 
 class Tester
 {
-    private OutputSubscriptionRequest outputSubscription;
+    private OutputSubscriptionRequest vJoyOutputSubReq;
+    private OutputSubscriptionRequest interceptionOutputSubReq;
     bool defaultProfileState = false;
     Guid defaultProfileGuid = Guid.NewGuid();
     IOWrapper.IOController iow;
@@ -57,14 +59,15 @@ class Tester
         ToggleDefaultProfileState();
 
         // Acquire vJoy stick
-        outputSubscription = new OutputSubscriptionRequest()
+        vJoyOutputSubReq = new OutputSubscriptionRequest()
         {
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "Core_vJoyInterfaceWrap",
             DeviceHandle = outputHandle
         };
-        iow.SubscribeOutput(outputSubscription);
+        iow.SubscribeOutput(vJoyOutputSubReq);
 
+        #region DirectInput
         Console.WriteLine("Binding input to handle " + inputHandle);
         // Subscribe to the found stick
         var diSub1 = new InputSubscriptionRequest()
@@ -78,7 +81,7 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 0 Value: " + value);
-                iow.SetOutputstate(outputSubscription, InputType.BUTTON, 0, value);
+                iow.SetOutputstate(vJoyOutputSubReq, InputType.BUTTON, 0, value);
             })
         };
         iow.SubscribeInput(diSub1);
@@ -96,7 +99,7 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 1 Value: " + value);
-                iow.SetOutputstate(outputSubscription, InputType.BUTTON, 0, value);
+                iow.SetOutputstate(vJoyOutputSubReq, InputType.BUTTON, 0, value);
                 if (value == 1)
                 {
                     ToggleDefaultProfileState();
@@ -117,13 +120,15 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Axis 0 Value: " + value);
-                iow.SetOutputstate(outputSubscription, InputType.AXIS, 0, value);
+                iow.SetOutputstate(vJoyOutputSubReq, InputType.AXIS, 0, value);
             })
         };
         iow.SubscribeInput(sub2);
         //iow.UnsubscribeInput(sub2);
         //iow.SubscribeInput(sub2);
+        #endregion
 
+        #region XInput
         var xinputAxis = new InputSubscriptionRequest()
         {
             ProfileGuid = defaultProfileGuid,
@@ -135,7 +140,7 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("XInput Axis 0 Value: " + value);
-                iow.SetOutputstate(outputSubscription, InputType.AXIS, 0, value);
+                iow.SetOutputstate(vJoyOutputSubReq, InputType.AXIS, 0, value);
             })
         };
         iow.SubscribeInput(xinputAxis);
@@ -152,11 +157,20 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("XInput Button 0 Value: " + value);
-                iow.SetOutputstate(outputSubscription, InputType.BUTTON, 1, value);
+                iow.SetOutputstate(vJoyOutputSubReq, InputType.BUTTON, 1, value);
             })
         };
         ret = iow.SubscribeInput(xinputButton);
-        //iow.UnsubscribeInput(xinputButton);
+        #endregion
+
+        #region Interception
+        interceptionOutputSubReq = new OutputSubscriptionRequest()
+        {
+            SubscriberGuid = Guid.NewGuid(),
+            ProviderName = "Core_Interception",
+            DeviceHandle = "1"
+        };
+        iow.SubscribeOutput(interceptionOutputSubReq);
 
         var subInterception = new InputSubscriptionRequest()
         {
@@ -168,11 +182,12 @@ class Tester
             InputIndex = 2, // 1 key on keyboard
             Callback = new Action<int>((value) =>
             {
+                iow.SetOutputstate(interceptionOutputSubReq, InputType.BUTTON, 17, value);
                 Console.WriteLine("Keyboard Key Value: " + value);
             })
         };
         iow.SubscribeInput(subInterception);
-
+        #endregion
     }
 
     void ToggleDefaultProfileState()
