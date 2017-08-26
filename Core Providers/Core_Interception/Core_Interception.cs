@@ -32,6 +32,7 @@ namespace Core_Interception
         private bool filterState = false;
 
         private Dictionary<int, KeyboardMonitor> MonitoredKeyboards = new Dictionary<int, KeyboardMonitor>();
+        private Dictionary<int, MouseMonitor> MonitoredMice = new Dictionary<int, MouseMonitor>();
         private Dictionary<string, int> deviceHandleToId;
 
         //private static Dictionary<int, string> buttonNames;
@@ -73,9 +74,9 @@ namespace Core_Interception
             if (state && !filterState)
             {
                 //Log("Got DeviceContext " + deviceContext);
-                SetFilter(deviceContext, IsKeyboard, Filter.All);
+                //SetFilter(deviceContext, IsKeyboard, Filter.All);
                 //SetFilter(deviceContext, IsMouse, Filter.MouseButton3Down | Filter.MouseButton3Up);
-                //SetFilter(deviceContext, IsMouse, Filter.All);
+                SetFilter(deviceContext, IsMouse, Filter.All);
             }
             else if (!state && filterState)
             {
@@ -144,11 +145,24 @@ namespace Core_Interception
                 return false;
             }
             var id = deviceHandleToId[subReq.DeviceHandle];
-            if (!MonitoredKeyboards.ContainsKey(id + 1))
+            if (id < 10)
             {
-                MonitoredKeyboards.Add(id + 1, new KeyboardMonitor() { });
+                if (!MonitoredKeyboards.ContainsKey(id + 1))
+                {
+                    MonitoredKeyboards.Add(id + 1, new KeyboardMonitor() { });
+                }
+                MonitoredKeyboards[id + 1].Add(subReq);
             }
-            MonitoredKeyboards[id+1].Add(subReq);
+            else
+            {
+                if (!MonitoredMice.ContainsKey(id + 1))
+                {
+                    MonitoredMice.Add(id + 1, new MouseMonitor() { });
+                }
+                MonitoredMice[id + 1].Add(subReq);
+            }
+
+
             if (pollThreadDesired)
             {
                 SetPollThreadState(true);
@@ -188,6 +202,7 @@ namespace Core_Interception
         }
         #endregion
 
+        #region Device Querying
         private void QueryDevices()
         {
             deviceHandleToId = new Dictionary<string, int>();
@@ -225,7 +240,7 @@ namespace Core_Interception
                     //ButtonList = keyboardList,
                 });
                 deviceHandleToId.Add(handle, i - 1);
-                //Log(String.Format("{0} ({1}) = VID/PID: {2}", i, t, handle));
+                Log(String.Format("{0} ({1}) = VID/PID: {2}", i, t, handle));
                 i++;
             }
         }
@@ -252,7 +267,7 @@ namespace Core_Interception
                 keyName = sb.ToString().Trim();
                 if (keyName == "")
                     continue;
-                Log("Button Index: {0}, name: '{1}'", i, keyName);
+                //Log("Button Index: {0}, name: '{1}'", i, keyName);
                 keyboardList.SubBindings.Add(new BindingInfo() {
                     InputIndex = i,
                     Title = keyName,
@@ -277,21 +292,19 @@ namespace Core_Interception
                     InputType = InputType.BUTTON,
                     Category = BindingInfo.InputCategory.Button
                 });
-                Log("Button Index: {0}, name: '{1}'", i + 256, altKeyName);
+                //Log("Button Index: {0}, name: '{1}'", i + 256, altKeyName);
                 //buttonNames.Add(i + 256, altKeyName);
             }
         }
+        #endregion
+
         #region Input processing
+        #region Keyboard
         private class KeyboardMonitor
         {
-            private Dictionary<ushort, KeyMonitor> monitoredKeys = new Dictionary<ushort, KeyMonitor>();
+            private Dictionary<ushort, KeyboardKeyMonitor> monitoredKeys = new Dictionary<ushort, KeyboardKeyMonitor>();
             //private int deviceId = 0;
             
-            public KeyboardMonitor()
-            {
-                
-            }
-
             public void Add(InputSubscriptionRequest subReq)
             {
                 var code = (ushort)(subReq.InputIndex + 1);
@@ -303,7 +316,7 @@ namespace Core_Interception
                     stateDown = 2;
                     stateUp = 3;
                 }
-                monitoredKeys.Add(code, new KeyMonitor() { code = code, stateDown = stateDown, stateUp = stateUp});
+                monitoredKeys.Add(code, new KeyboardKeyMonitor() { code = code, stateDown = stateDown, stateUp = stateUp});
                 monitoredKeys[code].Add(subReq);
             }
 
@@ -316,7 +329,7 @@ namespace Core_Interception
             }
         }
 
-        private class KeyMonitor
+        private class KeyboardKeyMonitor
         {
             //public int ButtonNumber { get; set; }
 
@@ -347,6 +360,70 @@ namespace Core_Interception
         }
         #endregion
 
+        #region Mouse
+        private class MouseMonitor
+        {
+            private Dictionary<ushort, MouseButtonMonitor> monitoredStates = new Dictionary<ushort, MouseButtonMonitor>();
+            //private int deviceId = 0;
+
+            public void Add(InputSubscriptionRequest subReq)
+            {
+                var i = (ushort)subReq.InputIndex;
+                ushort downbit = (ushort)(1 << (i * 2));
+                ushort upbit = (ushort)(1 << ((i * 2) + 1));
+
+                Log("Added subscription to mouse button {0}", subReq.InputIndex);
+                monitoredStates.Add(downbit, new MouseButtonMonitor() { outputState = 1 });
+                monitoredStates[downbit].Add(subReq);
+                monitoredStates.Add(upbit, new MouseButtonMonitor() { outputState = 0 });
+                monitoredStates[upbit].Add(subReq);
+            }
+
+            public void Poll(Stroke stroke)
+            {
+                if (monitoredStates.ContainsKey(stroke.mouse.state))
+                {
+                    monitoredStates[stroke.mouse.state].Poll(stroke);
+                }
+            }
+        }
+
+        private class MouseButtonMonitor
+        {
+            public int outputState;
+
+            private Dictionary<Guid, InputSubscriptionRequest> subReqs = new Dictionary<Guid, InputSubscriptionRequest>();
+
+            public void Add(InputSubscriptionRequest subReq)
+            {
+                subReqs.Add(subReq.SubscriberGuid, subReq);
+                //Log("Added Subscription to Mouse Button {0}", subReq.InputIndex);
+            }
+
+            public void Poll(Stroke stroke)
+            {
+                if ((stroke.mouse.state & (ushort)Filter.MouseButtonAny) != 0)
+                {
+                    foreach (var subscriptionRequest in subReqs.Values)
+                    {
+                        Log("State: {0}", outputState);
+                        // ToDo: Need thread pool ?
+                        //var t = new Thread(() => CallbackThread(subscriptionRequest, outputState));
+                        //t.Start();
+                    }
+                }
+            }
+
+            private static void CallbackThread(InputSubscriptionRequest subReq, int value)
+            {
+                //Log("Callback");
+                subReq.Callback(value);
+            }
+        }
+        #endregion
+
+        #endregion
+
         #region PollThread
         private void PollThread()
         {
@@ -358,7 +435,7 @@ namespace Core_Interception
 
             while (!pollThreadStopRequested)
             {
-                for (int i = 1; i < 21; i++)
+                for (int i = 1; i < 11; i++)
                 {
                     bool isMonitoredKeyboard = MonitoredKeyboards.ContainsKey(i);
 
@@ -368,6 +445,23 @@ namespace Core_Interception
                         if (isMonitoredKeyboard)
                         {
                             MonitoredKeyboards[i].Poll(stroke);
+                        }
+                        if (!block)
+                        {
+                            Send(deviceContext, i, ref stroke, 1);
+                        }
+                    }
+                }
+                for (int i = 11; i < 21; i++)
+                {
+                    bool isMonitoredMouse = MonitoredMice.ContainsKey(i);
+
+                    while (Receive(deviceContext, i, ref stroke, 1) > 0)
+                    {
+                        bool block = false;
+                        if (isMonitoredMouse)
+                        {
+                            MonitoredMice[i].Poll(stroke);
                         }
                         if (!block)
                         {
