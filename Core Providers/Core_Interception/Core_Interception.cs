@@ -187,17 +187,29 @@ namespace Core_Interception
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state)
         {
+            int devId = deviceHandleToId[subReq.DeviceHandle];
             Stroke stroke = new Stroke();
-            ushort st = (ushort)(1 - state);
-            ushort code = (ushort)(inputIndex+1);
-            if (code > 255)
+            if (devId < 11)
             {
-                st += 2;
-                code -= 256;
+                ushort st = (ushort)(1 - state);
+                ushort code = (ushort)(inputIndex + 1);
+                if (code > 255)
+                {
+                    st += 2;
+                    code -= 256;
+                }
+                stroke.key.code = code;
+                stroke.key.state = st;
             }
-            stroke.key.code = code;
-            stroke.key.state = st;
-            Send(deviceContext, Convert.ToInt32(subReq.DeviceHandle), ref stroke, 1);
+            else
+            {
+                var bit = (int)inputIndex * 2;
+                if (state == 0)
+                    bit += 1;
+                stroke.mouse.state = (ushort)(1 << bit);
+            }
+            //Send(deviceContext, Convert.ToInt32(subReq.DeviceHandle), ref stroke, 1);
+            Send(deviceContext, devId, ref stroke, 1);
             return true;
         }
         #endregion
