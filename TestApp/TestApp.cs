@@ -24,7 +24,8 @@ namespace TestApp
 class Tester
 {
     private OutputSubscriptionRequest vJoyOutputSubReq;
-    private OutputSubscriptionRequest interceptionOutputSubReq;
+    private OutputSubscriptionRequest interceptionKeyboardOutputSubReq;
+    private OutputSubscriptionRequest interceptionMouseOutputSubReq;
     bool defaultProfileState = false;
     Guid defaultProfileGuid = Guid.NewGuid();
     IOWrapper.IOController iow;
@@ -56,6 +57,9 @@ class Tester
         catch { return; }
         //keyboardHandle = @"Keyboard\HID\VID_04F2&PID_0112&REV_0103&MI_00";
 
+        string mouseHandle = null;
+        mouseHandle = @"Mouse\HID\VID_046D&PID_C531&REV_2100&MI_00";
+
         ToggleDefaultProfileState();
 
         // Acquire vJoy stick
@@ -82,6 +86,8 @@ class Tester
             {
                 Console.WriteLine("Button 0 Value: " + value);
                 iow.SetOutputstate(vJoyOutputSubReq, InputType.BUTTON, 0, value);
+                //iow.SetOutputstate(interceptionKeyboardOutputSubReq, InputType.BUTTON, 311, value); // Right Alt
+                //iow.SetOutputstate(interceptionMouseOutputSubReq, InputType.BUTTON, 1, value); // RMB
             })
         };
         iow.SubscribeInput(diSub1);
@@ -164,29 +170,43 @@ class Tester
         #endregion
 
         #region Interception
-        interceptionOutputSubReq = new OutputSubscriptionRequest()
+        interceptionKeyboardOutputSubReq = new OutputSubscriptionRequest()
         {
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "Core_Interception",
-            DeviceHandle = "1"
+            DeviceHandle = keyboardHandle
         };
-        iow.SubscribeOutput(interceptionOutputSubReq);
+        iow.SubscribeOutput(interceptionKeyboardOutputSubReq);
 
+        interceptionMouseOutputSubReq = new OutputSubscriptionRequest()
+        {
+            SubscriberGuid = Guid.NewGuid(),
+            ProviderName = "Core_Interception",
+            DeviceHandle = mouseHandle
+        };
+        iow.SubscribeOutput(interceptionKeyboardOutputSubReq);
+
+        /*
         var subInterception = new InputSubscriptionRequest()
         {
             ProfileGuid = Guid.NewGuid(),
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "Core_Interception",
             InputType = InputType.BUTTON,
-            DeviceHandle = keyboardHandle,
-            InputIndex = 2, // 1 key on keyboard
+            //DeviceHandle = keyboardHandle,
+            DeviceHandle = mouseHandle,
+            //InputIndex = 1, // 1 key on keyboard
+            //InputIndex = 311, // Right ALT key on keyboard
+            InputIndex = 0, // LMB
             Callback = new Action<int>((value) =>
             {
-                iow.SetOutputstate(interceptionOutputSubReq, InputType.BUTTON, 17, value);
+                //iow.SetOutputstate(interceptionOutputSubReq, InputType.BUTTON, 17, value);
+                //iow.SetOutputstate(vJoyOutputSubReq, InputType.BUTTON, 0, value);
                 Console.WriteLine("Keyboard Key Value: " + value);
             })
         };
         iow.SubscribeInput(subInterception);
+        */
         #endregion
     }
 
