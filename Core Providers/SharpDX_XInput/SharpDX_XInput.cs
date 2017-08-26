@@ -30,29 +30,38 @@ namespace SharpDX_XInput
 
         ProviderReport providerReport;
 
-        private readonly static List<ButtonInfo> buttonInfo = new List<ButtonInfo>()
+        private readonly static BindingInfo buttonInfo = new BindingInfo()
         {
-            new ButtonInfo() { Index = 0, Name = "A", IsEvent = false },
-            new ButtonInfo() { Index = 1, Name = "B", IsEvent = false },
-            new ButtonInfo() { Index = 2, Name = "X", IsEvent = false },
-            new ButtonInfo() { Index = 3, Name = "Y", IsEvent = false },
-            new ButtonInfo() { Index = 4, Name = "LB", IsEvent = false },
-            new ButtonInfo() { Index = 5, Name = "RB", IsEvent = false },
-            new ButtonInfo() { Index = 6, Name = "LS", IsEvent = false },
-            new ButtonInfo() { Index = 7, Name = "RS", IsEvent = false },
-            new ButtonInfo() { Index = 8, Name = "Back", IsEvent = false },
-            new ButtonInfo() { Index = 9, Name = "Start", IsEvent = false },
-            //new ButtonInfo() { Index = 10, Name = "Xbox", IsEvent = false },
+            Title = "Buttons",
+            IsBinding = false,
+            SubBindings =
+            {
+                new BindingInfo() { InputIndex = 0, Title = "A", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
+                new BindingInfo() { InputIndex = 1, Title = "B", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
+                new BindingInfo() { InputIndex = 2, Title = "X", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
+                new BindingInfo() { InputIndex = 3, Title = "Y", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
+                new BindingInfo() { InputIndex = 4, Title = "LB", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
+                new BindingInfo() { InputIndex = 5, Title = "RB", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
+                new BindingInfo() { InputIndex = 6, Title = "LS", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
+                new BindingInfo() { InputIndex = 7, Title = "RS", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
+                new BindingInfo() { InputIndex = 8, Title = "Back", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
+                new BindingInfo() { InputIndex = 9, Title = "Start", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
+            }
         };
 
-        private readonly static List<AxisInfo> axisInfo = new List<AxisInfo>()
+        private readonly static BindingInfo axisInfo = new BindingInfo()
         {
-            new AxisInfo() { Index = 0, Name = "LX", IsUnsigned = false },
-            new AxisInfo() { Index = 1, Name = "LY", IsUnsigned = false },
-            new AxisInfo() { Index = 2, Name = "RX", IsUnsigned = false },
-            new AxisInfo() { Index = 3, Name = "RY", IsUnsigned = false },
-            new AxisInfo() { Index = 4, Name = "LT", IsUnsigned = true },
-            new AxisInfo() { Index = 5, Name = "RT", IsUnsigned = true },
+            Title = "Axes",
+            IsBinding = false,
+            SubBindings = 
+            {
+                new BindingInfo() { InputIndex = 0, Title = "LX", InputType = InputType.AXIS, Category = BindingInfo.InputCategory.Range },
+                new BindingInfo() { InputIndex = 1, Title = "LY", InputType = InputType.AXIS, Category = BindingInfo.InputCategory.Range },
+                new BindingInfo() { InputIndex = 2, Title = "RX", InputType = InputType.AXIS, Category = BindingInfo.InputCategory.Range },
+                new BindingInfo() { InputIndex = 3, Title = "RY", InputType = InputType.AXIS, Category = BindingInfo.InputCategory.Range },
+                new BindingInfo() { InputIndex = 4, Title = "LT", InputType = InputType.AXIS, Category = BindingInfo.InputCategory.Trigger },
+                new BindingInfo() { InputIndex = 5, Title = "RT", InputType = InputType.AXIS, Category = BindingInfo.InputCategory.Trigger },
+            }
         };
 
         private static List<string> xinputAxisIdentifiers = new List<string>()
@@ -253,9 +262,10 @@ namespace SharpDX_XInput
                 DeviceName = "Xbox Controller " + (id + 1),
                 ProviderName = ProviderName,
                 API = "XInput",
+                Bindings = { buttonInfo, axisInfo }
                 //ButtonCount = 11,
-                ButtonList = buttonInfo,
-                AxisList = axisInfo,
+                //ButtonList = buttonInfo,
+                //AxisList = axisInfo,
             };
         }
 

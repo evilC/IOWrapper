@@ -19,7 +19,7 @@ namespace Providers
         //bool SubscribeAxis(string deviceHandle, uint axisId, dynamic callback);
     }
 
-    public enum InputType { AXIS, BUTTON, POV };
+    public enum InputType { NONE, AXIS, BUTTON, POV };
 
     #region Subscriptions
     public class InputSubscriptionRequest : SubscriptionRequest
@@ -75,6 +75,8 @@ namespace Providers
         public string API { get; set; }
 
         public List<BindingInfo> Bindings { get; set; } = new List<BindingInfo>();
+
+        /*
         /// <summary>
         /// A list of the device's buttons.
         /// Note that for some devices (eg keyboard), the indexes of the buttons may not be contiguous
@@ -86,6 +88,7 @@ namespace Providers
         /// A List of Axes IDs that this axis supports
         /// </summary>
         public List<AxisInfo> AxisList { get; set; }
+        */
     }
 
     public class InputInfo
@@ -130,6 +133,7 @@ namespace Providers
     {
         public enum InputCategory
         {
+            None,
             Button,
             Event,
             Range,
@@ -138,9 +142,9 @@ namespace Providers
         }
 
         public string Title { get; set; }
-        public bool IsBinding { get; set; }
-        public InputCategory Category { get; set; }
-        public InputType InputType { get; set; }
+        public bool IsBinding { get; set; } = true;
+        public InputCategory Category { get; set; } = InputCategory.None;
+        public InputType InputType { get; set; } = InputType.NONE;
         public int InputIndex { get; set; }
         public int InputSubIndex { get; set; }
         public List<BindingInfo> SubBindings { get; set; } = new List<BindingInfo>();

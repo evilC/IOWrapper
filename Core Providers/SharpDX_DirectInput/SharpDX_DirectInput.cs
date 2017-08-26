@@ -237,30 +237,43 @@ namespace SharpDX_DirectInput
                 var index = GetDeviceOrder(vidpid, deviceInstance.InstanceGuid);
 
                 handle += index;
+                // ----- Axes -----
+                var axisInfo = new BindingInfo()
+                {
+                    Title = "Axes",
+                    IsBinding = false
+                };
 
-                var sa = new List<AxisInfo>();
+                //var axisInfo = new List<AxisInfo>();
                 for (int i = 0; i < directInputMappings[InputType.AXIS].Count; i++)
                 {
                     try
                     {
                         var deviceInfo = joystick.GetObjectInfoByName(directInputMappings[InputType.AXIS][i].ToString());
-                        sa.Add(new AxisInfo() {
-                            Index = i,
+                        axisInfo.SubBindings.Add(new BindingInfo() {
+                            InputIndex = i,
                             //Name = axisNames[i],
-                            Name = deviceInfo.Name,
-                            IsUnsigned = false  // ToDo: Can we detect this from axis info?
+                            Title = deviceInfo.Name,
+                            InputType = InputType.AXIS,
+                            Category = BindingInfo.InputCategory.Range
                         });
                     }
                     catch { }
                 }
+
+                // ----- Buttons -----
                 var length = joystick.Capabilities.ButtonCount;
-                var buttonList = new List<ButtonInfo>();
+                var buttonInfo = new BindingInfo() {
+                    Title = "Buttons",
+                    IsBinding = false
+                };
                 for (int btn = 0; btn < length; btn++)
                 {
-                    buttonList.Add(new ButtonInfo() {
-                        Index = btn,
-                        Name = (btn + 1).ToString(),
-                        IsEvent = false
+                    buttonInfo.SubBindings.Add(new BindingInfo() {
+                        InputIndex = btn,
+                        Title = (btn + 1).ToString(),
+                        InputType = InputType.BUTTON,
+                        Category = BindingInfo.InputCategory.Button,
                     });
                 }
 
@@ -271,9 +284,10 @@ namespace SharpDX_DirectInput
                     DeviceName = deviceInstance.ProductName,
                     ProviderName = ProviderName,
                     API = "DirectInput",
+                    Bindings = { buttonInfo, axisInfo }
                     //ButtonCount = (uint)joystick.Capabilities.ButtonCount,
-                    ButtonList = buttonList,
-                    AxisList = sa,
+                    //ButtonList = buttonInfo,
+                    //AxisList = axisInfo,
                 });
                 handleToInstanceGuid.Add(handle, deviceInstance.InstanceGuid);
 

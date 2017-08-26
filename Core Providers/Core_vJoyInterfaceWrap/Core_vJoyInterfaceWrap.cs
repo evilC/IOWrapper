@@ -129,28 +129,41 @@ namespace Core_vJoyInterfaceWrap
                 var id = i + 1;
                 if (vJ.isVJDExists(id))
                 {
-                    var axes = new List<AxisInfo>();
+                    var handle = i.ToString();
+
+                    // ------ Axes ------
+                    var axisList = new BindingInfo() {
+                        Title = "Axes",
+                        IsBinding = false
+                    };
 
                     for (int ax = 0; ax < 8; ax++)
                     {
                         if (vJ.GetVJDAxisExist(id, AxisIdToUsage[ax]))
                         {
-                            axes.Add(new AxisInfo() {
-                                Index = ax,
-                                Name = axisNames[ax],
-                                IsUnsigned = false
+                            axisList.SubBindings.Add(new BindingInfo() {
+                                InputIndex = ax,
+                                Title = axisNames[ax],
+                                InputType = InputType.AXIS,
+                                Category = BindingInfo.InputCategory.Range,
                             });
                         }
                     }
-                    var handle = i.ToString();
+
+                    // ------ Buttons ------
                     var length = vJ.GetVJDButtonNumber(id);
-                    var buttonList = new List<ButtonInfo>();
+                    var buttonList = new BindingInfo()
+                    {
+                        Title = "Buttons",
+                        IsBinding = false
+                    };
                     for (int btn = 0; btn < length; btn++)
                     {
-                        buttonList.Add(new ButtonInfo() {
-                            Index = btn,
-                            Name = (btn + 1).ToString(),
-                            IsEvent = false
+                        buttonList.SubBindings.Add(new BindingInfo() {
+                            InputIndex = btn,
+                            Title = (btn + 1).ToString(),
+                            InputType = InputType.BUTTON,
+                            Category = BindingInfo.InputCategory.Button
                         });
                     }
                     pr.Devices.Add(handle, new IOWrapperDevice()
@@ -159,9 +172,10 @@ namespace Core_vJoyInterfaceWrap
                         DeviceName = String.Format("vJoy Stick {0}", id),
                         ProviderName = ProviderName,
                         API = "vJoy",
-                        ButtonList = buttonList,
+                        Bindings = { buttonList, axisList }
+                        //ButtonList = buttonList,
                         //ButtonCount = (uint)vJ.GetVJDButtonNumber(id),
-                        AxisList = axes,
+                        //AxisList = axisList,
                     });
                 }
             }

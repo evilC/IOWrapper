@@ -35,7 +35,7 @@ namespace Core_Interception
         private Dictionary<string, int> deviceHandleToId;
 
         //private static Dictionary<int, string> buttonNames;
-        private static List<ButtonInfo> buttonList;
+        private static BindingInfo keyboardList;
 
         public Core_Interception()
         {
@@ -181,7 +181,7 @@ namespace Core_Interception
         {
             deviceHandleToId = new Dictionary<string, int>();
             providerReport = new ProviderReport();
-            UpdateButtonList();
+            UpdateKeyList();
             string handle;
             int i = 1;
             while (i < 21)
@@ -210,7 +210,8 @@ namespace Core_Interception
                     DeviceName = "Unknown " + t,
                     ProviderName = ProviderName,
                     API = "Interception",
-                    ButtonList = buttonList,
+                    Bindings = { keyboardList }
+                    //ButtonList = keyboardList,
                 });
                 deviceHandleToId.Add(handle, i - 1);
                 //Log(String.Format("{0} ({1}) = VID/PID: {2}", i, t, handle));
@@ -218,9 +219,12 @@ namespace Core_Interception
             }
         }
 
-        private void UpdateButtonList()
+        private void UpdateKeyList()
         {
-            buttonList = new List<ButtonInfo>();
+            keyboardList = new BindingInfo() {
+                Title = "Keys",
+                IsBinding = false
+            };
             //buttonNames = new Dictionary<int, string>();
             uint lParam = 0;
             StringBuilder sb = new StringBuilder(260);
@@ -238,10 +242,11 @@ namespace Core_Interception
                 if (keyName == "")
                     continue;
                 Log("Button Index: {0}, name: '{1}'", i, keyName);
-                buttonList.Add(new ButtonInfo() {
-                    Index = i,
-                    Name = keyName,
-                    IsEvent = false
+                keyboardList.SubBindings.Add(new BindingInfo() {
+                    InputIndex = i,
+                    Title = keyName,
+                    InputType = InputType.BUTTON,
+                    Category = BindingInfo.InputCategory.Button
                 });
                 //buttonNames.Add(i, keyName);
 
@@ -255,14 +260,14 @@ namespace Core_Interception
                 if (altKeyName == "" || altKeyName == keyName)
                     continue;
                 //Log("ALT Button Index: {0}, name: '{1}'", i + 256, altKeyName);
-                buttonList.Add(new ButtonInfo() {
-                    Index = i + 256,
-                    Name = altKeyName,
-                    IsEvent = false
+                keyboardList.SubBindings.Add(new BindingInfo() {
+                    InputIndex = i + 256,
+                    Title = altKeyName,
+                    InputType = InputType.BUTTON,
+                    Category = BindingInfo.InputCategory.Button
                 });
                 Log("Button Index: {0}, name: '{1}'", i + 256, altKeyName);
                 //buttonNames.Add(i + 256, altKeyName);
-
             }
         }
         #region Input processing
