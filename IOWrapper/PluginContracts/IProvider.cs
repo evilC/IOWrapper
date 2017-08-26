@@ -74,6 +74,7 @@ namespace Providers
         /// </summary>
         public string API { get; set; }
 
+        public List<BindingInfo> Bindings { get; set; } = new List<BindingInfo>();
         /// <summary>
         /// A list of the device's buttons.
         /// Note that for some devices (eg keyboard), the indexes of the buttons may not be contiguous
@@ -123,5 +124,25 @@ namespace Providers
     {
         public SortedDictionary<string, IOWrapperDevice> Devices { get; set; }
             = new SortedDictionary<string, IOWrapperDevice>();
+    }
+
+    public class BindingInfo
+    {
+        public enum InputCategory
+        {
+            Button,
+            Event,
+            Range,
+            Trigger,
+            Delta
+        }
+
+        public string Title { get; set; }
+        public bool IsBinding { get; set; }
+        public InputCategory Category { get; set; }
+        public InputType InputType { get; set; }
+        public int InputIndex { get; set; }
+        public int InputSubIndex { get; set; }
+        public List<BindingInfo> SubBindings { get; set; } = new List<BindingInfo>();
     }
 }
