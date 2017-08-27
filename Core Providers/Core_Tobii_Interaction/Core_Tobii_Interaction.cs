@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace Core_Tobii_Interaction
 
         public Core_Tobii_Interaction()
         {
-            streamHandlers.Add("GazePoint", new GazePointHander());
+            streamHandlers.Add("GazePoint", new GazePointHandler());
             streamHandlers.Add("HeadPose", new HeadPoseHandler());
         }
 
@@ -109,146 +110,159 @@ namespace Core_Tobii_Interaction
             // GC.SuppressFinalize(this);
         }
         #endregion
-    }
 
-    #region Stream Handlers
-    abstract class StreamHandler : IDisposable
-    {
-        protected Host host;
-        protected Dictionary<uint, AxisMonitor> axisMonitors = new Dictionary<uint, AxisMonitor>();
-
-        public virtual bool SubscribeInput(InputSubscriptionRequest subReq)
+        private static void Log(string formatStr, params object[] arguments)
         {
-            if (!axisMonitors.ContainsKey(subReq.InputIndex))
-            {
-                axisMonitors.Add(subReq.InputIndex, new AxisMonitor());
-            }
-            axisMonitors[subReq.InputIndex].Add(subReq);
-            return true;
+            Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
         }
 
-        protected class AxisMonitor
+        #region Stream Handlers
+        abstract class StreamHandler : IDisposable
         {
-            private Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
-            public bool Add(InputSubscriptionRequest subReq)
+            protected Host host;
+            protected Dictionary<uint, AxisMonitor> axisMonitors = new Dictionary<uint, AxisMonitor>();
+
+            public virtual bool SubscribeInput(InputSubscriptionRequest subReq)
             {
-                subscriptions.Add(subReq.SubscriberGuid, subReq);
+                if (!axisMonitors.ContainsKey(subReq.InputIndex))
+                {
+                    axisMonitors.Add(subReq.InputIndex, new AxisMonitor());
+                }
+                axisMonitors[subReq.InputIndex].Add(subReq);
                 return true;
             }
 
-            public void Poll(int value)
+            protected class AxisMonitor
             {
-                foreach (var subscription in subscriptions.Values)
+                private Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
+                public bool Add(InputSubscriptionRequest subReq)
                 {
-                    subscription.Callback(value);
-                }
-            }
-        }
-
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    host.DisableConnection();
+                    subscriptions.Add(subReq.SubscriberGuid, subReq);
+                    return true;
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
-
-                disposedValue = true;
+                public void Poll(int value)
+                {
+                    foreach (var subscription in subscriptions.Values)
+                    {
+                        subscription.Callback(value);
+                    }
+                }
             }
-        }
 
-        public virtual void Dispose()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
-        }
-        #endregion
-    }
+            #region IDisposable Support
+            private bool disposedValue = false; // To detect redundant calls
 
-    class GazePointHander : StreamHandler
-    {
-        GazePointDataStream gazePointDataStream;
-        private double[] scaleFactors = new double[2];
-
-        public GazePointHander()
-        {
-            host = new Host();
-            gazePointDataStream = host.Streams.CreateGazePointDataStream(Tobii.Interaction.Framework.GazePointDataMode.LightlyFiltered);
-
-            double x = 0, y = 0;
-            // ToDo: Fix nasty infinite loop
-            while (x == 0)
+            protected virtual void Dispose(bool disposing)
             {
-                var max = host.States.GetScreenBoundsAsync().Result;
-                x = max.Value.Width;
-                y = max.Value.Height;
+                if (!disposedValue)
+                {
+                    if (disposing)
+                    {
+                        host.DisableConnection();
+                    }
+
+                    // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                    // TODO: set large fields to null.
+
+                    disposedValue = true;
+                }
             }
-            scaleFactors[0] = 65535 / x;
-            scaleFactors[1] = 65535 / y;
-            gazePointDataStream.Next += GPCallback;
 
-        }
-
-        private void GPCallback(object sender, StreamData<GazePointData> streamData)
-        {
-            //Console.WriteLine("Unfiltered: Timestamp: {0}\t X: {1} Y:{2}", streamData.Data.Timestamp, streamData.Data.X, streamData.Data.Y);
-            var axisData = new double[] { streamData.Data.X, streamData.Data.Y };
-
-            for (uint i = 0; i < 2; i++)
+            public virtual void Dispose()
             {
-                if (!axisMonitors.Keys.Contains(i))
-                    continue;
-                int value = (int)(axisData[i] * scaleFactors[i]);
-                if (value > 65535)
-                    value = 65535;
-                else if (value < 0)
-                    value = 0;
-                value -= 32767;
-                axisMonitors[i].Poll(value);
+                // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+                Dispose(true);
+                // TODO: uncomment the following line if the finalizer is overridden above.
+                // GC.SuppressFinalize(this);
             }
-        }
-    }
-
-    class HeadPoseHandler : StreamHandler
-    {
-        private HeadPoseStream headPoseStream;
-
-        public HeadPoseHandler()
-        {
-            host = new Host();
-            headPoseStream = host.Streams.CreateHeadPoseStream();
-            headPoseStream.Next += OnNextHeadPose;
+            #endregion
         }
 
-        private void OnNextHeadPose(object sender, StreamData<HeadPoseData> headPose)
+        class GazePointHandler : StreamHandler
         {
-            if (headPose.Data.HasHeadPosition)
+            GazePointDataStream gazePointDataStream;
+            private double[] scaleFactors = new double[2];
+
+            public GazePointHandler()
             {
-                var axisData = new double[] { headPose.Data.HeadPosition.X, headPose.Data.HeadPosition.Y, headPose.Data.HeadPosition.Z, headPose.Data.HeadRotation.X, headPose.Data.HeadRotation.Y, headPose.Data.HeadRotation.Z };
+                host = new Host();
+                gazePointDataStream = host.Streams.CreateGazePointDataStream(Tobii.Interaction.Framework.GazePointDataMode.LightlyFiltered);
+
+                double x = 0, y = 0;
+                var watch = new Stopwatch();
+                watch.Start();
+                while ((x == 0 || y == 0) && watch.ElapsedMilliseconds < 100)
+                {
+                    var max = host.States.GetScreenBoundsAsync().Result;
+                    x = max.Value.Width;
+                    y = max.Value.Height;
+                }
+                if (x == 0 || y == 0)
+                {
+                    Log("WARNING: Tobii GazePoint handler unable to get screen size within 100 ms, not starting watcher");
+                    return;
+                }
+                scaleFactors[0] = 65535 / x;
+                scaleFactors[1] = 65535 / y;
+                gazePointDataStream.Next += GPCallback;
+
+            }
+
+            private void GPCallback(object sender, StreamData<GazePointData> streamData)
+            {
+                //Console.WriteLine("Unfiltered: Timestamp: {0}\t X: {1} Y:{2}", streamData.Data.Timestamp, streamData.Data.X, streamData.Data.Y);
+                var axisData = new double[] { streamData.Data.X, streamData.Data.Y };
 
                 for (uint i = 0; i < 2; i++)
                 {
                     if (!axisMonitors.Keys.Contains(i))
                         continue;
-                    int value = (int)(axisData[i] * 163.84);
-                    if (value > 32768)
-                        value = 32768;
-                    else if (value < -32767)
-                        value = -32767;
+                    int value = (int)(axisData[i] * scaleFactors[i]);
+                    if (value > 65535)
+                        value = 65535;
+                    else if (value < 0)
+                        value = 0;
+                    value -= 32767;
                     axisMonitors[i].Poll(value);
                 }
             }
-
         }
+
+        class HeadPoseHandler : StreamHandler
+        {
+            private HeadPoseStream headPoseStream;
+
+            public HeadPoseHandler()
+            {
+                host = new Host();
+                headPoseStream = host.Streams.CreateHeadPoseStream();
+                headPoseStream.Next += OnNextHeadPose;
+            }
+
+            private void OnNextHeadPose(object sender, StreamData<HeadPoseData> headPose)
+            {
+                if (headPose.Data.HasHeadPosition)
+                {
+                    var axisData = new double[] { headPose.Data.HeadPosition.X, headPose.Data.HeadPosition.Y, headPose.Data.HeadPosition.Z, headPose.Data.HeadRotation.X, headPose.Data.HeadRotation.Y, headPose.Data.HeadRotation.Z };
+
+                    for (uint i = 0; i < 2; i++)
+                    {
+                        if (!axisMonitors.Keys.Contains(i))
+                            continue;
+                        int value = (int)(axisData[i] * 163.84);
+                        if (value > 32768)
+                            value = 32768;
+                        else if (value < -32767)
+                            value = -32767;
+                        axisMonitors[i].Poll(value);
+                    }
+                }
+
+            }
+        }
+        #endregion
+
     }
-    #endregion
+
 }
