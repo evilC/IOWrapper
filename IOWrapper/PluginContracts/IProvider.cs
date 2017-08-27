@@ -43,6 +43,7 @@ namespace Providers
     {
         public Guid SubscriberGuid { get; set; }
         public string ProviderName { get; set; }
+        public string SubProviderName { get; set; } = null;
         public string DeviceHandle { get; set; }
     }
     #endregion

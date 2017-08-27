@@ -214,6 +214,7 @@ class Tester
         {
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "Core_Tobii_Interaction",
+            SubProviderName = "GazePoint",
             InputType = InputType.AXIS,
             InputIndex = 0,
             Callback = new Action<int>((value) =>

@@ -12,11 +12,12 @@ namespace Core_Tobii_Interaction
     [Export(typeof(IProvider))]
     public class Core_Tobii_Interaction : IProvider
     {
-        private GazePointHander gazePointHandler = new GazePointHander();
+        //private GazePointHander gazePointHandler = new GazePointHander();
+        private Dictionary<string, StreamHandler> streamHandlers = new Dictionary<string, StreamHandler>(StringComparer.OrdinalIgnoreCase);
 
         public Core_Tobii_Interaction()
         {
-
+            streamHandlers.Add("GazePoint", new GazePointHander());
         }
 
         #region IProvider members
@@ -45,7 +46,11 @@ namespace Core_Tobii_Interaction
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            gazePointHandler.SubscribeInput(subReq);
+            if (streamHandlers.ContainsKey(subReq.SubProviderName))
+            {
+                streamHandlers[subReq.SubProviderName].SubscribeInput(subReq);
+                return true;
+            }
             return false;
         }
 
@@ -75,7 +80,10 @@ namespace Core_Tobii_Interaction
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects).
-                    gazePointHandler.Dispose();
+                    foreach (var streamHandler in streamHandlers.Values)
+                    {
+                        streamHandler.Dispose();
+                    }
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
@@ -102,7 +110,19 @@ namespace Core_Tobii_Interaction
         #endregion
     }
 
-    class GazePointHander : IDisposable
+    #region Stream Handlers
+    abstract class StreamHandler : IDisposable
+    {
+        public abstract bool SubscribeInput(InputSubscriptionRequest subReq);
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected abstract void Dispose(bool disposing);
+        public abstract void Dispose();
+        #endregion
+    }
+
+    class GazePointHander : StreamHandler
     {
         private Host host;
         GazePointDataStream gazePointDataStream;
@@ -129,7 +149,7 @@ namespace Core_Tobii_Interaction
 
         }
 
-        public bool SubscribeInput(InputSubscriptionRequest subReq)
+        public override bool SubscribeInput(InputSubscriptionRequest subReq)
         {
             if (!axisMonitors.ContainsKey(subReq.InputIndex))
             {
@@ -185,10 +205,16 @@ namespace Core_Tobii_Interaction
             }
         }
 
+        //class HeadPoseHandler : StreamHandler
+        //{
+
+        //}
+        #endregion
+
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
 
-        protected virtual void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
@@ -211,7 +237,7 @@ namespace Core_Tobii_Interaction
         // }
 
         // This code added to correctly implement the disposable pattern.
-        public void Dispose()
+        public override void Dispose()
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
