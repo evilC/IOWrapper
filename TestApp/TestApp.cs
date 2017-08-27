@@ -223,6 +223,20 @@ class Tester
             })
         };
         iow.SubscribeInput(tobiiGazePointSubReq);
+
+        var tobiiHeadPoseSubReq = new InputSubscriptionRequest()
+        {
+            SubscriberGuid = Guid.NewGuid(),
+            ProviderName = "Core_Tobii_Interaction",
+            SubProviderName = "HeadPose",
+            InputType = InputType.AXIS,
+            InputIndex = 0,
+            Callback = new Action<int>((value) =>
+            {
+                Console.WriteLine("Tobii Head Pose X: {0}", value);
+            })
+        };
+        iow.SubscribeInput(tobiiHeadPoseSubReq);
         #endregion
     }
 
