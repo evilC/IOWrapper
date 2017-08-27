@@ -59,24 +59,34 @@ namespace Core_Tobii_Interaction
             providerReport.Devices.Add("GazePoint", new IOWrapperDevice()
             {
                 ProviderName = ProviderName,
+                SubProviderName = "GazePoint",
                 DeviceHandle = "0",
                 API = "Tobii.Interaction",
                 Bindings = new List<BindingInfo>()
                 {
                     new BindingInfo()
                     {
-                        Title = "Gaze Point",
-                        SubProviderName = "GazePoint",
+                        Title = "Axes",
                         IsBinding = false,
                         SubBindings = gazeInfo
                     },
+                }
+            });
+
+            providerReport.Devices.Add("HeadPose", new IOWrapperDevice()
+            {
+                ProviderName = ProviderName,
+                SubProviderName = "HeadPose",
+                DeviceHandle = "0",
+                API = "Tobii.Interaction",
+                Bindings = new List<BindingInfo>()
+                {
                     new BindingInfo()
                     {
-                        Title = "Head Pose",
-                        SubProviderName = "HeadPose",
+                        Title = "Axes",
                         IsBinding = false,
-                        SubBindings = poseInfo
-                    }
+                        SubBindings = gazeInfo
+                    },
                 }
             });
 

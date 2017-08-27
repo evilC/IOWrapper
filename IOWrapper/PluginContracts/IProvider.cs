@@ -145,7 +145,6 @@ namespace Providers
         }
 
         public string Title { get; set; }
-        public string SubProviderName { get; set; }
         public bool IsBinding { get; set; } = true;
         public InputCategory Category { get; set; } = InputCategory.None;
         public InputType InputType { get; set; } = InputType.NONE;
