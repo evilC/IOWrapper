@@ -208,6 +208,21 @@ class Tester
         iow.SubscribeInput(subInterception);
         */
         #endregion
+
+        #region Tobii Eye Tracker
+        var tobiiGazePointSubReq = new InputSubscriptionRequest()
+        {
+            SubscriberGuid = Guid.NewGuid(),
+            ProviderName = "Core_Tobii_Interaction",
+            InputType = InputType.AXIS,
+            InputIndex = 0,
+            Callback = new Action<int>((value) =>
+            {
+                Console.WriteLine("Tobii Eye Gaxe X: {0}", value);
+            })
+        };
+        iow.SubscribeInput(tobiiGazePointSubReq);
+        #endregion
     }
 
     void ToggleDefaultProfileState()

@@ -4,13 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D9447B59-4B62-4BD8-BE91-5F5AB1D8F1BD}</ProjectGuid>
+    <ProjectGuid>{4CBA4863-015B-43E4-804B-199A198DD046}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IOWrapper</RootNamespace>
-    <AssemblyName>IOWrapper</AssemblyName>
+    <RootNamespace>Core_Tobii_Interaction</RootNamespace>
+    <AssemblyName>Core_Tobii_Interaction</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,9 +31,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -42,50 +41,45 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Tobii.Interaction.Model, Version=0.7.3.333, Culture=neutral, PublicKeyToken=70326046dcdce6cb, processorArchitecture=MSIL">
+      <HintPath>..\..\IOWrapper\packages\Tobii.Interaction.0.7.3\lib\net45\Tobii.Interaction.Model.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Tobii.Interaction.Net, Version=0.7.3.333, Culture=neutral, PublicKeyToken=70326046dcdce6cb, processorArchitecture=MSIL">
+      <HintPath>..\..\IOWrapper\packages\Tobii.Interaction.0.7.3\lib\net45\Tobii.Interaction.Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GenericMEFPluginLoader.cs" />
-    <Compile Include="IOController.cs" />
+    <Compile Include="Core_Tobii_Interaction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\..\Core Providers\Core_Interception\Core_Interception.csproj">
-      <Project>{3473e273-6859-49b3-a782-e4c7a5bf51f4}</Project>
-      <Name>Core_Interception</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core Providers\Core_Tobii_Interaction\Core_Tobii_Interaction.csproj">
-      <Project>{4cba4863-015b-43e4-804b-199a198dd046}</Project>
-      <Name>Core_Tobii_Interaction</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core Providers\Core_vJoyInterfaceWrap\Core_vJoyInterfaceWrap.csproj">
-      <Project>{10a9a35a-9cec-4271-ad68-65a9661638f6}</Project>
-      <Name>Core_vJoyInterfaceWrap</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core Providers\SharpDX_DirectInput\SharpDX_DirectInput.csproj">
-      <Project>{aa825875-9cb0-4973-bb5c-cfc53962d1c2}</Project>
-      <Name>SharpDX_DirectInput</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core Providers\SharpDX_XInput\SharpDX_XInput.csproj">
-      <Project>{2072b5a7-8069-433c-b4db-e150c26e9a49}</Project>
-      <Name>SharpDX_XInput</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PluginContracts\Providers.csproj">
+    <ProjectReference Include="..\..\IOWrapper\PluginContracts\Providers.csproj">
       <Project>{f6eaf2bc-f362-4ecd-94e5-617ca37a4210}</Project>
       <Name>Providers</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)*.dll" "$(ProjectDir)"
-
-
-</PostBuildEvent>
+    <PreBuildEvent>IF EXIST "$(ProjectDir)Dependencies/*" xcopy /Y "$(ProjectDir)Dependencies/*" "$(TargetDir)"</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PostBuildEvent>if exist "$(SolutionDir)..\Built Providers\$(ProjectName)" rmdir "$(SolutionDir)..\Built Providers\$(ProjectName)" /s /q
+mkdir "$(SolutionDir)..\Built Providers\$(ProjectName)"
+xcopy /Y "$(TargetDir)*.dll" "$(SolutionDir)..\Built Providers\$(ProjectName)"
+</PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\..\IOWrapper\packages\Tobii.Interaction.0.7.3\build\Tobii.Interaction.targets" Condition="Exists('..\..\IOWrapper\packages\Tobii.Interaction.0.7.3\build\Tobii.Interaction.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\IOWrapper\packages\Tobii.Interaction.0.7.3\build\Tobii.Interaction.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\IOWrapper\packages\Tobii.Interaction.0.7.3\build\Tobii.Interaction.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

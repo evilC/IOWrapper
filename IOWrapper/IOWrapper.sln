@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpDX_XInput", "..\Core P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core_Interception", "..\Core Providers\Core_Interception\Core_Interception.csproj", "{3473E273-6859-49B3-A782-E4C7A5BF51F4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core_Tobii_Interaction", "..\Core Providers\Core_Tobii_Interaction\Core_Tobii_Interaction.csproj", "{4CBA4863-015B-43E4-804B-199A198DD046}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{3473E273-6859-49B3-A782-E4C7A5BF51F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3473E273-6859-49B3-A782-E4C7A5BF51F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3473E273-6859-49B3-A782-E4C7A5BF51F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CBA4863-015B-43E4-804B-199A198DD046}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CBA4863-015B-43E4-804B-199A198DD046}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CBA4863-015B-43E4-804B-199A198DD046}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CBA4863-015B-43E4-804B-199A198DD046}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,5 +74,6 @@ Global
 		{AA825875-9CB0-4973-BB5C-CFC53962D1C2} = {0F3E0065-6DC2-4310-A7C4-E81283247A48}
 		{2072B5A7-8069-433C-B4DB-E150C26E9A49} = {0F3E0065-6DC2-4310-A7C4-E81283247A48}
 		{3473E273-6859-49B3-A782-E4C7A5BF51F4} = {0F3E0065-6DC2-4310-A7C4-E81283247A48}
+		{4CBA4863-015B-43E4-804B-199A198DD046} = {0F3E0065-6DC2-4310-A7C4-E81283247A48}
 	EndGlobalSection
 EndGlobal
