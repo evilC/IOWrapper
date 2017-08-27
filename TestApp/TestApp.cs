@@ -210,6 +210,7 @@ class Tester
         #endregion
 
         #region Tobii Eye Tracker
+        /*
         var tobiiGazePointSubReq = new InputSubscriptionRequest()
         {
             SubscriberGuid = Guid.NewGuid(),
@@ -237,6 +238,7 @@ class Tester
             })
         };
         iow.SubscribeInput(tobiiHeadPoseSubReq);
+        */
         #endregion
     }
 
