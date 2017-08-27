@@ -285,7 +285,7 @@ namespace Core_Tobii_Interaction
                         value = 65535;
                     else if (value < 0)
                         value = 0;
-                    value -= 32767;
+                    value -= 32768;
                     axisMonitors[i].Poll(value);
                 }
             }
