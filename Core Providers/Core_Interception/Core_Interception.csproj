@@ -59,7 +59,7 @@ xcopy /Y "$(TargetDir)*.dll" "$(SolutionDir)..\Built Providers\$(ProjectName)"
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>IF EXIST "$(ProjectDir)Dependencies/*" xcopy /Y "$(ProjectDir)Dependencies/*" "$(TargetDir)"</PreBuildEvent>
+    <PreBuildEvent>IF EXIST "$(ProjectDir)Dependencies\*" xcopy /Y "$(ProjectDir)Dependencies\*" "$(TargetDir)"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

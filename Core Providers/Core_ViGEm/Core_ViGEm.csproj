@@ -55,7 +55,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>IF EXIST "$(ProjectDir)Dependencies/*" xcopy /Y "$(ProjectDir)Dependencies/*" "$(TargetDir)"</PreBuildEvent>
+    <PreBuildEvent>IF EXIST "$(ProjectDir)Dependencies\*" xcopy /Y "$(ProjectDir)Dependencies\*" "$(TargetDir)"
+</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>if exist "$(SolutionDir)..\Built Providers\$(ProjectName)" rmdir "$(SolutionDir)..\Built Providers\$(ProjectName)" /s /q

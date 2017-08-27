@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace Core_ViGEm
 {
-    //[Export(typeof(IProvider))]
-    //public class Core_ViGEm : IProvider
-    public class Core_ViGEm
+    [Export(typeof(IProvider))]
+    public class Core_ViGEm : IProvider
+    //public class Core_ViGEm
     {
         public Core_ViGEm()
         {
