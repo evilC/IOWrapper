@@ -69,6 +69,8 @@ namespace Providers
         /// </summary>
         public string ProviderName { get; set; }
 
+        public string SubProviderName { get; set; }
+
         /// <summary>
         /// The underlying API that handles this input
         /// It is intended that many providers could support a given API
@@ -143,6 +145,7 @@ namespace Providers
         }
 
         public string Title { get; set; }
+        public string SubProviderName { get; set; }
         public bool IsBinding { get; set; } = true;
         public InputCategory Category { get; set; } = InputCategory.None;
         public InputType InputType { get; set; } = InputType.NONE;

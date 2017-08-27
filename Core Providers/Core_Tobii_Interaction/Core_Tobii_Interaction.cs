@@ -15,6 +15,8 @@ namespace Core_Tobii_Interaction
     {
         //private GazePointHander gazePointHandler = new GazePointHander();
         private Dictionary<string, StreamHandler> streamHandlers = new Dictionary<string, StreamHandler>(StringComparer.OrdinalIgnoreCase);
+        private List<string> sixDofAxisNames = new List<string>() { "X", "Y", "Z", "Rx", "Ry", "Rz" };
+        private ProviderReport providerReport;
 
         public Core_Tobii_Interaction()
         {
@@ -28,7 +30,57 @@ namespace Core_Tobii_Interaction
 
         public ProviderReport GetInputList()
         {
-            return null;
+            providerReport = new ProviderReport();
+            var gazeInfo = new List<BindingInfo>();
+            //foreach (var axis in sixDofAxisNames)
+            for (int i = 0; i < 6; i++)
+            {
+                gazeInfo.Add(new BindingInfo()
+                {
+                    Title = sixDofAxisNames[i],
+                    InputIndex = i,
+                    Category = BindingInfo.InputCategory.Range,
+                    InputType = InputType.AXIS
+                });
+            }
+
+            var poseInfo = new List<BindingInfo>();
+            for (int i = 0; i < 2; i++)
+            {
+                poseInfo.Add(new BindingInfo()
+                {
+                    Title = sixDofAxisNames[i],
+                    InputIndex = i,
+                    Category = BindingInfo.InputCategory.Range,
+                    InputType = InputType.AXIS
+                });
+            }
+
+            providerReport.Devices.Add("GazePoint", new IOWrapperDevice()
+            {
+                ProviderName = ProviderName,
+                DeviceHandle = "0",
+                API = "Tobii.Interaction",
+                Bindings = new List<BindingInfo>()
+                {
+                    new BindingInfo()
+                    {
+                        Title = "Gaze Point",
+                        SubProviderName = "GazePoint",
+                        IsBinding = false,
+                        SubBindings = gazeInfo
+                    },
+                    new BindingInfo()
+                    {
+                        Title = "Head Pose",
+                        SubProviderName = "HeadPose",
+                        IsBinding = false,
+                        SubBindings = poseInfo
+                    }
+                }
+            });
+
+            return providerReport;
         }
 
         public ProviderReport GetOutputList()
