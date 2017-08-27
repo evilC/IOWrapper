@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core_Tobii_Interaction", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core_ViGEm", "..\Core Providers\Core_ViGEm\Core_ViGEm.csproj", "{2A15AF30-2919-42B1-95B4-CE0BFDB924FB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TobiiLean", "TobiiLean\TobiiLean.csproj", "{73587511-24E0-41A4-822D-38131484653C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,10 @@ Global
 		{2A15AF30-2919-42B1-95B4-CE0BFDB924FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A15AF30-2919-42B1-95B4-CE0BFDB924FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A15AF30-2919-42B1-95B4-CE0BFDB924FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73587511-24E0-41A4-822D-38131484653C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73587511-24E0-41A4-822D-38131484653C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73587511-24E0-41A4-822D-38131484653C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73587511-24E0-41A4-822D-38131484653C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -24,6 +24,7 @@ namespace Core_Tobii_Interaction
             streamHandlers.Add("HeadPose", new HeadPoseHandler());
         }
 
+
         #region IProvider members
         // ToDo: Need better way to handle this. MEF meta-data?
         public string ProviderName { get { return typeof(Core_Tobii_Interaction).Namespace; } }
