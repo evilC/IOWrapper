@@ -75,13 +75,13 @@ namespace Core_Interception
         {
             if (state && !filterState)
             {
-                //Log("Got DeviceContext " + deviceContext);
-                //SetFilter(deviceContext, IsKeyboard, Filter.All);
-                //SetFilter(deviceContext, IsMouse, Filter.All);
+                SetFilter(deviceContext, IsKeyboard, Filter.All);
+                SetFilter(deviceContext, IsMouse, Filter.All);
             }
             else if (!state && filterState)
             {
                 SetFilter(deviceContext, IsKeyboard, Filter.None);
+                SetFilter(deviceContext, IsMouse, Filter.None);
             }
         }
 
