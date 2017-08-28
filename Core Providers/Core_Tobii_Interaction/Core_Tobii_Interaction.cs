@@ -61,6 +61,7 @@ namespace Core_Tobii_Interaction
             {
                 ProviderName = ProviderName,
                 SubProviderName = "GazePoint",
+                DeviceName = "Tobii Gaze Point",
                 DeviceHandle = "0",
                 API = "Tobii.Interaction",
                 Bindings = new List<BindingInfo>()
@@ -78,6 +79,7 @@ namespace Core_Tobii_Interaction
             {
                 ProviderName = ProviderName,
                 SubProviderName = "HeadPose",
+                DeviceName = "Tobii Head Pose",
                 DeviceHandle = "0",
                 API = "Tobii.Interaction",
                 Bindings = new List<BindingInfo>()
