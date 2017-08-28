@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -75,8 +76,8 @@ namespace Core_Interception
             if (state && !filterState)
             {
                 //Log("Got DeviceContext " + deviceContext);
-                SetFilter(deviceContext, IsKeyboard, Filter.All);
-                SetFilter(deviceContext, IsMouse, Filter.All);
+                //SetFilter(deviceContext, IsKeyboard, Filter.All);
+                //SetFilter(deviceContext, IsMouse, Filter.All);
             }
             else if (!state && filterState)
             {
@@ -225,38 +226,57 @@ namespace Core_Interception
             while (i < 11)
             {
                 handle = GetHardwareStr(deviceContext, i, 1000);
-                if (handle != "" && IsKeyboard(i) == 1)
+                int vid = 0, pid = 0;
+                GetVidPid(handle, ref vid, ref pid);
+                string name = "";
+                if (vid != 0 && pid != 0)
+                {
+                    name = DeviceHelper.GetDeviceName(vid, pid);
+                }
+                //if (handle != "" && IsKeyboard(i) == 1)
+                if (name != "" && IsKeyboard(i) == 1)
                 {
                     handle = @"Keyboard\" + handle;
                     providerReport.Devices.Add(handle, new IOWrapperDevice()
                     {
                         DeviceHandle = handle,
-                        DeviceName = "Unknown Keyboard",
+                        DeviceName = name,
                         ProviderName = ProviderName,
                         API = "Interception",
                         Bindings = { keyboardList }
                     });
                     deviceHandleToId.Add(handle, i - 1);
-                    Log(String.Format("{0} (Keyboard) = VID/PID: {1}", i, handle));
+                    //Log(String.Format("{0} (Keyboard) = VID/PID: {1}", i, handle));
+                    Log(String.Format("{0} (Keyboard) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
                 }
                 i++;
             }
             while (i < 21)
             {
                 handle = GetHardwareStr(deviceContext, i, 1000);
-                if (handle != "" && IsMouse(i) == 1)
+                int vid = 0, pid = 0;
+                GetVidPid(handle, ref vid, ref pid);
+                string name = "";
+                if (vid != 0 && pid != 0)
+                {
+                    name = DeviceHelper.GetDeviceName(vid, pid);
+                }
+
+                //if (handle != "" && IsMouse(i) == 1)
+                if (name != "" && IsMouse(i) == 1)
                 {
                     handle = @"Mouse\" + handle;
                     providerReport.Devices.Add(handle, new IOWrapperDevice()
                     {
                         DeviceHandle = handle,
-                        DeviceName = "Unknown Mouse",
+                        DeviceName = name,
                         ProviderName = ProviderName,
                         API = "Interception",
                         Bindings = { mouseButtonList }
                     });
                     deviceHandleToId.Add(handle, i - 1);
-                    Log(String.Format("{0} (Mouse) = VID/PID: {1}", i, handle));
+                    //Log(String.Format("{0} (Mouse) = VID/PID: {1}", i, handle));
+                    Log(String.Format("{0} (Mouse) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
                 }
                 i++;
             }
@@ -808,5 +828,15 @@ namespace Core_Interception
         static extern int GetKeyNameTextW(uint lParam, StringBuilder lpString, int nSize);
 
         #endregion
+
+        private static void GetVidPid(string str, ref int vid, ref int pid)
+        {
+            MatchCollection matches = Regex.Matches(str, @"VID_(\w{4})&PID_(\w{4})");
+            if ((matches.Count > 0) && (matches[0].Groups.Count > 1))
+            {
+                vid = Convert.ToInt32(matches[0].Groups[1].Value, 16);
+                pid = Convert.ToInt32(matches[0].Groups[2].Value, 16);
+            }
+        }
     }
 }

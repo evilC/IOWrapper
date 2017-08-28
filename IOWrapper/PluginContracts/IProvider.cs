@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HidSharp;
+using System;
 using System.Collections.Generic;
 
 namespace Providers
@@ -152,4 +153,38 @@ namespace Providers
         public int InputSubIndex { get; set; }
         public List<BindingInfo> SubBindings { get; set; } = new List<BindingInfo>();
     }
+
+    #region Helper Classes
+    static public class DeviceHelper
+    {
+        static public HidDeviceLoader loader = new HidDeviceLoader();
+
+        public static string GetDeviceName(int vid, int pid, int? ser = null)
+        {
+            string str = "Unknown Device";
+            try
+            {
+                var result = loader.GetDeviceOrDefault(vid, pid, ser);
+                str = result.Manufacturer;
+                if (str.Length > 0)
+                    str += " ";
+                str += result.ProductName;
+            }
+            catch { };
+            return str;
+        }
+
+        public static string GetDevicePath(int vid, int pid, int? ser = null)
+        {
+            string str = null;
+            try
+            {
+                var result = loader.GetDeviceOrDefault(vid, pid, ser);
+                str = result.DevicePath;
+            }
+            catch { }
+            return str;
+        }
+    }
+    #endregion
 }
