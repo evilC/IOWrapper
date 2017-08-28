@@ -393,7 +393,7 @@ namespace SharpDX_XInput
             public bool Add(InputSubscriptionRequest subReq)
             {
                 Log("XI adding subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceHandle, subReq.InputIndex, subReq.SubscriberGuid);
-                subscriptions.Add(subReq.SubscriberGuid, subReq.Clone());
+                subscriptions.Add(subReq.SubscriberGuid, subReq);
                 return true;
             }
 

@@ -38,7 +38,12 @@ namespace Providers
         }
     }
 
-    public class OutputSubscriptionRequest : SubscriptionRequest { }
+    public class OutputSubscriptionRequest : SubscriptionRequest {
+        public OutputSubscriptionRequest Clone()
+        {
+            return (OutputSubscriptionRequest)this.MemberwiseClone();
+        }
+    }
 
     public class SubscriptionRequest
     {

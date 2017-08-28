@@ -97,8 +97,10 @@ namespace IOWrapper
             return list;
         }
 
-        public bool SubscribeInput(InputSubscriptionRequest subReq)
+        public bool SubscribeInput(InputSubscriptionRequest _subReq)
         {
+            // Clone subreq before passing to provider, so if it gets altered outside, it does not affect the copy
+            var subReq = _subReq.Clone();
             Log("SubscribeInput: Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceHandle, subReq.InputIndex, subReq.SubscriberGuid);
             if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriberGuid))
             {
@@ -112,13 +114,14 @@ namespace IOWrapper
             var ret = prov.SubscribeInput(subReq);
             if (ret)
             {
-                ActiveInputSubscriptions.Add(subReq.SubscriberGuid, subReq.Clone());
+                ActiveInputSubscriptions.Add(subReq.SubscriberGuid, subReq);
             }
             return ret;
         }
 
-        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
+        public bool UnsubscribeInput(InputSubscriptionRequest _subReq)
         {
+            var subReq = _subReq.Clone();
             Log("UnsubscribeInput: Provider {0}, Device {1}, Input {2}", subReq.ProviderName, subReq.DeviceHandle, subReq.InputIndex);
             var ret = false;
             if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriberGuid))
@@ -133,8 +136,9 @@ namespace IOWrapper
             return ret;
         }
 
-        public bool SubscribeOutput(OutputSubscriptionRequest subReq)
+        public bool SubscribeOutput(OutputSubscriptionRequest _subReq)
         {
+            var subReq = _subReq.Clone();
             if (ActiveOutputSubscriptions.ContainsKey(subReq.SubscriberGuid))
             {
                 // If this Subscriber has an existing subscription...

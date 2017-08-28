@@ -466,7 +466,7 @@ namespace SharpDX_DirectInput
             {
                 inputType = subReq.InputType;
                 //subscriptions.Add(subReq.SubscriberGuid, subReq.Callback);
-                subscriptions.Add(subReq.SubscriberGuid, subReq.Clone());
+                subscriptions.Add(subReq.SubscriberGuid, subReq);
                 return true;
             }
 
