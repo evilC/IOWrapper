@@ -133,7 +133,8 @@ namespace Core_Interception
 
         public ProviderReport GetOutputList()
         {
-            return null;
+            //return null;
+            return providerReport;
         }
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
