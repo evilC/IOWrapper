@@ -76,12 +76,12 @@ namespace Core_Interception
             if (state && !filterState)
             {
                 SetFilter(deviceContext, IsKeyboard, Filter.All);
-                SetFilter(deviceContext, IsMouse, Filter.All);
+                //SetFilter(deviceContext, IsMouse, Filter.All);
             }
             else if (!state && filterState)
             {
                 SetFilter(deviceContext, IsKeyboard, Filter.None);
-                SetFilter(deviceContext, IsMouse, Filter.None);
+                //SetFilter(deviceContext, IsMouse, Filter.None);
             }
         }
 
@@ -138,42 +138,83 @@ namespace Core_Interception
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            if (pollThreadRunning)
-                SetPollThreadState(false);
-
-            if (!deviceHandleToId.ContainsKey(subReq.DeviceHandle))
+            bool ret = false;
+            if (deviceHandleToId.ContainsKey(subReq.DeviceHandle))
             {
-                return false;
-            }
-            var id = deviceHandleToId[subReq.DeviceHandle];
-            if (id < 10)
-            {
-                if (!MonitoredKeyboards.ContainsKey(id + 1))
+                try
                 {
-                    MonitoredKeyboards.Add(id + 1, new KeyboardMonitor() { });
+                    if (pollThreadRunning)
+                        SetPollThreadState(false);
+
+                    var id = deviceHandleToId[subReq.DeviceHandle];
+                    var devId = id + 1;
+                    if (id < 10)
+                    {
+                        if (!MonitoredKeyboards.ContainsKey(devId))
+                        {
+                            MonitoredKeyboards.Add(devId, new KeyboardMonitor() { });
+                        }
+                        ret = MonitoredKeyboards[devId].Add(subReq);
+                    }
+                    else
+                    {
+                        if (!MonitoredMice.ContainsKey(devId))
+                        {
+                            MonitoredMice.Add(devId, new MouseMonitor() { });
+                        }
+                        ret = MonitoredMice[devId].Add(subReq);
+                    }
+
+                    if (pollThreadDesired)
+                        SetPollThreadState(true);
                 }
-                MonitoredKeyboards[id + 1].Add(subReq);
-            }
-            else
-            {
-                if (!MonitoredMice.ContainsKey(id + 1))
+                catch
                 {
-                    MonitoredMice.Add(id + 1, new MouseMonitor() { });
+                    ret = false;
                 }
-                MonitoredMice[id + 1].Add(subReq);
             }
-
-
-            if (pollThreadDesired)
-            {
-                SetPollThreadState(true);
-            }
-            return true;
+            return ret;
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            return false;
+            bool ret = false;
+
+            try
+            {
+                if (deviceHandleToId.ContainsKey(subReq.DeviceHandle))
+                {
+                    var id = deviceHandleToId[subReq.DeviceHandle];
+                    var devId = id + 1;
+                    if (pollThreadRunning)
+                        SetPollThreadState(false);
+
+                    if (id < 10)
+                    {
+                        ret = MonitoredKeyboards[devId].Remove(subReq);
+                        if (!MonitoredKeyboards[devId].HasSubscriptions())
+                        {
+                            MonitoredKeyboards.Remove(devId);
+                        }
+                    }
+                    else
+                    {
+                        ret = MonitoredMice[devId].Remove(subReq);
+                        if (!MonitoredMice[devId].HasSubscriptions())
+                        {
+                            MonitoredMice.Remove(devId);
+                        }
+                    }
+
+                    if (pollThreadDesired)
+                        SetPollThreadState(true);
+                }
+            }
+            catch
+            {
+                ret = false;
+            }
+            return ret;
         }
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
@@ -361,19 +402,61 @@ namespace Core_Interception
         {
             private Dictionary<ushort, KeyboardKeyMonitor> monitoredKeys = new Dictionary<ushort, KeyboardKeyMonitor>();
             
-            public void Add(InputSubscriptionRequest subReq)
+            public bool Add(InputSubscriptionRequest subReq)
+            {
+                try
+                {
+                    var code = (ushort)(subReq.InputIndex + 1);
+                    ushort stateDown = 0;
+                    ushort stateUp = 1;
+                    if (code > 256)
+                    {
+                        code -= 256;
+                        stateDown = 2;
+                        stateUp = 3;
+                    }
+                    if (!monitoredKeys.ContainsKey(code))
+                    {
+                        monitoredKeys.Add(code, new KeyboardKeyMonitor() { code = code, stateDown = stateDown, stateUp = stateUp });
+                    }
+                    monitoredKeys[code].Add(subReq);
+                    Log("Added key monitor for key {0}", code);
+                    return true;
+                }
+                catch
+                {
+                    Log("WARNING: Tried to add key monitor but failed");
+                }
+                return false;
+            }
+
+            public bool Remove(InputSubscriptionRequest subReq)
             {
                 var code = (ushort)(subReq.InputIndex + 1);
-                ushort stateDown = 0;
-                ushort stateUp = 1;
                 if (code > 256)
                 {
                     code -= 256;
-                    stateDown = 2;
-                    stateUp = 3;
                 }
-                monitoredKeys.Add(code, new KeyboardKeyMonitor() { code = code, stateDown = stateDown, stateUp = stateUp});
-                monitoredKeys[code].Add(subReq);
+                try
+                {
+                    monitoredKeys[code].Remove(subReq);
+                    if (!monitoredKeys[code].HasSubscriptions())
+                    {
+                        monitoredKeys.Remove(code);
+                    }
+                    Log("Removed key monitor for key {0}", code);
+                    return true;
+                }
+                catch
+                {
+                    Log("WARNING: Tried to remove keyboard monitor but failed");
+                }
+                return false;
+            }
+
+            public bool HasSubscriptions()
+            {
+                return monitoredKeys.Count > 0;
             }
 
             public void Poll(Stroke stroke)
@@ -398,6 +481,16 @@ namespace Core_Interception
                 subReqs.Add(subReq.SubscriberGuid, subReq);
             }
 
+            public void Remove(InputSubscriptionRequest subReq)
+            {
+                subReqs.Remove(subReq.SubscriberGuid);
+            }
+
+            public bool HasSubscriptions()
+            {
+                return subReqs.Count > 0;
+            }
+
             public void Poll(Stroke stroke)
             {
                 var isDown = stateDown == stroke.key.state;
@@ -419,17 +512,65 @@ namespace Core_Interception
         {
             private Dictionary<ushort, MouseButtonMonitor> monitoredStates = new Dictionary<ushort, MouseButtonMonitor>();
 
-            public void Add(InputSubscriptionRequest subReq)
+            public bool Add(InputSubscriptionRequest subReq)
             {
-                var i = (ushort)subReq.InputIndex;
-                ushort downbit = (ushort)(1 << (i * 2));
-                ushort upbit = (ushort)(1 << ((i * 2) + 1));
+                try
+                {
+                    var i = (ushort)subReq.InputIndex;
+                    ushort downbit = (ushort)(1 << (i * 2));
+                    ushort upbit = (ushort)(1 << ((i * 2) + 1));
 
-                Log("Added subscription to mouse button {0}", subReq.InputIndex);
-                monitoredStates.Add(downbit, new MouseButtonMonitor() { outputState = 1 });
-                monitoredStates[downbit].Add(subReq);
-                monitoredStates.Add(upbit, new MouseButtonMonitor() { outputState = 0 });
-                monitoredStates[upbit].Add(subReq);
+                    Log("Added subscription to mouse button {0}", subReq.InputIndex);
+                    if (!monitoredStates.ContainsKey(downbit))
+                    {
+                        monitoredStates.Add(downbit, new MouseButtonMonitor() { outputState = 1 });
+                    }
+                    monitoredStates[downbit].Add(subReq);
+
+                    if (!monitoredStates.ContainsKey(upbit))
+                    {
+                        monitoredStates.Add(upbit, new MouseButtonMonitor() { outputState = 0 });
+                    }
+                    monitoredStates[upbit].Add(subReq);
+                    return true;
+                }
+                catch
+                {
+                    Log("WARNING: Tried to add mouse button monitor but failed");
+                }
+                return false;
+            }
+
+            public bool Remove(InputSubscriptionRequest subReq)
+            {
+                try
+                {
+                    var i = (ushort)subReq.InputIndex;
+                    ushort downbit = (ushort)(1 << (i * 2));
+                    ushort upbit = (ushort)(1 << ((i * 2) + 1));
+
+                    monitoredStates[downbit].Remove(subReq);
+                    if (!monitoredStates[downbit].HasSubscriptions())
+                    {
+                        monitoredStates.Remove(downbit);
+                    }
+                    monitoredStates[upbit].Remove(subReq);
+                    if (!monitoredStates[upbit].HasSubscriptions())
+                    {
+                        monitoredStates.Remove(upbit);
+                    }
+                    return true;
+                }
+                catch
+                {
+                    Log("WARNING: Tried to remove mouse button monitor but failed");
+                }
+                return false;
+            }
+
+            public bool HasSubscriptions()
+            {
+                return monitoredStates.Count > 0;
             }
 
             public void Poll(Stroke stroke)
@@ -451,6 +592,16 @@ namespace Core_Interception
             {
                 subReqs.Add(subReq.SubscriberGuid, subReq);
                 //Log("Added Subscription to Mouse Button {0}", subReq.InputIndex);
+            }
+
+            public void Remove(InputSubscriptionRequest subReq)
+            {
+                subReqs.Remove(subReq.SubscriberGuid);
+            }
+
+            public bool HasSubscriptions()
+            {
+                return subReqs.Count > 0;
             }
 
             public void Poll(Stroke stroke)
