@@ -230,7 +230,8 @@ namespace Core_Interception
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state)
         {
-            int devId = deviceHandleToId[subReq.DeviceHandle];
+            int devId = deviceHandleToId[subReq.DeviceHandle] + 1;
+            //Log("SetOutputState. Type: {0}, Index: {1}, State: {2}, Device: {3}", inputType, inputIndex, state, devId);
             Stroke stroke = new Stroke();
             if (devId < 11)
             {
