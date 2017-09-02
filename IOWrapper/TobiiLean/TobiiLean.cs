@@ -19,15 +19,19 @@ namespace TobiiLean
 
         private class LeanMapper
         {
+            private IOWrapper.IOController iow;
             private OutputSubscriptionRequest interceptionKeyboardOutputSubReq;
-            private int leanState = 0;
+            private int currState = 0;
             private Dictionary<int, uint> leanCodes = new Dictionary<int, uint>() { { -1, 15 }, { 1, 17 } };
+
+            private bool macroEnabled = false;
 
             public LeanMapper()
             {
-                var iow = new IOWrapper.IOController();
+                iow = new IOWrapper.IOController();
                 var inputList = iow.GetInputList();
-                string keyboardHandle = inputList["Core_Interception"].Devices.FirstOrDefault().Key;
+                //string keyboardHandle = inputList["Core_Interception"].Devices.FirstOrDefault().Key;
+                string keyboardHandle = @"Keyboard\HID\VID_04F2&PID_0112&REV_0103&MI_00";
 
                 interceptionKeyboardOutputSubReq = new OutputSubscriptionRequest()
                 {
@@ -37,6 +41,23 @@ namespace TobiiLean
                 };
                 iow.SubscribeOutput(interceptionKeyboardOutputSubReq);
 
+                var toggleSubReq = new InputSubscriptionRequest()
+                {
+                    SubscriberGuid = Guid.NewGuid(),
+                    ProviderName = "Core_Interception",
+                    DeviceHandle = keyboardHandle,
+                    InputType = InputType.BUTTON,
+                    //InputIndex = 81,    // Num 0
+                    InputIndex = 40,    // `
+                    Callback = new Action<int>((value) =>
+                    {
+                        if (value == 0)
+                            return;
+                        macroEnabled = !macroEnabled;
+                        Console.Beep(500 + (Convert.ToInt32(macroEnabled) * 500), 200);
+                    })
+                };
+                iow.SubscribeInput(toggleSubReq);
 
                 var subReq = new InputSubscriptionRequest()
                 {
@@ -47,30 +68,31 @@ namespace TobiiLean
                     InputIndex = 0,
                     Callback = new Action<int>((value) =>
                     {
-                        int currstate;
-                        if (value == 0)
-                            currstate = 0;
-                        else
-                            currstate = value < 0 ? -1 : 1;
-                        if (Math.Abs(value) > 5000)
+                        if (!macroEnabled)
+                            return;
+                        int newState;
+                        if (Math.Abs(value) > 8000)
                         {
-                            if ((leanState != currstate) && (leanState != 0))
-                            {
-                                iow.SetOutputstate(interceptionKeyboardOutputSubReq, InputType.BUTTON, leanCodes[leanState], 0);
-                            }
-                            leanState = currstate;
-                            iow.SetOutputstate(interceptionKeyboardOutputSubReq, InputType.BUTTON, leanCodes[leanState], 1);
+                            newState = value < 0 ? -1 : 1;
                         }
                         else
                         {
-                            if (leanState != 0)
-                            {
-                                iow.SetOutputstate(interceptionKeyboardOutputSubReq, InputType.BUTTON, leanCodes[leanState], 0);
-                            }
-                            leanState = 0;
+                            newState = 0;
                         }
+                        if (newState == currState)
+                            return;
+                        if (currState != 0)
+                        {
+                            iow.SetOutputstate(interceptionKeyboardOutputSubReq, InputType.BUTTON, leanCodes[currState], 0);
+                        }
+                        if (newState != 0)
+                        {
+                            iow.SetOutputstate(interceptionKeyboardOutputSubReq, InputType.BUTTON, leanCodes[newState], 1);
+                        }
+                        currState = newState;
+
                         //Console.WriteLine("Tobii Head Pose X: {0}", value);
-                        //Console.WriteLine("LeanState: {0}", leanState);
+                        Console.WriteLine("LeanState: {0}, CurrState: {1}", currState, newState);
                     })
                 };
                 iow.SubscribeInput(subReq);
