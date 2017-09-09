@@ -178,13 +178,13 @@ namespace SharpDX_XInput
         private void QueryDevices()
         {
             providerReport = new ProviderReport();
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 4; i++)
             {
                 var ctrlr = new Controller((UserIndex)i);
-                if (ctrlr.IsConnected)
-                {
+                //if (ctrlr.IsConnected)
+                //{
                     providerReport.Devices.Add(i.ToString(), BuildXInputDevice(i));
-                }
+                //}
             }
         }
 
