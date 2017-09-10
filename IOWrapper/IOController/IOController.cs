@@ -147,7 +147,13 @@ namespace IOWrapper
                 UnsubscribeOutput(ActiveOutputSubscriptions[subReq.SubscriberGuid]);
             }
             var provider = GetProvider(subReq.ProviderName);
-            return provider.SubscribeOutputDevice(subReq);
+            bool ret = false;
+            ret = provider.SubscribeOutputDevice(subReq);
+            if (ret)
+            {
+                ActiveOutputSubscriptions.Add(subReq.SubscriberGuid, subReq);
+            }
+            return ret;
         }
 
         public bool UnsubscribeOutput(OutputSubscriptionRequest _subReq)

@@ -177,6 +177,7 @@ class Tester
             DeviceHandle = keyboardHandle
         };
         iow.SubscribeOutput(interceptionKeyboardOutputSubReq);
+        //iow.UnsubscribeOutput(interceptionKeyboardOutputSubReq);
 
         interceptionMouseOutputSubReq = new OutputSubscriptionRequest()
         {
