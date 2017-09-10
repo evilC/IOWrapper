@@ -126,8 +126,8 @@ namespace IOWrapper
             var ret = false;
             if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriberGuid))
             {
-                var prov = GetProvider(subReq.ProviderName);
-                ret = prov.UnsubscribeInput(subReq);
+                var provider = GetProvider(subReq.ProviderName);
+                ret = provider.UnsubscribeInput(ActiveInputSubscriptions[subReq.SubscriberGuid]);
                 if (ret)
                 {
                     ActiveInputSubscriptions.Remove(subReq.SubscriberGuid);
@@ -144,9 +144,26 @@ namespace IOWrapper
                 // If this Subscriber has an existing subscription...
                 // ... then remove the old subscription first.
                 // unsub output here
+                UnsubscribeOutput(ActiveOutputSubscriptions[subReq.SubscriberGuid]);
             }
-            return GetProvider(subReq.ProviderName)
-                .SubscribeOutputDevice(subReq);
+            var provider = GetProvider(subReq.ProviderName);
+            return provider.SubscribeOutputDevice(subReq);
+        }
+
+        public bool UnsubscribeOutput(OutputSubscriptionRequest _subReq)
+        {
+            var subReq = _subReq.Clone();
+            var ret = false;
+            if (ActiveOutputSubscriptions.ContainsKey(subReq.SubscriberGuid))
+            {
+                var provider = GetProvider(subReq.ProviderName);
+                ret = provider.UnSubscribeOutputDevice(subReq);
+                if (ret)
+                {
+                    ActiveOutputSubscriptions.Remove(subReq.SubscriberGuid);
+                }
+            }
+            return ret;
         }
 
         public bool SetOutputstate(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state)
@@ -163,7 +180,7 @@ namespace IOWrapper
             }
             else
             {
-                return null;
+                throw new Exception(String.Format("Provider {0} not found", providerName));
             }
         }
     }
