@@ -30,7 +30,7 @@ namespace Providers
         public uint InputIndex { get; set; }
         public dynamic Callback { get; set; }
         // used, eg, for DirectInput POV number
-        public int InputSubId { get; set; } = 0;
+        public int InputSubIndex { get; set; } = 0;
         public Guid ProfileGuid { get; set; }
         public InputSubscriptionRequest Clone()
         {
