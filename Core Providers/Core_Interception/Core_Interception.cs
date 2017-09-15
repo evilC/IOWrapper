@@ -395,6 +395,7 @@ namespace Core_Interception
                 //Log("Button Index: {0}, name: '{1}'", i + 256, altKeyName);
                 //buttonNames.Add(i + 256, altKeyName);
             }
+            keyboardList.SubBindings.Sort((x, y) => x.Title.CompareTo(y.Title));
         }
         #endregion
 
