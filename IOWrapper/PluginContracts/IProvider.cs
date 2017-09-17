@@ -54,6 +54,25 @@ namespace Providers
     }
     #endregion
 
+    #region Reporting
+    #region Provider Report
+    public class ProviderReport
+    {
+        public SortedDictionary<string, IOWrapperDevice> Devices { get; set; }
+            = new SortedDictionary<string, IOWrapperDevice>();
+    }
+    #endregion
+
+    #region Report Node
+    public class DeviceNode
+    {
+        public string Title { get; set; }
+        public List<DeviceNode> Nodes { get; set; } = new List<DeviceNode>();
+        public List<BindingInfo> Bindings { get; set; } = new List<BindingInfo>();
+    }
+    #endregion
+
+    #region Device Report
     public class IOWrapperDevice
     {
         /// <summary>
@@ -83,81 +102,23 @@ namespace Providers
         /// </summary>
         public string API { get; set; }
 
-        public List<BindingInfo> Bindings { get; set; } = new List<BindingInfo>();
+        //public List<BindingInfo> Bindings { get; set; } = new List<BindingInfo>();
 
+        /// <summary>
+        /// Nodes give the device report structure and allow the front-end to logically group items
+        /// </summary>
         public List<DeviceNode> Nodes { get; set; } = new List<DeviceNode>();
-        /*
-        /// <summary>
-        /// A list of the device's buttons.
-        /// Note that for some devices (eg keyboard), the indexes of the buttons may not be contiguous
-        /// ie it may have index 1,3,5
-        /// </summary>
-        public List<ButtonInfo> ButtonList { get; set; }
-
-        /// <summary>
-        /// A List of Axes IDs that this axis supports
-        /// </summary>
-        public List<AxisInfo> AxisList { get; set; }
-        */
     }
+    #endregion
 
-    //public class InputInfo
-    //{
-    //    /// <summary>
-    //    /// The index (zero based) of this input
-    //    /// </summary>
-    //    public int Index { get; set; }
-
-    //    /// <summary>
-    //    /// The name of this input.
-    //    /// If purely a button number, then the first button (Index 0) should be called "1"
-    //    /// </summary>
-    //    public string Name { get; set; }
-    //}
-
-    //public class ButtonInfo : InputInfo
-    //{
-    //    /// <summary>
-    //    /// Buttons with this property set to true only have one state
-    //    /// eg Mouse Wheel, which has no "press" or "release" event
-    //    /// </summary>
-    //    public bool IsEvent { get; set; }
-    //}
-
-    //public class AxisInfo : InputInfo
-    //{
-    //    /// <summary>
-    //    /// Axes with this property set to true do not rest in the middle
-    //    /// eg a Pedal or a Trigger on an Xbox controller
-    //    /// </summary>
-    //    public bool IsUnsigned { get; set; }
-    //}
-
-    public class ProviderReport
-    {
-        public SortedDictionary<string, IOWrapperDevice> Devices { get; set; }
-            = new SortedDictionary<string, IOWrapperDevice>();
-    }
-
+    #region Binding Report
     public class BindingInfo
     {
         public string Title { get; set; }
-        public bool IsBinding { get; set; } = true;
         public BindingType Type { get; set; } = BindingType.NONE;
-        public OldBindingCategory OldCategory { get; set; } = OldBindingCategory.None;
         public int Index { get; set; }
         public int SubIndex { get; set; }
         public List<BindingInfo> SubBindings { get; set; } = new List<BindingInfo>();
-    }
-
-    public enum OldBindingCategory
-    {
-        None,
-        Button,
-        Event,
-        Range,
-        Trigger,
-        Delta
     }
 
     public class ButtonBindingInfo : BindingInfo
@@ -174,18 +135,14 @@ namespace Providers
     {
         public POVCategory Category { get; set; }
     }
+    #endregion
 
+    #region Category Enums
     public enum AxisCategory { Signed, Unsigned, Delta }
     public enum ButtonCategory { Momentary, Event }
     public enum POVCategory { POV1, POV2, POV3, POV4 }
-
-
-    public class DeviceNode
-    {
-        public string Title { get; set; }
-        public List<DeviceNode> Nodes { get; set; } = new List<DeviceNode>();
-        public List<BindingInfo> Bindings { get; set; } = new List<BindingInfo>();
-    }
+    #endregion
+    #endregion
 
     #region Helper Classes
     static public class DeviceHelper
