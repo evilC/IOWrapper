@@ -175,7 +175,10 @@ namespace SharpDX_XInput
 
         private void QueryDevices()
         {
-            providerReport = new ProviderReport();
+            providerReport = new ProviderReport() {
+                Title = "XInput (Core)",
+                Description = "Reads Xbox gamepads"
+            };
             for (int i = 0; i < 4; i++)
             {
                 var ctrlr = new Controller((UserIndex)i);
@@ -318,23 +321,23 @@ namespace SharpDX_XInput
 
             public bool Add(InputSubscriptionRequest subReq)
             {
-                var inputId = subReq.InputIndex;
-                var monitor = monitors[subReq.InputType];
+                var inputId = subReq.Index;
+                var monitor = monitors[subReq.Type];
                 if (!monitor.ContainsKey(inputId))
                 {
                     monitor.Add(inputId, new InputMonitor());
                 }
-                Log("Adding subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.InputType.ToString(), subReq.InputIndex);
+                Log("Adding subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.Type.ToString(), subReq.Index);
                 return monitor[inputId].Add(subReq);
             }
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
-                var inputId = subReq.InputIndex;
-                var monitor = monitors[subReq.InputType];
+                var inputId = subReq.Index;
+                var monitor = monitors[subReq.Type];
                 if (monitor.ContainsKey(inputId))
                 {
-                    Log("Removing subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.InputType.ToString(), subReq.InputIndex);
+                    Log("Removing subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.Type.ToString(), subReq.Index);
                     var ret = monitor[inputId].Remove(subReq);
                     if (!monitor[inputId].HasSubscriptions())
                     {
@@ -390,14 +393,14 @@ namespace SharpDX_XInput
 
             public bool Add(InputSubscriptionRequest subReq)
             {
-                Log("XI adding subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceHandle, subReq.InputIndex, subReq.SubscriberGuid);
+                Log("XI adding subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceHandle, subReq.Index, subReq.SubscriberGuid);
                 subscriptions.Add(subReq.SubscriberGuid, subReq);
                 return true;
             }
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
-                Log("XI removing subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceHandle, subReq.InputIndex, subReq.SubscriberGuid);
+                Log("XI removing subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceHandle, subReq.Index, subReq.SubscriberGuid);
                 if (subscriptions.ContainsKey(subReq.SubscriberGuid))
                 {
                     return subscriptions.Remove(subReq.SubscriberGuid);

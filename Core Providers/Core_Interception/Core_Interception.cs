@@ -261,7 +261,10 @@ namespace Core_Interception
         private void QueryDevices()
         {
             deviceHandleToId = new Dictionary<string, int>();
-            providerReport = new ProviderReport();
+            providerReport = new ProviderReport() {
+                Title = "Interception (Core)",
+                Description = "Supports per-device Keyboard and Mouse Input/Output, with blocking\nRequires custom driver from http://oblita.com/interception"
+            };
 
             UpdateKeyList();
             UpdateMouseButtonList();
@@ -427,7 +430,7 @@ namespace Core_Interception
             {
                 try
                 {
-                    var code = (ushort)(subReq.InputIndex + 1);
+                    var code = (ushort)(subReq.Index + 1);
                     ushort stateDown = 0;
                     ushort stateUp = 1;
                     if (code > 256)
@@ -453,7 +456,7 @@ namespace Core_Interception
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
-                var code = (ushort)(subReq.InputIndex + 1);
+                var code = (ushort)(subReq.Index + 1);
                 if (code > 256)
                 {
                     code -= 256;
@@ -537,11 +540,11 @@ namespace Core_Interception
             {
                 try
                 {
-                    var i = (ushort)subReq.InputIndex;
+                    var i = (ushort)subReq.Index;
                     ushort downbit = (ushort)(1 << (i * 2));
                     ushort upbit = (ushort)(1 << ((i * 2) + 1));
 
-                    Log("Added subscription to mouse button {0}", subReq.InputIndex);
+                    Log("Added subscription to mouse button {0}", subReq.Index);
                     if (!monitoredStates.ContainsKey(downbit))
                     {
                         monitoredStates.Add(downbit, new MouseButtonMonitor() { outputState = 1 });
@@ -566,7 +569,7 @@ namespace Core_Interception
             {
                 try
                 {
-                    var i = (ushort)subReq.InputIndex;
+                    var i = (ushort)subReq.Index;
                     ushort downbit = (ushort)(1 << (i * 2));
                     ushort upbit = (ushort)(1 << ((i * 2) + 1));
 

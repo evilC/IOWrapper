@@ -46,9 +46,9 @@ namespace TobiiLean
                     SubscriberGuid = Guid.NewGuid(),
                     ProviderName = "Core_Interception",
                     DeviceHandle = keyboardHandle,
-                    InputType = BindingType.BUTTON,
+                    Type = BindingType.BUTTON,
                     //InputIndex = 81,    // Num 0
-                    InputIndex = 40,    // `
+                    Index = 40,    // `
                     Callback = new Action<int>((value) =>
                     {
                         if (value == 0)
@@ -64,8 +64,8 @@ namespace TobiiLean
                     SubscriberGuid = Guid.NewGuid(),
                     ProviderName = "Core_Tobii_Interaction",
                     SubProviderName = "HeadPose",
-                    InputType = BindingType.AXIS,
-                    InputIndex = 0,
+                    Type = BindingType.AXIS,
+                    Index = 0,
                     Callback = new Action<int>((value) =>
                     {
                         if (!macroEnabled)

@@ -123,7 +123,10 @@ namespace Core_vJoyInterfaceWrap
 
         public ProviderReport GetOutputList()
         {
-            var pr = new ProviderReport();
+            var pr = new ProviderReport() {
+                Title = "vJoy (Core)",
+                Description = "Allows emulation of DirectInput sticks. Requires driver from http://vjoystick.sourceforge.net/"
+            };
             for (uint i = 0; i < 16; i++)
             {
                 var id = i + 1;

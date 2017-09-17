@@ -217,7 +217,10 @@ namespace SharpDX_DirectInput
         #region Device Querying
         private void queryDevices()
         {
-            providerReport = new ProviderReport();
+            providerReport = new ProviderReport() {
+                Title = "DirectInput (Core)",
+                Description = "Allows reading of generic joysticks."
+            };
             handleToInstanceGuid = new Dictionary<string, Guid>();
 
             // ToDo: device list should be returned in handle order for duplicate devices
@@ -402,18 +405,18 @@ namespace SharpDX_DirectInput
 
             public bool Add(InputSubscriptionRequest subReq)
             {
-                var inputId = GetInputIdentifier(subReq.InputType, (int)subReq.InputIndex);
+                var inputId = GetInputIdentifier(subReq.Type, (int)subReq.Index);
                 if (!monitors.ContainsKey(inputId))
                 {
                     monitors.Add(inputId, new InputMonitor());
                 }
-                Log("Adding subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.InputType.ToString(), subReq.InputIndex);
+                Log("Adding subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.Type.ToString(), subReq.Index);
                 return monitors[inputId].Add(subReq);
             }
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
-                var inputId = GetInputIdentifier(subReq.InputType, (int)subReq.InputIndex);
+                var inputId = GetInputIdentifier(subReq.Type, (int)subReq.Index);
                 if (monitors.ContainsKey(inputId))
                 {
                     var ret = monitors[inputId].Remove(subReq);
@@ -421,7 +424,7 @@ namespace SharpDX_DirectInput
                     {
                         monitors.Remove(inputId);
                     }
-                    Log("Removing subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.InputType.ToString(), subReq.InputIndex);
+                    Log("Removing subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.Type.ToString(), subReq.Index);
                     return ret;
                 }
                 return false;
@@ -464,7 +467,7 @@ namespace SharpDX_DirectInput
 
             public bool Add(InputSubscriptionRequest subReq)
             {
-                inputType = subReq.InputType;
+                inputType = subReq.Type;
                 //subscriptions.Add(subReq.SubscriberGuid, subReq.Callback);
                 subscriptions.Add(subReq.SubscriberGuid, subReq);
                 return true;

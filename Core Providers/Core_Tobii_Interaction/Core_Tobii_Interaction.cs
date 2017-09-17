@@ -31,7 +31,10 @@ namespace Core_Tobii_Interaction
 
         public ProviderReport GetInputList()
         {
-            providerReport = new ProviderReport();
+            providerReport = new ProviderReport() {
+                Title = "Tobii Interaction (Core)",
+                Description = "Tracks head and eye movement. Requires a Tobii device, see https://tobiigaming.com/"
+            };
 
             var gazeDevice = new IOWrapperDevice()
             {
@@ -236,11 +239,11 @@ namespace Core_Tobii_Interaction
 
             public virtual bool SubscribeInput(InputSubscriptionRequest subReq)
             {
-                if (!axisMonitors.ContainsKey(subReq.InputIndex))
+                if (!axisMonitors.ContainsKey(subReq.Index))
                 {
-                    axisMonitors.Add(subReq.InputIndex, new AxisMonitor());
+                    axisMonitors.Add(subReq.Index, new AxisMonitor());
                 }
-                axisMonitors[subReq.InputIndex].Add(subReq);
+                axisMonitors[subReq.Index].Add(subReq);
                 return true;
             }
 

@@ -20,29 +20,10 @@ namespace Providers
         //bool SubscribeAxis(string deviceHandle, uint axisId, dynamic callback);
     }
 
-    #region Subscriptions
-    public class InputSubscriptionRequest : SubscriptionRequest
-    {
-        public BindingType InputType { get; set; }
-        //public string SubscriberId { get; set; }
-        public uint InputIndex { get; set; }
-        public dynamic Callback { get; set; }
-        // used, eg, for DirectInput POV number
-        public int InputSubIndex { get; set; } = 0;
-        public Guid ProfileGuid { get; set; }
-        public InputSubscriptionRequest Clone()
-        {
-            return (InputSubscriptionRequest)this.MemberwiseClone();
-        }
-    }
-
-    public class OutputSubscriptionRequest : SubscriptionRequest {
-        public OutputSubscriptionRequest Clone()
-        {
-            return (OutputSubscriptionRequest)this.MemberwiseClone();
-        }
-    }
-
+    #region Subscription Requests
+    /// <summary>
+    /// Base class for Subscription Requests. Shared by Input and Output
+    /// </summary>
     public class SubscriptionRequest
     {
         public Guid SubscriberGuid { get; set; }
@@ -50,12 +31,61 @@ namespace Providers
         public string SubProviderName { get; set; } = null;
         public string DeviceHandle { get; set; }
     }
+
+    /// <summary>
+    /// Contains all the required information for :
+    ///     The IOController to route the request to the appropriate Provider
+    ///     The Provider to subscribe to the appropriate input
+    ///     The Provider to notify the subscriber of activity
+    /// </summary>
+    public class InputSubscriptionRequest : SubscriptionRequest
+    {
+        public BindingType Type { get; set; }
+        public uint Index { get; set; }
+        public dynamic Callback { get; set; }
+        // used, eg, for DirectInput POV number
+        public int SubIndex { get; set; } = 0;
+        public Guid ProfileGuid { get; set; }
+        public InputSubscriptionRequest Clone()
+        {
+            return (InputSubscriptionRequest)this.MemberwiseClone();
+        }
+    }
+
+    /// <summary>
+    /// Contains all the information for:
+    ///     The IOController to route the request to the appropriate Provider
+    ///     
+    /// Output Subscriptions are typically used to eg create virtual devices...
+    /// ... so that output can be sent to them
+    /// </summary>
+    public class OutputSubscriptionRequest : SubscriptionRequest {
+        public OutputSubscriptionRequest Clone()
+        {
+            return (OutputSubscriptionRequest)this.MemberwiseClone();
+        }
+    }
     #endregion
 
+    // Reports allow the back-end to tell the front-end what capabilities are available
     #region Reporting
     #region Provider Report
+    
+    /// <summary>
+    /// Contains information about each provider
+    /// </summary>
     public class ProviderReport
     {
+        /// <summary>
+        /// The human-friendly name of the Provider
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
+        /// A description of what the Provider does
+        /// </summary>
+        public string Description { get; set; }
+
         public SortedDictionary<string, IOWrapperDevice> Devices { get; set; }
             = new SortedDictionary<string, IOWrapperDevice>();
     }

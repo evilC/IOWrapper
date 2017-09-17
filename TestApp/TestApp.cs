@@ -79,9 +79,9 @@ class Tester
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_DirectInput",
-            InputType = BindingType.BUTTON,
+            Type = BindingType.BUTTON,
             DeviceHandle = inputHandle,
-            InputIndex = 0,
+            Index = 0,
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 0 Value: " + value);
@@ -99,9 +99,9 @@ class Tester
             ProfileGuid = Guid.NewGuid(),
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_DirectInput",
-            InputType = BindingType.BUTTON,
+            Type = BindingType.BUTTON,
             DeviceHandle = inputHandle,
-            InputIndex = 1,
+            Index = 1,
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 1 Value: " + value);
@@ -120,9 +120,9 @@ class Tester
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = defaultProfileGuid,
             ProviderName = "SharpDX_DirectInput",
-            InputType = BindingType.AXIS,
+            Type = BindingType.AXIS,
             DeviceHandle = inputHandle,
-            InputIndex = 0,
+            Index = 0,
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Axis 0 Value: " + value);
@@ -140,9 +140,9 @@ class Tester
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_XInput",
-            InputType = BindingType.AXIS,
+            Type = BindingType.AXIS,
             DeviceHandle = "0",
-            InputIndex = 0,
+            Index = 0,
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("XInput Axis 0 Value: " + value);
@@ -157,9 +157,9 @@ class Tester
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_XInput",
-            InputType = BindingType.BUTTON,
+            Type = BindingType.BUTTON,
             DeviceHandle = "0",
-            InputIndex = 0,
+            Index = 0,
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("XInput Button 0 Value: " + value);
