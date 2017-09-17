@@ -20,8 +20,6 @@ namespace Providers
         //bool SubscribeAxis(string deviceHandle, uint axisId, dynamic callback);
     }
 
-    public enum BindingType { NONE, AXIS, BUTTON, POV };
-
     #region Subscriptions
     public class InputSubscriptionRequest : SubscriptionRequest
     {
@@ -115,7 +113,7 @@ namespace Providers
     public class BindingInfo
     {
         public string Title { get; set; }
-        public BindingType Type { get; set; } = BindingType.NONE;
+        public BindingType Type { get; set; }
         public int Index { get; set; }
         public int SubIndex { get; set; }
         public List<BindingInfo> SubBindings { get; set; } = new List<BindingInfo>();
@@ -137,7 +135,12 @@ namespace Providers
     }
     #endregion
 
+    /// <summary>
+    /// Enums used to categorize how a binding reports
+    /// </summary>
     #region Category Enums
+    public enum BindingType { AXIS, BUTTON, POV };
+
     public enum AxisCategory { Signed, Unsigned, Delta }
     public enum ButtonCategory { Momentary, Event }
     public enum POVCategory { POV1, POV2, POV3, POV4 }
