@@ -255,16 +255,16 @@ namespace SharpDX_DirectInput
                 };
 
                 //var axisInfo = new List<AxisInfo>();
-                for (int i = 0; i < directInputMappings[BindingType.AXIS].Count; i++)
+                for (int i = 0; i < directInputMappings[BindingType.Axis].Count; i++)
                 {
                     try
                     {
-                        var deviceInfo = joystick.GetObjectInfoByName(directInputMappings[BindingType.AXIS][i].ToString());
+                        var deviceInfo = joystick.GetObjectInfoByName(directInputMappings[BindingType.Axis][i].ToString());
                         axisInfo.Bindings.Add(new AxisBindingInfo() {
                             Index = i,
                             //Name = axisNames[i],
                             Title = deviceInfo.Name,
-                            Type = BindingType.AXIS,
+                            Type = BindingType.Axis,
                             Category = AxisCategory.Signed
                         });
                     }
@@ -283,7 +283,7 @@ namespace SharpDX_DirectInput
                     buttonInfo.Bindings.Add(new ButtonBindingInfo() {
                         Index = btn,
                         Title = (btn + 1).ToString(),
-                        Type = BindingType.BUTTON,
+                        Type = BindingType.Button,
                         Category = ButtonCategory.Momentary
                     });
                 }
@@ -501,13 +501,13 @@ namespace SharpDX_DirectInput
                         int reportedValue = value;
                         switch (inputType)
                         {
-                            case BindingType.AXIS:
+                            case BindingType.Axis:
                                 // DirectInput reports as 0..65535 with center of 32767
                                 // All axes are normalized for now to int16 (-32768...32767) with center being 0
                                 // So for now, this means flipping the axis.
                                 reportedValue = (reportedValue - 32767) * -1;
                                 break;
-                            case BindingType.BUTTON:
+                            case BindingType.Button:
                                 // DirectInput reports as 0..128 for buttons
                                 // PS controllers can report in an analog fashion, so supporting this at some point may be cool
                                 // However, these could be handled like axes
@@ -611,7 +611,7 @@ namespace SharpDX_DirectInput
         // Maps SharpDX "Offsets" (Input Identifiers) to both iinput type and input index (eg x axis to axis 1)
         private static Dictionary<BindingType, List<JoystickOffset>> directInputMappings = new Dictionary<BindingType, List<JoystickOffset>>(){
                 {
-                    BindingType.AXIS, new List<JoystickOffset>()
+                    BindingType.Axis, new List<JoystickOffset>()
                     {
                         JoystickOffset.X,
                         JoystickOffset.Y,
@@ -624,7 +624,7 @@ namespace SharpDX_DirectInput
                     }
                 },
                 {
-                    BindingType.BUTTON, new List<JoystickOffset>()
+                    BindingType.Button, new List<JoystickOffset>()
                     {
                         JoystickOffset.Buttons0, JoystickOffset.Buttons1, JoystickOffset.Buttons2, JoystickOffset.Buttons3, JoystickOffset.Buttons4,
                         JoystickOffset.Buttons5, JoystickOffset.Buttons6, JoystickOffset.Buttons7, JoystickOffset.Buttons8, JoystickOffset.Buttons9, JoystickOffset.Buttons10,

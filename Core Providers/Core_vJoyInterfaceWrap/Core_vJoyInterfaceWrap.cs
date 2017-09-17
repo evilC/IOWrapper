@@ -159,7 +159,7 @@ namespace Core_vJoyInterfaceWrap
                             axisNode.Bindings.Add(new AxisBindingInfo() {
                                 Index = ax,
                                 Title = axisNames[ax],
-                                Type = BindingType.AXIS,
+                                Type = BindingType.Axis,
                                 Category = AxisCategory.Signed
                             });
                         }
@@ -178,7 +178,7 @@ namespace Core_vJoyInterfaceWrap
                         buttonNode.Bindings.Add(new ButtonBindingInfo() {
                             Index = btn,
                             Title = (btn + 1).ToString(),
-                            Type = BindingType.BUTTON,
+                            Type = BindingType.Button,
                             Category = ButtonCategory.Momentary
                         });
                     }
@@ -230,10 +230,10 @@ namespace Core_vJoyInterfaceWrap
             }
             switch (inputType)
             {
-                case BindingType.AXIS:
+                case BindingType.Axis:
                     return vJ.SetAxis((state + 32768) / 2, devId + 1, AxisIdToUsage[(int)inputIndex]);
 
-                case BindingType.BUTTON:
+                case BindingType.Button:
                     return vJ.SetBtn(state == 1, devId + 1, inputIndex + 1);
 
                 case BindingType.POV:

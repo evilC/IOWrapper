@@ -349,7 +349,7 @@ namespace Core_Interception
                 {
                     Index = i,
                     Title = mouseButtonNames[i],
-                    Type = BindingType.BUTTON,
+                    Type = BindingType.Button,
                     Category = ButtonCategory.Momentary
                 });
             }
@@ -360,7 +360,7 @@ namespace Core_Interception
                 {
                     Index = i,
                     Title = mouseButtonNames[i],
-                    Type = BindingType.BUTTON,
+                    Type = BindingType.Button,
                     Category = ButtonCategory.Event
                 });
             }
@@ -392,7 +392,7 @@ namespace Core_Interception
                 keyboardList.Bindings.Add(new ButtonBindingInfo() {
                     Index = i,
                     Title = keyName,
-                    Type = BindingType.BUTTON,
+                    Type = BindingType.Button,
                     Category = ButtonCategory.Momentary
                 });
                 //buttonNames.Add(i, keyName);
@@ -410,7 +410,7 @@ namespace Core_Interception
                 keyboardList.Bindings.Add(new ButtonBindingInfo() {
                     Index = i + 256,
                     Title = altKeyName,
-                    Type = BindingType.BUTTON,
+                    Type = BindingType.Button,
                     Category = ButtonCategory.Momentary
                 });
                 //Log("Button Index: {0}, name: '{1}'", i + 256, altKeyName);

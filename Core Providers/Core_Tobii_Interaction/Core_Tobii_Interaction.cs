@@ -51,7 +51,7 @@ namespace Core_Tobii_Interaction
                 {
                     Title = sixDofAxisNames[i],
                     Index = i,
-                    Type = BindingType.AXIS,
+                    Type = BindingType.Axis,
                     Category = AxisCategory.Signed
                 });
             }
@@ -74,7 +74,7 @@ namespace Core_Tobii_Interaction
                 {
                     Title = sixDofAxisNames[i],
                     Index = i,
-                    Type = BindingType.AXIS,
+                    Type = BindingType.Axis,
                     Category = AxisCategory.Signed
                 });
             }

@@ -79,13 +79,13 @@ class Tester
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_DirectInput",
-            Type = BindingType.BUTTON,
+            Type = BindingType.Button,
             DeviceHandle = inputHandle,
             Index = 0,
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 0 Value: " + value);
-                iow.SetOutputstate(vJoyOutputSubReq, BindingType.BUTTON, 0, value);
+                iow.SetOutputstate(vJoyOutputSubReq, BindingType.Button, 0, value);
                 //iow.SetOutputstate(interceptionKeyboardOutputSubReq, InputType.BUTTON, 311, value); // Right Alt
                 //iow.SetOutputstate(interceptionMouseOutputSubReq, InputType.BUTTON, 1, value); // RMB
             })
@@ -99,13 +99,13 @@ class Tester
             ProfileGuid = Guid.NewGuid(),
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_DirectInput",
-            Type = BindingType.BUTTON,
+            Type = BindingType.Button,
             DeviceHandle = inputHandle,
             Index = 1,
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 1 Value: " + value);
-                iow.SetOutputstate(vJoyOutputSubReq, BindingType.BUTTON, 0, value);
+                iow.SetOutputstate(vJoyOutputSubReq, BindingType.Button, 0, value);
                 if (value == 1)
                 {
                     ToggleDefaultProfileState();
@@ -120,13 +120,13 @@ class Tester
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = defaultProfileGuid,
             ProviderName = "SharpDX_DirectInput",
-            Type = BindingType.AXIS,
+            Type = BindingType.Axis,
             DeviceHandle = inputHandle,
             Index = 0,
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Axis 0 Value: " + value);
-                iow.SetOutputstate(vJoyOutputSubReq, BindingType.AXIS, 0, value);
+                iow.SetOutputstate(vJoyOutputSubReq, BindingType.Axis, 0, value);
             })
         };
         iow.SubscribeInput(sub2);
@@ -140,13 +140,13 @@ class Tester
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_XInput",
-            Type = BindingType.AXIS,
+            Type = BindingType.Axis,
             DeviceHandle = "0",
             Index = 0,
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("XInput Axis 0 Value: " + value);
-                iow.SetOutputstate(vJoyOutputSubReq, BindingType.AXIS, 0, value);
+                iow.SetOutputstate(vJoyOutputSubReq, BindingType.Axis, 0, value);
             })
         };
         iow.SubscribeInput(xinputAxis);
@@ -157,13 +157,13 @@ class Tester
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_XInput",
-            Type = BindingType.BUTTON,
+            Type = BindingType.Button,
             DeviceHandle = "0",
             Index = 0,
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("XInput Button 0 Value: " + value);
-                iow.SetOutputstate(vJoyOutputSubReq, BindingType.BUTTON, 1, value);
+                iow.SetOutputstate(vJoyOutputSubReq, BindingType.Button, 1, value);
             })
         };
         ret = iow.SubscribeInput(xinputButton);

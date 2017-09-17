@@ -194,7 +194,7 @@ namespace Providers
     /// Enums used to categorize how a binding reports
     /// </summary>
     #region Category Enums
-    public enum BindingType { AXIS, BUTTON, POV };
+    public enum BindingType { Axis, Button, POV };
 
     public enum AxisCategory { Signed, Unsigned, Delta }
     public enum ButtonCategory { Momentary, Event }
