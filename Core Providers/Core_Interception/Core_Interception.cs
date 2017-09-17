@@ -36,9 +36,9 @@ namespace Core_Interception
         private Dictionary<int, MouseMonitor> MonitoredMice = new Dictionary<int, MouseMonitor>();
         private Dictionary<string, int> deviceHandleToId;
 
-        private static BindingInfo keyboardList;
-        private static BindingInfo mouseButtonList;
-        private static List<string> mouseButtonNames = new List<string>() { "Left Mouse", "Right Mouse", "Middle Mouse", "Side Button 1", "Side Button 2" };
+        private static DeviceNode keyboardList;
+        private static DeviceNode mouseButtonList;
+        private static List<string> mouseButtonNames = new List<string>() { "Left Mouse", "Right Mouse", "Middle Mouse", "Side Button 1", "Side Button 2", "Wheel Up", "Wheel Down" };
 
         public Core_Interception()
         {
@@ -262,6 +262,7 @@ namespace Core_Interception
         {
             deviceHandleToId = new Dictionary<string, int>();
             providerReport = new ProviderReport();
+
             UpdateKeyList();
             UpdateMouseButtonList();
             string handle;
@@ -286,7 +287,11 @@ namespace Core_Interception
                         DeviceName = name,
                         ProviderName = ProviderName,
                         API = "Interception",
-                        Bindings = { keyboardList }
+                        //Bindings = { keyboardList }
+                        Nodes = new List<DeviceNode>()
+                        {
+                            keyboardList
+                        }
                     });
                     deviceHandleToId.Add(handle, i - 1);
                     //Log(String.Format("{0} (Keyboard) = VID/PID: {1}", i, handle));
@@ -315,7 +320,11 @@ namespace Core_Interception
                         DeviceName = name,
                         ProviderName = ProviderName,
                         API = "Interception",
-                        Bindings = { mouseButtonList }
+                        //Bindings = { mouseButtonList }
+                        Nodes = new List<DeviceNode>()
+                        {
+                            mouseButtonList
+                        }
                     });
                     deviceHandleToId.Add(handle, i - 1);
                     //Log(String.Format("{0} (Mouse) = VID/PID: {1}", i, handle));
@@ -327,19 +336,29 @@ namespace Core_Interception
 
         private void UpdateMouseButtonList()
         {
-            mouseButtonList = new BindingInfo()
+            mouseButtonList = new DeviceNode()
             {
-                Title = "Buttons",
-                IsBinding = false
+                Title = "Buttons"
             };
             for (int i = 0; i < 5; i++)
             {
-                mouseButtonList.SubBindings.Add(new BindingInfo()
+                mouseButtonList.Bindings.Add(new ButtonBindingInfo()
                 {
                     Index = i,
                     Title = mouseButtonNames[i],
                     Type = BindingType.BUTTON,
-                    OldCategory = OldBindingCategory.Button
+                    Category = ButtonCategory.Momentary
+                });
+            }
+            
+            for (int i = 5; i < 7; i++)
+            {
+                mouseButtonList.Bindings.Add(new ButtonBindingInfo()
+                {
+                    Index = i,
+                    Title = mouseButtonNames[i],
+                    Type = BindingType.BUTTON,
+                    Category = ButtonCategory.Event
                 });
             }
             
@@ -347,9 +366,8 @@ namespace Core_Interception
 
         private void UpdateKeyList()
         {
-            keyboardList = new BindingInfo() {
-                Title = "Keys",
-                IsBinding = false
+            keyboardList = new DeviceNode() {
+                Title = "Keys"
             };
             //buttonNames = new Dictionary<int, string>();
             uint lParam = 0;
@@ -368,11 +386,11 @@ namespace Core_Interception
                 if (keyName == "")
                     continue;
                 //Log("Button Index: {0}, name: '{1}'", i, keyName);
-                keyboardList.SubBindings.Add(new BindingInfo() {
+                keyboardList.Bindings.Add(new ButtonBindingInfo() {
                     Index = i,
                     Title = keyName,
                     Type = BindingType.BUTTON,
-                    OldCategory = OldBindingCategory.Button
+                    Category = ButtonCategory.Momentary
                 });
                 //buttonNames.Add(i, keyName);
 
@@ -386,16 +404,16 @@ namespace Core_Interception
                 if (altKeyName == "" || altKeyName == keyName)
                     continue;
                 //Log("ALT Button Index: {0}, name: '{1}'", i + 256, altKeyName);
-                keyboardList.SubBindings.Add(new BindingInfo() {
+                keyboardList.Bindings.Add(new ButtonBindingInfo() {
                     Index = i + 256,
                     Title = altKeyName,
                     Type = BindingType.BUTTON,
-                    OldCategory = OldBindingCategory.Button
+                    Category = ButtonCategory.Momentary
                 });
                 //Log("Button Index: {0}, name: '{1}'", i + 256, altKeyName);
                 //buttonNames.Add(i + 256, altKeyName);
             }
-            keyboardList.SubBindings.Sort((x, y) => x.Title.CompareTo(y.Title));
+            keyboardList.Bindings.Sort((x, y) => x.Title.CompareTo(y.Title));
         }
         #endregion
 
