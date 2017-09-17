@@ -26,8 +26,24 @@ namespace Providers
     /// </summary>
     public class SubscriptionRequest
     {
+        /// <summary>
+        /// Uniquely identifies a subscriber
+        /// </summary>
         public Guid SubscriberGuid { get; set; }
+
+        /// <summary>
+        /// Allows grouping of subscriptions for easy toggling on / off sets of subscriptions
+        /// </summary>
+        public Guid ProfileGuid { get; set; }
+
+        /// <summary>
+        /// Identifies which Provider this subscription is for
+        /// </summary>
         public string ProviderName { get; set; }
+
+        /// <summary>
+        /// Identifies which Device this subscription is for
+        /// </summary>
         public string DeviceHandle { get; set; }
     }
 
@@ -39,16 +55,29 @@ namespace Providers
     /// </summary>
     public class InputSubscriptionRequest : SubscriptionRequest
     {
+        /// <summary>
+        /// Identifies the Type (Button / Axis / POV) of the subscription
+        /// </summary>
         public BindingType Type { get; set; }
+
+        /// <summary>
+        /// For the given type, identifies which specific input this subscription is for
+        /// </summary>
         public uint Index { get; set; }
+
+        /// <summary>
+        /// Callback that is fired when this input changes state
+        /// </summary>
         public dynamic Callback { get; set; }
-        // used, eg, for DirectInput POV number
-        //public int SubIndex { get; set; } = 0;
-        public Guid ProfileGuid { get; set; }
+
         public InputSubscriptionRequest Clone()
         {
             return (InputSubscriptionRequest)this.MemberwiseClone();
         }
+
+        // used, eg, for DirectInput POV number
+        //public int SubIndex { get; set; } = 0;
+
     }
 
     /// <summary>
