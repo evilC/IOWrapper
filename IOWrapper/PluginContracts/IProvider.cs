@@ -28,7 +28,6 @@ namespace Providers
     {
         public Guid SubscriberGuid { get; set; }
         public string ProviderName { get; set; }
-        public string SubProviderName { get; set; } = null;
         public string DeviceHandle { get; set; }
     }
 
@@ -121,8 +120,6 @@ namespace Providers
         /// This should be unique
         /// </summary>
         public string ProviderName { get; set; }
-
-        public string SubProviderName { get; set; }
 
         /// <summary>
         /// The underlying API that handles this input

@@ -63,7 +63,7 @@ namespace TobiiLean
                 {
                     SubscriberGuid = Guid.NewGuid(),
                     ProviderName = "Core_Tobii_Interaction",
-                    SubProviderName = "HeadPose",
+                    DeviceHandle = "HeadPose",
                     Type = BindingType.AXIS,
                     Index = 0,
                     Callback = new Action<int>((value) =>

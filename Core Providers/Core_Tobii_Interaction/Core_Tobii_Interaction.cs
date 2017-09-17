@@ -39,7 +39,6 @@ namespace Core_Tobii_Interaction
             var gazeDevice = new IOWrapperDevice()
             {
                 ProviderName = ProviderName,
-                //SubProviderName = "GazePoint",
                 DeviceName = "Gaze Point",
                 DeviceHandle = "GazePoint",
                 API = "Tobii.Interaction",
@@ -82,67 +81,6 @@ namespace Core_Tobii_Interaction
             poseDevice.Nodes.Add(poseNode);
             providerReport.Devices.Add("HeadPose", poseDevice);
 
-            //var gazeInfo = new List<BindingInfo>();
-            ////foreach (var axis in sixDofAxisNames)
-            //for (int i = 0; i < 6; i++)
-            //{
-            //    gazeInfo.Add(new BindingInfo()
-            //    {
-            //        Title = sixDofAxisNames[i],
-            //        Index = i,
-            //        OldCategory = OldBindingCategory.Range,
-            //        Type = BindingType.AXIS
-            //    });
-            //}
-
-            //var poseInfo = new List<BindingInfo>();
-            //for (int i = 0; i < 2; i++)
-            //{
-            //    poseInfo.Add(new BindingInfo()
-            //    {
-            //        Title = sixDofAxisNames[i],
-            //        Index = i,
-            //        OldCategory = OldBindingCategory.Range,
-            //        Type = BindingType.AXIS
-            //    });
-            //}
-
-            //providerReport.Devices.Add("GazePoint", new IOWrapperDevice()
-            //{
-            //    ProviderName = ProviderName,
-            //    SubProviderName = "GazePoint",
-            //    DeviceName = "Tobii Gaze Point",
-            //    DeviceHandle = "0",
-            //    API = "Tobii.Interaction",
-            //    Bindings = new List<BindingInfo>()
-            //    {
-            //        new BindingInfo()
-            //        {
-            //            Title = "Axes",
-            //            IsBinding = false,
-            //            SubBindings = gazeInfo
-            //        },
-            //    }
-            //});
-
-            //providerReport.Devices.Add("HeadPose", new IOWrapperDevice()
-            //{
-            //    ProviderName = ProviderName,
-            //    SubProviderName = "HeadPose",
-            //    DeviceName = "Tobii Head Pose",
-            //    DeviceHandle = "0",
-            //    API = "Tobii.Interaction",
-            //    Bindings = new List<BindingInfo>()
-            //    {
-            //        new BindingInfo()
-            //        {
-            //            Title = "Axes",
-            //            IsBinding = false,
-            //            SubBindings = gazeInfo
-            //        },
-            //    }
-            //});
-
             return providerReport;
         }
 
@@ -163,9 +101,9 @@ namespace Core_Tobii_Interaction
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            if (streamHandlers.ContainsKey(subReq.SubProviderName))
+            if (streamHandlers.ContainsKey(subReq.DeviceHandle))
             {
-                streamHandlers[subReq.SubProviderName].SubscribeInput(subReq);
+                streamHandlers[subReq.DeviceHandle].SubscribeInput(subReq);
                 return true;
             }
             return false;

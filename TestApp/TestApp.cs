@@ -216,9 +216,9 @@ class Tester
         {
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "Core_Tobii_Interaction",
-            SubProviderName = "GazePoint",
-            InputType = InputType.AXIS,
-            InputIndex = 0,
+            DeviceHandle = "GazePoint",
+            Type = BindingType.AXIS,
+            Index = 0,
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Tobii Eye Gaxe X: {0}", value);
@@ -230,9 +230,9 @@ class Tester
         {
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "Core_Tobii_Interaction",
-            SubProviderName = "HeadPose",
-            InputType = InputType.AXIS,
-            InputIndex = 0,
+            DeviceHandle = "HeadPose",
+            Type = BindingType.AXIS,
+            Index = 0,
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Tobii Head Pose X: {0}", value);
