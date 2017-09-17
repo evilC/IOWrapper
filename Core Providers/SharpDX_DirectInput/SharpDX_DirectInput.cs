@@ -236,12 +236,19 @@ namespace SharpDX_DirectInput
                 string handle = vidpid + "/";
                 var index = GetDeviceOrder(vidpid, deviceInstance.InstanceGuid);
 
+                var device = new IOWrapperDevice()
+                {
+                    DeviceHandle = handle,
+                    DeviceName = deviceInstance.ProductName,
+                    ProviderName = ProviderName,
+                    API = "DirectInput",
+                };
+
                 handle += index;
                 // ----- Axes -----
-                var axisInfo = new BindingInfo()
+                var axisInfo = new DeviceNode()
                 {
                     Title = "Axes",
-                    IsBinding = false
                 };
 
                 //var axisInfo = new List<AxisInfo>();
@@ -250,45 +257,38 @@ namespace SharpDX_DirectInput
                     try
                     {
                         var deviceInfo = joystick.GetObjectInfoByName(directInputMappings[BindingType.AXIS][i].ToString());
-                        axisInfo.SubBindings.Add(new BindingInfo() {
+                        axisInfo.Bindings.Add(new AxisBindingInfo() {
                             Index = i,
                             //Name = axisNames[i],
                             Title = deviceInfo.Name,
                             Type = BindingType.AXIS,
-                            OldCategory = OldBindingCategory.Range
+                            Category = AxisCategory.Signed
                         });
                     }
                     catch { }
                 }
 
+                device.Nodes.Add(axisInfo);
+
                 // ----- Buttons -----
                 var length = joystick.Capabilities.ButtonCount;
-                var buttonInfo = new BindingInfo() {
-                    Title = "Buttons",
-                    IsBinding = false
+                var buttonInfo = new DeviceNode() {
+                    Title = "Buttons"
                 };
                 for (int btn = 0; btn < length; btn++)
                 {
-                    buttonInfo.SubBindings.Add(new BindingInfo() {
+                    buttonInfo.Bindings.Add(new ButtonBindingInfo() {
                         Index = btn,
                         Title = (btn + 1).ToString(),
                         Type = BindingType.BUTTON,
-                        OldCategory = OldBindingCategory.Button,
+                        Category = ButtonCategory.Momentary
                     });
                 }
 
-                providerReport.Devices.Add(handle, new IOWrapperDevice()
-                {
-                    //DeviceHandle = deviceInstance.InstanceGuid.ToString(),
-                    DeviceHandle = handle,
-                    DeviceName = deviceInstance.ProductName,
-                    ProviderName = ProviderName,
-                    API = "DirectInput",
-                    Bindings = { buttonInfo, axisInfo }
-                    //ButtonCount = (uint)joystick.Capabilities.ButtonCount,
-                    //ButtonList = buttonInfo,
-                    //AxisList = axisInfo,
-                });
+                device.Nodes.Add(buttonInfo);
+
+                providerReport.Devices.Add(handle, device);
+
                 handleToInstanceGuid.Add(handle, deviceInstance.InstanceGuid);
 
                 //Log(String.Format("{0} #{1} GUID: {2} Handle: {3} NativePointer: {4}"
