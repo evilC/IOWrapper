@@ -85,6 +85,7 @@ namespace Providers
 
         public List<BindingInfo> Bindings { get; set; } = new List<BindingInfo>();
 
+        public List<DeviceNode> Nodes { get; set; } = new List<DeviceNode>();
         /*
         /// <summary>
         /// A list of the device's buttons.
