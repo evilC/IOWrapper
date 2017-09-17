@@ -32,66 +32,113 @@ namespace Core_Tobii_Interaction
         public ProviderReport GetInputList()
         {
             providerReport = new ProviderReport();
-            var gazeInfo = new List<BindingInfo>();
-            //foreach (var axis in sixDofAxisNames)
-            for (int i = 0; i < 6; i++)
+
+            var gazeDevice = new IOWrapperDevice()
             {
-                gazeInfo.Add(new BindingInfo()
+                ProviderName = ProviderName,
+                //SubProviderName = "GazePoint",
+                DeviceName = "Gaze Point",
+                DeviceHandle = "GazePoint",
+                API = "Tobii.Interaction",
+            };
+
+            var gazeNode = new DeviceNode() { Title = "Axes" };
+            for (int i = 0; i < 3; i++)
+            {
+                gazeNode.Bindings.Add(new AxisBindingInfo()
                 {
                     Title = sixDofAxisNames[i],
                     Index = i,
-                    OldCategory = OldBindingCategory.Range,
-                    Type = BindingType.AXIS
+                    Type = BindingType.AXIS,
+                    Category = AxisCategory.Signed
                 });
             }
+            gazeDevice.Nodes.Add(gazeNode);
+            providerReport.Devices.Add("GazePoint", gazeDevice);
 
-            var poseInfo = new List<BindingInfo>();
+
+            var poseDevice = new IOWrapperDevice()
+            {
+                ProviderName = ProviderName,
+                DeviceName = "Head Pose",
+                DeviceHandle = "HeadPose",
+                API = "Tobii.Interaction"
+            };
+
+            var poseNode = new DeviceNode() { Title = "Axes" };
             for (int i = 0; i < 2; i++)
             {
-                poseInfo.Add(new BindingInfo()
+                poseNode.Bindings.Add(new AxisBindingInfo()
                 {
                     Title = sixDofAxisNames[i],
                     Index = i,
-                    OldCategory = OldBindingCategory.Range,
-                    Type = BindingType.AXIS
+                    Type = BindingType.AXIS,
+                    Category = AxisCategory.Signed
                 });
             }
+            poseDevice.Nodes.Add(poseNode);
+            providerReport.Devices.Add("HeadPose", poseDevice);
 
-            providerReport.Devices.Add("GazePoint", new IOWrapperDevice()
-            {
-                ProviderName = ProviderName,
-                SubProviderName = "GazePoint",
-                DeviceName = "Tobii Gaze Point",
-                DeviceHandle = "0",
-                API = "Tobii.Interaction",
-                Bindings = new List<BindingInfo>()
-                {
-                    new BindingInfo()
-                    {
-                        Title = "Axes",
-                        IsBinding = false,
-                        SubBindings = gazeInfo
-                    },
-                }
-            });
+            //var gazeInfo = new List<BindingInfo>();
+            ////foreach (var axis in sixDofAxisNames)
+            //for (int i = 0; i < 6; i++)
+            //{
+            //    gazeInfo.Add(new BindingInfo()
+            //    {
+            //        Title = sixDofAxisNames[i],
+            //        Index = i,
+            //        OldCategory = OldBindingCategory.Range,
+            //        Type = BindingType.AXIS
+            //    });
+            //}
 
-            providerReport.Devices.Add("HeadPose", new IOWrapperDevice()
-            {
-                ProviderName = ProviderName,
-                SubProviderName = "HeadPose",
-                DeviceName = "Tobii Head Pose",
-                DeviceHandle = "0",
-                API = "Tobii.Interaction",
-                Bindings = new List<BindingInfo>()
-                {
-                    new BindingInfo()
-                    {
-                        Title = "Axes",
-                        IsBinding = false,
-                        SubBindings = gazeInfo
-                    },
-                }
-            });
+            //var poseInfo = new List<BindingInfo>();
+            //for (int i = 0; i < 2; i++)
+            //{
+            //    poseInfo.Add(new BindingInfo()
+            //    {
+            //        Title = sixDofAxisNames[i],
+            //        Index = i,
+            //        OldCategory = OldBindingCategory.Range,
+            //        Type = BindingType.AXIS
+            //    });
+            //}
+
+            //providerReport.Devices.Add("GazePoint", new IOWrapperDevice()
+            //{
+            //    ProviderName = ProviderName,
+            //    SubProviderName = "GazePoint",
+            //    DeviceName = "Tobii Gaze Point",
+            //    DeviceHandle = "0",
+            //    API = "Tobii.Interaction",
+            //    Bindings = new List<BindingInfo>()
+            //    {
+            //        new BindingInfo()
+            //        {
+            //            Title = "Axes",
+            //            IsBinding = false,
+            //            SubBindings = gazeInfo
+            //        },
+            //    }
+            //});
+
+            //providerReport.Devices.Add("HeadPose", new IOWrapperDevice()
+            //{
+            //    ProviderName = ProviderName,
+            //    SubProviderName = "HeadPose",
+            //    DeviceName = "Tobii Head Pose",
+            //    DeviceHandle = "0",
+            //    API = "Tobii.Interaction",
+            //    Bindings = new List<BindingInfo>()
+            //    {
+            //        new BindingInfo()
+            //        {
+            //            Title = "Axes",
+            //            IsBinding = false,
+            //            SubBindings = gazeInfo
+            //        },
+            //    }
+            //});
 
             return providerReport;
         }
