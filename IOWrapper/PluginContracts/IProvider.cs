@@ -43,7 +43,7 @@ namespace Providers
         public uint Index { get; set; }
         public dynamic Callback { get; set; }
         // used, eg, for DirectInput POV number
-        public int SubIndex { get; set; } = 0;
+        //public int SubIndex { get; set; } = 0;
         public Guid ProfileGuid { get; set; }
         public InputSubscriptionRequest Clone()
         {
@@ -142,7 +142,7 @@ namespace Providers
         public string Title { get; set; }
         public BindingType Type { get; set; }
         public int Index { get; set; }
-        public int SubIndex { get; set; }
+        //public int SubIndex { get; set; }
         public List<BindingInfo> SubBindings { get; set; } = new List<BindingInfo>();
     }
 
