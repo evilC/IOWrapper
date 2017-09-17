@@ -172,8 +172,10 @@ namespace Providers
         public BindingType Type { get; set; }
         public int Index { get; set; }
         public int SubIndex { get; set; }
+        public BindingCategory Category { get; set; }
     }
 
+    /*
     public class ButtonBindingInfo : BindingInfo
     {
         public ButtonCategory Category { get; set; }
@@ -188,6 +190,7 @@ namespace Providers
     {
         public ButtonCategory Category { get; set; } = ButtonCategory.Momentary;
     }
+    */
     #endregion
 
     /// <summary>
@@ -196,8 +199,9 @@ namespace Providers
     #region Category Enums
     public enum BindingType { Axis, Button, POV };
 
-    public enum AxisCategory { Signed, Unsigned, Delta }
-    public enum ButtonCategory { Momentary, Event }
+    public enum BindingCategory { Momentary, Event, Signed, Unsigned, Delta }
+    //public enum AxisCategory { Signed, Unsigned, Delta }
+    //public enum ButtonCategory { Momentary, Event }
     //public enum POVCategory { POV1, POV2, POV3, POV4 }
     #endregion
     #endregion

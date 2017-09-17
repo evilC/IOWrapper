@@ -345,23 +345,23 @@ namespace Core_Interception
             };
             for (int i = 0; i < 5; i++)
             {
-                mouseButtonList.Bindings.Add(new ButtonBindingInfo()
+                mouseButtonList.Bindings.Add(new BindingInfo()
                 {
                     Index = i,
                     Title = mouseButtonNames[i],
                     Type = BindingType.Button,
-                    Category = ButtonCategory.Momentary
+                    Category = BindingCategory.Momentary
                 });
             }
             
             for (int i = 5; i < 7; i++)
             {
-                mouseButtonList.Bindings.Add(new ButtonBindingInfo()
+                mouseButtonList.Bindings.Add(new BindingInfo()
                 {
                     Index = i,
                     Title = mouseButtonNames[i],
                     Type = BindingType.Button,
-                    Category = ButtonCategory.Event
+                    Category = BindingCategory.Event
                 });
             }
             
@@ -389,11 +389,11 @@ namespace Core_Interception
                 if (keyName == "")
                     continue;
                 //Log("Button Index: {0}, name: '{1}'", i, keyName);
-                keyboardList.Bindings.Add(new ButtonBindingInfo() {
+                keyboardList.Bindings.Add(new BindingInfo() {
                     Index = i,
                     Title = keyName,
                     Type = BindingType.Button,
-                    Category = ButtonCategory.Momentary
+                    Category = BindingCategory.Momentary
                 });
                 //buttonNames.Add(i, keyName);
 
@@ -407,11 +407,11 @@ namespace Core_Interception
                 if (altKeyName == "" || altKeyName == keyName)
                     continue;
                 //Log("ALT Button Index: {0}, name: '{1}'", i + 256, altKeyName);
-                keyboardList.Bindings.Add(new ButtonBindingInfo() {
+                keyboardList.Bindings.Add(new BindingInfo() {
                     Index = i + 256,
                     Title = altKeyName,
                     Type = BindingType.Button,
-                    Category = ButtonCategory.Momentary
+                    Category = BindingCategory.Momentary
                 });
                 //Log("Button Index: {0}, name: '{1}'", i + 256, altKeyName);
                 //buttonNames.Add(i + 256, altKeyName);

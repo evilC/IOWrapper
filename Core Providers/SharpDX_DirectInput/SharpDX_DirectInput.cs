@@ -260,12 +260,12 @@ namespace SharpDX_DirectInput
                     try
                     {
                         var deviceInfo = joystick.GetObjectInfoByName(directInputMappings[BindingType.Axis][i].ToString());
-                        axisInfo.Bindings.Add(new AxisBindingInfo() {
+                        axisInfo.Bindings.Add(new BindingInfo() {
                             Index = i,
                             //Name = axisNames[i],
                             Title = deviceInfo.Name,
                             Type = BindingType.Axis,
-                            Category = AxisCategory.Signed
+                            Category = BindingCategory.Signed
                         });
                     }
                     catch { }
@@ -280,11 +280,11 @@ namespace SharpDX_DirectInput
                 };
                 for (int btn = 0; btn < length; btn++)
                 {
-                    buttonInfo.Bindings.Add(new ButtonBindingInfo() {
+                    buttonInfo.Bindings.Add(new BindingInfo() {
                         Index = btn,
                         Title = (btn + 1).ToString(),
                         Type = BindingType.Button,
-                        Category = ButtonCategory.Momentary
+                        Category = BindingCategory.Momentary
                     });
                 }
 

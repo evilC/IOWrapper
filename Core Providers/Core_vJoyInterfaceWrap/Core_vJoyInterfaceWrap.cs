@@ -156,11 +156,11 @@ namespace Core_vJoyInterfaceWrap
                     {
                         if (vJ.GetVJDAxisExist(id, AxisIdToUsage[ax]))
                         {
-                            axisNode.Bindings.Add(new AxisBindingInfo() {
+                            axisNode.Bindings.Add(new BindingInfo() {
                                 Index = ax,
                                 Title = axisNames[ax],
                                 Type = BindingType.Axis,
-                                Category = AxisCategory.Signed
+                                Category = BindingCategory.Signed
                             });
                         }
                     }
@@ -175,11 +175,11 @@ namespace Core_vJoyInterfaceWrap
                     };
                     for (int btn = 0; btn < length; btn++)
                     {
-                        buttonNode.Bindings.Add(new ButtonBindingInfo() {
+                        buttonNode.Bindings.Add(new BindingInfo() {
                             Index = btn,
                             Title = (btn + 1).ToString(),
                             Type = BindingType.Button,
-                            Category = ButtonCategory.Momentary
+                            Category = BindingCategory.Momentary
                         });
                     }
 

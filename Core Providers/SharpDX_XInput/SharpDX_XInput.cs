@@ -35,16 +35,16 @@ namespace SharpDX_XInput
             Title = "Buttons",
             Bindings =
             {
-                new ButtonBindingInfo() { Index = 0, Title = "A", Type = BindingType.Button, Category = ButtonCategory.Momentary },
-                new ButtonBindingInfo() { Index = 1, Title = "B", Type = BindingType.Button, Category = ButtonCategory.Momentary },
-                new ButtonBindingInfo() { Index = 2, Title = "X", Type = BindingType.Button, Category = ButtonCategory.Momentary },
-                new ButtonBindingInfo() { Index = 3, Title = "Y", Type = BindingType.Button, Category = ButtonCategory.Momentary },
-                new ButtonBindingInfo() { Index = 4, Title = "LB", Type = BindingType.Button, Category = ButtonCategory.Momentary },
-                new ButtonBindingInfo() { Index = 5, Title = "RB", Type = BindingType.Button, Category = ButtonCategory.Momentary },
-                new ButtonBindingInfo() { Index = 6, Title = "LS", Type = BindingType.Button, Category = ButtonCategory.Momentary },
-                new ButtonBindingInfo() { Index = 7, Title = "RS", Type = BindingType.Button, Category = ButtonCategory.Momentary },
-                new ButtonBindingInfo() { Index = 8, Title = "Back", Type = BindingType.Button, Category = ButtonCategory.Momentary },
-                new ButtonBindingInfo() { Index = 9, Title = "Start", Type = BindingType.Button, Category = ButtonCategory.Momentary },
+                new BindingInfo() { Index = 0, Title = "A", Type = BindingType.Button, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 1, Title = "B", Type = BindingType.Button, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 2, Title = "X", Type = BindingType.Button, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 3, Title = "Y", Type = BindingType.Button, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 4, Title = "LB", Type = BindingType.Button, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 5, Title = "RB", Type = BindingType.Button, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 6, Title = "LS", Type = BindingType.Button, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 7, Title = "RS", Type = BindingType.Button, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 8, Title = "Back", Type = BindingType.Button, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 9, Title = "Start", Type = BindingType.Button, Category = BindingCategory.Momentary },
             }
         };
 
@@ -53,12 +53,12 @@ namespace SharpDX_XInput
             Title = "Axes",
             Bindings = 
             {
-                new AxisBindingInfo() { Index = 0, Title = "LX", Type = BindingType.Axis, Category = AxisCategory.Signed },
-                new AxisBindingInfo() { Index = 1, Title = "LY", Type = BindingType.Axis, Category = AxisCategory.Signed },
-                new AxisBindingInfo() { Index = 2, Title = "RX", Type = BindingType.Axis, Category = AxisCategory.Signed },
-                new AxisBindingInfo() { Index = 3, Title = "RY", Type = BindingType.Axis, Category = AxisCategory.Signed },
-                new AxisBindingInfo() { Index = 4, Title = "LT", Type = BindingType.Axis, Category = AxisCategory.Unsigned },
-                new AxisBindingInfo() { Index = 5, Title = "RT", Type = BindingType.Axis, Category = AxisCategory.Unsigned },
+                new BindingInfo() { Index = 0, Title = "LX", Type = BindingType.Axis, Category = BindingCategory.Signed },
+                new BindingInfo() { Index = 1, Title = "LY", Type = BindingType.Axis, Category = BindingCategory.Signed },
+                new BindingInfo() { Index = 2, Title = "RX", Type = BindingType.Axis, Category = BindingCategory.Signed },
+                new BindingInfo() { Index = 3, Title = "RY", Type = BindingType.Axis, Category = BindingCategory.Signed },
+                new BindingInfo() { Index = 4, Title = "LT", Type = BindingType.Axis, Category = BindingCategory.Unsigned },
+                new BindingInfo() { Index = 5, Title = "RT", Type = BindingType.Axis, Category = BindingCategory.Unsigned },
             }
         };
 

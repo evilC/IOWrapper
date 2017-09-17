@@ -47,12 +47,12 @@ namespace Core_Tobii_Interaction
             var gazeNode = new DeviceNode() { Title = "Axes" };
             for (int i = 0; i < 3; i++)
             {
-                gazeNode.Bindings.Add(new AxisBindingInfo()
+                gazeNode.Bindings.Add(new BindingInfo()
                 {
                     Title = sixDofAxisNames[i],
                     Index = i,
                     Type = BindingType.Axis,
-                    Category = AxisCategory.Signed
+                    Category = BindingCategory.Signed
                 });
             }
             gazeDevice.Nodes.Add(gazeNode);
@@ -70,12 +70,12 @@ namespace Core_Tobii_Interaction
             var poseNode = new DeviceNode() { Title = "Axes" };
             for (int i = 0; i < 2; i++)
             {
-                poseNode.Bindings.Add(new AxisBindingInfo()
+                poseNode.Bindings.Add(new BindingInfo()
                 {
                     Title = sixDofAxisNames[i],
                     Index = i,
                     Type = BindingType.Axis,
-                    Category = AxisCategory.Signed
+                    Category = BindingCategory.Signed
                 });
             }
             poseDevice.Nodes.Add(poseNode);
