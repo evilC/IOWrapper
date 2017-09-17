@@ -30,37 +30,35 @@ namespace SharpDX_XInput
 
         ProviderReport providerReport;
 
-        private readonly static BindingInfo buttonInfo = new BindingInfo()
+        private readonly static DeviceNode buttonInfo = new DeviceNode()
         {
             Title = "Buttons",
-            IsBinding = false,
-            SubBindings =
+            Bindings =
             {
-                new BindingInfo() { Index = 0, Title = "A", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
-                new BindingInfo() { Index = 1, Title = "B", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
-                new BindingInfo() { Index = 2, Title = "X", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
-                new BindingInfo() { Index = 3, Title = "Y", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
-                new BindingInfo() { Index = 4, Title = "LB", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
-                new BindingInfo() { Index = 5, Title = "RB", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
-                new BindingInfo() { Index = 6, Title = "LS", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
-                new BindingInfo() { Index = 7, Title = "RS", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
-                new BindingInfo() { Index = 8, Title = "Back", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
-                new BindingInfo() { Index = 9, Title = "Start", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
+                new ButtonBindingInfo() { Index = 0, Title = "A", Type = BindingType.BUTTON, Category = ButtonCategory.Momentary },
+                new ButtonBindingInfo() { Index = 1, Title = "B", Type = BindingType.BUTTON, Category = ButtonCategory.Momentary },
+                new ButtonBindingInfo() { Index = 2, Title = "X", Type = BindingType.BUTTON, Category = ButtonCategory.Momentary },
+                new ButtonBindingInfo() { Index = 3, Title = "Y", Type = BindingType.BUTTON, Category = ButtonCategory.Momentary },
+                new ButtonBindingInfo() { Index = 4, Title = "LB", Type = BindingType.BUTTON, Category = ButtonCategory.Momentary },
+                new ButtonBindingInfo() { Index = 5, Title = "RB", Type = BindingType.BUTTON, Category = ButtonCategory.Momentary },
+                new ButtonBindingInfo() { Index = 6, Title = "LS", Type = BindingType.BUTTON, Category = ButtonCategory.Momentary },
+                new ButtonBindingInfo() { Index = 7, Title = "RS", Type = BindingType.BUTTON, Category = ButtonCategory.Momentary },
+                new ButtonBindingInfo() { Index = 8, Title = "Back", Type = BindingType.BUTTON, Category = ButtonCategory.Momentary },
+                new ButtonBindingInfo() { Index = 9, Title = "Start", Type = BindingType.BUTTON, Category = ButtonCategory.Momentary },
             }
         };
 
-        private readonly static BindingInfo axisInfo = new BindingInfo()
+        private readonly static DeviceNode axisInfo = new DeviceNode()
         {
             Title = "Axes",
-            IsBinding = false,
-            SubBindings = 
+            Bindings = 
             {
-                new BindingInfo() { Index = 0, Title = "LX", Type = BindingType.AXIS, OldCategory = OldBindingCategory.Range },
-                new BindingInfo() { Index = 1, Title = "LY", Type = BindingType.AXIS, OldCategory = OldBindingCategory.Range },
-                new BindingInfo() { Index = 2, Title = "RX", Type = BindingType.AXIS, OldCategory = OldBindingCategory.Range },
-                new BindingInfo() { Index = 3, Title = "RY", Type = BindingType.AXIS, OldCategory = OldBindingCategory.Range },
-                new BindingInfo() { Index = 4, Title = "LT", Type = BindingType.AXIS, OldCategory = OldBindingCategory.Trigger },
-                new BindingInfo() { Index = 5, Title = "RT", Type = BindingType.AXIS, OldCategory = OldBindingCategory.Trigger },
+                new AxisBindingInfo() { Index = 0, Title = "LX", Type = BindingType.AXIS, Category = AxisCategory.Signed },
+                new AxisBindingInfo() { Index = 1, Title = "LY", Type = BindingType.AXIS, Category = AxisCategory.Signed },
+                new AxisBindingInfo() { Index = 2, Title = "RX", Type = BindingType.AXIS, Category = AxisCategory.Signed },
+                new AxisBindingInfo() { Index = 3, Title = "RY", Type = BindingType.AXIS, Category = AxisCategory.Signed },
+                new AxisBindingInfo() { Index = 4, Title = "LT", Type = BindingType.AXIS, Category = AxisCategory.Unsigned },
+                new AxisBindingInfo() { Index = 5, Title = "RT", Type = BindingType.AXIS, Category = AxisCategory.Unsigned },
             }
         };
 
@@ -262,7 +260,7 @@ namespace SharpDX_XInput
                 DeviceName = "Xbox Controller " + (id + 1),
                 ProviderName = ProviderName,
                 API = "XInput",
-                Bindings = { buttonInfo, axisInfo }
+                Nodes = { buttonInfo, axisInfo }
                 //ButtonCount = 11,
                 //ButtonList = buttonInfo,
                 //AxisList = axisInfo,
