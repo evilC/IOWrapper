@@ -39,9 +39,9 @@ namespace Core_Tobii_Interaction
                 gazeInfo.Add(new BindingInfo()
                 {
                     Title = sixDofAxisNames[i],
-                    InputIndex = i,
-                    Category = BindingInfo.InputCategory.Range,
-                    InputType = InputType.AXIS
+                    Index = i,
+                    OldCategory = OldBindingCategory.Range,
+                    Type = BindingType.AXIS
                 });
             }
 
@@ -51,9 +51,9 @@ namespace Core_Tobii_Interaction
                 poseInfo.Add(new BindingInfo()
                 {
                     Title = sixDofAxisNames[i],
-                    InputIndex = i,
-                    Category = BindingInfo.InputCategory.Range,
-                    InputType = InputType.AXIS
+                    Index = i,
+                    OldCategory = OldBindingCategory.Range,
+                    Type = BindingType.AXIS
                 });
             }
 
@@ -101,7 +101,7 @@ namespace Core_Tobii_Interaction
             return null;
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state)
+        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
         {
             return false;
         }

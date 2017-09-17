@@ -36,16 +36,16 @@ namespace SharpDX_XInput
             IsBinding = false,
             SubBindings =
             {
-                new BindingInfo() { InputIndex = 0, Title = "A", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
-                new BindingInfo() { InputIndex = 1, Title = "B", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
-                new BindingInfo() { InputIndex = 2, Title = "X", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
-                new BindingInfo() { InputIndex = 3, Title = "Y", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
-                new BindingInfo() { InputIndex = 4, Title = "LB", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
-                new BindingInfo() { InputIndex = 5, Title = "RB", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
-                new BindingInfo() { InputIndex = 6, Title = "LS", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
-                new BindingInfo() { InputIndex = 7, Title = "RS", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
-                new BindingInfo() { InputIndex = 8, Title = "Back", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
-                new BindingInfo() { InputIndex = 9, Title = "Start", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
+                new BindingInfo() { Index = 0, Title = "A", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
+                new BindingInfo() { Index = 1, Title = "B", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
+                new BindingInfo() { Index = 2, Title = "X", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
+                new BindingInfo() { Index = 3, Title = "Y", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
+                new BindingInfo() { Index = 4, Title = "LB", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
+                new BindingInfo() { Index = 5, Title = "RB", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
+                new BindingInfo() { Index = 6, Title = "LS", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
+                new BindingInfo() { Index = 7, Title = "RS", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
+                new BindingInfo() { Index = 8, Title = "Back", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
+                new BindingInfo() { Index = 9, Title = "Start", Type = BindingType.BUTTON, OldCategory = OldBindingCategory.Button },
             }
         };
 
@@ -55,12 +55,12 @@ namespace SharpDX_XInput
             IsBinding = false,
             SubBindings = 
             {
-                new BindingInfo() { InputIndex = 0, Title = "LX", InputType = InputType.AXIS, Category = BindingInfo.InputCategory.Range },
-                new BindingInfo() { InputIndex = 1, Title = "LY", InputType = InputType.AXIS, Category = BindingInfo.InputCategory.Range },
-                new BindingInfo() { InputIndex = 2, Title = "RX", InputType = InputType.AXIS, Category = BindingInfo.InputCategory.Range },
-                new BindingInfo() { InputIndex = 3, Title = "RY", InputType = InputType.AXIS, Category = BindingInfo.InputCategory.Range },
-                new BindingInfo() { InputIndex = 4, Title = "LT", InputType = InputType.AXIS, Category = BindingInfo.InputCategory.Trigger },
-                new BindingInfo() { InputIndex = 5, Title = "RT", InputType = InputType.AXIS, Category = BindingInfo.InputCategory.Trigger },
+                new BindingInfo() { Index = 0, Title = "LX", Type = BindingType.AXIS, OldCategory = OldBindingCategory.Range },
+                new BindingInfo() { Index = 1, Title = "LY", Type = BindingType.AXIS, OldCategory = OldBindingCategory.Range },
+                new BindingInfo() { Index = 2, Title = "RX", Type = BindingType.AXIS, OldCategory = OldBindingCategory.Range },
+                new BindingInfo() { Index = 3, Title = "RY", Type = BindingType.AXIS, OldCategory = OldBindingCategory.Range },
+                new BindingInfo() { Index = 4, Title = "LT", Type = BindingType.AXIS, OldCategory = OldBindingCategory.Trigger },
+                new BindingInfo() { Index = 5, Title = "RT", Type = BindingType.AXIS, OldCategory = OldBindingCategory.Trigger },
             }
         };
 
@@ -248,7 +248,7 @@ namespace SharpDX_XInput
             return false;
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state)
+        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
         {
             return false;
         }
@@ -308,14 +308,14 @@ namespace SharpDX_XInput
             private Dictionary<uint, InputMonitor> axisMonitors = new Dictionary<uint, InputMonitor>();
             private Dictionary<uint, InputMonitor> buttonMonitors = new Dictionary<uint, InputMonitor>();
 
-            Dictionary<InputType, Dictionary<uint, InputMonitor>> monitors = new Dictionary<InputType, Dictionary<uint, InputMonitor>>();
+            Dictionary<BindingType, Dictionary<uint, InputMonitor>> monitors = new Dictionary<BindingType, Dictionary<uint, InputMonitor>>();
 
             public StickMonitor(int cid)
             {
                 controllerId = cid;
                 controller = new Controller((UserIndex)controllerId);
-                monitors.Add(InputType.AXIS, axisMonitors);
-                monitors.Add(InputType.BUTTON, buttonMonitors);
+                monitors.Add(BindingType.AXIS, axisMonitors);
+                monitors.Add(BindingType.BUTTON, buttonMonitors);
             }
 
             public bool Add(InputSubscriptionRequest subReq)

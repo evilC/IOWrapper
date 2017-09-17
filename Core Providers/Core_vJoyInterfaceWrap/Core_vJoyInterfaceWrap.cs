@@ -142,10 +142,10 @@ namespace Core_vJoyInterfaceWrap
                         if (vJ.GetVJDAxisExist(id, AxisIdToUsage[ax]))
                         {
                             axisList.SubBindings.Add(new BindingInfo() {
-                                InputIndex = ax,
+                                Index = ax,
                                 Title = axisNames[ax],
-                                InputType = InputType.AXIS,
-                                Category = BindingInfo.InputCategory.Range,
+                                Type = BindingType.AXIS,
+                                OldCategory = OldBindingCategory.Range,
                             });
                         }
                     }
@@ -160,10 +160,10 @@ namespace Core_vJoyInterfaceWrap
                     for (int btn = 0; btn < length; btn++)
                     {
                         buttonList.SubBindings.Add(new BindingInfo() {
-                            InputIndex = btn,
+                            Index = btn,
                             Title = (btn + 1).ToString(),
-                            InputType = InputType.BUTTON,
-                            Category = BindingInfo.InputCategory.Button
+                            Type = BindingType.BUTTON,
+                            OldCategory = OldBindingCategory.Button
                         });
                     }
                     pr.Devices.Add(handle, new IOWrapperDevice()
@@ -213,7 +213,7 @@ namespace Core_vJoyInterfaceWrap
             return true;
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state)
+        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
         {
             var devId = subscriptionToDevice[subReq.SubscriberGuid];
             if (!acquiredDevices[devId])
@@ -222,13 +222,13 @@ namespace Core_vJoyInterfaceWrap
             }
             switch (inputType)
             {
-                case InputType.AXIS:
+                case BindingType.AXIS:
                     return vJ.SetAxis((state + 32768) / 2, devId + 1, AxisIdToUsage[(int)inputIndex]);
 
-                case InputType.BUTTON:
+                case BindingType.BUTTON:
                     return vJ.SetBtn(state == 1, devId + 1, inputIndex + 1);
 
-                case InputType.POV:
+                case BindingType.POV:
                     break;
 
                 default:

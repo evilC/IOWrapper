@@ -208,7 +208,7 @@ namespace SharpDX_DirectInput
             return false;
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state)
+        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
         {
             return false;
         }
@@ -245,17 +245,17 @@ namespace SharpDX_DirectInput
                 };
 
                 //var axisInfo = new List<AxisInfo>();
-                for (int i = 0; i < directInputMappings[InputType.AXIS].Count; i++)
+                for (int i = 0; i < directInputMappings[BindingType.AXIS].Count; i++)
                 {
                     try
                     {
-                        var deviceInfo = joystick.GetObjectInfoByName(directInputMappings[InputType.AXIS][i].ToString());
+                        var deviceInfo = joystick.GetObjectInfoByName(directInputMappings[BindingType.AXIS][i].ToString());
                         axisInfo.SubBindings.Add(new BindingInfo() {
-                            InputIndex = i,
+                            Index = i,
                             //Name = axisNames[i],
                             Title = deviceInfo.Name,
-                            InputType = InputType.AXIS,
-                            Category = BindingInfo.InputCategory.Range
+                            Type = BindingType.AXIS,
+                            OldCategory = OldBindingCategory.Range
                         });
                     }
                     catch { }
@@ -270,10 +270,10 @@ namespace SharpDX_DirectInput
                 for (int btn = 0; btn < length; btn++)
                 {
                     buttonInfo.SubBindings.Add(new BindingInfo() {
-                        InputIndex = btn,
+                        Index = btn,
                         Title = (btn + 1).ToString(),
-                        InputType = InputType.BUTTON,
-                        Category = BindingInfo.InputCategory.Button,
+                        Type = BindingType.BUTTON,
+                        OldCategory = OldBindingCategory.Button,
                     });
                 }
 
@@ -460,7 +460,7 @@ namespace SharpDX_DirectInput
         public class InputMonitor
         {
             private Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
-            private InputType inputType;
+            private BindingType inputType;
 
             public bool Add(InputSubscriptionRequest subReq)
             {
@@ -498,20 +498,20 @@ namespace SharpDX_DirectInput
                         int reportedValue = value;
                         switch (inputType)
                         {
-                            case InputType.AXIS:
+                            case BindingType.AXIS:
                                 // DirectInput reports as 0..65535 with center of 32767
                                 // All axes are normalized for now to int16 (-32768...32767) with center being 0
                                 // So for now, this means flipping the axis.
                                 reportedValue = (reportedValue - 32767) * -1;
                                 break;
-                            case InputType.BUTTON:
+                            case BindingType.BUTTON:
                                 // DirectInput reports as 0..128 for buttons
                                 // PS controllers can report in an analog fashion, so supporting this at some point may be cool
                                 // However, these could be handled like axes
                                 // For now, a button is a digital device, so convert to 1 or 0
                                 reportedValue /= 128;
                                 break;
-                            case InputType.POV:
+                            case BindingType.POV:
                                 break;
                             default:
                                 break;
@@ -533,7 +533,7 @@ namespace SharpDX_DirectInput
         /// <param name="inputType">The type of input (Axis, Button etc)</param>
         /// <param name="inputId">The index of the input. 0 based</param>
         /// <returns></returns>
-        private static JoystickOffset GetInputIdentifier(InputType inputType, int inputId)
+        private static JoystickOffset GetInputIdentifier(BindingType inputType, int inputId)
         {
             return directInputMappings[inputType][inputId];
         }
@@ -606,9 +606,9 @@ namespace SharpDX_DirectInput
 
         #region Lookup Tables
         // Maps SharpDX "Offsets" (Input Identifiers) to both iinput type and input index (eg x axis to axis 1)
-        private static Dictionary<InputType, List<JoystickOffset>> directInputMappings = new Dictionary<InputType, List<JoystickOffset>>(){
+        private static Dictionary<BindingType, List<JoystickOffset>> directInputMappings = new Dictionary<BindingType, List<JoystickOffset>>(){
                 {
-                    InputType.AXIS, new List<JoystickOffset>()
+                    BindingType.AXIS, new List<JoystickOffset>()
                     {
                         JoystickOffset.X,
                         JoystickOffset.Y,
@@ -621,7 +621,7 @@ namespace SharpDX_DirectInput
                     }
                 },
                 {
-                    InputType.BUTTON, new List<JoystickOffset>()
+                    BindingType.BUTTON, new List<JoystickOffset>()
                     {
                         JoystickOffset.Buttons0, JoystickOffset.Buttons1, JoystickOffset.Buttons2, JoystickOffset.Buttons3, JoystickOffset.Buttons4,
                         JoystickOffset.Buttons5, JoystickOffset.Buttons6, JoystickOffset.Buttons7, JoystickOffset.Buttons8, JoystickOffset.Buttons9, JoystickOffset.Buttons10,
@@ -648,7 +648,7 @@ namespace SharpDX_DirectInput
                     }
                 },
                 {
-                    InputType.POV, new List<JoystickOffset>()
+                    BindingType.POV, new List<JoystickOffset>()
                     {
                         JoystickOffset.PointOfViewControllers0,
                         JoystickOffset.PointOfViewControllers1,

@@ -172,7 +172,7 @@ namespace IOWrapper
             return ret;
         }
 
-        public bool SetOutputstate(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state)
+        public bool SetOutputstate(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
         {
             return GetProvider(subReq.ProviderName)
                 .SetOutputState(subReq, inputType, inputIndex, state);

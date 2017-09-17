@@ -16,16 +16,16 @@ namespace Providers
         bool SubscribeOutputDevice(OutputSubscriptionRequest subReq);
         bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq);
         //bool SetOutputButton(string dev, uint button, bool state);
-        bool SetOutputState(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state);
+        bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state);
         //bool SubscribeAxis(string deviceHandle, uint axisId, dynamic callback);
     }
 
-    public enum InputType { NONE, AXIS, BUTTON, POV };
+    public enum BindingType { NONE, AXIS, BUTTON, POV };
 
     #region Subscriptions
     public class InputSubscriptionRequest : SubscriptionRequest
     {
-        public InputType InputType { get; set; }
+        public BindingType InputType { get; set; }
         //public string SubscriberId { get; set; }
         public uint InputIndex { get; set; }
         public dynamic Callback { get; set; }
@@ -100,37 +100,37 @@ namespace Providers
         */
     }
 
-    public class InputInfo
-    {
-        /// <summary>
-        /// The index (zero based) of this input
-        /// </summary>
-        public int Index { get; set; }
+    //public class InputInfo
+    //{
+    //    /// <summary>
+    //    /// The index (zero based) of this input
+    //    /// </summary>
+    //    public int Index { get; set; }
 
-        /// <summary>
-        /// The name of this input.
-        /// If purely a button number, then the first button (Index 0) should be called "1"
-        /// </summary>
-        public string Name { get; set; }
-    }
+    //    /// <summary>
+    //    /// The name of this input.
+    //    /// If purely a button number, then the first button (Index 0) should be called "1"
+    //    /// </summary>
+    //    public string Name { get; set; }
+    //}
 
-    public class ButtonInfo : InputInfo
-    {
-        /// <summary>
-        /// Buttons with this property set to true only have one state
-        /// eg Mouse Wheel, which has no "press" or "release" event
-        /// </summary>
-        public bool IsEvent { get; set; }
-    }
+    //public class ButtonInfo : InputInfo
+    //{
+    //    /// <summary>
+    //    /// Buttons with this property set to true only have one state
+    //    /// eg Mouse Wheel, which has no "press" or "release" event
+    //    /// </summary>
+    //    public bool IsEvent { get; set; }
+    //}
 
-    public class AxisInfo : InputInfo
-    {
-        /// <summary>
-        /// Axes with this property set to true do not rest in the middle
-        /// eg a Pedal or a Trigger on an Xbox controller
-        /// </summary>
-        public bool IsUnsigned { get; set; }
-    }
+    //public class AxisInfo : InputInfo
+    //{
+    //    /// <summary>
+    //    /// Axes with this property set to true do not rest in the middle
+    //    /// eg a Pedal or a Trigger on an Xbox controller
+    //    /// </summary>
+    //    public bool IsUnsigned { get; set; }
+    //}
 
     public class ProviderReport
     {
@@ -140,23 +140,50 @@ namespace Providers
 
     public class BindingInfo
     {
-        public enum InputCategory
-        {
-            None,
-            Button,
-            Event,
-            Range,
-            Trigger,
-            Delta
-        }
-
         public string Title { get; set; }
         public bool IsBinding { get; set; } = true;
-        public InputCategory Category { get; set; } = InputCategory.None;
-        public InputType InputType { get; set; } = InputType.NONE;
-        public int InputIndex { get; set; }
-        public int InputSubIndex { get; set; }
+        public BindingType Type { get; set; } = BindingType.NONE;
+        public OldBindingCategory OldCategory { get; set; } = OldBindingCategory.None;
+        public int Index { get; set; }
+        public int SubIndex { get; set; }
         public List<BindingInfo> SubBindings { get; set; } = new List<BindingInfo>();
+    }
+
+    public enum OldBindingCategory
+    {
+        None,
+        Button,
+        Event,
+        Range,
+        Trigger,
+        Delta
+    }
+
+    public class ButtonBindingInfo : BindingInfo
+    {
+        public ButtonCategory Category { get; set; }
+    }
+
+    public class AxisBindingInfo : BindingInfo
+    {
+        public AxisCategory Category { get; set; }
+    }
+
+    public class POVBindingInfo : BindingInfo
+    {
+        public POVCategory Category { get; set; }
+    }
+
+    public enum AxisCategory { Signed, Unsigned, Delta }
+    public enum ButtonCategory { Momentary, Event }
+    public enum POVCategory { POV1, POV2, POV3, POV4 }
+
+
+    public class DeviceNode
+    {
+        public string Title { get; set; }
+        public List<DeviceNode> Nodes { get; set; } = new List<DeviceNode>();
+        public List<BindingInfo> Bindings { get; set; } = new List<BindingInfo>();
     }
 
     #region Helper Classes

@@ -228,7 +228,7 @@ namespace Core_Interception
             return true;
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state)
+        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
         {
             int devId = deviceHandleToId[subReq.DeviceHandle] + 1;
             //Log("SetOutputState. Type: {0}, Index: {1}, State: {2}, Device: {3}", inputType, inputIndex, state, devId);
@@ -336,10 +336,10 @@ namespace Core_Interception
             {
                 mouseButtonList.SubBindings.Add(new BindingInfo()
                 {
-                    InputIndex = i,
+                    Index = i,
                     Title = mouseButtonNames[i],
-                    InputType = InputType.BUTTON,
-                    Category = BindingInfo.InputCategory.Button
+                    Type = BindingType.BUTTON,
+                    OldCategory = OldBindingCategory.Button
                 });
             }
             
@@ -369,10 +369,10 @@ namespace Core_Interception
                     continue;
                 //Log("Button Index: {0}, name: '{1}'", i, keyName);
                 keyboardList.SubBindings.Add(new BindingInfo() {
-                    InputIndex = i,
+                    Index = i,
                     Title = keyName,
-                    InputType = InputType.BUTTON,
-                    Category = BindingInfo.InputCategory.Button
+                    Type = BindingType.BUTTON,
+                    OldCategory = OldBindingCategory.Button
                 });
                 //buttonNames.Add(i, keyName);
 
@@ -387,10 +387,10 @@ namespace Core_Interception
                     continue;
                 //Log("ALT Button Index: {0}, name: '{1}'", i + 256, altKeyName);
                 keyboardList.SubBindings.Add(new BindingInfo() {
-                    InputIndex = i + 256,
+                    Index = i + 256,
                     Title = altKeyName,
-                    InputType = InputType.BUTTON,
-                    Category = BindingInfo.InputCategory.Button
+                    Type = BindingType.BUTTON,
+                    OldCategory = OldBindingCategory.Button
                 });
                 //Log("Button Index: {0}, name: '{1}'", i + 256, altKeyName);
                 //buttonNames.Add(i + 256, altKeyName);
