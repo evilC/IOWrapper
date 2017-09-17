@@ -172,7 +172,6 @@ namespace Providers
         public BindingType Type { get; set; }
         public int Index { get; set; }
         public int SubIndex { get; set; }
-        public List<BindingInfo> SubBindings { get; set; } = new List<BindingInfo>();
     }
 
     public class ButtonBindingInfo : BindingInfo
