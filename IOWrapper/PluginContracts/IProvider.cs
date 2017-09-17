@@ -171,7 +171,7 @@ namespace Providers
         public string Title { get; set; }
         public BindingType Type { get; set; }
         public int Index { get; set; }
-        //public int SubIndex { get; set; }
+        public int SubIndex { get; set; }
         public List<BindingInfo> SubBindings { get; set; } = new List<BindingInfo>();
     }
 
@@ -187,7 +187,7 @@ namespace Providers
 
     public class POVBindingInfo : BindingInfo
     {
-        public POVCategory Category { get; set; }
+        public ButtonCategory Category { get; set; } = ButtonCategory.Momentary;
     }
     #endregion
 
@@ -199,7 +199,7 @@ namespace Providers
 
     public enum AxisCategory { Signed, Unsigned, Delta }
     public enum ButtonCategory { Momentary, Event }
-    public enum POVCategory { POV1, POV2, POV3, POV4 }
+    //public enum POVCategory { POV1, POV2, POV3, POV4 }
     #endregion
     #endregion
 
