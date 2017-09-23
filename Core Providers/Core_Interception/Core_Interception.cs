@@ -38,6 +38,27 @@ namespace Core_Interception
 
         private static DeviceNode keyboardList;
         private static DeviceNode mouseButtonList;
+        private static DeviceNode mouseAxisList = new DeviceNode()
+        {
+            Title = "Axes",
+            Bindings = new List<BindingInfo>()
+            {
+                new BindingInfo()
+                {
+                    Title = "X",
+                    Index = 0,
+                    Type = BindingType.Axis,
+                    Category = BindingCategory.Delta,
+                },
+                new BindingInfo()
+                {
+                    Title = "Y",
+                    Index = 1,
+                    Type = BindingType.Axis,
+                    Category = BindingCategory.Delta,
+                }
+            }
+        };
         private static List<string> mouseButtonNames = new List<string>() { "Left Mouse", "Right Mouse", "Middle Mouse", "Side Button 1", "Side Button 2", "Wheel Up", "Wheel Down" };
 
         public Core_Interception()
@@ -326,7 +347,8 @@ namespace Core_Interception
                         //Bindings = { mouseButtonList }
                         Nodes = new List<DeviceNode>()
                         {
-                            mouseButtonList
+                            mouseButtonList,
+                            mouseAxisList
                         }
                     });
                     deviceHandleToId.Add(handle, i - 1);
