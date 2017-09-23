@@ -351,6 +351,7 @@ namespace SharpDX_DirectInput
             private Joystick joystick;
             private Guid stickGuid;
             private Dictionary<JoystickOffset, InputMonitor> monitors = new Dictionary<JoystickOffset, InputMonitor>();
+            private Dictionary<JoystickOffset, PovMonitor> povMonitors = new Dictionary<JoystickOffset, PovMonitor>();
 
             public StickMonitor(InputSubscriptionRequest subReq)
             {
@@ -406,12 +407,25 @@ namespace SharpDX_DirectInput
             public bool Add(InputSubscriptionRequest subReq)
             {
                 var inputId = GetInputIdentifier(subReq.Type, (int)subReq.Index);
-                if (!monitors.ContainsKey(inputId))
+                if (subReq.Type == BindingType.POV)
                 {
-                    monitors.Add(inputId, new InputMonitor());
+                    var pov = PovFromIndex(subReq.Index);
+                    if (!povMonitors.ContainsKey(inputId))
+                    {
+                        povMonitors.Add(inputId, new PovMonitor());
+                    }
+                    Log("Adding subscription to DI device Handle {0}, Type {1}, POV {2}, Input {3}", deviceHandle, subReq.Type.ToString(), pov, subReq.Index);
+                    return povMonitors[inputId].Add(subReq);
                 }
-                Log("Adding subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.Type.ToString(), subReq.Index);
-                return monitors[inputId].Add(subReq);
+                else
+                {
+                    if (!monitors.ContainsKey(inputId))
+                    {
+                        monitors.Add(inputId, new InputMonitor( subReq.Type));
+                    }
+                    Log("Adding subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.Type.ToString(), subReq.Index);
+                    return monitors[inputId].Add(subReq);
+                }
             }
 
             public bool Remove(InputSubscriptionRequest subReq)
@@ -446,12 +460,16 @@ namespace SharpDX_DirectInput
             {
                 if (joystick == null)
                     return;
-                var data = joystick.GetBufferedData();
+                JoystickUpdate[] data = joystick.GetBufferedData();
                 foreach (var state in data)
                 {
                     if (monitors.ContainsKey(state.Offset))
                     {
                         monitors[state.Offset].ProcessPollResult(state.Value);
+                    }
+                    else if (povMonitors.ContainsKey(state.Offset))
+                    {
+                        povMonitors[state.Offset].ProcessPollResult(state.Value);
                     }
                 }
                 Thread.Sleep(1);
@@ -463,12 +481,16 @@ namespace SharpDX_DirectInput
         public class InputMonitor
         {
             private Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
-            private BindingType inputType;
+            //private PovDirectionMonitor[] povDirectionMonitors = new PovDirectionMonitor[4];
+            private BindingType bindingType;
+
+            public InputMonitor(BindingType type)
+            {
+                bindingType = type;
+            }
 
             public bool Add(InputSubscriptionRequest subReq)
             {
-                inputType = subReq.Type;
-                //subscriptions.Add(subReq.SubscriberGuid, subReq.Callback);
                 subscriptions.Add(subReq.SubscriberGuid, subReq);
                 return true;
             }
@@ -499,13 +521,14 @@ namespace SharpDX_DirectInput
                     if (ActiveProfiles.Contains(subscription.ProfileGuid))
                     {
                         int reportedValue = value;
-                        switch (inputType)
+                        switch (bindingType)
                         {
                             case BindingType.Axis:
                                 // DirectInput reports as 0..65535 with center of 32767
                                 // All axes are normalized for now to int16 (-32768...32767) with center being 0
                                 // So for now, this means flipping the axis.
                                 reportedValue = (reportedValue - 32767) * -1;
+                                subscription.Callback(reportedValue);
                                 break;
                             case BindingType.Button:
                                 // DirectInput reports as 0..128 for buttons
@@ -513,23 +536,104 @@ namespace SharpDX_DirectInput
                                 // However, these could be handled like axes
                                 // For now, a button is a digital device, so convert to 1 or 0
                                 reportedValue /= 128;
+                                subscription.Callback(reportedValue);
                                 break;
-                            case BindingType.POV:
-                                break;
+                            //case BindingType.POV:
+                            //    // Up to four POVs need to be polled
+                            //    break;
                             default:
                                 break;
                         }
-                        subscription.Callback(reportedValue);
                     }
                 }
             }
         }
 
         #endregion
+
+        #region POV Input Detection
+        class PovMonitor
+        {
+            private PovDirectionMonitor[] directionMonitors = new PovDirectionMonitor[4];
+
+            public bool Add(InputSubscriptionRequest subReq)
+            {
+                var dir = DirFromIndex(subReq.Index);
+                if (directionMonitors[dir] == null)
+                {
+                    directionMonitors[dir] = new PovDirectionMonitor(dir);
+                }
+                return directionMonitors[dir].Add(subReq);
+            }
+
+            public void ProcessPollResult(int value)
+            {
+                foreach (var directionMonitor in directionMonitors)
+                {
+                    if (directionMonitor != null)
+                        directionMonitor.Poll(value);
+                }
+            }
+        }
+
+        class PovDirectionMonitor
+        {
+            private Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
+            private bool state = false;
+            private static int tolerance = 4500;
+            private int angle;
+
+            public PovDirectionMonitor(int dir)
+            {
+                angle = dir * 900;
+            }
+
+            public bool Add(InputSubscriptionRequest subReq)
+            {
+                subscriptions.Add(subReq.SubscriberGuid, subReq);
+                return true;
+            }
+
+            public void Poll(int value)
+            {
+                bool newState = ValueMatchesAngle(value);
+                if (newState != state)
+                {
+                    state = newState;
+                    var ret = Convert.ToInt32(state);
+                    foreach (var subscription in subscriptions.Values)
+                    {
+                        subscription.Callback(ret);
+                    }
+                }
+            }
+
+            private bool ValueMatchesAngle(int value)
+            {
+                if (value == -1)
+                    return false;
+                var diff = AngleDiff(value, angle);
+                return value != -1 && AngleDiff(value, angle) <= tolerance;
+            }
+
+            private int AngleDiff(int a, int b)
+            {
+                var result1 = a - b;
+                if (result1 < 0)
+                    result1 += 36000;
+
+                var result2 = b - a;
+                if (result2 < 0)
+                    result2 += 36000;
+
+                return Math.Min(result1, result2);
+            }
+        }
+        #endregion
         #endregion
 
         #region Helper Methods
-        
+
         /// <summary>
         /// Converts index (eg button 0, axis 1) into DirectX Offsets
         /// </summary>
@@ -651,16 +755,52 @@ namespace SharpDX_DirectInput
                     }
                 },
                 {
+                    //BindingType.POV, new List<JoystickOffset>()
+                    //{
+                    //    JoystickOffset.PointOfViewControllers0,
+                    //    JoystickOffset.PointOfViewControllers1,
+                    //    JoystickOffset.PointOfViewControllers2,
+                    //    JoystickOffset.PointOfViewControllers3
+                    //}
                     BindingType.POV, new List<JoystickOffset>()
                     {
                         JoystickOffset.PointOfViewControllers0,
+                        JoystickOffset.PointOfViewControllers0,
+                        JoystickOffset.PointOfViewControllers0,
+                        JoystickOffset.PointOfViewControllers0,
+                        JoystickOffset.PointOfViewControllers1,
+                        JoystickOffset.PointOfViewControllers1,
+                        JoystickOffset.PointOfViewControllers1,
                         JoystickOffset.PointOfViewControllers1,
                         JoystickOffset.PointOfViewControllers2,
+                        JoystickOffset.PointOfViewControllers2,
+                        JoystickOffset.PointOfViewControllers2,
+                        JoystickOffset.PointOfViewControllers2,
+                        JoystickOffset.PointOfViewControllers3,
+                        JoystickOffset.PointOfViewControllers3,
+                        JoystickOffset.PointOfViewControllers3,
                         JoystickOffset.PointOfViewControllers3
                     }
                 }
             };
         #endregion
 
+
+        private static int PovFromIndex(uint inputIndex)
+        {
+            return (int)(Math.Floor((decimal)(inputIndex / 4)));
+        }
+
+        private static int DirFromIndex(uint inputIndex)
+        {
+            return (int)inputIndex % 3;
+        }
+
+        private static int AngleToRawDir(int angle)
+        {
+            if (angle == -1)
+                return 0;
+            return angle / 4500;
+        }
     }
 }
