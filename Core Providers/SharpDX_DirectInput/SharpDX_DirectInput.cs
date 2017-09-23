@@ -255,6 +255,7 @@ namespace SharpDX_DirectInput
 
                 string handle = vidpid + "/";
                 var index = GetDeviceOrder(vidpid, deviceInstance.InstanceGuid);
+                handle += index;
 
                 var device = new IOWrapperDevice()
                 {
@@ -264,7 +265,6 @@ namespace SharpDX_DirectInput
                     API = "DirectInput",
                 };
 
-                handle += index;
                 // ----- Axes -----
                 var axisInfo = new DeviceNode()
                 {
@@ -543,7 +543,7 @@ namespace SharpDX_DirectInput
 
             public void ProcessPollResult(JoystickUpdate state)
             {
-                if (state.Offset >= JoystickOffset.PointOfViewControllers0 || state.Offset <= JoystickOffset.PointOfViewControllers3)
+                if (state.Offset >= JoystickOffset.PointOfViewControllers0 && state.Offset <= JoystickOffset.PointOfViewControllers3)
                 {
                     int pov = (state.Offset - JoystickOffset.PointOfViewControllers0) / 4;
                     if (povDirectionMonitors[pov] != null)
