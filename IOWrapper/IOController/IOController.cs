@@ -174,8 +174,8 @@ namespace IOWrapper
 
         public bool SetOutputstate(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
         {
-            return GetProvider(subReq.ProviderName)
-                .SetOutputState(subReq, inputType, inputIndex, state);
+            var provider = GetProvider(subReq.ProviderName);
+            return provider.SetOutputState(subReq, inputType, inputIndex, state);
         }
 
         private IProvider GetProvider(string providerName)
