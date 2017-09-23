@@ -33,11 +33,28 @@ namespace SharpDX_DirectInput
         private static Dictionary<string, Guid> handleToInstanceGuid;
         private ProviderReport providerReport;
 
+        static private List<BindingInfo>[] povBindingInfos = new List<BindingInfo>[4];
+
         //static private Dictionary<int, string> axisNames = new Dictionary<int, string>()
         //    { { 0, "X" }, { 1, "Y" }, { 2, "Z" }, { 3, "Rx" }, { 4, "Ry" }, { 5, "Rz" }, { 6, "Sl0" }, { 7, "Sl1" } };
 
         public SharpDX_DirectInput()
         {
+            for (int p = 0; p < 4; p++)
+            {
+                povBindingInfos[p] = new List<BindingInfo>();
+                for (int d = 0; d < 4; d++)
+                {
+                    povBindingInfos[p].Add(new BindingInfo()
+                    {
+                        Title = povDirections[d],
+                        Type = BindingType.POV,
+                        Category = BindingCategory.Momentary,
+                        Index = (p * 4) + d,
+                    });
+                }
+            }
+
             directInput = new DirectInput();
             queryDevices();
             pollThreadDesired = true;
@@ -290,6 +307,23 @@ namespace SharpDX_DirectInput
 
                 device.Nodes.Add(buttonInfo);
 
+                // ----- POVs -----
+                var povCount = joystick.Capabilities.PovCount;
+                var povsInfo = new DeviceNode()
+                {
+                    Title = "POVs"
+                };
+                for (int p = 0; p < povCount; p++)
+                {
+                    var povInfo = new DeviceNode()
+                    {
+                        Title = "POV #" + (p + 1),
+                        Bindings = povBindingInfos[p]
+                    };
+                    povsInfo.Nodes.Add(povInfo);
+                }
+                device.Nodes.Add(povsInfo);
+
                 providerReport.Devices.Add(handle, device);
 
                 handleToInstanceGuid.Add(handle, deviceInstance.InstanceGuid);
@@ -511,7 +545,7 @@ namespace SharpDX_DirectInput
             {
                 if (state.Offset >= JoystickOffset.PointOfViewControllers0 || state.Offset <= JoystickOffset.PointOfViewControllers3)
                 {
-                    int pov = state.Offset - JoystickOffset.PointOfViewControllers0;
+                    int pov = (state.Offset - JoystickOffset.PointOfViewControllers0) / 4;
                     if (povDirectionMonitors[pov] != null)
                         povDirectionMonitors[pov].Poll(state.Value);
                 }
@@ -758,6 +792,8 @@ namespace SharpDX_DirectInput
                     }
                 }
             };
+
+        private static List<string> povDirections = new List<string>() { "Up", "Right", "Down", "Left" };
         #endregion
 
 
