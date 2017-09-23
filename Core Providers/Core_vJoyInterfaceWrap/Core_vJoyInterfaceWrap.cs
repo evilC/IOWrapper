@@ -14,17 +14,31 @@ namespace Core_vJoyInterfaceWrap
     {
         bool disposed = false;
         public static vJoyInterfaceWrap.vJoy vJ = new vJoyInterfaceWrap.vJoy();
-        private List<Guid>[] deviceSubscriptions = new List<Guid>[16];
+        private VjoyDevice[] vJoyDevices = new VjoyDevice[16];
         private Dictionary<Guid, uint> subscriptionToDevice = new Dictionary<Guid, uint>();
-        private bool[] acquiredDevices = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
         static private Dictionary<int, string> axisNames = new Dictionary<int, string>()
             { { 0, "X" }, { 1,"Y" }, { 2, "Z" }, { 3, "Rx" }, { 4, "Ry" }, { 5, "Rz" }, { 6, "Sl0" }, { 7, "Sl1" } };
+        static private List<BindingInfo>[] povBindingInfos = new List<BindingInfo>[4];
 
         public Core_vJoyInterfaceWrap()
         {
             for (uint i = 0; i < 16; i++)
             {
-                deviceSubscriptions[i] = new List<Guid>();
+                vJoyDevices[i] = new VjoyDevice(i + 1);
+            }
+            for (int p = 0; p < 4; p++)
+            {
+                povBindingInfos[p] = new List<BindingInfo>();
+                for (int d = 0; d < 4; d++)
+                {
+                    povBindingInfos[p].Add(new BindingInfo()
+                    {
+                        Title = povDirections[d],
+                        Type = BindingType.POV,
+                        Category = BindingCategory.Momentary,
+                        Index = (p * 4) + d,
+                    });
+                }
             }
         }
 
@@ -44,61 +58,15 @@ namespace Core_vJoyInterfaceWrap
                 return;
             if (disposing)
             {
-                // Set deviceSubscriptions to null, so that SetAcquireState() will allow relinquishing of stick with subscriptions
-                deviceSubscriptions = null;
-                //foreach (var devId in acquiredDevices)
                 for (uint devId = 0; devId < 16; devId++)
                 {
-                    if (acquiredDevices[devId])
-                    {
-                        SetAcquireState(devId, false);
-                    }
+                    vJoyDevices[devId].Dispose();
                 }
+                vJoyDevices = null;
                 vJ = null;
             }
             disposed = true;
             Log("Provider {0} was Disposed", ProviderName);
-        }
-
-        private bool SetAcquireState(uint devId, bool state)
-        {
-            bool ret = false;
-            if (state && !acquiredDevices[devId])
-            {
-                try
-                {
-                    ret = vJ.AcquireVJD(devId + 1);
-                    acquiredDevices[devId] = true;
-                    Log("Aquired vJoy device {0}", devId + 1);
-                }
-                catch
-                {
-                    ret = false;
-                }
-            }
-            else if (!state && acquiredDevices[devId])
-            {
-                try
-                {
-                    // Do not allow Relinquishing of a stick if it has active subscriptions
-                    if (deviceSubscriptions != null && deviceSubscriptions[devId].Count > 0)
-                    {
-                        ret = false;
-                    }
-                    else
-                    {
-                        vJ.RelinquishVJD(devId + 1);
-                        acquiredDevices[devId] = false;
-                        ret = true;
-                        Log("Relinquished vJoy device {0}", devId + 1);
-                    }
-                }
-                catch
-                {
-                    ret = false;
-                }
-            }
-            return ret;
         }
 
         private static void Log(string formatStr, params object[] arguments)
@@ -123,7 +91,8 @@ namespace Core_vJoyInterfaceWrap
 
         public ProviderReport GetOutputList()
         {
-            var pr = new ProviderReport() {
+            var pr = new ProviderReport()
+            {
                 Title = "vJoy (Core)",
                 Description = "Allows emulation of DirectInput sticks. Requires driver from http://vjoystick.sourceforge.net/"
             };
@@ -141,12 +110,6 @@ namespace Core_vJoyInterfaceWrap
                         API = "vJoy",
                     };
 
-                    // ------ Axes ------
-                    //var axisList = new BindingInfo() {
-                    //    Title = "Axes",
-                    //    IsBinding = false
-                    //};
-
                     var axisNode = new DeviceNode()
                     {
                         Title = "Axes"
@@ -156,7 +119,8 @@ namespace Core_vJoyInterfaceWrap
                     {
                         if (vJ.GetVJDAxisExist(id, AxisIdToUsage[ax]))
                         {
-                            axisNode.Bindings.Add(new BindingInfo() {
+                            axisNode.Bindings.Add(new BindingInfo()
+                            {
                                 Index = ax,
                                 Title = axisNames[ax],
                                 Type = BindingType.Axis,
@@ -175,15 +139,36 @@ namespace Core_vJoyInterfaceWrap
                     };
                     for (int btn = 0; btn < length; btn++)
                     {
-                        buttonNode.Bindings.Add(new BindingInfo() {
+                        buttonNode.Bindings.Add(new BindingInfo()
+                        {
                             Index = btn,
                             Title = (btn + 1).ToString(),
                             Type = BindingType.Button,
                             Category = BindingCategory.Momentary
                         });
                     }
-
                     device.Nodes.Add(buttonNode);
+
+                    // ------ POVs ------
+                    var povCount = vJ.GetVJDContPovNumber(id);
+                    var povsNode = new DeviceNode()
+                    {
+                        Title = "POVs"
+                    };
+
+                    for (int p = 0; p < 4; p++)
+                    {
+                        var povNode = new DeviceNode()
+                        {
+                            Title = "POV #" + (p + 1)
+                        };
+                        for (int d = 0; d < 4; d++)
+                        {
+                            povNode.Bindings = povBindingInfos[d];
+                        }
+                        povsNode.Nodes.Add(povNode);
+                    }
+                    device.Nodes.Add(povsNode);
                     pr.Devices.Add(handle, device);
                 }
             }
@@ -203,8 +188,7 @@ namespace Core_vJoyInterfaceWrap
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
             var devId = DevIdFromHandle(subReq.DeviceHandle);
-            deviceSubscriptions[devId].Add(subReq.SubscriberGuid);
-            SetAcquireState(devId, true);
+            vJoyDevices[devId].Add(subReq);
             subscriptionToDevice.Add(subReq.SubscriberGuid, devId);
             return true;
         }
@@ -212,11 +196,7 @@ namespace Core_vJoyInterfaceWrap
         public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
             uint devId = subscriptionToDevice[subReq.SubscriberGuid];
-            deviceSubscriptions[devId].Remove(subReq.SubscriberGuid);
-            if (deviceSubscriptions[devId].Count == 0)
-            {
-                SetAcquireState(devId, false);
-            }
+            vJoyDevices[devId].Remove(subReq);
             subscriptionToDevice.Remove(subReq.SubscriberGuid);
             return true;
         }
@@ -224,7 +204,7 @@ namespace Core_vJoyInterfaceWrap
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
         {
             var devId = subscriptionToDevice[subReq.SubscriberGuid];
-            if (!acquiredDevices[devId])
+            if (!vJoyDevices[devId].IsAcquired)
             {
                 return false;
             }
@@ -237,6 +217,9 @@ namespace Core_vJoyInterfaceWrap
                     return vJ.SetBtn(state == 1, devId + 1, inputIndex + 1);
 
                 case BindingType.POV:
+                    var pov = (int)(Math.Floor((decimal)(inputIndex / 4)));
+                    var dir = (int)(inputIndex % 3);
+                    vJoyDevices[devId].SetPovState(pov, dir, state);
                     break;
 
                 default:
@@ -255,5 +238,114 @@ namespace Core_vJoyInterfaceWrap
             HID_USAGES.HID_USAGE_X, HID_USAGES.HID_USAGE_Y, HID_USAGES.HID_USAGE_Z,
             HID_USAGES.HID_USAGE_RX, HID_USAGES.HID_USAGE_RY, HID_USAGES.HID_USAGE_RZ,
             HID_USAGES.HID_USAGE_SL0, HID_USAGES.HID_USAGE_SL1 };
+
+        private class VjoyDevice
+        {
+            public bool IsAcquired { get { return acquired; } }
+
+            private uint deviceId = 0;
+            private bool acquired = false;
+            private Dictionary<Guid, OutputSubscriptionRequest> subReqs = new Dictionary<Guid, OutputSubscriptionRequest>();
+            private POVHandler[] povHandlers = new POVHandler[4];
+
+            public VjoyDevice(uint id)
+            {
+                deviceId = id;
+                for (uint i = 0; i < 4; i++)
+                {
+                    povHandlers[i] = new POVHandler(deviceId, i + 1);
+                }
+            }
+
+            public void Add(OutputSubscriptionRequest subReq)
+            {
+                if (subReqs.Count == 0)
+                {
+                    Acquire();
+                }
+                subReqs.Add(subReq.SubscriberGuid, subReq);
+            }
+
+            public void Remove(OutputSubscriptionRequest subReq)
+            {
+                subReqs.Remove(subReq.SubscriberGuid);
+                if (subReqs.Count == 0)
+                {
+                    Relinquish();
+                }
+            }
+
+            public void SetPovState(int pov, int dir, int state)
+            {
+                povHandlers[pov].SetState(dir, state);
+            }
+
+            public void Dispose()
+            {
+                Relinquish();
+            }
+
+            private void Acquire()
+            {
+                if (!acquired)
+                {
+                    vJ.AcquireVJD(deviceId);
+                    acquired = true;
+                    Log("Acquired vJoy device {0}", deviceId);
+                }
+            }
+
+            private void Relinquish()
+            {
+                if (acquired)
+                {
+                    vJ.RelinquishVJD(deviceId);
+                    acquired = false;
+                    Log("Relinquished vJoy device {0}", deviceId);
+                }
+            }
+
+            private class POVHandler
+            {
+                private int[] axes = new int[] { 0, 0 };
+                private uint deviceId = 0;
+                private uint povId = 0;
+
+                public POVHandler(uint device, uint pov)
+                {
+                    deviceId = device;
+                    povId = pov;
+                }
+
+                public void SetState(int dir, int state)
+                {
+                    axes[DirToAxis(dir)] = state;
+                    SetPovState();
+                }
+
+                private void SetPovState()
+                {
+                    var angle = (axes[0] == 0 && axes[1] == 0 ? -1 : GetAngle());
+                    vJ.SetContPov(angle, deviceId, povId);
+                }
+
+                private int DirToAxis(int dir)
+                {
+                    if (dir == 0 || dir == 2)
+                    {
+                        return 1;
+                    }
+                    return 0;
+                }
+
+                private int GetAngle()
+                {
+                    return (int)(Math.Atan2(axes[0], axes[1]) * (180 / Math.PI)) * 100;
+                }
+            }
+
+        }
+
+        private static List<string> povDirections = new List<string>() { "Up", "Right", "Down", "Left" };
     }
 }
