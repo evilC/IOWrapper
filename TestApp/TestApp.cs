@@ -71,6 +71,7 @@ class Tester
         };
         iow.SubscribeOutput(vJoyOutputSubReq);
 
+        /*
         #region DirectInput
         Console.WriteLine("Binding input to handle " + inputHandle);
         // Subscribe to the found stick
@@ -168,8 +169,10 @@ class Tester
         };
         ret = iow.SubscribeInput(xinputButton);
         #endregion
+        */
 
         #region Interception
+        /*
         interceptionKeyboardOutputSubReq = new OutputSubscriptionRequest()
         {
             SubscriberGuid = Guid.NewGuid(),
@@ -186,6 +189,25 @@ class Tester
             DeviceHandle = mouseHandle
         };
         iow.SubscribeOutput(interceptionKeyboardOutputSubReq);
+        */
+
+        var subInterceptionMouseDelta = new InputSubscriptionRequest()
+        {
+            ProfileGuid = Guid.NewGuid(),
+            SubscriberGuid = Guid.NewGuid(),
+            ProviderName = "Core_Interception",
+            Type = BindingType.Axis,
+            //DeviceHandle = keyboardHandle,
+            DeviceHandle = mouseHandle,
+            Index = 0, // X Axis
+            Callback = new Action<int>((value) =>
+            {
+                //iow.SetOutputstate(interceptionOutputSubReq, InputType.BUTTON, 17, value);
+                //iow.SetOutputstate(vJoyOutputSubReq, InputType.BUTTON, 0, value);
+                Console.WriteLine("Mouse Axis Value: " + value);
+            })
+        };
+        iow.SubscribeInput(subInterceptionMouseDelta);
 
         /*
         var subInterception = new InputSubscriptionRequest()
