@@ -87,6 +87,11 @@ namespace SharpDX_XInput
             , GamepadButtonFlags.Back, GamepadButtonFlags.Start
         };
 
+        private static List<GamepadButtonFlags> xinputPovDirectionIdentifiers = new List<GamepadButtonFlags>()
+        {
+            GamepadButtonFlags.DPadUp, GamepadButtonFlags.DPadRight, GamepadButtonFlags.DPadDown, GamepadButtonFlags.DPadLeft
+        };
+
 
         public SharpDX_XInput()
         {
@@ -320,6 +325,7 @@ namespace SharpDX_XInput
 
             private Dictionary<uint, InputMonitor> axisMonitors = new Dictionary<uint, InputMonitor>();
             private Dictionary<uint, InputMonitor> buttonMonitors = new Dictionary<uint, InputMonitor>();
+            private Dictionary<uint, InputMonitor> povDirectionMonitors = new Dictionary<uint, InputMonitor>();
 
             Dictionary<BindingType, Dictionary<uint, InputMonitor>> monitors = new Dictionary<BindingType, Dictionary<uint, InputMonitor>>();
 
@@ -329,6 +335,7 @@ namespace SharpDX_XInput
                 controller = new Controller((UserIndex)controllerId);
                 monitors.Add(BindingType.Axis, axisMonitors);
                 monitors.Add(BindingType.Button, buttonMonitors);
+                monitors.Add(BindingType.POV, povDirectionMonitors);
             }
 
             public bool Add(InputSubscriptionRequest subReq)
@@ -390,6 +397,13 @@ namespace SharpDX_XInput
                 foreach (var monitor in buttonMonitors)
                 {
                     var flag = state.Gamepad.Buttons & xinputButtonIdentifiers[(int)monitor.Key];
+                    var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
+                    monitor.Value.ProcessPollResult(value);
+                }
+
+                foreach (var monitor in povDirectionMonitors)
+                {
+                    var flag = state.Gamepad.Buttons & xinputPovDirectionIdentifiers[(int)monitor.Key];
                     var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
                     monitor.Value.ProcessPollResult(value);
                 }
