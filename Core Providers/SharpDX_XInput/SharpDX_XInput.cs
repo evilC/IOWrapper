@@ -62,6 +62,18 @@ namespace SharpDX_XInput
             }
         };
 
+        private readonly static DeviceNode povInfo = new DeviceNode()
+        {
+            Title = "D-Pad",
+            Bindings =
+            {
+                new BindingInfo() { Index = 0, Title = "Up", Type = BindingType.POV, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 2, Title = "Down", Type = BindingType.POV, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 3, Title = "Left", Type = BindingType.POV, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 1, Title = "Right", Type = BindingType.POV, Category = BindingCategory.Momentary },
+            }
+        };
+
         private static List<string> xinputAxisIdentifiers = new List<string>()
         {
             "LeftThumbX", "LeftThumbY", "LeftTrigger", "RightThumbX", "RightThumbY", "RightTrigger"
@@ -263,7 +275,7 @@ namespace SharpDX_XInput
                 DeviceName = "Xbox Controller " + (id + 1),
                 ProviderName = ProviderName,
                 API = "XInput",
-                Nodes = { buttonInfo, axisInfo }
+                Nodes = { buttonInfo, axisInfo , povInfo}
                 //ButtonCount = 11,
                 //ButtonList = buttonInfo,
                 //AxisList = axisInfo,
