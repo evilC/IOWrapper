@@ -225,7 +225,7 @@ namespace Providers
         /// </summary>
         public string DeviceHandle { get; set; }
 
-        //public int DeviceInstance { get; set; }
+        public int DeviceInstance { get; set; }
     }
 
     /// <summary>

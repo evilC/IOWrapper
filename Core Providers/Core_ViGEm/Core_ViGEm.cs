@@ -19,9 +19,45 @@ namespace Core_ViGEm
         private static readonly ViGEmClient client = new ViGEmClient();
         Xbox360Controller[] xboxControllers = new Xbox360Controller[4];
 
+        private readonly ProviderReport providerReport;
+
         public Core_ViGEm()
         {
-
+            providerReport = new ProviderReport()
+            {
+                Title = "ViGEm",
+                API = "ViGEm",
+                Description = "Allows emulation of Gamepads (Xbox, PS etc)",
+                ProviderDescriptor = new ProviderDescriptor()
+                {
+                    ProviderName = ProviderName
+                },
+            };
+            providerReport.Devices.Add("xb360", new DeviceReport()
+            {
+                DeviceName = "Xb360 Controller 1",
+                DeviceDescriptor = new DeviceDescriptor() { DeviceHandle = "xb360", DeviceInstance = 0 },
+                Nodes = new List<DeviceReportNode>()
+                {
+                    new DeviceReportNode()
+                    {
+                        Title = "Buttons",
+                        Bindings = new List<BindingReport>()
+                        {
+                            new BindingReport()
+                            {
+                                Title = "A",
+                                Category = BindingCategory.Momentary,
+                                BindingDescriptor = new BindingDescriptor()
+                                {
+                                    Type = BindingType.Button,
+                                    Index = 0
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         #region IProvider Members
@@ -35,7 +71,7 @@ namespace Core_ViGEm
 
         public ProviderReport GetOutputList()
         {
-            return null;
+            return providerReport;
         }
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
