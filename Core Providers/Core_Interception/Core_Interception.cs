@@ -36,9 +36,9 @@ namespace Core_Interception
         private Dictionary<int, MouseMonitor> MonitoredMice = new Dictionary<int, MouseMonitor>();
         private Dictionary<string, int> deviceHandleToId;
 
-        private static DeviceNode keyboardList;
-        private static DeviceNode mouseButtonList;
-        private static DeviceNode mouseAxisList = new DeviceNode()
+        private static DeviceReportNode keyboardList;
+        private static DeviceReportNode mouseButtonList;
+        private static DeviceReportNode mouseAxisList = new DeviceReportNode()
         {
             Title = "Axes",
             Bindings = new List<BindingInfo>()
@@ -310,7 +310,7 @@ namespace Core_Interception
                 if (name != "" && IsKeyboard(i) == 1)
                 {
                     handle = @"Keyboard\" + handle;
-                    providerReport.Devices.Add(handle, new IOWrapperDevice()
+                    providerReport.Devices.Add(handle, new DeviceReport()
                     {
                         DeviceName = name,
                         DeviceInfo = new DeviceInfo()
@@ -318,7 +318,7 @@ namespace Core_Interception
                             DeviceHandle = handle,
                         },
                         //Bindings = { keyboardList }
-                        Nodes = new List<DeviceNode>()
+                        Nodes = new List<DeviceReportNode>()
                         {
                             keyboardList
                         }
@@ -344,7 +344,7 @@ namespace Core_Interception
                 if (name != "" && IsMouse(i) == 1)
                 {
                     handle = @"Mouse\" + handle;
-                    providerReport.Devices.Add(handle, new IOWrapperDevice()
+                    providerReport.Devices.Add(handle, new DeviceReport()
                     {
                         DeviceName = name,
                         DeviceInfo = new DeviceInfo()
@@ -352,7 +352,7 @@ namespace Core_Interception
                             DeviceHandle = handle,
                         },
                         //Bindings = { mouseButtonList }
-                        Nodes = new List<DeviceNode>()
+                        Nodes = new List<DeviceReportNode>()
                         {
                             mouseButtonList,
                             mouseAxisList
@@ -368,7 +368,7 @@ namespace Core_Interception
 
         private void UpdateMouseButtonList()
         {
-            mouseButtonList = new DeviceNode()
+            mouseButtonList = new DeviceReportNode()
             {
                 Title = "Buttons"
             };
@@ -398,7 +398,7 @@ namespace Core_Interception
 
         private void UpdateKeyList()
         {
-            keyboardList = new DeviceNode() {
+            keyboardList = new DeviceReportNode() {
                 Title = "Keys"
             };
             //buttonNames = new Dictionary<int, string>();

@@ -107,7 +107,7 @@ namespace Core_vJoyInterfaceWrap
                 if (vJ.isVJDExists(id))
                 {
                     var handle = i.ToString();
-                    var device = new IOWrapperDevice()
+                    var device = new DeviceReport()
                     {
                         DeviceName = String.Format("vJoy Stick {0}", id),
                         DeviceInfo = new DeviceInfo()
@@ -116,7 +116,7 @@ namespace Core_vJoyInterfaceWrap
                         },
                     };
 
-                    var axisNode = new DeviceNode()
+                    var axisNode = new DeviceReportNode()
                     {
                         Title = "Axes"
                     };
@@ -139,7 +139,7 @@ namespace Core_vJoyInterfaceWrap
 
                     // ------ Buttons ------
                     var length = vJ.GetVJDButtonNumber(id);
-                    var buttonNode = new DeviceNode()
+                    var buttonNode = new DeviceReportNode()
                     {
                         Title = "Buttons"
                     };
@@ -157,14 +157,14 @@ namespace Core_vJoyInterfaceWrap
 
                     // ------ POVs ------
                     var povCount = vJ.GetVJDContPovNumber(id);
-                    var povsNode = new DeviceNode()
+                    var povsNode = new DeviceReportNode()
                     {
                         Title = "POVs"
                     };
 
                     for (int p = 0; p < 4; p++)
                     {
-                        var povNode = new DeviceNode()
+                        var povNode = new DeviceReportNode()
                         {
                             Title = "POV #" + (p + 1)
                         };

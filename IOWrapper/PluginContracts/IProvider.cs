@@ -74,8 +74,9 @@ namespace Providers
 
     // Reports allow the back-end to tell the front-end what capabilities are available
     #region Reporting
+
     #region Provider Report
-    
+
     /// <summary>
     /// Contains information about each provider
     /// </summary>
@@ -93,22 +94,15 @@ namespace Providers
 
         public ProviderInfo ProviderInfo { get; set; }
 
-        public SortedDictionary<string, IOWrapperDevice> Devices { get; set; }
-            = new SortedDictionary<string, IOWrapperDevice>();
+        public SortedDictionary<string, DeviceReport> Devices { get; set; }
+            = new SortedDictionary<string, DeviceReport>();
     }
+
     #endregion
 
-    #region Report Node
-    public class DeviceNode
-    {
-        public string Title { get; set; }
-        public List<DeviceNode> Nodes { get; set; } = new List<DeviceNode>();
-        public List<BindingInfo> Bindings { get; set; } = new List<BindingInfo>();
-    }
-    #endregion
+    #region Device Reports
 
-    #region Device Report
-    public class IOWrapperDevice
+    public class DeviceReport
     {
         /// <summary>
         /// The human-friendly name of the device
@@ -122,10 +116,46 @@ namespace Providers
         /// <summary>
         /// Nodes give the device report structure and allow the front-end to logically group items
         /// </summary>
-        public List<DeviceNode> Nodes { get; set; } = new List<DeviceNode>();
+        public List<DeviceReportNode> Nodes { get; set; } = new List<DeviceReportNode>();
     }
+
+    public class DeviceReportNode
+    {
+        public string Title { get; set; }
+        public List<DeviceReportNode> Nodes { get; set; } = new List<DeviceReportNode>();
+        public List<BindingInfo> Bindings { get; set; } = new List<BindingInfo>();
+    }
+
     #endregion
 
+    #endregion
+
+    #region Descriptors
+    // Descriptors are used to identify various aspects of a Binding
+    // These classes control routing of the subscription request
+
+    /// <summary>
+    /// Identifies the Provider responsible for handling the Binding
+    /// </summary>
+    public class ProviderInfo
+    {
+        /// <summary>
+        /// The API implementation that handles this input
+        /// This should be unique
+        /// </summary>
+        public string ProviderName { get; set; }
+
+        // ToDo: Move out of this class - is meta-data
+        /// <summary>
+        /// The underlying API that handles this input
+        /// It is intended that many providers could support a given API
+        /// </summary>
+        public string API { get; set; }
+    }
+
+    /// <summary>
+    /// Identifies a device within a Provider
+    /// </summary>
     public class DeviceInfo
     {
         /// <summary>
@@ -139,43 +169,38 @@ namespace Providers
         //public int DeviceInstance { get; set; }
     }
 
-    public class ProviderInfo
+    /// <summary>
+    /// Identifies a Binding within a Device
+    /// </summary>
+    public class BindingInfo
     {
-        /// <summary>
-        /// The API implementation that handles this input
-        /// This should be unique
-        /// </summary>
-        public string ProviderName { get; set; }
-
-        /// <summary>
-        /// The underlying API that handles this input
-        /// It is intended that many providers could support a given API
-        /// </summary>
-        public string API { get; set; }
+        public string Title { get; set; }   // ToDo: move, meta-data
+        public BindingType Type { get; set; }
+        public int Index { get; set; }
+        public int SubIndex { get; set; }
+        public BindingCategory Category { get; set; }   // ToDo: move, meta-data
     }
 
+    /// <summary>
+    /// Identifies the Subscriber
+    /// </summary>
     public class SubscriptionInfo
     {
         /// <summary>
-        /// Uniquely identifies a subscriber
+        /// Uniquely identifies a Binding - each subscriber can only be subscribed to one input / output
+        /// In an application such as UCR, each binding (GuiControl) can only be bound to one input / output
         /// </summary>
         public Guid SubscriberGuid { get; set; }
 
+        // ToDo: Move?
         /// <summary>
         /// Allows grouping of subscriptions for easy toggling on / off sets of subscriptions
         /// </summary>
         public Guid ProfileGuid { get; set; }
     }
+    #endregion
 
     #region Binding Report
-    public class BindingInfo
-    {
-        public string Title { get; set; }
-        public BindingType Type { get; set; }
-        public int Index { get; set; }
-        public int SubIndex { get; set; }
-        public BindingCategory Category { get; set; }
-    }
 
     /*
     public class ButtonBindingInfo : BindingInfo
@@ -194,7 +219,7 @@ namespace Providers
     }
     */
     #endregion
-    
+
     /// <summary>
     /// Enums used to categorize how a binding reports
     /// </summary>
@@ -205,7 +230,6 @@ namespace Providers
     //public enum AxisCategory { Signed, Unsigned, Delta }
     //public enum ButtonCategory { Momentary, Event }
     //public enum POVCategory { POV1, POV2, POV3, POV4 }
-    #endregion
     #endregion
 
     #region Helper Classes

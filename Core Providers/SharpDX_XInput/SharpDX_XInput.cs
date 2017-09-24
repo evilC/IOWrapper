@@ -30,7 +30,7 @@ namespace SharpDX_XInput
 
         ProviderReport providerReport;
 
-        private readonly static DeviceNode buttonInfo = new DeviceNode()
+        private readonly static DeviceReportNode buttonInfo = new DeviceReportNode()
         {
             Title = "Buttons",
             Bindings =
@@ -48,7 +48,7 @@ namespace SharpDX_XInput
             }
         };
 
-        private readonly static DeviceNode axisInfo = new DeviceNode()
+        private readonly static DeviceReportNode axisInfo = new DeviceReportNode()
         {
             Title = "Axes",
             Bindings = 
@@ -62,7 +62,7 @@ namespace SharpDX_XInput
             }
         };
 
-        private readonly static DeviceNode povInfo = new DeviceNode()
+        private readonly static DeviceReportNode povInfo = new DeviceReportNode()
         {
             Title = "D-Pad",
             Bindings =
@@ -277,9 +277,9 @@ namespace SharpDX_XInput
         }
         #endregion
 
-        private IOWrapperDevice BuildXInputDevice(int id)
+        private DeviceReport BuildXInputDevice(int id)
         {
-            return new IOWrapperDevice()
+            return new DeviceReport()
             {
                 DeviceName = "Xbox Controller " + (id + 1),
                 DeviceInfo = new DeviceInfo()

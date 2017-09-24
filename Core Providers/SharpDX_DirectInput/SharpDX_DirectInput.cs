@@ -262,7 +262,7 @@ namespace SharpDX_DirectInput
                 var index = GetDeviceOrder(vidpid, deviceInstance.InstanceGuid);
                 handle += index;
 
-                var device = new IOWrapperDevice()
+                var device = new DeviceReport()
                 {
                     DeviceName = deviceInstance.ProductName,
                     DeviceInfo = new DeviceInfo()
@@ -272,7 +272,7 @@ namespace SharpDX_DirectInput
                 };
 
                 // ----- Axes -----
-                var axisInfo = new DeviceNode()
+                var axisInfo = new DeviceReportNode()
                 {
                     Title = "Axes",
                 };
@@ -298,7 +298,7 @@ namespace SharpDX_DirectInput
 
                 // ----- Buttons -----
                 var length = joystick.Capabilities.ButtonCount;
-                var buttonInfo = new DeviceNode() {
+                var buttonInfo = new DeviceReportNode() {
                     Title = "Buttons"
                 };
                 for (int btn = 0; btn < length; btn++)
@@ -315,13 +315,13 @@ namespace SharpDX_DirectInput
 
                 // ----- POVs -----
                 var povCount = joystick.Capabilities.PovCount;
-                var povsInfo = new DeviceNode()
+                var povsInfo = new DeviceReportNode()
                 {
                     Title = "POVs"
                 };
                 for (int p = 0; p < povCount; p++)
                 {
-                    var povInfo = new DeviceNode()
+                    var povInfo = new DeviceReportNode()
                     {
                         Title = "POV #" + (p + 1),
                         Bindings = povBindingInfos[p]

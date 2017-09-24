@@ -41,7 +41,7 @@ namespace Core_Tobii_Interaction
                 },
             };
 
-            var gazeDevice = new IOWrapperDevice()
+            var gazeDevice = new DeviceReport()
             {
                 DeviceName = "Tobii Gaze Point",
                 DeviceInfo = new DeviceInfo()
@@ -50,7 +50,7 @@ namespace Core_Tobii_Interaction
                 },
             };
 
-            var gazeNode = new DeviceNode() { Title = "Axes" };
+            var gazeNode = new DeviceReportNode() { Title = "Axes" };
             for (int i = 0; i < 3; i++)
             {
                 gazeNode.Bindings.Add(new BindingInfo()
@@ -65,7 +65,7 @@ namespace Core_Tobii_Interaction
             providerReport.Devices.Add("GazePoint", gazeDevice);
 
 
-            var poseDevice = new IOWrapperDevice()
+            var poseDevice = new DeviceReport()
             {
                 DeviceName = "Tobii Head Pose",
                 DeviceInfo = new DeviceInfo()
@@ -74,7 +74,7 @@ namespace Core_Tobii_Interaction
                 },
             };
 
-            var poseNode = new DeviceNode() { Title = "Axes" };
+            var poseNode = new DeviceReportNode() { Title = "Axes" };
             for (int i = 0; i < 2; i++)
             {
                 poseNode.Bindings.Add(new BindingInfo()
