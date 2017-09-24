@@ -40,12 +40,12 @@ class Tester
 
         // Get handle to 1st DirectInput device
         string outputHandle = null;
-        try { inputHandle = inputList["SharpDX_DirectInput"].Devices.FirstOrDefault().Key; }
-        catch { return; }
+        //try { inputHandle = inputList["SharpDX_DirectInput"].Devices.FirstOrDefault().Key; }
+        //catch { return; }
         //inputHandle = "VID_1234&PID_BEAD/0";    // vJoy
         //inputHandle = "VID_0C45&PID_7403/0";   // XBox
         //inputHandle = "VID_054C&PID_09CC/0";   // DS4
-        //inputHandle = "VID_044F&PID_B10A/0";   // T.16000M
+        inputHandle = "VID_044F&PID_B10A/0";   // T.16000M
 
         // Get handle to 1st vJoy device
         try { outputHandle = outputList["Core_vJoyInterfaceWrap"].Devices.FirstOrDefault().Key; }
@@ -62,6 +62,7 @@ class Tester
 
         ToggleDefaultProfileState();
 
+        #region vJoy
         // Acquire vJoy stick
         vJoyOutputSubReq = new OutputSubscriptionRequest()
         {
@@ -70,10 +71,11 @@ class Tester
             DeviceHandle = outputHandle
         };
         iow.SubscribeOutput(vJoyOutputSubReq);
+        #endregion
 
-        /*
         #region DirectInput
         Console.WriteLine("Binding input to handle " + inputHandle);
+        /*
         // Subscribe to the found stick
         var diSub1 = new InputSubscriptionRequest()
         {
@@ -81,18 +83,23 @@ class Tester
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_DirectInput",
             Type = BindingType.Button,
+            //Type = BindingType.POV,
             DeviceHandle = inputHandle,
             Index = 0,
+            //Index = 4,
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 0 Value: " + value);
                 iow.SetOutputstate(vJoyOutputSubReq, BindingType.Button, 0, value);
+                //iow.SetOutputstate(vJoyOutputSubReq, BindingType.POV, 0, value);
                 //iow.SetOutputstate(interceptionKeyboardOutputSubReq, InputType.BUTTON, 311, value); // Right Alt
                 //iow.SetOutputstate(interceptionMouseOutputSubReq, InputType.BUTTON, 1, value); // RMB
             })
         };
         iow.SubscribeInput(diSub1);
+        */
 
+        /*
         Console.WriteLine("Binding input to handle " + inputHandle);
         // Subscribe to the found stick
         var diSub2 = new InputSubscriptionRequest()
@@ -107,6 +114,7 @@ class Tester
             {
                 Console.WriteLine("Button 1 Value: " + value);
                 iow.SetOutputstate(vJoyOutputSubReq, BindingType.Button, 0, value);
+                //iow.SetOutputstate(vJoyOutputSubReq, BindingType.POV, 1, value);
                 if (value == 1)
                 {
                     ToggleDefaultProfileState();
@@ -115,6 +123,9 @@ class Tester
         };
         iow.SubscribeInput(diSub2);
         iow.SetProfileState(diSub2.ProfileGuid, true);
+        */
+
+        /*
 
         var sub2 = new InputSubscriptionRequest()
         {
@@ -133,9 +144,11 @@ class Tester
         iow.SubscribeInput(sub2);
         //iow.UnsubscribeInput(sub2);
         //iow.SubscribeInput(sub2);
+        */
         #endregion
 
         #region XInput
+        /*
         var xinputAxis = new InputSubscriptionRequest()
         {
             ProfileGuid = defaultProfileGuid,
@@ -168,8 +181,27 @@ class Tester
             })
         };
         ret = iow.SubscribeInput(xinputButton);
-        #endregion
         */
+
+        /*
+        var xinputPov = new InputSubscriptionRequest()
+        {
+            ProfileGuid = defaultProfileGuid,
+            SubscriberGuid = Guid.NewGuid(),
+            ProviderName = "SharpDX_XInput",
+            Type = BindingType.POV,
+            DeviceHandle = "0",
+            Index = 0,
+            Callback = new Action<int>((value) =>
+            {
+                Console.WriteLine("XInput Button 0 Value: " + value);
+                //iow.SetOutputstate(vJoyOutputSubReq, BindingType.Button, 1, value);
+                iow.SetOutputstate(vJoyOutputSubReq, BindingType.POV, 8, value);
+            })
+        };
+        ret = iow.SubscribeInput(xinputPov);
+        */
+        #endregion
 
         #region Interception
         /*
@@ -191,6 +223,7 @@ class Tester
         iow.SubscribeOutput(interceptionKeyboardOutputSubReq);
         */
 
+        /*
         var subInterceptionMouseDelta = new InputSubscriptionRequest()
         {
             ProfileGuid = Guid.NewGuid(),
@@ -208,6 +241,7 @@ class Tester
             })
         };
         iow.SubscribeInput(subInterceptionMouseDelta);
+        */
 
         /*
         var subInterception = new InputSubscriptionRequest()
@@ -239,7 +273,7 @@ class Tester
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "Core_Tobii_Interaction",
             DeviceHandle = "GazePoint",
-            Type = BindingType.AXIS,
+            Type = BindingType.Axis,
             Index = 0,
             Callback = new Action<int>((value) =>
             {
@@ -247,13 +281,15 @@ class Tester
             })
         };
         iow.SubscribeInput(tobiiGazePointSubReq);
+        */
 
+        /*
         var tobiiHeadPoseSubReq = new InputSubscriptionRequest()
         {
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "Core_Tobii_Interaction",
             DeviceHandle = "HeadPose",
-            Type = BindingType.AXIS,
+            Type = BindingType.Axis,
             Index = 0,
             Callback = new Action<int>((value) =>
             {
