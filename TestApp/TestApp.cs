@@ -35,46 +35,39 @@ class Tester
         iow = new IOWrapper.IOController();
         var inputList = iow.GetInputList();
         var outputList = iow.GetOutputList();
-        string inputHandle = null;
+        string directInputHandle = null;
         bool ret;
-
-        // Get handle to 1st DirectInput device
-        string outputHandle = null;
-        //try { inputHandle = inputList["SharpDX_DirectInput"].Devices.FirstOrDefault().Key; }
-        //catch { return; }
-        //inputHandle = "VID_1234&PID_BEAD/0";    // vJoy
-        //inputHandle = "VID_0C45&PID_7403/0";   // XBox
-        //inputHandle = "VID_054C&PID_09CC/0";   // DS4
-        inputHandle = "VID_044F&PID_B10A/0";   // T.16000M
-
-        // Get handle to 1st vJoy device
-        try { outputHandle = outputList["Core_vJoyInterfaceWrap"].Devices.FirstOrDefault().Key; }
-        catch { return; }
-
-        // Get handle to Keyboard
-        string keyboardHandle = null;
-        try { keyboardHandle = inputList["Core_Interception"].Devices.FirstOrDefault().Key; }
-        catch { return; }
-        //keyboardHandle = @"Keyboard\HID\VID_04F2&PID_0112&REV_0103&MI_00";
-
-        string mouseHandle = null;
-        mouseHandle = @"Mouse\HID\VID_046D&PID_C531&REV_2100&MI_00";
 
         ToggleDefaultProfileState();
 
         #region vJoy
         // Acquire vJoy stick
+        string vjoyDeviceHandle = null;
+        // Get handle to 1st vJoy device
+        try { vjoyDeviceHandle = outputList["Core_vJoyInterfaceWrap"].Devices.FirstOrDefault().Key; }
+        catch { return; }
         vJoyOutputSubReq = new OutputSubscriptionRequest()
         {
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "Core_vJoyInterfaceWrap",
-            DeviceHandle = outputHandle
+            DeviceInfo = new DeviceInfo()
+            {
+                DeviceHandle = vjoyDeviceHandle
+            },
         };
         iow.SubscribeOutput(vJoyOutputSubReq);
         #endregion
 
         #region DirectInput
-        Console.WriteLine("Binding input to handle " + inputHandle);
+        // Get handle to 1st DirectInput device
+        //try { directInputHandle = inputList["SharpDX_DirectInput"].Devices.FirstOrDefault().Key; }
+        //catch { return; }
+        //directInputHandle = "VID_1234&PID_BEAD/0";    // vJoy
+        //directInputHandle = "VID_0C45&PID_7403/0";   // XBox
+        //directInputHandle = "VID_054C&PID_09CC/0";   // DS4
+        directInputHandle = "VID_044F&PID_B10A/0";   // T.16000M
+
+        Console.WriteLine("Binding input to handle " + directInputHandle);
         // Subscribe to the found stick
         var diSub1 = new InputSubscriptionRequest()
         {
@@ -88,7 +81,10 @@ class Tester
                 Index = 0,
                 //Index = 4,
             },
-            DeviceHandle = inputHandle,
+            DeviceInfo = new DeviceInfo()
+            {
+                DeviceHandle = directInputHandle,
+            },
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 0 Value: " + value);
@@ -98,16 +94,19 @@ class Tester
                 //iow.SetOutputstate(interceptionMouseOutputSubReq, InputType.BUTTON, 1, value); // RMB
             })
         };
-        //iow.SubscribeInput(diSub1);
+        iow.SubscribeInput(diSub1);
 
-        Console.WriteLine("Binding input to handle " + inputHandle);
+        Console.WriteLine("Binding input to handle " + directInputHandle);
         // Subscribe to the found stick
         var diSub2 = new InputSubscriptionRequest()
         {
             ProfileGuid = Guid.NewGuid(),
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_DirectInput",
-            DeviceHandle = inputHandle,
+            DeviceInfo = new DeviceInfo()
+            {
+                DeviceHandle = directInputHandle,
+            },
             BindingInfo = new BindingInfo()
             {
                 Type = BindingType.Button,
@@ -133,7 +132,10 @@ class Tester
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = defaultProfileGuid,
             ProviderName = "SharpDX_DirectInput",
-            DeviceHandle = inputHandle,
+            DeviceInfo = new DeviceInfo()
+            {
+                DeviceHandle = directInputHandle,
+            },
             BindingInfo = new BindingInfo()
             {
                 Type = BindingType.Axis,
@@ -156,7 +158,10 @@ class Tester
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_XInput",
-            DeviceHandle = "0",
+            DeviceInfo = new DeviceInfo()
+            {
+                DeviceHandle = "0",
+            },
             BindingInfo = new BindingInfo()
             {
                 Type = BindingType.Axis,
@@ -176,7 +181,10 @@ class Tester
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_XInput",
-            DeviceHandle = "0",
+            DeviceInfo = new DeviceInfo()
+            {
+                DeviceHandle = "0",
+            },
             BindingInfo = new BindingInfo()
             {
                 Type = BindingType.Button,
@@ -195,7 +203,10 @@ class Tester
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_XInput",
-            DeviceHandle = "0",
+            DeviceInfo = new DeviceInfo()
+            {
+                DeviceHandle = "0",
+            },
             BindingInfo = new BindingInfo()
             {
                 Type = BindingType.POV,
@@ -212,11 +223,30 @@ class Tester
         #endregion
 
         #region Interception
+        string keyboardHandle = null;
+        try { keyboardHandle = inputList["Core_Interception"].Devices.FirstOrDefault().Key; }
+        catch { return; }
+        //keyboardHandle = @"Keyboard\HID\VID_04F2&PID_0112&REV_0103&MI_00";
+        DeviceInfo interceptionKeyboard = new DeviceInfo()
+        {
+            DeviceHandle = keyboardHandle
+        };
+
+        string mouseHandle = null;
+        mouseHandle = @"Mouse\HID\VID_046D&PID_C531&REV_2100&MI_00";
+        DeviceInfo interceptionMouse = new DeviceInfo()
+        {
+            DeviceHandle = mouseHandle
+        };
+
         interceptionKeyboardOutputSubReq = new OutputSubscriptionRequest()
         {
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "Core_Interception",
-            DeviceHandle = keyboardHandle
+            DeviceInfo = new DeviceInfo()
+            {
+                DeviceHandle = keyboardHandle
+            },
         };
         //iow.SubscribeOutput(interceptionKeyboardOutputSubReq);
         //iow.UnsubscribeOutput(interceptionKeyboardOutputSubReq);
@@ -225,7 +255,10 @@ class Tester
         {
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "Core_Interception",
-            DeviceHandle = mouseHandle
+            DeviceInfo = new DeviceInfo()
+            {
+                DeviceHandle = mouseHandle
+            },
         };
         //iow.SubscribeOutput(interceptionKeyboardOutputSubReq);
 
@@ -234,8 +267,11 @@ class Tester
             ProfileGuid = Guid.NewGuid(),
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "Core_Interception",
-            //DeviceHandle = keyboardHandle,
-            DeviceHandle = mouseHandle,
+            DeviceInfo = new DeviceInfo()
+            {
+                //DeviceHandle = keyboardHandle,
+                DeviceHandle = mouseHandle,
+            },
             BindingInfo = new BindingInfo()
             {
                 Type = BindingType.Axis,
@@ -257,7 +293,10 @@ class Tester
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "Core_Interception",
             //DeviceHandle = keyboardHandle,
-            DeviceHandle = mouseHandle,
+            DeviceInfo = new DeviceInfo()
+            {
+                DeviceHandle = mouseHandle,
+            },
             BindingInfo = new BindingInfo()
             {
                 Type = BindingType.Button,

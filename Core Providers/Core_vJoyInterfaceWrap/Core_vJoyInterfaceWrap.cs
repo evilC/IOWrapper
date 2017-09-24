@@ -104,8 +104,11 @@ namespace Core_vJoyInterfaceWrap
                     var handle = i.ToString();
                     var device = new IOWrapperDevice()
                     {
-                        DeviceHandle = handle,
-                        DeviceName = String.Format("vJoy Stick {0}", id),
+                        DeviceInfo = new DeviceInfo()
+                        {
+                            DeviceHandle = handle,
+                            DeviceName = String.Format("vJoy Stick {0}", id),
+                        },
                         ProviderName = ProviderName,
                         API = "vJoy",
                     };
@@ -184,7 +187,7 @@ namespace Core_vJoyInterfaceWrap
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            var devId = DevIdFromHandle(subReq.DeviceHandle);
+            var devId = DevIdFromHandle(subReq.DeviceInfo.DeviceHandle);
             vJoyDevices[devId].Add(subReq);
             subscriptionToDevice.Add(subReq.SubscriberGuid, devId);
             return true;

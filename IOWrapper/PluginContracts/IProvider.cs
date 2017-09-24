@@ -41,10 +41,15 @@ namespace Providers
         /// </summary>
         public string ProviderName { get; set; }
 
+        ///// <summary>
+        ///// Identifies which Device this subscription is for
+        ///// </summary>
+        //public string DeviceHandle { get; set; }
+
         /// <summary>
         /// Identifies which Device this subscription is for
         /// </summary>
-        public string DeviceHandle { get; set; }
+        public DeviceInfo DeviceInfo { get; set; }
     }
 
     /// <summary>
@@ -133,18 +138,20 @@ namespace Providers
     #region Device Report
     public class IOWrapperDevice
     {
-        /// <summary>
-        /// The human-friendly name of the device
-        /// </summary>
-        public string DeviceName { get; set; }
+        ///// <summary>
+        ///// The human-friendly name of the device
+        ///// </summary>
+        //public string DeviceName { get; set; }
 
-        /// <summary>
-        /// A way to uniquely identify a device instance via it's API
-        /// Note that ideally all providers implementing the same API should ideally generate the same device handles
-        /// For something like RawInput or DirectInput, this would likely be based on VID/PID
-        /// For an ordered API like XInput, this would just be controller number
-        /// </summary>
-        public string DeviceHandle { get; set; }
+        ///// <summary>
+        ///// A way to uniquely identify a device instance via it's API
+        ///// Note that ideally all providers implementing the same API should ideally generate the same device handles
+        ///// For something like RawInput or DirectInput, this would likely be based on VID/PID
+        ///// For an ordered API like XInput, this would just be controller number
+        ///// </summary>
+        //public string DeviceHandle { get; set; }
+
+        public DeviceInfo DeviceInfo { get; set; }
 
         /// <summary>
         /// The API implementation that handles this input
@@ -166,6 +173,23 @@ namespace Providers
         public List<DeviceNode> Nodes { get; set; } = new List<DeviceNode>();
     }
     #endregion
+
+    public class DeviceInfo
+    {
+        /// <summary>
+        /// The human-friendly name of the device
+        /// </summary>
+        public string DeviceName { get; set; }
+
+        /// <summary>
+        /// A way to uniquely identify a device instance via it's API
+        /// Note that ideally all providers implementing the same API should ideally generate the same device handles
+        /// For something like RawInput or DirectInput, this would likely be based on VID/PID
+        /// For an ordered API like XInput, this would just be controller number
+        /// </summary>
+        public string DeviceHandle { get; set; }
+
+    }
 
     #region Binding Report
     public class BindingInfo

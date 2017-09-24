@@ -212,7 +212,7 @@ namespace SharpDX_XInput
             if (pollThreadActive)
                 SetPollThreadState(false);
 
-            var stickId = Convert.ToInt32(subReq.DeviceHandle);
+            var stickId = Convert.ToInt32(subReq.DeviceInfo.DeviceHandle);
             if (!MonitoredSticks.ContainsKey(stickId))
             {
                 MonitoredSticks.Add(stickId, new StickMonitor(stickId));
@@ -236,7 +236,7 @@ namespace SharpDX_XInput
                 SetPollThreadState(false);
 
             bool ret = false;
-            var stickId = Convert.ToInt32(subReq.DeviceHandle);
+            var stickId = Convert.ToInt32(subReq.DeviceInfo.DeviceHandle);
             if (MonitoredSticks.ContainsKey(stickId))
             {
                 // Remove from monitor lookup table
@@ -276,8 +276,11 @@ namespace SharpDX_XInput
         {
             return new IOWrapperDevice()
             {
-                DeviceHandle = id.ToString(),
-                DeviceName = "Xbox Controller " + (id + 1),
+                DeviceInfo = new DeviceInfo()
+                {
+                    DeviceHandle = id.ToString(),
+                    DeviceName = "Xbox Controller " + (id + 1),
+                },
                 ProviderName = ProviderName,
                 API = "XInput",
                 Nodes = { buttonInfo, axisInfo , povInfo}
@@ -419,14 +422,14 @@ namespace SharpDX_XInput
 
             public bool Add(InputSubscriptionRequest subReq)
             {
-                Log("XI adding subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceHandle, subReq.BindingInfo.Index, subReq.SubscriberGuid);
+                Log("XI adding subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceInfo.DeviceHandle, subReq.BindingInfo.Index, subReq.SubscriberGuid);
                 subscriptions.Add(subReq.SubscriberGuid, subReq);
                 return true;
             }
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
-                Log("XI removing subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceHandle, subReq.BindingInfo.Index, subReq.SubscriberGuid);
+                Log("XI removing subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceInfo.DeviceHandle, subReq.BindingInfo.Index, subReq.SubscriberGuid);
                 if (subscriptions.ContainsKey(subReq.SubscriberGuid))
                 {
                     return subscriptions.Remove(subReq.SubscriberGuid);

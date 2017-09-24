@@ -161,14 +161,14 @@ namespace Core_Interception
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
             bool ret = false;
-            if (deviceHandleToId.ContainsKey(subReq.DeviceHandle))
+            if (deviceHandleToId.ContainsKey(subReq.DeviceInfo.DeviceHandle))
             {
                 try
                 {
                     if (pollThreadRunning)
                         SetPollThreadState(false);
 
-                    var id = deviceHandleToId[subReq.DeviceHandle];
+                    var id = deviceHandleToId[subReq.DeviceInfo.DeviceHandle];
                     var devId = id + 1;
                     if (id < 10)
                     {
@@ -204,9 +204,9 @@ namespace Core_Interception
 
             try
             {
-                if (deviceHandleToId.ContainsKey(subReq.DeviceHandle))
+                if (deviceHandleToId.ContainsKey(subReq.DeviceInfo.DeviceHandle))
                 {
-                    var id = deviceHandleToId[subReq.DeviceHandle];
+                    var id = deviceHandleToId[subReq.DeviceInfo.DeviceHandle];
                     var devId = id + 1;
                     if (pollThreadRunning)
                         SetPollThreadState(false);
@@ -251,7 +251,7 @@ namespace Core_Interception
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
         {
-            int devId = deviceHandleToId[subReq.DeviceHandle] + 1;
+            int devId = deviceHandleToId[subReq.DeviceInfo.DeviceHandle] + 1;
             //Log("SetOutputState. Type: {0}, Index: {1}, State: {2}, Device: {3}", inputType, inputIndex, state, devId);
             Stroke stroke = new Stroke();
             if (devId < 11)
@@ -307,8 +307,11 @@ namespace Core_Interception
                     handle = @"Keyboard\" + handle;
                     providerReport.Devices.Add(handle, new IOWrapperDevice()
                     {
-                        DeviceHandle = handle,
-                        DeviceName = name,
+                        DeviceInfo = new DeviceInfo()
+                        {
+                            DeviceHandle = handle,
+                            DeviceName = name,
+                        },
                         ProviderName = ProviderName,
                         API = "Interception",
                         //Bindings = { keyboardList }
@@ -340,8 +343,11 @@ namespace Core_Interception
                     handle = @"Mouse\" + handle;
                     providerReport.Devices.Add(handle, new IOWrapperDevice()
                     {
-                        DeviceHandle = handle,
-                        DeviceName = name,
+                        DeviceInfo = new DeviceInfo()
+                        {
+                            DeviceHandle = handle,
+                            DeviceName = name,
+                        },
                         ProviderName = ProviderName,
                         API = "Interception",
                         //Bindings = { mouseButtonList }

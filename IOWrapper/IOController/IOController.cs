@@ -101,7 +101,7 @@ namespace IOWrapper
         {
             // Clone subreq before passing to provider, so if it gets altered outside, it does not affect the copy
             var subReq = _subReq.Clone();
-            Log("SubscribeInput: Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceHandle, subReq.BindingInfo.Index, subReq.SubscriberGuid);
+            Log("SubscribeInput: Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceInfo.DeviceHandle, subReq.BindingInfo.Index, subReq.SubscriberGuid);
             if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriberGuid))
             {
                 // If this Subscriber has an existing subscription...
@@ -122,7 +122,7 @@ namespace IOWrapper
         public bool UnsubscribeInput(InputSubscriptionRequest _subReq)
         {
             var subReq = _subReq.Clone();
-            Log("UnsubscribeInput: Provider {0}, Device {1}, Input {2}", subReq.ProviderName, subReq.DeviceHandle, subReq.BindingInfo.Index);
+            Log("UnsubscribeInput: Provider {0}, Device {1}, Input {2}", subReq.ProviderName, subReq.DeviceInfo.DeviceHandle, subReq.BindingInfo.Index);
             var ret = false;
             if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriberGuid))
             {

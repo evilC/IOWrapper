@@ -173,11 +173,11 @@ namespace SharpDX_DirectInput
             if (pollThreadActive)
                 SetPollThreadState(false);
 
-            if (!MonitoredSticks.ContainsKey(subReq.DeviceHandle))
+            if (!MonitoredSticks.ContainsKey(subReq.DeviceInfo.DeviceHandle))
             {
-                MonitoredSticks.Add(subReq.DeviceHandle, new StickMonitor(subReq));
+                MonitoredSticks.Add(subReq.DeviceInfo.DeviceHandle, new StickMonitor(subReq));
             }
-            var success =  MonitoredSticks[subReq.DeviceHandle].Add(subReq);
+            var success =  MonitoredSticks[subReq.DeviceInfo.DeviceHandle].Add(subReq);
             if (success)
             {
                 if (prev_state)
@@ -196,15 +196,15 @@ namespace SharpDX_DirectInput
             if (pollThreadActive)
                 SetPollThreadState(false);
 
-            if (MonitoredSticks.ContainsKey(subReq.DeviceHandle))
+            if (MonitoredSticks.ContainsKey(subReq.DeviceInfo.DeviceHandle))
             {
-                ret = MonitoredSticks[subReq.DeviceHandle].Remove(subReq);
+                ret = MonitoredSticks[subReq.DeviceInfo.DeviceHandle].Remove(subReq);
                 if (ret)
                 {
-                    if (!MonitoredSticks[subReq.DeviceHandle].HasSubscriptions())
+                    if (!MonitoredSticks[subReq.DeviceInfo.DeviceHandle].HasSubscriptions())
                     {
-                        MonitoredSticks[subReq.DeviceHandle].Dispose();
-                        MonitoredSticks.Remove(subReq.DeviceHandle);
+                        MonitoredSticks[subReq.DeviceInfo.DeviceHandle].Dispose();
+                        MonitoredSticks.Remove(subReq.DeviceInfo.DeviceHandle);
                     }
                 }
             }
@@ -259,8 +259,11 @@ namespace SharpDX_DirectInput
 
                 var device = new IOWrapperDevice()
                 {
-                    DeviceHandle = handle,
-                    DeviceName = deviceInstance.ProductName,
+                    DeviceInfo = new DeviceInfo()
+                    {
+                        DeviceHandle = handle,
+                        DeviceName = deviceInstance.ProductName,
+                    },
                     ProviderName = ProviderName,
                     API = "DirectInput",
                 };
@@ -387,7 +390,7 @@ namespace SharpDX_DirectInput
 
             public StickMonitor(InputSubscriptionRequest subReq)
             {
-                deviceHandle = subReq.DeviceHandle;
+                deviceHandle = subReq.DeviceInfo.DeviceHandle;
                 if (handleToInstanceGuid.ContainsKey(deviceHandle))
                 {
                     SetAcquireState(true);

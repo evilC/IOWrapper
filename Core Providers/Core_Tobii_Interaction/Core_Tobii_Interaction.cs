@@ -39,8 +39,11 @@ namespace Core_Tobii_Interaction
             var gazeDevice = new IOWrapperDevice()
             {
                 ProviderName = ProviderName,
-                DeviceName = "Tobii Gaze Point",
-                DeviceHandle = "GazePoint",
+                DeviceInfo = new DeviceInfo()
+                {
+                    DeviceName = "Tobii Gaze Point",
+                    DeviceHandle = "GazePoint",
+                },
                 API = "Tobii.Interaction",
             };
 
@@ -61,9 +64,12 @@ namespace Core_Tobii_Interaction
 
             var poseDevice = new IOWrapperDevice()
             {
+                DeviceInfo = new DeviceInfo()
+                {
+                    DeviceName = "Tobii Head Pose",
+                    DeviceHandle = "HeadPose",
+                },
                 ProviderName = ProviderName,
-                DeviceName = "Tobii Head Pose",
-                DeviceHandle = "HeadPose",
                 API = "Tobii.Interaction"
             };
 
@@ -101,9 +107,9 @@ namespace Core_Tobii_Interaction
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            if (streamHandlers.ContainsKey(subReq.DeviceHandle))
+            if (streamHandlers.ContainsKey(subReq.DeviceInfo.DeviceHandle))
             {
-                streamHandlers[subReq.DeviceHandle].SubscribeInput(subReq);
+                streamHandlers[subReq.DeviceInfo.DeviceHandle].SubscribeInput(subReq);
                 return true;
             }
             return false;
