@@ -1,5 +1,7 @@
-﻿using Nefarius.ViGEm.Targets;
-using Nefarius.ViGEm.Targets.Xbox360;
+﻿using Nefarius.ViGEm.Client;
+using Nefarius.ViGEm.Client.Targets;
+using Nefarius.ViGEm.Client.Targets.DualShock4;
+using Nefarius.ViGEm.Client.Targets.Xbox360;
 using Providers;
 using System;
 using System.Collections.Generic;
@@ -14,10 +16,13 @@ namespace Core_ViGEm
     //public class Core_ViGEm : IProvider
     public class Core_ViGEm
     {
+        //private static readonly ViGEmClient client = new ViGEmClient();
+
         public Core_ViGEm()
         {
-            var x360 = new Xbox360Controller();
-            x360.PlugIn();
+            var client = new ViGEmClient();
+            var x360 = new Xbox360Controller(client);
+            x360.Connect();
             var report1 = new Xbox360Report();
             report1.SetButtons(Xbox360Buttons.A, Xbox360Buttons.B);
             x360.SendReport(report1);
@@ -39,7 +44,7 @@ namespace Core_ViGEm
             return null;
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
+        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
             return false;
         }
