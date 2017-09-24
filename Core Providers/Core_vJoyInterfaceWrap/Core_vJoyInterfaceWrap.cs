@@ -162,10 +162,7 @@ namespace Core_vJoyInterfaceWrap
                         {
                             Title = "POV #" + (p + 1)
                         };
-                        for (int d = 0; d < 4; d++)
-                        {
-                            povNode.Bindings = povBindingInfos[d];
-                        }
+                        povNode.Bindings = povBindingInfos[p];
                         povsNode.Nodes.Add(povNode);
                     }
                     device.Nodes.Add(povsNode);
@@ -218,7 +215,8 @@ namespace Core_vJoyInterfaceWrap
 
                 case BindingType.POV:
                     var pov = (int)(Math.Floor((decimal)(inputIndex / 4)));
-                    var dir = (int)(inputIndex % 3);
+                    var dir = (int)(inputIndex % 4);
+                    //Log("vJoy POV output requested - POV {0}, Dir {1}, State {2}", pov, dir, state);
                     vJoyDevices[devId].SetPovState(pov, dir, state);
                     break;
 
@@ -319,13 +317,24 @@ namespace Core_vJoyInterfaceWrap
 
                 public void SetState(int dir, int state)
                 {
-                    axes[DirToAxis(dir)] = state;
+                    var axis = DirToAxis(dir);
+                    var vector = DirAndAxisToVector(dir, axis);
+                    //Log("POV Dir: {0} Axis: {1}, Vector: {2}", dir, axis, vector);
+                    axes[axis] = state == 0 ? 0 : vector;
                     SetPovState();
+                }
+
+                private int DirAndAxisToVector(int dir, int axis)
+                {
+                    if (dir == 0 || dir == 1)
+                        return 1;
+                    return -1;
                 }
 
                 private void SetPovState()
                 {
                     var angle = (axes[0] == 0 && axes[1] == 0 ? -1 : GetAngle());
+                    //Log("Pov Angle: {0}", angle);
                     vJ.SetContPov(angle, deviceId, povId);
                 }
 
@@ -340,7 +349,10 @@ namespace Core_vJoyInterfaceWrap
 
                 private int GetAngle()
                 {
-                    return (int)(Math.Atan2(axes[0], axes[1]) * (180 / Math.PI)) * 100;
+                    int angle = (int)(Math.Atan2(axes[0], axes[1]) * (180 / Math.PI)) * 100;
+                    if (angle < 0)
+                        angle = 36000 + angle;
+                    return angle;
                 }
             }
 
