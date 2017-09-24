@@ -12,22 +12,16 @@ using System.Threading.Tasks;
 
 namespace Core_ViGEm
 {
-    //[Export(typeof(IProvider))]
-    //public class Core_ViGEm : IProvider
-    public class Core_ViGEm
+    [Export(typeof(IProvider))]
+    public class Core_ViGEm : IProvider
+    //public class Core_ViGEm
     {
-        //private static readonly ViGEmClient client = new ViGEmClient();
+        private static readonly ViGEmClient client = new ViGEmClient();
+        Xbox360Controller[] xboxControllers = new Xbox360Controller[4];
 
         public Core_ViGEm()
         {
-            var client = new ViGEmClient();
-            var x360 = new Xbox360Controller(client);
-            x360.Connect();
-            var report1 = new Xbox360Report();
-            report1.SetButtons(Xbox360Buttons.A, Xbox360Buttons.B);
-            x360.SendReport(report1);
-            var report2 = new Xbox360Report();
-            x360.SendReport(report2);
+
         }
 
         #region IProvider Members
@@ -46,6 +40,12 @@ namespace Core_ViGEm
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
+            var report = new Xbox360Report();
+            if (state != 0)
+            {
+                report.SetButtons(new Xbox360Buttons[] { Xbox360Buttons.A });
+            }
+            xboxControllers[0].SendReport(report);
             return false;
         }
 
@@ -61,7 +61,9 @@ namespace Core_ViGEm
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            return false;
+            xboxControllers[0] = new Xbox360Controller(client);
+            xboxControllers[0].Connect();
+            return true;
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
@@ -71,6 +73,11 @@ namespace Core_ViGEm
 
         public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
+            if (xboxControllers[0] != null)
+            {
+                xboxControllers[0].Disconnect();
+                return true;
+            }
             return false;
         }
         #endregion

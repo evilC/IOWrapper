@@ -26,6 +26,8 @@ class Tester
     private OutputSubscriptionRequest vJoyOutputSubReq;
     private OutputSubscriptionRequest interceptionKeyboardOutputSubReq;
     private OutputSubscriptionRequest interceptionMouseOutputSubReq;
+    private OutputSubscriptionRequest viGemXboxOutputSubReq;
+
     bool defaultProfileState = false;
     Guid defaultProfileGuid = Guid.NewGuid();
     IOWrapper.IOController iow;
@@ -35,6 +37,7 @@ class Tester
     ProviderDescriptor vjoyProvider = new ProviderDescriptor() { ProviderName = "Core_vJoyInterfaceWrap" };
     ProviderDescriptor interceptionProvider = new ProviderDescriptor() { ProviderName = "Core_Interception" };
     ProviderDescriptor tobiiProvider = new ProviderDescriptor() { ProviderName = "Core_Tobii_Interaction" };
+    ProviderDescriptor vigemProvider = new ProviderDescriptor() { ProviderName = "Core_ViGEm" };
 
     BindingDescriptor buttonOneDescriptor = new BindingDescriptor() { Index = 0, Type = BindingType.Button };
     BindingDescriptor buttonTwoDescriptor = new BindingDescriptor() { Index = 1, Type = BindingType.Button };
@@ -109,7 +112,8 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 0 Value: " + value);
-                iow.SetOutputstate(vJoyOutputSubReq, buttonOneDescriptor, value);
+                //iow.SetOutputstate(vJoyOutputSubReq, buttonOneDescriptor, value);
+                iow.SetOutputstate(viGemXboxOutputSubReq, buttonOneDescriptor, value);
                 //iow.SetOutputstate(vJoyOutputSubReq, povOneUpDescriptor, value);
                 //iow.SetOutputstate(interceptionKeyboardOutputSubReq, new BindingDescriptor() { Type = BindingType.Button, Index = 311 }, value); // Right Alt
                 //iow.SetOutputstate(interceptionMouseOutputSubReq, new BindingDescriptor() { Type = BindingType.Button, Index = 1 }, value); // RMB
@@ -411,6 +415,18 @@ class Tester
             })
         };
         //iow.SubscribeInput(tobiiHeadPoseSubReq);
+        #endregion
+
+        #region ViGEm
+        viGemXboxOutputSubReq = new OutputSubscriptionRequest()
+        {
+            SubscriptionDescriptor = new SubscriptionDescriptor()
+            {
+                SubscriberGuid = Guid.NewGuid(),
+            },
+            ProviderDescriptor = vigemProvider,
+        };
+        iow.SubscribeOutput(viGemXboxOutputSubReq);
         #endregion
     }
 
