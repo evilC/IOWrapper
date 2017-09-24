@@ -30,7 +30,12 @@ namespace SharpDX_XInput
 
         ProviderReport providerReport;
 
-        private readonly static DeviceReportNode buttonInfo = new DeviceReportNode()
+        private static List<string> buttonNames = new List<string>() { "A", "B", "X", "Y", "LB", "RB", "LS", "RS", "Back", "Start" };
+        private static List<string> axisNames = new List<string>() { "LX", "LY", "RX", "RY", "LT", "RT"};
+        private static List<string> povNames = new List<string>() { "Up", "Right", "Down", "Left" };
+
+        private static DeviceReportNode buttonInfo;
+        /*= new DeviceReportNode()
         {
             Title = "Buttons",
             Bindings =
@@ -46,9 +51,10 @@ namespace SharpDX_XInput
                 new BindingInfo() { Index = 8, Title = "Back", Type = BindingType.Button, Category = BindingCategory.Momentary },
                 new BindingInfo() { Index = 9, Title = "Start", Type = BindingType.Button, Category = BindingCategory.Momentary },
             }
-        };
+        };*/
 
-        private readonly static DeviceReportNode axisInfo = new DeviceReportNode()
+        private static DeviceReportNode axisInfo;
+        /*= new DeviceReportNode()
         {
             Title = "Axes",
             Bindings = 
@@ -60,9 +66,10 @@ namespace SharpDX_XInput
                 new BindingInfo() { Index = 4, Title = "LT", Type = BindingType.Axis, Category = BindingCategory.Unsigned },
                 new BindingInfo() { Index = 5, Title = "RT", Type = BindingType.Axis, Category = BindingCategory.Unsigned },
             }
-        };
+        };*/
 
-        private readonly static DeviceReportNode povInfo = new DeviceReportNode()
+        private static DeviceReportNode povInfo;
+        /*= new DeviceReportNode()
         {
             Title = "D-Pad",
             Bindings =
@@ -73,6 +80,7 @@ namespace SharpDX_XInput
                 new BindingInfo() { Index = 1, Title = "Right", Type = BindingType.POV, Category = BindingCategory.Momentary },
             }
         };
+        */
 
         private static List<string> xinputAxisIdentifiers = new List<string>()
         {
@@ -95,10 +103,68 @@ namespace SharpDX_XInput
 
         public SharpDX_XInput()
         {
+            BuildButtonList();
             pollThreadDesired = true;
             QueryDevices();
             pollThread = new Thread(PollThread);
             pollThread.Start();
+        }
+
+        private void BuildButtonList()
+        {
+            buttonInfo = new DeviceReportNode()
+            {
+                Title = "Buttons"
+            };
+            for (int b = 0; b < 10; b++)
+            {
+                buttonInfo.Bindings.Add(new BindingReport()
+                {
+                    Title = buttonNames[b],
+                    Category = BindingCategory.Momentary,
+                    BindingInfo = new BindingInfo()
+                    {
+                        Index = b,
+                        Type = BindingType.Button,
+                    }
+                });
+            }
+
+            axisInfo = new DeviceReportNode()
+            {
+                Title = "Axes"
+            };
+            for (int a = 0; a < 6; a++)
+            {
+                axisInfo.Bindings.Add(new BindingReport()
+                {
+                    Title = axisNames[a],
+                    Category = ( a < 4 ? BindingCategory.Signed : BindingCategory.Unsigned),
+                    BindingInfo = new BindingInfo()
+                    {
+                        Index = a,
+                        Type = BindingType.Axis,
+                    }
+                });
+            }
+
+            povInfo = new DeviceReportNode()
+            {
+                Title = "DPad"
+            };
+            for (int d = 0; d < 4; d++)
+            {
+                povInfo.Bindings.Add(new BindingReport()
+                {
+                    Title = povNames[d],
+                    Category = BindingCategory.Momentary,
+                    BindingInfo = new BindingInfo()
+                    {
+                        Index = d,
+                        Type = BindingType.POV,
+                    }
+                });
+            }
         }
 
         public void Dispose()

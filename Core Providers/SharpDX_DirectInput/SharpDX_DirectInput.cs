@@ -33,7 +33,7 @@ namespace SharpDX_DirectInput
         private static Dictionary<string, Guid> handleToInstanceGuid;
         private ProviderReport providerReport;
 
-        static private List<BindingInfo>[] povBindingInfos = new List<BindingInfo>[4];
+        static private List<BindingReport>[] povBindingInfos = new List<BindingReport>[4];
 
         //static private Dictionary<int, string> axisNames = new Dictionary<int, string>()
         //    { { 0, "X" }, { 1, "Y" }, { 2, "Z" }, { 3, "Rx" }, { 4, "Ry" }, { 5, "Rz" }, { 6, "Sl0" }, { 7, "Sl1" } };
@@ -42,15 +42,18 @@ namespace SharpDX_DirectInput
         {
             for (int p = 0; p < 4; p++)
             {
-                povBindingInfos[p] = new List<BindingInfo>();
+                povBindingInfos[p] = new List<BindingReport>();
                 for (int d = 0; d < 4; d++)
                 {
-                    povBindingInfos[p].Add(new BindingInfo()
+                    povBindingInfos[p].Add(new BindingReport()
                     {
                         Title = povDirections[d],
-                        Type = BindingType.POV,
                         Category = BindingCategory.Momentary,
-                        Index = (p * 4) + d,
+                        BindingInfo = new BindingInfo()
+                        {
+                            Type = BindingType.POV,
+                            Index = (p * 4) + d,
+                        }
                     });
                 }
             }
@@ -283,12 +286,16 @@ namespace SharpDX_DirectInput
                     try
                     {
                         var deviceInfo = joystick.GetObjectInfoByName(directInputMappings[BindingType.Axis][i].ToString());
-                        axisInfo.Bindings.Add(new BindingInfo() {
-                            Index = i,
-                            //Name = axisNames[i],
+                        axisInfo.Bindings.Add(new BindingReport()
+                        {
                             Title = deviceInfo.Name,
-                            Type = BindingType.Axis,
-                            Category = BindingCategory.Signed
+                            Category = BindingCategory.Signed,
+                            BindingInfo = new BindingInfo()
+                            {
+                                Index = i,
+                                //Name = axisNames[i],
+                                Type = BindingType.Axis,
+                            }
                         });
                     }
                     catch { }
@@ -303,11 +310,15 @@ namespace SharpDX_DirectInput
                 };
                 for (int btn = 0; btn < length; btn++)
                 {
-                    buttonInfo.Bindings.Add(new BindingInfo() {
-                        Index = btn,
+                    buttonInfo.Bindings.Add(new BindingReport()
+                    {
                         Title = (btn + 1).ToString(),
-                        Type = BindingType.Button,
-                        Category = BindingCategory.Momentary
+                        Category = BindingCategory.Momentary,
+                        BindingInfo = new BindingInfo()
+                        {
+                            Index = btn,
+                            Type = BindingType.Button,
+                        }
                     });
                 }
 

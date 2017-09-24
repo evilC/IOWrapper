@@ -123,9 +123,19 @@ namespace Providers
     {
         public string Title { get; set; }
         public List<DeviceReportNode> Nodes { get; set; } = new List<DeviceReportNode>();
-        public List<BindingInfo> Bindings { get; set; } = new List<BindingInfo>();
+        public List<BindingReport> Bindings { get; set; } = new List<BindingReport>();
     }
 
+    #endregion
+
+    #region Binding Report
+
+    public class BindingReport
+    {
+        public string Title { get; set; }   // ToDo: move, meta-data
+        public BindingCategory Category { get; set; }   // ToDo: move, meta-data
+        public BindingInfo BindingInfo { get; set; }
+    }
     #endregion
 
     #endregion
@@ -174,11 +184,9 @@ namespace Providers
     /// </summary>
     public class BindingInfo
     {
-        public string Title { get; set; }   // ToDo: move, meta-data
         public BindingType Type { get; set; }
         public int Index { get; set; }
         public int SubIndex { get; set; }
-        public BindingCategory Category { get; set; }   // ToDo: move, meta-data
     }
 
     /// <summary>
@@ -198,26 +206,6 @@ namespace Providers
         /// </summary>
         public Guid ProfileGuid { get; set; }
     }
-    #endregion
-
-    #region Binding Report
-
-    /*
-    public class ButtonBindingInfo : BindingInfo
-    {
-        public ButtonCategory Category { get; set; }
-    }
-
-    public class AxisBindingInfo : BindingInfo
-    {
-        public AxisCategory Category { get; set; }
-    }
-
-    public class POVBindingInfo : BindingInfo
-    {
-        public ButtonCategory Category { get; set; } = ButtonCategory.Momentary;
-    }
-    */
     #endregion
 
     /// <summary>

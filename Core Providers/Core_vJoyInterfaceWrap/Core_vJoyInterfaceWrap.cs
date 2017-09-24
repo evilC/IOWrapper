@@ -18,7 +18,7 @@ namespace Core_vJoyInterfaceWrap
         private Dictionary<Guid, uint> subscriptionToDevice = new Dictionary<Guid, uint>();
         static private Dictionary<int, string> axisNames = new Dictionary<int, string>()
             { { 0, "X" }, { 1,"Y" }, { 2, "Z" }, { 3, "Rx" }, { 4, "Ry" }, { 5, "Rz" }, { 6, "Sl0" }, { 7, "Sl1" } };
-        static private List<BindingInfo>[] povBindingInfos = new List<BindingInfo>[4];
+        static private List<BindingReport>[] povBindingInfos = new List<BindingReport>[4];
 
         public Core_vJoyInterfaceWrap()
         {
@@ -28,15 +28,18 @@ namespace Core_vJoyInterfaceWrap
             }
             for (int p = 0; p < 4; p++)
             {
-                povBindingInfos[p] = new List<BindingInfo>();
+                povBindingInfos[p] = new List<BindingReport>();
                 for (int d = 0; d < 4; d++)
                 {
-                    povBindingInfos[p].Add(new BindingInfo()
+                    povBindingInfos[p].Add(new BindingReport()
                     {
                         Title = povDirections[d],
-                        Type = BindingType.POV,
                         Category = BindingCategory.Momentary,
-                        Index = (p * 4) + d,
+                        BindingInfo = new BindingInfo()
+                        {
+                            Type = BindingType.POV,
+                            Index = (p * 4) + d,
+                        }
                     });
                 }
             }
@@ -125,12 +128,15 @@ namespace Core_vJoyInterfaceWrap
                     {
                         if (vJ.GetVJDAxisExist(id, AxisIdToUsage[ax]))
                         {
-                            axisNode.Bindings.Add(new BindingInfo()
+                            axisNode.Bindings.Add(new BindingReport()
                             {
-                                Index = ax,
                                 Title = axisNames[ax],
-                                Type = BindingType.Axis,
-                                Category = BindingCategory.Signed
+                                Category = BindingCategory.Signed,
+                                BindingInfo = new BindingInfo()
+                                {
+                                    Index = ax,
+                                    Type = BindingType.Axis,
+                                }
                             });
                         }
                     }
@@ -145,12 +151,15 @@ namespace Core_vJoyInterfaceWrap
                     };
                     for (int btn = 0; btn < length; btn++)
                     {
-                        buttonNode.Bindings.Add(new BindingInfo()
+                        buttonNode.Bindings.Add(new BindingReport()
                         {
-                            Index = btn,
                             Title = (btn + 1).ToString(),
-                            Type = BindingType.Button,
-                            Category = BindingCategory.Momentary
+                            Category = BindingCategory.Momentary,
+                            BindingInfo = new BindingInfo()
+                            {
+                                Index = btn,
+                                Type = BindingType.Button,
+                            }
                         });
                     }
                     device.Nodes.Add(buttonNode);

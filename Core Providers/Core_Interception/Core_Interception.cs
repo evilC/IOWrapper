@@ -41,21 +41,27 @@ namespace Core_Interception
         private static DeviceReportNode mouseAxisList = new DeviceReportNode()
         {
             Title = "Axes",
-            Bindings = new List<BindingInfo>()
+            Bindings = new List<BindingReport>()
             {
-                new BindingInfo()
+                new BindingReport()
                 {
                     Title = "X",
-                    Index = 0,
-                    Type = BindingType.Axis,
                     Category = BindingCategory.Delta,
+                    BindingInfo =   new BindingInfo()
+                    {
+                        Index = 0,
+                        Type = BindingType.Axis,
+                    }
                 },
-                new BindingInfo()
+                new BindingReport()
                 {
                     Title = "Y",
-                    Index = 1,
-                    Type = BindingType.Axis,
                     Category = BindingCategory.Delta,
+                    BindingInfo = new BindingInfo()
+                    {
+                        Index = 1,
+                        Type = BindingType.Axis,
+                    }
                 }
             }
         };
@@ -374,23 +380,29 @@ namespace Core_Interception
             };
             for (int i = 0; i < 5; i++)
             {
-                mouseButtonList.Bindings.Add(new BindingInfo()
+                mouseButtonList.Bindings.Add(new BindingReport()
                 {
-                    Index = i,
                     Title = mouseButtonNames[i],
-                    Type = BindingType.Button,
-                    Category = BindingCategory.Momentary
+                    Category = BindingCategory.Momentary,
+                    BindingInfo = new BindingInfo()
+                    {
+                        Index = i,
+                        Type = BindingType.Button,
+                    }
                 });
             }
             
             for (int i = 5; i < 7; i++)
             {
-                mouseButtonList.Bindings.Add(new BindingInfo()
+                mouseButtonList.Bindings.Add(new BindingReport()
                 {
-                    Index = i,
                     Title = mouseButtonNames[i],
-                    Type = BindingType.Button,
-                    Category = BindingCategory.Event
+                    Category = BindingCategory.Event,
+                    BindingInfo = new BindingInfo()
+                    {
+                        Index = i,
+                        Type = BindingType.Button,
+                    }
                 });
             }
             
@@ -418,11 +430,15 @@ namespace Core_Interception
                 if (keyName == "")
                     continue;
                 //Log("Button Index: {0}, name: '{1}'", i, keyName);
-                keyboardList.Bindings.Add(new BindingInfo() {
-                    Index = i,
+                keyboardList.Bindings.Add(new BindingReport()
+                {
                     Title = keyName,
-                    Type = BindingType.Button,
-                    Category = BindingCategory.Momentary
+                    Category = BindingCategory.Momentary,
+                    BindingInfo = new BindingInfo()
+                    {
+                        Index = i,
+                        Type = BindingType.Button,
+                    }
                 });
                 //buttonNames.Add(i, keyName);
 
@@ -436,11 +452,15 @@ namespace Core_Interception
                 if (altKeyName == "" || altKeyName == keyName)
                     continue;
                 //Log("ALT Button Index: {0}, name: '{1}'", i + 256, altKeyName);
-                keyboardList.Bindings.Add(new BindingInfo() {
-                    Index = i + 256,
+                keyboardList.Bindings.Add(new BindingReport()
+                {
                     Title = altKeyName,
-                    Type = BindingType.Button,
-                    Category = BindingCategory.Momentary
+                    Category = BindingCategory.Momentary,
+                    BindingInfo = new BindingInfo()
+                    {
+                        Index = i + 256,
+                        Type = BindingType.Button,
+                    }
                 });
                 //Log("Button Index: {0}, name: '{1}'", i + 256, altKeyName);
                 //buttonNames.Add(i + 256, altKeyName);
