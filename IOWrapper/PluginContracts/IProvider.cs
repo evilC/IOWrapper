@@ -26,14 +26,20 @@ namespace Providers
     /// </summary>
     public class SubscriptionRequest
     {
-        public SubscriptionInfo SubscriptionInfo { get; set; }
+        /// <summary>
+        /// Identifies the Subscriber
+        /// </summary>
+        public SubscriptionDescriptor SubscriptionDescriptor { get; set; }
 
         /// <summary>
-        /// Identifies which Device this subscription is for
+        /// Identifies the Provider that this subscription is for
         /// </summary>
-        public DeviceInfo DeviceInfo { get; set; }
+        public ProviderDescriptor ProviderDescriptor { get; set; }
 
-        public ProviderInfo ProviderInfo { get; set; }
+        /// <summary>
+        /// Identifies which (Provider-specific) Device that this subscription is for
+        /// </summary>
+        public DeviceDescriptor DeviceDescriptor { get; set; }
     }
 
     /// <summary>
@@ -44,10 +50,13 @@ namespace Providers
     /// </summary>
     public class InputSubscriptionRequest : SubscriptionRequest
     {
-        public BindingInfo BindingInfo { get; set; }
+        /// <summary>
+        /// Identifies the (Provider+Device-specific) Input that this subscription is for
+        /// </summary>
+        public BindingDescriptor BindingDescriptor { get; set; }
 
         /// <summary>
-        /// Callback that is fired when this input changes state
+        /// Callback to be fired when this Input changes state
         /// </summary>
         public dynamic Callback { get; set; }
 
@@ -73,6 +82,9 @@ namespace Providers
     #endregion
 
     // Reports allow the back-end to tell the front-end what capabilities are available
+    // Reports comprise of two parts:
+    // Descriptors allow the front-end to subscribe to Bindings
+    // Other meta-data allows the front-end to interpret capabilities, report style etc
     #region Reporting
 
     #region Provider Report
@@ -92,7 +104,10 @@ namespace Providers
         /// </summary>
         public string Description { get; set; }
 
-        public ProviderInfo ProviderInfo { get; set; }
+        /// <summary>
+        /// Contains information needed to subscribe to this Provider
+        /// </summary>
+        public ProviderDescriptor ProviderDescriptor { get; set; }
 
         public SortedDictionary<string, DeviceReport> Devices { get; set; }
             = new SortedDictionary<string, DeviceReport>();
@@ -102,6 +117,9 @@ namespace Providers
 
     #region Device Reports
 
+    /// <summary>
+    /// Contains information about each Device on a Provider
+    /// </summary>
     public class DeviceReport
     {
         /// <summary>
@@ -109,7 +127,10 @@ namespace Providers
         /// </summary>
         public string DeviceName { get; set; }
 
-        public DeviceInfo DeviceInfo { get; set; }
+        /// <summary>
+        /// Contains information needed to subscribe to this Device via the Provider
+        /// </summary>
+        public DeviceDescriptor DeviceDescriptor { get; set; }
 
         //public List<BindingInfo> Bindings { get; set; } = new List<BindingInfo>();
 
@@ -119,23 +140,51 @@ namespace Providers
         public List<DeviceReportNode> Nodes { get; set; } = new List<DeviceReportNode>();
     }
 
+    #region Binding Report
+
+    /// <summary>
+    /// Contains information about each Binding on a Device on a Provider
+    /// </summary>
+    public class BindingReport
+    {
+        /// <summary>
+        /// Meta-Data for the front-end to display a Human-Readable name for the Binding
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
+        /// Meta-Data to allow the front-end to interpret the Binding
+        /// </summary>
+        public BindingCategory Category { get; set; }
+
+        /// <summary>
+        /// Contains information needed to subscribe to this Binding
+        /// </summary>
+        public BindingDescriptor BindingDescriptor { get; set; }
+    }
+    #endregion
+
+    /// <summary>
+    /// Used as a sub-node, to logically group Bindings
+    /// </summary>
     public class DeviceReportNode
     {
+        /// <summary>
+        /// Human-friendly name of this node
+        /// </summary>
         public string Title { get; set; }
+
+        /// <summary>
+        /// Sub-Nodes
+        /// </summary>
         public List<DeviceReportNode> Nodes { get; set; } = new List<DeviceReportNode>();
+
+        /// <summary>
+        /// Bindings contained in this node
+        /// </summary>
         public List<BindingReport> Bindings { get; set; } = new List<BindingReport>();
     }
 
-    #endregion
-
-    #region Binding Report
-
-    public class BindingReport
-    {
-        public string Title { get; set; }   // ToDo: move, meta-data
-        public BindingCategory Category { get; set; }   // ToDo: move, meta-data
-        public BindingInfo BindingInfo { get; set; }
-    }
     #endregion
 
     #endregion
@@ -147,7 +196,7 @@ namespace Providers
     /// <summary>
     /// Identifies the Provider responsible for handling the Binding
     /// </summary>
-    public class ProviderInfo
+    public class ProviderDescriptor
     {
         /// <summary>
         /// The API implementation that handles this input
@@ -166,7 +215,7 @@ namespace Providers
     /// <summary>
     /// Identifies a device within a Provider
     /// </summary>
-    public class DeviceInfo
+    public class DeviceDescriptor
     {
         /// <summary>
         /// A way to uniquely identify a device instance via it's API
@@ -182,17 +231,29 @@ namespace Providers
     /// <summary>
     /// Identifies a Binding within a Device
     /// </summary>
-    public class BindingInfo
+    public class BindingDescriptor
     {
+        /// <summary>
+        /// The Type of the Binding - ie Button / Axis / POV
+        /// </summary>
         public BindingType Type { get; set; }
+
+        /// <summary>
+        /// The Type-specific Index of the Binding
+        /// </summary>
         public int Index { get; set; }
+
+        // Currently un-used. May be desirable for POV directions
+        /// <summary>
+        /// The Type-specific SubIndex of the Binding
+        /// </summary>
         public int SubIndex { get; set; }
     }
 
     /// <summary>
     /// Identifies the Subscriber
     /// </summary>
-    public class SubscriptionInfo
+    public class SubscriptionDescriptor
     {
         /// <summary>
         /// Uniquely identifies a Binding - each subscriber can only be subscribed to one input / output
@@ -208,12 +269,18 @@ namespace Providers
     }
     #endregion
 
-    /// <summary>
-    /// Enums used to categorize how a binding reports
-    /// </summary>
+    // Enums used to categorize how a binding reports
     #region Category Enums
+    
+    /// <summary>
+    /// Describes what kind of input or output you are trying to read or emulate
+    /// </summary>
     public enum BindingType { Axis, Button, POV };
 
+    /// <summary>
+    /// Describes the reporting style of a Binding
+    /// Only used for the back-end to report to the front-end how to work with the binding
+    /// </summary>
     public enum BindingCategory { Momentary, Event, Signed, Unsigned, Delta }
     //public enum AxisCategory { Signed, Unsigned, Delta }
     //public enum ButtonCategory { Momentary, Event }

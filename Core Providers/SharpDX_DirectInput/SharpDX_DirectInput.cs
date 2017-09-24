@@ -49,7 +49,7 @@ namespace SharpDX_DirectInput
                     {
                         Title = povDirections[d],
                         Category = BindingCategory.Momentary,
-                        BindingInfo = new BindingInfo()
+                        BindingDescriptor = new BindingDescriptor()
                         {
                             Type = BindingType.POV,
                             Index = (p * 4) + d,
@@ -176,11 +176,11 @@ namespace SharpDX_DirectInput
             if (pollThreadActive)
                 SetPollThreadState(false);
 
-            if (!MonitoredSticks.ContainsKey(subReq.DeviceInfo.DeviceHandle))
+            if (!MonitoredSticks.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
             {
-                MonitoredSticks.Add(subReq.DeviceInfo.DeviceHandle, new StickMonitor(subReq));
+                MonitoredSticks.Add(subReq.DeviceDescriptor.DeviceHandle, new StickMonitor(subReq));
             }
-            var success =  MonitoredSticks[subReq.DeviceInfo.DeviceHandle].Add(subReq);
+            var success =  MonitoredSticks[subReq.DeviceDescriptor.DeviceHandle].Add(subReq);
             if (success)
             {
                 if (prev_state)
@@ -199,15 +199,15 @@ namespace SharpDX_DirectInput
             if (pollThreadActive)
                 SetPollThreadState(false);
 
-            if (MonitoredSticks.ContainsKey(subReq.DeviceInfo.DeviceHandle))
+            if (MonitoredSticks.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
             {
-                ret = MonitoredSticks[subReq.DeviceInfo.DeviceHandle].Remove(subReq);
+                ret = MonitoredSticks[subReq.DeviceDescriptor.DeviceHandle].Remove(subReq);
                 if (ret)
                 {
-                    if (!MonitoredSticks[subReq.DeviceInfo.DeviceHandle].HasSubscriptions())
+                    if (!MonitoredSticks[subReq.DeviceDescriptor.DeviceHandle].HasSubscriptions())
                     {
-                        MonitoredSticks[subReq.DeviceInfo.DeviceHandle].Dispose();
-                        MonitoredSticks.Remove(subReq.DeviceInfo.DeviceHandle);
+                        MonitoredSticks[subReq.DeviceDescriptor.DeviceHandle].Dispose();
+                        MonitoredSticks.Remove(subReq.DeviceDescriptor.DeviceHandle);
                     }
                 }
             }
@@ -240,7 +240,7 @@ namespace SharpDX_DirectInput
             providerReport = new ProviderReport() {
                 Title = "DirectInput (Core)",
                 Description = "Allows reading of generic joysticks.",
-                ProviderInfo = new ProviderInfo()
+                ProviderDescriptor = new ProviderDescriptor()
                 {
                     ProviderName = ProviderName,
                     API = "DirectInput",
@@ -268,7 +268,7 @@ namespace SharpDX_DirectInput
                 var device = new DeviceReport()
                 {
                     DeviceName = deviceInstance.ProductName,
-                    DeviceInfo = new DeviceInfo()
+                    DeviceDescriptor = new DeviceDescriptor()
                     {
                         DeviceHandle = handle,
                     },
@@ -290,7 +290,7 @@ namespace SharpDX_DirectInput
                         {
                             Title = deviceInfo.Name,
                             Category = BindingCategory.Signed,
-                            BindingInfo = new BindingInfo()
+                            BindingDescriptor = new BindingDescriptor()
                             {
                                 Index = i,
                                 //Name = axisNames[i],
@@ -314,7 +314,7 @@ namespace SharpDX_DirectInput
                     {
                         Title = (btn + 1).ToString(),
                         Category = BindingCategory.Momentary,
-                        BindingInfo = new BindingInfo()
+                        BindingDescriptor = new BindingDescriptor()
                         {
                             Index = btn,
                             Type = BindingType.Button,
@@ -404,7 +404,7 @@ namespace SharpDX_DirectInput
 
             public StickMonitor(InputSubscriptionRequest subReq)
             {
-                deviceHandle = subReq.DeviceInfo.DeviceHandle;
+                deviceHandle = subReq.DeviceDescriptor.DeviceHandle;
                 if (handleToInstanceGuid.ContainsKey(deviceHandle))
                 {
                     SetAcquireState(true);
@@ -455,18 +455,18 @@ namespace SharpDX_DirectInput
 
             public bool Add(InputSubscriptionRequest subReq)
             {
-                var inputId = GetInputIdentifier(subReq.BindingInfo.Type, (int)subReq.BindingInfo.Index);
+                var inputId = GetInputIdentifier(subReq.BindingDescriptor.Type, (int)subReq.BindingDescriptor.Index);
                 if (!monitors.ContainsKey(inputId))
                 {
-                    monitors.Add(inputId, new InputMonitor( subReq.BindingInfo.Type ));
+                    monitors.Add(inputId, new InputMonitor( subReq.BindingDescriptor.Type ));
                 }
-                Log("Adding subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.BindingInfo.Type.ToString(), subReq.BindingInfo.Index);
+                Log("Adding subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.BindingDescriptor.Type.ToString(), subReq.BindingDescriptor.Index);
                 return monitors[inputId].Add(subReq);
             }
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
-                var inputId = GetInputIdentifier(subReq.BindingInfo.Type, (int)subReq.BindingInfo.Index);
+                var inputId = GetInputIdentifier(subReq.BindingDescriptor.Type, (int)subReq.BindingDescriptor.Index);
                 if (monitors.ContainsKey(inputId))
                 {
                     var ret = monitors[inputId].Remove(subReq);
@@ -474,7 +474,7 @@ namespace SharpDX_DirectInput
                     {
                         monitors.Remove(inputId);
                     }
-                    Log("Removing subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.BindingInfo.Type.ToString(), subReq.BindingInfo.Index);
+                    Log("Removing subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.BindingDescriptor.Type.ToString(), subReq.BindingDescriptor.Index);
                     return ret;
                 }
                 return false;
@@ -523,9 +523,9 @@ namespace SharpDX_DirectInput
 
             public bool Add(InputSubscriptionRequest subReq)
             {
-                if (subReq.BindingInfo.Type == BindingType.POV)
+                if (subReq.BindingDescriptor.Type == BindingType.POV)
                 {
-                    var dir = DirFromIndex(subReq.BindingInfo.Index);
+                    var dir = DirFromIndex(subReq.BindingDescriptor.Index);
                     if (povDirectionMonitors[dir] == null)
                     {
                         povDirectionMonitors[dir] = new PovDirectionMonitor(dir);
@@ -534,16 +534,16 @@ namespace SharpDX_DirectInput
                 }
                 else
                 {
-                    subscriptions.Add(subReq.SubscriptionInfo.SubscriberGuid, subReq);
+                    subscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
                     return true;
                 }
             }
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
-                if (subscriptions.ContainsKey(subReq.SubscriptionInfo.SubscriberGuid))
+                if (subscriptions.ContainsKey(subReq.SubscriptionDescriptor.SubscriberGuid))
                 {
-                    subscriptions.Remove(subReq.SubscriptionInfo.SubscriberGuid);
+                    subscriptions.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
                     return true;
                 }
                 return false;
@@ -571,7 +571,7 @@ namespace SharpDX_DirectInput
                     int reportedValue;
                     foreach (var subscription in subscriptions.Values)
                     {
-                        if (ActiveProfiles.Contains(subscription.SubscriptionInfo.ProfileGuid))
+                        if (ActiveProfiles.Contains(subscription.SubscriptionDescriptor.ProfileGuid))
                         {
                             switch (bindingType)
                             {
@@ -616,7 +616,7 @@ namespace SharpDX_DirectInput
 
             public bool Add(InputSubscriptionRequest subReq)
             {
-                subscriptions.Add(subReq.SubscriptionInfo.SubscriberGuid, subReq);
+                subscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
                 return true;
             }
 

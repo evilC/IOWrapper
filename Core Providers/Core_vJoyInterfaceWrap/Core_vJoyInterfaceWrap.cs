@@ -35,7 +35,7 @@ namespace Core_vJoyInterfaceWrap
                     {
                         Title = povDirections[d],
                         Category = BindingCategory.Momentary,
-                        BindingInfo = new BindingInfo()
+                        BindingDescriptor = new BindingDescriptor()
                         {
                             Type = BindingType.POV,
                             Index = (p * 4) + d,
@@ -98,7 +98,7 @@ namespace Core_vJoyInterfaceWrap
             {
                 Title = "vJoy (Core)",
                 Description = "Allows emulation of DirectInput sticks. Requires driver from http://vjoystick.sourceforge.net/",
-                ProviderInfo = new ProviderInfo()
+                ProviderDescriptor = new ProviderDescriptor()
                 {
                     ProviderName = ProviderName,
                     API = "vJoy",
@@ -113,7 +113,7 @@ namespace Core_vJoyInterfaceWrap
                     var device = new DeviceReport()
                     {
                         DeviceName = String.Format("vJoy Stick {0}", id),
-                        DeviceInfo = new DeviceInfo()
+                        DeviceDescriptor = new DeviceDescriptor()
                         {
                             DeviceHandle = handle,
                         },
@@ -132,7 +132,7 @@ namespace Core_vJoyInterfaceWrap
                             {
                                 Title = axisNames[ax],
                                 Category = BindingCategory.Signed,
-                                BindingInfo = new BindingInfo()
+                                BindingDescriptor = new BindingDescriptor()
                                 {
                                     Index = ax,
                                     Type = BindingType.Axis,
@@ -155,7 +155,7 @@ namespace Core_vJoyInterfaceWrap
                         {
                             Title = (btn + 1).ToString(),
                             Category = BindingCategory.Momentary,
-                            BindingInfo = new BindingInfo()
+                            BindingDescriptor = new BindingDescriptor()
                             {
                                 Index = btn,
                                 Type = BindingType.Button,
@@ -199,23 +199,23 @@ namespace Core_vJoyInterfaceWrap
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            var devId = DevIdFromHandle(subReq.DeviceInfo.DeviceHandle);
+            var devId = DevIdFromHandle(subReq.DeviceDescriptor.DeviceHandle);
             vJoyDevices[devId].Add(subReq);
-            subscriptionToDevice.Add(subReq.SubscriptionInfo.SubscriberGuid, devId);
+            subscriptionToDevice.Add(subReq.SubscriptionDescriptor.SubscriberGuid, devId);
             return true;
         }
 
         public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            uint devId = subscriptionToDevice[subReq.SubscriptionInfo.SubscriberGuid];
+            uint devId = subscriptionToDevice[subReq.SubscriptionDescriptor.SubscriberGuid];
             vJoyDevices[devId].Remove(subReq);
-            subscriptionToDevice.Remove(subReq.SubscriptionInfo.SubscriberGuid);
+            subscriptionToDevice.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
             return true;
         }
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
         {
-            var devId = subscriptionToDevice[subReq.SubscriptionInfo.SubscriberGuid];
+            var devId = subscriptionToDevice[subReq.SubscriptionDescriptor.SubscriberGuid];
             if (!vJoyDevices[devId].IsAcquired)
             {
                 return false;
@@ -276,12 +276,12 @@ namespace Core_vJoyInterfaceWrap
                 {
                     Acquire();
                 }
-                subReqs.Add(subReq.SubscriptionInfo.SubscriberGuid, subReq);
+                subReqs.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
             }
 
             public void Remove(OutputSubscriptionRequest subReq)
             {
-                subReqs.Remove(subReq.SubscriptionInfo.SubscriberGuid);
+                subReqs.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
                 if (subReqs.Count == 0)
                 {
                     Relinquish();

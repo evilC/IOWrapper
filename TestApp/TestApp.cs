@@ -30,11 +30,11 @@ class Tester
     Guid defaultProfileGuid = Guid.NewGuid();
     IOWrapper.IOController iow;
 
-    ProviderInfo diProvider = new ProviderInfo() { ProviderName = "SharpDX_DirectInput" };
-    ProviderInfo xiProvider = new ProviderInfo() { ProviderName = "SharpDX_DirectInput" };
-    ProviderInfo vjoyProvider = new ProviderInfo() { ProviderName = "Core_vJoyInterfaceWrap" };
-    ProviderInfo interceptionProvider = new ProviderInfo() { ProviderName = "Core_Interception" };
-    ProviderInfo tobiiProvider = new ProviderInfo() { ProviderName = "Core_Tobii_Interaction" };
+    ProviderDescriptor diProvider = new ProviderDescriptor() { ProviderName = "SharpDX_DirectInput" };
+    ProviderDescriptor xiProvider = new ProviderDescriptor() { ProviderName = "SharpDX_DirectInput" };
+    ProviderDescriptor vjoyProvider = new ProviderDescriptor() { ProviderName = "Core_vJoyInterfaceWrap" };
+    ProviderDescriptor interceptionProvider = new ProviderDescriptor() { ProviderName = "Core_Interception" };
+    ProviderDescriptor tobiiProvider = new ProviderDescriptor() { ProviderName = "Core_Tobii_Interaction" };
 
     public Tester()
     {
@@ -54,12 +54,12 @@ class Tester
         catch { return; }
         vJoyOutputSubReq = new OutputSubscriptionRequest()
         {
-            SubscriptionInfo = new SubscriptionInfo()
+            SubscriptionDescriptor = new SubscriptionDescriptor()
             {
                 SubscriberGuid = Guid.NewGuid(),
             },
-            ProviderInfo = vjoyProvider,
-            DeviceInfo = new DeviceInfo()
+            ProviderDescriptor = vjoyProvider,
+            DeviceDescriptor = new DeviceDescriptor()
             {
                 DeviceHandle = vjoyDeviceHandle
             },
@@ -80,23 +80,23 @@ class Tester
         // Subscribe to the found stick
         var diSub1 = new InputSubscriptionRequest()
         {
-            SubscriptionInfo = new SubscriptionInfo()
+            SubscriptionDescriptor = new SubscriptionDescriptor()
             {
                 ProfileGuid = defaultProfileGuid,
                 SubscriberGuid = Guid.NewGuid(),
             },
-            ProviderInfo = new ProviderInfo()
+            ProviderDescriptor = new ProviderDescriptor()
             {
                 ProviderName = "SharpDX_DirectInput",
             },
-            BindingInfo = new BindingInfo()
+            BindingDescriptor = new BindingDescriptor()
             {
                 Type = BindingType.Button,
                 //Type = BindingType.POV,
                 Index = 0,
                 //Index = 4,
             },
-            DeviceInfo = new DeviceInfo()
+            DeviceDescriptor = new DeviceDescriptor()
             {
                 DeviceHandle = directInputHandle,
             },
@@ -115,20 +115,20 @@ class Tester
         // Subscribe to the found stick
         var diSub2 = new InputSubscriptionRequest()
         {
-            SubscriptionInfo = new SubscriptionInfo()
+            SubscriptionDescriptor = new SubscriptionDescriptor()
             {
                 ProfileGuid = Guid.NewGuid(),
                 SubscriberGuid = Guid.NewGuid()
             },
-            ProviderInfo = new ProviderInfo()
+            ProviderDescriptor = new ProviderDescriptor()
             {
                 ProviderName = "SharpDX_DirectInput",
             },
-            DeviceInfo = new DeviceInfo()
+            DeviceDescriptor = new DeviceDescriptor()
             {
                 DeviceHandle = directInputHandle,
             },
-            BindingInfo = new BindingInfo()
+            BindingDescriptor = new BindingDescriptor()
             {
                 Type = BindingType.Button,
                 Index = 1,
@@ -145,22 +145,22 @@ class Tester
             })
         };
         //iow.SubscribeInput(diSub2);
-        iow.SetProfileState(diSub2.SubscriptionInfo.ProfileGuid, true);
+        iow.SetProfileState(diSub2.SubscriptionDescriptor.ProfileGuid, true);
 
 
         var sub2 = new InputSubscriptionRequest()
         {
-            SubscriptionInfo = new SubscriptionInfo()
+            SubscriptionDescriptor = new SubscriptionDescriptor()
             {
                 ProfileGuid = defaultProfileGuid,
                 SubscriberGuid = defaultProfileGuid
             },
-            ProviderInfo = diProvider,
-            DeviceInfo = new DeviceInfo()
+            ProviderDescriptor = diProvider,
+            DeviceDescriptor = new DeviceDescriptor()
             {
                 DeviceHandle = directInputHandle,
             },
-            BindingInfo = new BindingInfo()
+            BindingDescriptor = new BindingDescriptor()
             {
                 Type = BindingType.Axis,
                 Index = 0,
@@ -179,17 +179,17 @@ class Tester
         #region XInput
         var xinputAxis = new InputSubscriptionRequest()
         {
-            SubscriptionInfo = new SubscriptionInfo()
+            SubscriptionDescriptor = new SubscriptionDescriptor()
             {
                 ProfileGuid = defaultProfileGuid,
                 SubscriberGuid = Guid.NewGuid()
             },
-            ProviderInfo = xiProvider,
-            DeviceInfo = new DeviceInfo()
+            ProviderDescriptor = xiProvider,
+            DeviceDescriptor = new DeviceDescriptor()
             {
                 DeviceHandle = "0",
             },
-            BindingInfo = new BindingInfo()
+            BindingDescriptor = new BindingDescriptor()
             {
                 Type = BindingType.Axis,
                 Index = 0,
@@ -205,17 +205,17 @@ class Tester
 
         var xinputButton = new InputSubscriptionRequest()
         {
-            SubscriptionInfo = new SubscriptionInfo()
+            SubscriptionDescriptor = new SubscriptionDescriptor()
             {
                 ProfileGuid = defaultProfileGuid,
                 SubscriberGuid = Guid.NewGuid()
             },
-            ProviderInfo = xiProvider,
-            DeviceInfo = new DeviceInfo()
+            ProviderDescriptor = xiProvider,
+            DeviceDescriptor = new DeviceDescriptor()
             {
                 DeviceHandle = "0",
             },
-            BindingInfo = new BindingInfo()
+            BindingDescriptor = new BindingDescriptor()
             {
                 Type = BindingType.Button,
                 Index = 0,
@@ -230,17 +230,17 @@ class Tester
 
         var xinputPov = new InputSubscriptionRequest()
         {
-            SubscriptionInfo = new SubscriptionInfo()
+            SubscriptionDescriptor = new SubscriptionDescriptor()
             {
                 ProfileGuid = defaultProfileGuid,
                 SubscriberGuid = Guid.NewGuid()
             },
-            ProviderInfo = xiProvider,
-            DeviceInfo = new DeviceInfo()
+            ProviderDescriptor = xiProvider,
+            DeviceDescriptor = new DeviceDescriptor()
             {
                 DeviceHandle = "0",
             },
-            BindingInfo = new BindingInfo()
+            BindingDescriptor = new BindingDescriptor()
             {
                 Type = BindingType.POV,
                 Index = 0,
@@ -260,26 +260,26 @@ class Tester
         try { keyboardHandle = inputList["Core_Interception"].Devices.FirstOrDefault().Key; }
         catch { return; }
         //keyboardHandle = @"Keyboard\HID\VID_04F2&PID_0112&REV_0103&MI_00";
-        DeviceInfo interceptionKeyboard = new DeviceInfo()
+        DeviceDescriptor interceptionKeyboard = new DeviceDescriptor()
         {
             DeviceHandle = keyboardHandle
         };
 
         string mouseHandle = null;
         mouseHandle = @"Mouse\HID\VID_046D&PID_C531&REV_2100&MI_00";
-        DeviceInfo interceptionMouse = new DeviceInfo()
+        DeviceDescriptor interceptionMouse = new DeviceDescriptor()
         {
             DeviceHandle = mouseHandle
         };
 
         interceptionKeyboardOutputSubReq = new OutputSubscriptionRequest()
         {
-            SubscriptionInfo = new SubscriptionInfo()
+            SubscriptionDescriptor = new SubscriptionDescriptor()
             {
                 SubscriberGuid = Guid.NewGuid()
             },
-            ProviderInfo = interceptionProvider,
-            DeviceInfo = new DeviceInfo()
+            ProviderDescriptor = interceptionProvider,
+            DeviceDescriptor = new DeviceDescriptor()
             {
                 DeviceHandle = keyboardHandle
             },
@@ -289,12 +289,12 @@ class Tester
 
         interceptionMouseOutputSubReq = new OutputSubscriptionRequest()
         {
-            SubscriptionInfo = new SubscriptionInfo()
+            SubscriptionDescriptor = new SubscriptionDescriptor()
             {
                 SubscriberGuid = Guid.NewGuid()
             },
-            ProviderInfo = interceptionProvider,
-            DeviceInfo = new DeviceInfo()
+            ProviderDescriptor = interceptionProvider,
+            DeviceDescriptor = new DeviceDescriptor()
             {
                 DeviceHandle = mouseHandle
             },
@@ -303,18 +303,18 @@ class Tester
 
         var subInterceptionMouseDelta = new InputSubscriptionRequest()
         {
-            SubscriptionInfo = new SubscriptionInfo()
+            SubscriptionDescriptor = new SubscriptionDescriptor()
             {
                 ProfileGuid = Guid.NewGuid(),
                 SubscriberGuid = Guid.NewGuid()
             },
-            ProviderInfo = interceptionProvider,
-            DeviceInfo = new DeviceInfo()
+            ProviderDescriptor = interceptionProvider,
+            DeviceDescriptor = new DeviceDescriptor()
             {
                 //DeviceHandle = keyboardHandle,
                 DeviceHandle = mouseHandle,
             },
-            BindingInfo = new BindingInfo()
+            BindingDescriptor = new BindingDescriptor()
             {
                 Type = BindingType.Axis,
                 Index = 0, // X Axis
@@ -331,18 +331,18 @@ class Tester
 
         var subInterception = new InputSubscriptionRequest()
         {
-            SubscriptionInfo = new SubscriptionInfo()
+            SubscriptionDescriptor = new SubscriptionDescriptor()
             {
                 ProfileGuid = Guid.NewGuid(),
                 SubscriberGuid = Guid.NewGuid()
             },
-            ProviderInfo = interceptionProvider,
+            ProviderDescriptor = interceptionProvider,
             //DeviceHandle = keyboardHandle,
-            DeviceInfo = new DeviceInfo()
+            DeviceDescriptor = new DeviceDescriptor()
             {
                 DeviceHandle = mouseHandle,
             },
-            BindingInfo = new BindingInfo()
+            BindingDescriptor = new BindingDescriptor()
             {
                 Type = BindingType.Button,
                 //Index = 1, // 1 key on keyboard
@@ -362,16 +362,16 @@ class Tester
         #region Tobii Eye Tracker
         var tobiiGazePointSubReq = new InputSubscriptionRequest()
         {
-            SubscriptionInfo = new SubscriptionInfo()
+            SubscriptionDescriptor = new SubscriptionDescriptor()
             {
                 SubscriberGuid = Guid.NewGuid(),
             },
-            ProviderInfo = tobiiProvider,
-            DeviceInfo = new DeviceInfo()
+            ProviderDescriptor = tobiiProvider,
+            DeviceDescriptor = new DeviceDescriptor()
             {
                 DeviceHandle = "GazePoint",
             },
-            BindingInfo = new BindingInfo()
+            BindingDescriptor = new BindingDescriptor()
             {
                 Type = BindingType.Axis,
                 Index = 0,
@@ -385,16 +385,16 @@ class Tester
 
         var tobiiHeadPoseSubReq = new InputSubscriptionRequest()
         {
-            SubscriptionInfo = new SubscriptionInfo()
+            SubscriptionDescriptor = new SubscriptionDescriptor()
             {
                 SubscriberGuid = Guid.NewGuid(),
             },
-            ProviderInfo = tobiiProvider,
-            DeviceInfo = new DeviceInfo()
+            ProviderDescriptor = tobiiProvider,
+            DeviceDescriptor = new DeviceDescriptor()
             {
                 DeviceHandle = "HeadPose",
             },
-            BindingInfo = new BindingInfo()
+            BindingDescriptor = new BindingDescriptor()
             {
                 Type = BindingType.Axis,
                 Index = 0,

@@ -34,7 +34,7 @@ namespace Core_Tobii_Interaction
             providerReport = new ProviderReport() {
                 Title = "Tobii Interaction (Core)",
                 Description = "Tracks head and eye movement. Requires a Tobii device, see https://tobiigaming.com/",
-                ProviderInfo = new ProviderInfo()
+                ProviderDescriptor = new ProviderDescriptor()
                 {
                     ProviderName = ProviderName,
                     API = "Tobii.Interaction",
@@ -44,7 +44,7 @@ namespace Core_Tobii_Interaction
             var gazeDevice = new DeviceReport()
             {
                 DeviceName = "Tobii Gaze Point",
-                DeviceInfo = new DeviceInfo()
+                DeviceDescriptor = new DeviceDescriptor()
                 {
                     DeviceHandle = "GazePoint",
                 },
@@ -57,7 +57,7 @@ namespace Core_Tobii_Interaction
                 {
                     Title = sixDofAxisNames[i],
                     Category = BindingCategory.Signed,
-                    BindingInfo = new BindingInfo()
+                    BindingDescriptor = new BindingDescriptor()
                     {
                         Index = i,
                         Type = BindingType.Axis,
@@ -71,7 +71,7 @@ namespace Core_Tobii_Interaction
             var poseDevice = new DeviceReport()
             {
                 DeviceName = "Tobii Head Pose",
-                DeviceInfo = new DeviceInfo()
+                DeviceDescriptor = new DeviceDescriptor()
                 {
                     DeviceHandle = "HeadPose",
                 },
@@ -84,7 +84,7 @@ namespace Core_Tobii_Interaction
                 {
                     Title = sixDofAxisNames[i],
                     Category = BindingCategory.Signed,
-                    BindingInfo = new BindingInfo()
+                    BindingDescriptor = new BindingDescriptor()
                     {
                         Index = i,
                         Type = BindingType.Axis,
@@ -114,9 +114,9 @@ namespace Core_Tobii_Interaction
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            if (streamHandlers.ContainsKey(subReq.DeviceInfo.DeviceHandle))
+            if (streamHandlers.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
             {
-                streamHandlers[subReq.DeviceInfo.DeviceHandle].SubscribeInput(subReq);
+                streamHandlers[subReq.DeviceDescriptor.DeviceHandle].SubscribeInput(subReq);
                 return true;
             }
             return false;
@@ -190,11 +190,11 @@ namespace Core_Tobii_Interaction
 
             public virtual bool SubscribeInput(InputSubscriptionRequest subReq)
             {
-                if (!axisMonitors.ContainsKey(subReq.BindingInfo.Index))
+                if (!axisMonitors.ContainsKey(subReq.BindingDescriptor.Index))
                 {
-                    axisMonitors.Add(subReq.BindingInfo.Index, new AxisMonitor());
+                    axisMonitors.Add(subReq.BindingDescriptor.Index, new AxisMonitor());
                 }
-                axisMonitors[subReq.BindingInfo.Index].Add(subReq);
+                axisMonitors[subReq.BindingDescriptor.Index].Add(subReq);
                 return true;
             }
 
@@ -203,7 +203,7 @@ namespace Core_Tobii_Interaction
                 private Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
                 public bool Add(InputSubscriptionRequest subReq)
                 {
-                    subscriptions.Add(subReq.SubscriptionInfo.SubscriberGuid, subReq);
+                    subscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
                     return true;
                 }
 

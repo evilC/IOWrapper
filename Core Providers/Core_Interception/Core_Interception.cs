@@ -47,7 +47,7 @@ namespace Core_Interception
                 {
                     Title = "X",
                     Category = BindingCategory.Delta,
-                    BindingInfo =   new BindingInfo()
+                    BindingDescriptor =   new BindingDescriptor()
                     {
                         Index = 0,
                         Type = BindingType.Axis,
@@ -57,7 +57,7 @@ namespace Core_Interception
                 {
                     Title = "Y",
                     Category = BindingCategory.Delta,
-                    BindingInfo = new BindingInfo()
+                    BindingDescriptor = new BindingDescriptor()
                     {
                         Index = 1,
                         Type = BindingType.Axis,
@@ -167,14 +167,14 @@ namespace Core_Interception
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
             bool ret = false;
-            if (deviceHandleToId.ContainsKey(subReq.DeviceInfo.DeviceHandle))
+            if (deviceHandleToId.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
             {
                 try
                 {
                     if (pollThreadRunning)
                         SetPollThreadState(false);
 
-                    var id = deviceHandleToId[subReq.DeviceInfo.DeviceHandle];
+                    var id = deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle];
                     var devId = id + 1;
                     if (id < 10)
                     {
@@ -210,9 +210,9 @@ namespace Core_Interception
 
             try
             {
-                if (deviceHandleToId.ContainsKey(subReq.DeviceInfo.DeviceHandle))
+                if (deviceHandleToId.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
                 {
-                    var id = deviceHandleToId[subReq.DeviceInfo.DeviceHandle];
+                    var id = deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle];
                     var devId = id + 1;
                     if (pollThreadRunning)
                         SetPollThreadState(false);
@@ -257,7 +257,7 @@ namespace Core_Interception
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
         {
-            int devId = deviceHandleToId[subReq.DeviceInfo.DeviceHandle] + 1;
+            int devId = deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle] + 1;
             //Log("SetOutputState. Type: {0}, Index: {1}, State: {2}, Device: {3}", inputType, inputIndex, state, devId);
             Stroke stroke = new Stroke();
             if (devId < 11)
@@ -291,7 +291,7 @@ namespace Core_Interception
             providerReport = new ProviderReport() {
                 Title = "Interception (Core)",
                 Description = "Supports per-device Keyboard and Mouse Input/Output, with blocking\nRequires custom driver from http://oblita.com/interception",
-                ProviderInfo = new ProviderInfo()
+                ProviderDescriptor = new ProviderDescriptor()
                 {
                     ProviderName = ProviderName,
                     API = "Interception",
@@ -319,7 +319,7 @@ namespace Core_Interception
                     providerReport.Devices.Add(handle, new DeviceReport()
                     {
                         DeviceName = name,
-                        DeviceInfo = new DeviceInfo()
+                        DeviceDescriptor = new DeviceDescriptor()
                         {
                             DeviceHandle = handle,
                         },
@@ -353,7 +353,7 @@ namespace Core_Interception
                     providerReport.Devices.Add(handle, new DeviceReport()
                     {
                         DeviceName = name,
-                        DeviceInfo = new DeviceInfo()
+                        DeviceDescriptor = new DeviceDescriptor()
                         {
                             DeviceHandle = handle,
                         },
@@ -384,7 +384,7 @@ namespace Core_Interception
                 {
                     Title = mouseButtonNames[i],
                     Category = BindingCategory.Momentary,
-                    BindingInfo = new BindingInfo()
+                    BindingDescriptor = new BindingDescriptor()
                     {
                         Index = i,
                         Type = BindingType.Button,
@@ -398,7 +398,7 @@ namespace Core_Interception
                 {
                     Title = mouseButtonNames[i],
                     Category = BindingCategory.Event,
-                    BindingInfo = new BindingInfo()
+                    BindingDescriptor = new BindingDescriptor()
                     {
                         Index = i,
                         Type = BindingType.Button,
@@ -434,7 +434,7 @@ namespace Core_Interception
                 {
                     Title = keyName,
                     Category = BindingCategory.Momentary,
-                    BindingInfo = new BindingInfo()
+                    BindingDescriptor = new BindingDescriptor()
                     {
                         Index = i,
                         Type = BindingType.Button,
@@ -456,7 +456,7 @@ namespace Core_Interception
                 {
                     Title = altKeyName,
                     Category = BindingCategory.Momentary,
-                    BindingInfo = new BindingInfo()
+                    BindingDescriptor = new BindingDescriptor()
                     {
                         Index = i + 256,
                         Type = BindingType.Button,
@@ -479,7 +479,7 @@ namespace Core_Interception
             {
                 try
                 {
-                    var code = (ushort)(subReq.BindingInfo.Index + 1);
+                    var code = (ushort)(subReq.BindingDescriptor.Index + 1);
                     ushort stateDown = 0;
                     ushort stateUp = 1;
                     if (code > 256)
@@ -505,7 +505,7 @@ namespace Core_Interception
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
-                var code = (ushort)(subReq.BindingInfo.Index + 1);
+                var code = (ushort)(subReq.BindingDescriptor.Index + 1);
                 if (code > 256)
                 {
                     code -= 256;
@@ -551,12 +551,12 @@ namespace Core_Interception
 
             public void Add(InputSubscriptionRequest subReq)
             {
-                subReqs.Add(subReq.SubscriptionInfo.SubscriberGuid, subReq);
+                subReqs.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
             }
 
             public void Remove(InputSubscriptionRequest subReq)
             {
-                subReqs.Remove(subReq.SubscriptionInfo.SubscriberGuid);
+                subReqs.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
             }
 
             public bool HasSubscriptions()
@@ -590,13 +590,13 @@ namespace Core_Interception
             {
                 try
                 {
-                    if (subReq.BindingInfo.Type == BindingType.Button)
+                    if (subReq.BindingDescriptor.Type == BindingType.Button)
                     {
-                        var i = (ushort)subReq.BindingInfo.Index;
+                        var i = (ushort)subReq.BindingDescriptor.Index;
                         ushort downbit = (ushort)(1 << (i * 2));
                         ushort upbit = (ushort)(1 << ((i * 2) + 1));
 
-                        Log("Added subscription to mouse button {0}", subReq.BindingInfo.Index);
+                        Log("Added subscription to mouse button {0}", subReq.BindingDescriptor.Index);
                         if (!monitoredStates.ContainsKey(downbit))
                         {
                             monitoredStates.Add(downbit, new MouseButtonMonitor() { MonitoredState = 1 });
@@ -610,13 +610,13 @@ namespace Core_Interception
                         monitoredStates[upbit].Add(subReq);
                         return true;
                     }
-                    else if (subReq.BindingInfo.Type == BindingType.Axis)
+                    else if (subReq.BindingDescriptor.Type == BindingType.Axis)
                     {
-                        if (!monitoredAxes.ContainsKey(subReq.BindingInfo.Index))
+                        if (!monitoredAxes.ContainsKey(subReq.BindingDescriptor.Index))
                         {
-                            monitoredAxes.Add(subReq.BindingInfo.Index, new MouseAxisMonitor() { MonitoredAxis = subReq.BindingInfo.Index });
+                            monitoredAxes.Add(subReq.BindingDescriptor.Index, new MouseAxisMonitor() { MonitoredAxis = subReq.BindingDescriptor.Index });
                         }
-                        monitoredAxes[subReq.BindingInfo.Index].Add(subReq);
+                        monitoredAxes[subReq.BindingDescriptor.Index].Add(subReq);
                         return true;
                     }
                 }
@@ -631,7 +631,7 @@ namespace Core_Interception
             {
                 try
                 {
-                    var i = (ushort)subReq.BindingInfo.Index;
+                    var i = (ushort)subReq.BindingDescriptor.Index;
                     ushort downbit = (ushort)(1 << (i * 2));
                     ushort upbit = (ushort)(1 << ((i * 2) + 1));
 
@@ -695,13 +695,13 @@ namespace Core_Interception
 
             public void Add(InputSubscriptionRequest subReq)
             {
-                subReqs.Add(subReq.SubscriptionInfo.SubscriberGuid, subReq);
+                subReqs.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
                 //Log("Added Subscription to Mouse Button {0}", subReq.InputIndex);
             }
 
             public void Remove(InputSubscriptionRequest subReq)
             {
-                subReqs.Remove(subReq.SubscriptionInfo.SubscriberGuid);
+                subReqs.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
             }
 
             public bool HasSubscriptions()
@@ -737,13 +737,13 @@ namespace Core_Interception
 
             public void Add(InputSubscriptionRequest subReq)
             {
-                subReqs.Add(subReq.SubscriptionInfo.SubscriberGuid, subReq);
+                subReqs.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
                 //Log("Added Subscription to Mouse Button {0}", subReq.InputIndex);
             }
 
             public void Remove(InputSubscriptionRequest subReq)
             {
-                subReqs.Remove(subReq.SubscriptionInfo.SubscriberGuid);
+                subReqs.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
             }
 
             public bool HasSubscriptions()
