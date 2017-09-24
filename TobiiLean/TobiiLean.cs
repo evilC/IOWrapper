@@ -110,11 +110,11 @@ namespace TobiiLean
                             return;
                         if (currState != 0)
                         {
-                            iow.SetOutputstate(interceptionKeyboardOutputSubReq, BindingType.Button, leanCodes[currState], 0);
+                            iow.SetOutputstate(interceptionKeyboardOutputSubReq, new BindingDescriptor() { Type = BindingType.Button, Index = (int)leanCodes[currState] }, 0);
                         }
                         if (newState != 0)
                         {
-                            iow.SetOutputstate(interceptionKeyboardOutputSubReq, BindingType.Button, leanCodes[newState], 1);
+                            iow.SetOutputstate(interceptionKeyboardOutputSubReq, new BindingDescriptor() { Type = BindingType.Button, Index = (int)leanCodes[newState] }, 1);
                         }
                         currState = newState;
 
