@@ -43,9 +43,9 @@ namespace Core_Tobii_Interaction
 
             var gazeDevice = new IOWrapperDevice()
             {
+                DeviceName = "Tobii Gaze Point",
                 DeviceInfo = new DeviceInfo()
                 {
-                    DeviceName = "Tobii Gaze Point",
                     DeviceHandle = "GazePoint",
                 },
             };
@@ -67,9 +67,9 @@ namespace Core_Tobii_Interaction
 
             var poseDevice = new IOWrapperDevice()
             {
+                DeviceName = "Tobii Head Pose",
                 DeviceInfo = new DeviceInfo()
                 {
-                    DeviceName = "Tobii Head Pose",
                     DeviceHandle = "HeadPose",
                 },
             };
@@ -197,7 +197,7 @@ namespace Core_Tobii_Interaction
                 private Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
                 public bool Add(InputSubscriptionRequest subReq)
                 {
-                    subscriptions.Add(subReq.SubscriberGuid, subReq);
+                    subscriptions.Add(subReq.SubscriptionInfo.SubscriberGuid, subReq);
                     return true;
                 }
 

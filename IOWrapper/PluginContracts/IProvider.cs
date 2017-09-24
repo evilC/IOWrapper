@@ -110,18 +110,10 @@ namespace Providers
     #region Device Report
     public class IOWrapperDevice
     {
-        ///// <summary>
-        ///// The human-friendly name of the device
-        ///// </summary>
-        //public string DeviceName { get; set; }
-
-        ///// <summary>
-        ///// A way to uniquely identify a device instance via it's API
-        ///// Note that ideally all providers implementing the same API should ideally generate the same device handles
-        ///// For something like RawInput or DirectInput, this would likely be based on VID/PID
-        ///// For an ordered API like XInput, this would just be controller number
-        ///// </summary>
-        //public string DeviceHandle { get; set; }
+        /// <summary>
+        /// The human-friendly name of the device
+        /// </summary>
+        public string DeviceName { get; set; }
 
         public DeviceInfo DeviceInfo { get; set; }
 
@@ -137,11 +129,6 @@ namespace Providers
     public class DeviceInfo
     {
         /// <summary>
-        /// The human-friendly name of the device
-        /// </summary>
-        public string DeviceName { get; set; }
-
-        /// <summary>
         /// A way to uniquely identify a device instance via it's API
         /// Note that ideally all providers implementing the same API should ideally generate the same device handles
         /// For something like RawInput or DirectInput, this would likely be based on VID/PID
@@ -149,6 +136,7 @@ namespace Providers
         /// </summary>
         public string DeviceHandle { get; set; }
 
+        //public int DeviceInstance { get; set; }
     }
 
     public class ProviderInfo

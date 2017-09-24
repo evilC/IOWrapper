@@ -264,10 +264,10 @@ namespace SharpDX_DirectInput
 
                 var device = new IOWrapperDevice()
                 {
+                    DeviceName = deviceInstance.ProductName,
                     DeviceInfo = new DeviceInfo()
                     {
                         DeviceHandle = handle,
-                        DeviceName = deviceInstance.ProductName,
                     },
                 };
 
@@ -523,16 +523,16 @@ namespace SharpDX_DirectInput
                 }
                 else
                 {
-                    subscriptions.Add(subReq.SubscriberGuid, subReq);
+                    subscriptions.Add(subReq.SubscriptionInfo.SubscriberGuid, subReq);
                     return true;
                 }
             }
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
-                if (subscriptions.ContainsKey(subReq.SubscriberGuid))
+                if (subscriptions.ContainsKey(subReq.SubscriptionInfo.SubscriberGuid))
                 {
-                    subscriptions.Remove(subReq.SubscriberGuid);
+                    subscriptions.Remove(subReq.SubscriptionInfo.SubscriberGuid);
                     return true;
                 }
                 return false;
@@ -560,7 +560,7 @@ namespace SharpDX_DirectInput
                     int reportedValue;
                     foreach (var subscription in subscriptions.Values)
                     {
-                        if (ActiveProfiles.Contains(subscription.ProfileGuid))
+                        if (ActiveProfiles.Contains(subscription.SubscriptionInfo.ProfileGuid))
                         {
                             switch (bindingType)
                             {
@@ -605,7 +605,7 @@ namespace SharpDX_DirectInput
 
             public bool Add(InputSubscriptionRequest subReq)
             {
-                subscriptions.Add(subReq.SubscriberGuid, subReq);
+                subscriptions.Add(subReq.SubscriptionInfo.SubscriberGuid, subReq);
                 return true;
             }
 

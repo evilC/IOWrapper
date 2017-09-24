@@ -312,10 +312,10 @@ namespace Core_Interception
                     handle = @"Keyboard\" + handle;
                     providerReport.Devices.Add(handle, new IOWrapperDevice()
                     {
+                        DeviceName = name,
                         DeviceInfo = new DeviceInfo()
                         {
                             DeviceHandle = handle,
-                            DeviceName = name,
                         },
                         //Bindings = { keyboardList }
                         Nodes = new List<DeviceNode>()
@@ -346,10 +346,10 @@ namespace Core_Interception
                     handle = @"Mouse\" + handle;
                     providerReport.Devices.Add(handle, new IOWrapperDevice()
                     {
+                        DeviceName = name,
                         DeviceInfo = new DeviceInfo()
                         {
                             DeviceHandle = handle,
-                            DeviceName = name,
                         },
                         //Bindings = { mouseButtonList }
                         Nodes = new List<DeviceNode>()
@@ -531,12 +531,12 @@ namespace Core_Interception
 
             public void Add(InputSubscriptionRequest subReq)
             {
-                subReqs.Add(subReq.SubscriberGuid, subReq);
+                subReqs.Add(subReq.SubscriptionInfo.SubscriberGuid, subReq);
             }
 
             public void Remove(InputSubscriptionRequest subReq)
             {
-                subReqs.Remove(subReq.SubscriberGuid);
+                subReqs.Remove(subReq.SubscriptionInfo.SubscriberGuid);
             }
 
             public bool HasSubscriptions()
@@ -675,13 +675,13 @@ namespace Core_Interception
 
             public void Add(InputSubscriptionRequest subReq)
             {
-                subReqs.Add(subReq.SubscriberGuid, subReq);
+                subReqs.Add(subReq.SubscriptionInfo.SubscriberGuid, subReq);
                 //Log("Added Subscription to Mouse Button {0}", subReq.InputIndex);
             }
 
             public void Remove(InputSubscriptionRequest subReq)
             {
-                subReqs.Remove(subReq.SubscriberGuid);
+                subReqs.Remove(subReq.SubscriptionInfo.SubscriberGuid);
             }
 
             public bool HasSubscriptions()
@@ -717,13 +717,13 @@ namespace Core_Interception
 
             public void Add(InputSubscriptionRequest subReq)
             {
-                subReqs.Add(subReq.SubscriberGuid, subReq);
+                subReqs.Add(subReq.SubscriptionInfo.SubscriberGuid, subReq);
                 //Log("Added Subscription to Mouse Button {0}", subReq.InputIndex);
             }
 
             public void Remove(InputSubscriptionRequest subReq)
             {
-                subReqs.Remove(subReq.SubscriberGuid);
+                subReqs.Remove(subReq.SubscriptionInfo.SubscriberGuid);
             }
 
             public bool HasSubscriptions()

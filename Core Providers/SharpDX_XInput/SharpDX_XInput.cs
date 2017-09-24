@@ -281,10 +281,10 @@ namespace SharpDX_XInput
         {
             return new IOWrapperDevice()
             {
+                DeviceName = "Xbox Controller " + (id + 1),
                 DeviceInfo = new DeviceInfo()
                 {
                     DeviceHandle = id.ToString(),
-                    DeviceName = "Xbox Controller " + (id + 1),
                 },
                 Nodes = { buttonInfo, axisInfo , povInfo}
                 //ButtonCount = 11,
@@ -425,17 +425,17 @@ namespace SharpDX_XInput
 
             public bool Add(InputSubscriptionRequest subReq)
             {
-                Log("XI adding subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderInfo.ProviderName, subReq.DeviceInfo.DeviceHandle, subReq.BindingInfo.Index, subReq.SubscriberGuid);
-                subscriptions.Add(subReq.SubscriberGuid, subReq);
+                Log("XI adding subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderInfo.ProviderName, subReq.DeviceInfo.DeviceHandle, subReq.BindingInfo.Index, subReq.SubscriptionInfo.SubscriberGuid);
+                subscriptions.Add(subReq.SubscriptionInfo.SubscriberGuid, subReq);
                 return true;
             }
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
-                Log("XI removing subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderInfo.ProviderName, subReq.DeviceInfo.DeviceHandle, subReq.BindingInfo.Index, subReq.SubscriberGuid);
-                if (subscriptions.ContainsKey(subReq.SubscriberGuid))
+                Log("XI removing subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderInfo.ProviderName, subReq.DeviceInfo.DeviceHandle, subReq.BindingInfo.Index, subReq.SubscriptionInfo.SubscriberGuid);
+                if (subscriptions.ContainsKey(subReq.SubscriptionInfo.SubscriberGuid))
                 {
-                    return subscriptions.Remove(subReq.SubscriberGuid);
+                    return subscriptions.Remove(subReq.SubscriptionInfo.SubscriberGuid);
                 }
                 return false;
             }
@@ -453,7 +453,7 @@ namespace SharpDX_XInput
                 currentValue = value;
                 foreach (var subscription in subscriptions.Values)
                 {
-                    if (ActiveProfiles.Contains(subscription.ProfileGuid))
+                    if (ActiveProfiles.Contains(subscription.SubscriptionInfo.ProfileGuid))
                     {
                         subscription.Callback(value);
                     }

@@ -109,10 +109,10 @@ namespace Core_vJoyInterfaceWrap
                     var handle = i.ToString();
                     var device = new IOWrapperDevice()
                     {
+                        DeviceName = String.Format("vJoy Stick {0}", id),
                         DeviceInfo = new DeviceInfo()
                         {
                             DeviceHandle = handle,
-                            DeviceName = String.Format("vJoy Stick {0}", id),
                         },
                     };
 
@@ -192,21 +192,21 @@ namespace Core_vJoyInterfaceWrap
         {
             var devId = DevIdFromHandle(subReq.DeviceInfo.DeviceHandle);
             vJoyDevices[devId].Add(subReq);
-            subscriptionToDevice.Add(subReq.SubscriberGuid, devId);
+            subscriptionToDevice.Add(subReq.SubscriptionInfo.SubscriberGuid, devId);
             return true;
         }
 
         public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            uint devId = subscriptionToDevice[subReq.SubscriberGuid];
+            uint devId = subscriptionToDevice[subReq.SubscriptionInfo.SubscriberGuid];
             vJoyDevices[devId].Remove(subReq);
-            subscriptionToDevice.Remove(subReq.SubscriberGuid);
+            subscriptionToDevice.Remove(subReq.SubscriptionInfo.SubscriberGuid);
             return true;
         }
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
         {
-            var devId = subscriptionToDevice[subReq.SubscriberGuid];
+            var devId = subscriptionToDevice[subReq.SubscriptionInfo.SubscriberGuid];
             if (!vJoyDevices[devId].IsAcquired)
             {
                 return false;
@@ -267,12 +267,12 @@ namespace Core_vJoyInterfaceWrap
                 {
                     Acquire();
                 }
-                subReqs.Add(subReq.SubscriberGuid, subReq);
+                subReqs.Add(subReq.SubscriptionInfo.SubscriberGuid, subReq);
             }
 
             public void Remove(OutputSubscriptionRequest subReq)
             {
-                subReqs.Remove(subReq.SubscriberGuid);
+                subReqs.Remove(subReq.SubscriptionInfo.SubscriberGuid);
                 if (subReqs.Count == 0)
                 {
                     Relinquish();

@@ -101,20 +101,20 @@ namespace IOWrapper
         {
             // Clone subreq before passing to provider, so if it gets altered outside, it does not affect the copy
             var subReq = _subReq.Clone();
-            Log("SubscribeInput: Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderInfo.ProviderName, subReq.DeviceInfo.DeviceHandle, subReq.BindingInfo.Index, subReq.SubscriberGuid);
-            if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriberGuid))
+            Log("SubscribeInput: Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderInfo.ProviderName, subReq.DeviceInfo.DeviceHandle, subReq.BindingInfo.Index, subReq.SubscriptionInfo.SubscriberGuid);
+            if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriptionInfo.SubscriberGuid))
             {
                 // If this Subscriber has an existing subscription...
                 // ... then remove the old subscription first.
                 Log("Existing subscription found, removing...");
-                var oldSub = ActiveInputSubscriptions[subReq.SubscriberGuid];
+                var oldSub = ActiveInputSubscriptions[subReq.SubscriptionInfo.SubscriberGuid];
                 UnsubscribeInput(oldSub);
             }
             var prov = GetProvider(subReq.ProviderInfo.ProviderName);
             var ret = prov.SubscribeInput(subReq);
             if (ret)
             {
-                ActiveInputSubscriptions.Add(subReq.SubscriberGuid, subReq);
+                ActiveInputSubscriptions.Add(subReq.SubscriptionInfo.SubscriberGuid, subReq);
             }
             return ret;
         }
@@ -124,13 +124,13 @@ namespace IOWrapper
             var subReq = _subReq.Clone();
             Log("UnsubscribeInput: Provider {0}, Device {1}, Input {2}", subReq.ProviderInfo.ProviderName, subReq.DeviceInfo.DeviceHandle, subReq.BindingInfo.Index);
             var ret = false;
-            if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriberGuid))
+            if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriptionInfo.SubscriberGuid))
             {
                 var provider = GetProvider(subReq.ProviderInfo.ProviderName);
-                ret = provider.UnsubscribeInput(ActiveInputSubscriptions[subReq.SubscriberGuid]);
+                ret = provider.UnsubscribeInput(ActiveInputSubscriptions[subReq.SubscriptionInfo.SubscriberGuid]);
                 if (ret)
                 {
-                    ActiveInputSubscriptions.Remove(subReq.SubscriberGuid);
+                    ActiveInputSubscriptions.Remove(subReq.SubscriptionInfo.SubscriberGuid);
                 }
             }
             return ret;
@@ -139,19 +139,19 @@ namespace IOWrapper
         public bool SubscribeOutput(OutputSubscriptionRequest _subReq)
         {
             var subReq = _subReq.Clone();
-            if (ActiveOutputSubscriptions.ContainsKey(subReq.SubscriberGuid))
+            if (ActiveOutputSubscriptions.ContainsKey(subReq.SubscriptionInfo.SubscriberGuid))
             {
                 // If this Subscriber has an existing subscription...
                 // ... then remove the old subscription first.
                 // unsub output here
-                UnsubscribeOutput(ActiveOutputSubscriptions[subReq.SubscriberGuid]);
+                UnsubscribeOutput(ActiveOutputSubscriptions[subReq.SubscriptionInfo.SubscriberGuid]);
             }
             var provider = GetProvider(subReq.ProviderInfo.ProviderName);
             bool ret = false;
             ret = provider.SubscribeOutputDevice(subReq);
             if (ret)
             {
-                ActiveOutputSubscriptions.Add(subReq.SubscriberGuid, subReq);
+                ActiveOutputSubscriptions.Add(subReq.SubscriptionInfo.SubscriberGuid, subReq);
             }
             return ret;
         }
@@ -160,13 +160,13 @@ namespace IOWrapper
         {
             var subReq = _subReq.Clone();
             var ret = false;
-            if (ActiveOutputSubscriptions.ContainsKey(subReq.SubscriberGuid))
+            if (ActiveOutputSubscriptions.ContainsKey(subReq.SubscriptionInfo.SubscriberGuid))
             {
                 var provider = GetProvider(subReq.ProviderInfo.ProviderName);
                 ret = provider.UnSubscribeOutputDevice(subReq);
                 if (ret)
                 {
-                    ActiveOutputSubscriptions.Remove(subReq.SubscriberGuid);
+                    ActiveOutputSubscriptions.Remove(subReq.SubscriptionInfo.SubscriberGuid);
                 }
             }
             return ret;
