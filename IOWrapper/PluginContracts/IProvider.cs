@@ -16,44 +16,119 @@ namespace Providers
         bool SubscribeOutputDevice(OutputSubscriptionRequest subReq);
         bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq);
         //bool SetOutputButton(string dev, uint button, bool state);
-        bool SetOutputState(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state);
+        bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state);
         //bool SubscribeAxis(string deviceHandle, uint axisId, dynamic callback);
     }
 
-    public enum InputType { NONE, AXIS, BUTTON, POV };
+    #region Subscription Requests
+    /// <summary>
+    /// Base class for Subscription Requests. Shared by Input and Output
+    /// </summary>
+    public class SubscriptionRequest
+    {
+        /// <summary>
+        /// Uniquely identifies a subscriber
+        /// </summary>
+        public Guid SubscriberGuid { get; set; }
 
-    #region Subscriptions
+        /// <summary>
+        /// Allows grouping of subscriptions for easy toggling on / off sets of subscriptions
+        /// </summary>
+        public Guid ProfileGuid { get; set; }
+
+        /// <summary>
+        /// Identifies which Provider this subscription is for
+        /// </summary>
+        public string ProviderName { get; set; }
+
+        /// <summary>
+        /// Identifies which Device this subscription is for
+        /// </summary>
+        public string DeviceHandle { get; set; }
+    }
+
+    /// <summary>
+    /// Contains all the required information for :
+    ///     The IOController to route the request to the appropriate Provider
+    ///     The Provider to subscribe to the appropriate input
+    ///     The Provider to notify the subscriber of activity
+    /// </summary>
     public class InputSubscriptionRequest : SubscriptionRequest
     {
-        public InputType InputType { get; set; }
-        //public string SubscriberId { get; set; }
-        public uint InputIndex { get; set; }
+        /// <summary>
+        /// Identifies the Type (Button / Axis / POV) of the subscription
+        /// </summary>
+        public BindingType Type { get; set; }
+
+        /// <summary>
+        /// For the given type, identifies which specific input this subscription is for
+        /// </summary>
+        public uint Index { get; set; }
+
+        /// <summary>
+        /// Callback that is fired when this input changes state
+        /// </summary>
         public dynamic Callback { get; set; }
-        // used, eg, for DirectInput POV number
-        public int InputSubIndex { get; set; } = 0;
-        public Guid ProfileGuid { get; set; }
+
         public InputSubscriptionRequest Clone()
         {
             return (InputSubscriptionRequest)this.MemberwiseClone();
         }
+
+        // used, eg, for DirectInput POV number
+        //public int SubIndex { get; set; } = 0;
+
     }
 
+    /// <summary>
+    /// Contains all the information for:
+    ///     The IOController to route the request to the appropriate Provider
+    ///     
+    /// Output Subscriptions are typically used to eg create virtual devices...
+    /// ... so that output can be sent to them
+    /// </summary>
     public class OutputSubscriptionRequest : SubscriptionRequest {
         public OutputSubscriptionRequest Clone()
         {
             return (OutputSubscriptionRequest)this.MemberwiseClone();
         }
     }
+    #endregion
 
-    public class SubscriptionRequest
+    // Reports allow the back-end to tell the front-end what capabilities are available
+    #region Reporting
+    #region Provider Report
+    
+    /// <summary>
+    /// Contains information about each provider
+    /// </summary>
+    public class ProviderReport
     {
-        public Guid SubscriberGuid { get; set; }
-        public string ProviderName { get; set; }
-        public string SubProviderName { get; set; } = null;
-        public string DeviceHandle { get; set; }
+        /// <summary>
+        /// The human-friendly name of the Provider
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
+        /// A description of what the Provider does
+        /// </summary>
+        public string Description { get; set; }
+
+        public SortedDictionary<string, IOWrapperDevice> Devices { get; set; }
+            = new SortedDictionary<string, IOWrapperDevice>();
     }
     #endregion
 
+    #region Report Node
+    public class DeviceNode
+    {
+        public string Title { get; set; }
+        public List<DeviceNode> Nodes { get; set; } = new List<DeviceNode>();
+        public List<BindingInfo> Bindings { get; set; } = new List<BindingInfo>();
+    }
+    #endregion
+
+    #region Device Report
     public class IOWrapperDevice
     {
         /// <summary>
@@ -75,89 +150,61 @@ namespace Providers
         /// </summary>
         public string ProviderName { get; set; }
 
-        public string SubProviderName { get; set; }
-
         /// <summary>
         /// The underlying API that handles this input
         /// It is intended that many providers could support a given API
         /// </summary>
         public string API { get; set; }
 
-        public List<BindingInfo> Bindings { get; set; } = new List<BindingInfo>();
-
-        /*
-        /// <summary>
-        /// A list of the device's buttons.
-        /// Note that for some devices (eg keyboard), the indexes of the buttons may not be contiguous
-        /// ie it may have index 1,3,5
-        /// </summary>
-        public List<ButtonInfo> ButtonList { get; set; }
+        //public List<BindingInfo> Bindings { get; set; } = new List<BindingInfo>();
 
         /// <summary>
-        /// A List of Axes IDs that this axis supports
+        /// Nodes give the device report structure and allow the front-end to logically group items
         /// </summary>
-        public List<AxisInfo> AxisList { get; set; }
-        */
+        public List<DeviceNode> Nodes { get; set; } = new List<DeviceNode>();
     }
+    #endregion
 
-    public class InputInfo
-    {
-        /// <summary>
-        /// The index (zero based) of this input
-        /// </summary>
-        public int Index { get; set; }
-
-        /// <summary>
-        /// The name of this input.
-        /// If purely a button number, then the first button (Index 0) should be called "1"
-        /// </summary>
-        public string Name { get; set; }
-    }
-
-    public class ButtonInfo : InputInfo
-    {
-        /// <summary>
-        /// Buttons with this property set to true only have one state
-        /// eg Mouse Wheel, which has no "press" or "release" event
-        /// </summary>
-        public bool IsEvent { get; set; }
-    }
-
-    public class AxisInfo : InputInfo
-    {
-        /// <summary>
-        /// Axes with this property set to true do not rest in the middle
-        /// eg a Pedal or a Trigger on an Xbox controller
-        /// </summary>
-        public bool IsUnsigned { get; set; }
-    }
-
-    public class ProviderReport
-    {
-        public SortedDictionary<string, IOWrapperDevice> Devices { get; set; }
-            = new SortedDictionary<string, IOWrapperDevice>();
-    }
-
+    #region Binding Report
     public class BindingInfo
     {
-        public enum InputCategory
-        {
-            None,
-            Button,
-            Event,
-            Range,
-            Trigger,
-            Delta
-        }
-
         public string Title { get; set; }
-        public bool IsBinding { get; set; } = true;
-        public InputCategory Category { get; set; } = InputCategory.None;
-        public InputType InputType { get; set; } = InputType.NONE;
-        public int InputIndex { get; set; }
-        public int InputSubIndex { get; set; }
-        public List<BindingInfo> SubBindings { get; set; } = new List<BindingInfo>();
+        public BindingType Type { get; set; }
+        public int Index { get; set; }
+        public int SubIndex { get; set; }
+        public BindingCategory Category { get; set; }
     }
+
+    /*
+    public class ButtonBindingInfo : BindingInfo
+    {
+        public ButtonCategory Category { get; set; }
+    }
+
+    public class AxisBindingInfo : BindingInfo
+    {
+        public AxisCategory Category { get; set; }
+    }
+
+    public class POVBindingInfo : BindingInfo
+    {
+        public ButtonCategory Category { get; set; } = ButtonCategory.Momentary;
+    }
+    */
+    #endregion
+
+    /// <summary>
+    /// Enums used to categorize how a binding reports
+    /// </summary>
+    #region Category Enums
+    public enum BindingType { Axis, Button, POV };
+
+    public enum BindingCategory { Momentary, Event, Signed, Unsigned, Delta }
+    //public enum AxisCategory { Signed, Unsigned, Delta }
+    //public enum ButtonCategory { Momentary, Event }
+    //public enum POVCategory { POV1, POV2, POV3, POV4 }
+    #endregion
+    #endregion
 
     #region Helper Classes
     static public class DeviceHelper

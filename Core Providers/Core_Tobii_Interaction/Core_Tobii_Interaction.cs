@@ -31,67 +31,55 @@ namespace Core_Tobii_Interaction
 
         public ProviderReport GetInputList()
         {
-            providerReport = new ProviderReport();
-            var gazeInfo = new List<BindingInfo>();
-            //foreach (var axis in sixDofAxisNames)
-            for (int i = 0; i < 6; i++)
+            providerReport = new ProviderReport() {
+                Title = "Tobii Interaction (Core)",
+                Description = "Tracks head and eye movement. Requires a Tobii device, see https://tobiigaming.com/"
+            };
+
+            var gazeDevice = new IOWrapperDevice()
             {
-                gazeInfo.Add(new BindingInfo()
+                ProviderName = ProviderName,
+                DeviceName = "Tobii Gaze Point",
+                DeviceHandle = "GazePoint",
+                API = "Tobii.Interaction",
+            };
+
+            var gazeNode = new DeviceNode() { Title = "Axes" };
+            for (int i = 0; i < 3; i++)
+            {
+                gazeNode.Bindings.Add(new BindingInfo()
                 {
                     Title = sixDofAxisNames[i],
-                    InputIndex = i,
-                    Category = BindingInfo.InputCategory.Range,
-                    InputType = InputType.AXIS
+                    Index = i,
+                    Type = BindingType.Axis,
+                    Category = BindingCategory.Signed
                 });
             }
+            gazeDevice.Nodes.Add(gazeNode);
+            providerReport.Devices.Add("GazePoint", gazeDevice);
 
-            var poseInfo = new List<BindingInfo>();
+
+            var poseDevice = new IOWrapperDevice()
+            {
+                ProviderName = ProviderName,
+                DeviceName = "Tobii Head Pose",
+                DeviceHandle = "HeadPose",
+                API = "Tobii.Interaction"
+            };
+
+            var poseNode = new DeviceNode() { Title = "Axes" };
             for (int i = 0; i < 2; i++)
             {
-                poseInfo.Add(new BindingInfo()
+                poseNode.Bindings.Add(new BindingInfo()
                 {
                     Title = sixDofAxisNames[i],
-                    InputIndex = i,
-                    Category = BindingInfo.InputCategory.Range,
-                    InputType = InputType.AXIS
+                    Index = i,
+                    Type = BindingType.Axis,
+                    Category = BindingCategory.Signed
                 });
             }
-
-            providerReport.Devices.Add("GazePoint", new IOWrapperDevice()
-            {
-                ProviderName = ProviderName,
-                SubProviderName = "GazePoint",
-                DeviceName = "Tobii Gaze Point",
-                DeviceHandle = "0",
-                API = "Tobii.Interaction",
-                Bindings = new List<BindingInfo>()
-                {
-                    new BindingInfo()
-                    {
-                        Title = "Axes",
-                        IsBinding = false,
-                        SubBindings = gazeInfo
-                    },
-                }
-            });
-
-            providerReport.Devices.Add("HeadPose", new IOWrapperDevice()
-            {
-                ProviderName = ProviderName,
-                SubProviderName = "HeadPose",
-                DeviceName = "Tobii Head Pose",
-                DeviceHandle = "0",
-                API = "Tobii.Interaction",
-                Bindings = new List<BindingInfo>()
-                {
-                    new BindingInfo()
-                    {
-                        Title = "Axes",
-                        IsBinding = false,
-                        SubBindings = gazeInfo
-                    },
-                }
-            });
+            poseDevice.Nodes.Add(poseNode);
+            providerReport.Devices.Add("HeadPose", poseDevice);
 
             return providerReport;
         }
@@ -101,7 +89,7 @@ namespace Core_Tobii_Interaction
             return null;
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state)
+        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
         {
             return false;
         }
@@ -113,9 +101,9 @@ namespace Core_Tobii_Interaction
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            if (streamHandlers.ContainsKey(subReq.SubProviderName))
+            if (streamHandlers.ContainsKey(subReq.DeviceHandle))
             {
-                streamHandlers[subReq.SubProviderName].SubscribeInput(subReq);
+                streamHandlers[subReq.DeviceHandle].SubscribeInput(subReq);
                 return true;
             }
             return false;
@@ -189,11 +177,11 @@ namespace Core_Tobii_Interaction
 
             public virtual bool SubscribeInput(InputSubscriptionRequest subReq)
             {
-                if (!axisMonitors.ContainsKey(subReq.InputIndex))
+                if (!axisMonitors.ContainsKey(subReq.Index))
                 {
-                    axisMonitors.Add(subReq.InputIndex, new AxisMonitor());
+                    axisMonitors.Add(subReq.Index, new AxisMonitor());
                 }
-                axisMonitors[subReq.InputIndex].Add(subReq);
+                axisMonitors[subReq.Index].Add(subReq);
                 return true;
             }
 

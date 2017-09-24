@@ -36,9 +36,30 @@ namespace Core_Interception
         private Dictionary<int, MouseMonitor> MonitoredMice = new Dictionary<int, MouseMonitor>();
         private Dictionary<string, int> deviceHandleToId;
 
-        private static BindingInfo keyboardList;
-        private static BindingInfo mouseButtonList;
-        private static List<string> mouseButtonNames = new List<string>() { "Left Mouse", "Right Mouse", "Middle Mouse", "Side Button 1", "Side Button 2" };
+        private static DeviceNode keyboardList;
+        private static DeviceNode mouseButtonList;
+        private static DeviceNode mouseAxisList = new DeviceNode()
+        {
+            Title = "Axes",
+            Bindings = new List<BindingInfo>()
+            {
+                new BindingInfo()
+                {
+                    Title = "X",
+                    Index = 0,
+                    Type = BindingType.Axis,
+                    Category = BindingCategory.Delta,
+                },
+                new BindingInfo()
+                {
+                    Title = "Y",
+                    Index = 1,
+                    Type = BindingType.Axis,
+                    Category = BindingCategory.Delta,
+                }
+            }
+        };
+        private static List<string> mouseButtonNames = new List<string>() { "Left Mouse", "Right Mouse", "Middle Mouse", "Side Button 1", "Side Button 2", "Wheel Up", "Wheel Down" };
 
         public Core_Interception()
         {
@@ -76,12 +97,12 @@ namespace Core_Interception
             if (state && !filterState)
             {
                 SetFilter(deviceContext, IsKeyboard, Filter.All);
-                //SetFilter(deviceContext, IsMouse, Filter.All);
+                SetFilter(deviceContext, IsMouse, Filter.All);
             }
             else if (!state && filterState)
             {
                 SetFilter(deviceContext, IsKeyboard, Filter.None);
-                //SetFilter(deviceContext, IsMouse, Filter.None);
+                SetFilter(deviceContext, IsMouse, Filter.None);
             }
         }
 
@@ -228,7 +249,7 @@ namespace Core_Interception
             return true;
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state)
+        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
         {
             int devId = deviceHandleToId[subReq.DeviceHandle] + 1;
             //Log("SetOutputState. Type: {0}, Index: {1}, State: {2}, Device: {3}", inputType, inputIndex, state, devId);
@@ -261,7 +282,11 @@ namespace Core_Interception
         private void QueryDevices()
         {
             deviceHandleToId = new Dictionary<string, int>();
-            providerReport = new ProviderReport();
+            providerReport = new ProviderReport() {
+                Title = "Interception (Core)",
+                Description = "Supports per-device Keyboard and Mouse Input/Output, with blocking\nRequires custom driver from http://oblita.com/interception"
+            };
+
             UpdateKeyList();
             UpdateMouseButtonList();
             string handle;
@@ -286,7 +311,11 @@ namespace Core_Interception
                         DeviceName = name,
                         ProviderName = ProviderName,
                         API = "Interception",
-                        Bindings = { keyboardList }
+                        //Bindings = { keyboardList }
+                        Nodes = new List<DeviceNode>()
+                        {
+                            keyboardList
+                        }
                     });
                     deviceHandleToId.Add(handle, i - 1);
                     //Log(String.Format("{0} (Keyboard) = VID/PID: {1}", i, handle));
@@ -315,7 +344,12 @@ namespace Core_Interception
                         DeviceName = name,
                         ProviderName = ProviderName,
                         API = "Interception",
-                        Bindings = { mouseButtonList }
+                        //Bindings = { mouseButtonList }
+                        Nodes = new List<DeviceNode>()
+                        {
+                            mouseButtonList,
+                            mouseAxisList
+                        }
                     });
                     deviceHandleToId.Add(handle, i - 1);
                     //Log(String.Format("{0} (Mouse) = VID/PID: {1}", i, handle));
@@ -327,19 +361,29 @@ namespace Core_Interception
 
         private void UpdateMouseButtonList()
         {
-            mouseButtonList = new BindingInfo()
+            mouseButtonList = new DeviceNode()
             {
-                Title = "Buttons",
-                IsBinding = false
+                Title = "Buttons"
             };
             for (int i = 0; i < 5; i++)
             {
-                mouseButtonList.SubBindings.Add(new BindingInfo()
+                mouseButtonList.Bindings.Add(new BindingInfo()
                 {
-                    InputIndex = i,
+                    Index = i,
                     Title = mouseButtonNames[i],
-                    InputType = InputType.BUTTON,
-                    Category = BindingInfo.InputCategory.Button
+                    Type = BindingType.Button,
+                    Category = BindingCategory.Momentary
+                });
+            }
+            
+            for (int i = 5; i < 7; i++)
+            {
+                mouseButtonList.Bindings.Add(new BindingInfo()
+                {
+                    Index = i,
+                    Title = mouseButtonNames[i],
+                    Type = BindingType.Button,
+                    Category = BindingCategory.Event
                 });
             }
             
@@ -347,9 +391,8 @@ namespace Core_Interception
 
         private void UpdateKeyList()
         {
-            keyboardList = new BindingInfo() {
-                Title = "Keys",
-                IsBinding = false
+            keyboardList = new DeviceNode() {
+                Title = "Keys"
             };
             //buttonNames = new Dictionary<int, string>();
             uint lParam = 0;
@@ -368,11 +411,11 @@ namespace Core_Interception
                 if (keyName == "")
                     continue;
                 //Log("Button Index: {0}, name: '{1}'", i, keyName);
-                keyboardList.SubBindings.Add(new BindingInfo() {
-                    InputIndex = i,
+                keyboardList.Bindings.Add(new BindingInfo() {
+                    Index = i,
                     Title = keyName,
-                    InputType = InputType.BUTTON,
-                    Category = BindingInfo.InputCategory.Button
+                    Type = BindingType.Button,
+                    Category = BindingCategory.Momentary
                 });
                 //buttonNames.Add(i, keyName);
 
@@ -386,16 +429,16 @@ namespace Core_Interception
                 if (altKeyName == "" || altKeyName == keyName)
                     continue;
                 //Log("ALT Button Index: {0}, name: '{1}'", i + 256, altKeyName);
-                keyboardList.SubBindings.Add(new BindingInfo() {
-                    InputIndex = i + 256,
+                keyboardList.Bindings.Add(new BindingInfo() {
+                    Index = i + 256,
                     Title = altKeyName,
-                    InputType = InputType.BUTTON,
-                    Category = BindingInfo.InputCategory.Button
+                    Type = BindingType.Button,
+                    Category = BindingCategory.Momentary
                 });
                 //Log("Button Index: {0}, name: '{1}'", i + 256, altKeyName);
                 //buttonNames.Add(i + 256, altKeyName);
             }
-            keyboardList.SubBindings.Sort((x, y) => x.Title.CompareTo(y.Title));
+            keyboardList.Bindings.Sort((x, y) => x.Title.CompareTo(y.Title));
         }
         #endregion
 
@@ -409,7 +452,7 @@ namespace Core_Interception
             {
                 try
                 {
-                    var code = (ushort)(subReq.InputIndex + 1);
+                    var code = (ushort)(subReq.Index + 1);
                     ushort stateDown = 0;
                     ushort stateUp = 1;
                     if (code > 256)
@@ -435,7 +478,7 @@ namespace Core_Interception
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
-                var code = (ushort)(subReq.InputIndex + 1);
+                var code = (ushort)(subReq.Index + 1);
                 if (code > 256)
                 {
                     code -= 256;
@@ -514,28 +557,41 @@ namespace Core_Interception
         private class MouseMonitor
         {
             private Dictionary<ushort, MouseButtonMonitor> monitoredStates = new Dictionary<ushort, MouseButtonMonitor>();
+            private Dictionary<uint, MouseAxisMonitor> monitoredAxes = new Dictionary<uint, MouseAxisMonitor>();
 
             public bool Add(InputSubscriptionRequest subReq)
             {
                 try
                 {
-                    var i = (ushort)subReq.InputIndex;
-                    ushort downbit = (ushort)(1 << (i * 2));
-                    ushort upbit = (ushort)(1 << ((i * 2) + 1));
-
-                    Log("Added subscription to mouse button {0}", subReq.InputIndex);
-                    if (!monitoredStates.ContainsKey(downbit))
+                    if (subReq.Type == BindingType.Button)
                     {
-                        monitoredStates.Add(downbit, new MouseButtonMonitor() { outputState = 1 });
-                    }
-                    monitoredStates[downbit].Add(subReq);
+                        var i = (ushort)subReq.Index;
+                        ushort downbit = (ushort)(1 << (i * 2));
+                        ushort upbit = (ushort)(1 << ((i * 2) + 1));
 
-                    if (!monitoredStates.ContainsKey(upbit))
-                    {
-                        monitoredStates.Add(upbit, new MouseButtonMonitor() { outputState = 0 });
+                        Log("Added subscription to mouse button {0}", subReq.Index);
+                        if (!monitoredStates.ContainsKey(downbit))
+                        {
+                            monitoredStates.Add(downbit, new MouseButtonMonitor() { MonitoredState = 1 });
+                        }
+                        monitoredStates[downbit].Add(subReq);
+
+                        if (!monitoredStates.ContainsKey(upbit))
+                        {
+                            monitoredStates.Add(upbit, new MouseButtonMonitor() { MonitoredState = 0 });
+                        }
+                        monitoredStates[upbit].Add(subReq);
+                        return true;
                     }
-                    monitoredStates[upbit].Add(subReq);
-                    return true;
+                    else if (subReq.Type == BindingType.Axis)
+                    {
+                        if (!monitoredAxes.ContainsKey(subReq.Index))
+                        {
+                            monitoredAxes.Add(subReq.Index, new MouseAxisMonitor() { MonitoredAxis = subReq.Index });
+                        }
+                        monitoredAxes[subReq.Index].Add(subReq);
+                        return true;
+                    }
                 }
                 catch
                 {
@@ -548,7 +604,7 @@ namespace Core_Interception
             {
                 try
                 {
-                    var i = (ushort)subReq.InputIndex;
+                    var i = (ushort)subReq.Index;
                     ushort downbit = (ushort)(1 << (i * 2));
                     ushort upbit = (ushort)(1 << ((i * 2) + 1));
 
@@ -582,12 +638,31 @@ namespace Core_Interception
                 {
                     monitoredStates[stroke.mouse.state].Poll(stroke);
                 }
+                else if (stroke.mouse.state == 0)
+                {
+                    try
+                    {
+                        var xvalue = stroke.mouse.GetAxis(0);
+                        if (xvalue != 0 && monitoredAxes.ContainsKey(0))
+                        {
+                            monitoredAxes[0].Poll(xvalue);
+                        }
+                        var yvalue = stroke.mouse.GetAxis(1);
+                        if (yvalue != 0 && monitoredAxes.ContainsKey(1))
+                        {
+                            monitoredAxes[1].Poll(yvalue);
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
             }
         }
 
         private class MouseButtonMonitor
         {
-            public int outputState;
+            public int MonitoredState { get; set; }
 
             private Dictionary<Guid, InputSubscriptionRequest> subReqs = new Dictionary<Guid, InputSubscriptionRequest>();
 
@@ -613,9 +688,9 @@ namespace Core_Interception
                 {
                     foreach (var subscriptionRequest in subReqs.Values)
                     {
-                        Log("State: {0}", outputState);
+                        Log("State: {0}", MonitoredState);
                         // ToDo: Need thread pool ?
-                        //var t = new Thread(() => CallbackThread(subscriptionRequest, outputState));
+                        //var t = new Thread(() => CallbackThread(subscriptionRequest, MonitoredState));
                         //t.Start();
                     }
                 }
@@ -625,6 +700,36 @@ namespace Core_Interception
             {
                 //Log("Callback");
                 subReq.Callback(value);
+            }
+        }
+
+        private class MouseAxisMonitor
+        {
+            private Dictionary<Guid, InputSubscriptionRequest> subReqs = new Dictionary<Guid, InputSubscriptionRequest>();
+            public uint MonitoredAxis { get; set; }
+
+            public void Add(InputSubscriptionRequest subReq)
+            {
+                subReqs.Add(subReq.SubscriberGuid, subReq);
+                //Log("Added Subscription to Mouse Button {0}", subReq.InputIndex);
+            }
+
+            public void Remove(InputSubscriptionRequest subReq)
+            {
+                subReqs.Remove(subReq.SubscriberGuid);
+            }
+
+            public bool HasSubscriptions()
+            {
+                return subReqs.Count > 0;
+            }
+
+            public void Poll(int value)
+            {
+                foreach (var subscriptionRequest in subReqs.Values)
+                {
+                    subscriptionRequest.Callback(value);
+                }
             }
         }
         #endregion
@@ -884,6 +989,11 @@ namespace Core_Interception
             public int x;
             public int y;
             public uint information;
+
+            public int GetAxis(uint axis)
+            {
+                return axis == 0 ? x : y;
+            }
         }
 
         [StructLayout(LayoutKind.Sequential)]

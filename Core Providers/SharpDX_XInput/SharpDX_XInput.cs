@@ -30,37 +30,47 @@ namespace SharpDX_XInput
 
         ProviderReport providerReport;
 
-        private readonly static BindingInfo buttonInfo = new BindingInfo()
+        private readonly static DeviceNode buttonInfo = new DeviceNode()
         {
             Title = "Buttons",
-            IsBinding = false,
-            SubBindings =
+            Bindings =
             {
-                new BindingInfo() { InputIndex = 0, Title = "A", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
-                new BindingInfo() { InputIndex = 1, Title = "B", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
-                new BindingInfo() { InputIndex = 2, Title = "X", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
-                new BindingInfo() { InputIndex = 3, Title = "Y", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
-                new BindingInfo() { InputIndex = 4, Title = "LB", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
-                new BindingInfo() { InputIndex = 5, Title = "RB", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
-                new BindingInfo() { InputIndex = 6, Title = "LS", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
-                new BindingInfo() { InputIndex = 7, Title = "RS", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
-                new BindingInfo() { InputIndex = 8, Title = "Back", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
-                new BindingInfo() { InputIndex = 9, Title = "Start", InputType = InputType.BUTTON, Category = BindingInfo.InputCategory.Button },
+                new BindingInfo() { Index = 0, Title = "A", Type = BindingType.Button, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 1, Title = "B", Type = BindingType.Button, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 2, Title = "X", Type = BindingType.Button, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 3, Title = "Y", Type = BindingType.Button, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 4, Title = "LB", Type = BindingType.Button, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 5, Title = "RB", Type = BindingType.Button, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 6, Title = "LS", Type = BindingType.Button, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 7, Title = "RS", Type = BindingType.Button, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 8, Title = "Back", Type = BindingType.Button, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 9, Title = "Start", Type = BindingType.Button, Category = BindingCategory.Momentary },
             }
         };
 
-        private readonly static BindingInfo axisInfo = new BindingInfo()
+        private readonly static DeviceNode axisInfo = new DeviceNode()
         {
             Title = "Axes",
-            IsBinding = false,
-            SubBindings = 
+            Bindings = 
             {
-                new BindingInfo() { InputIndex = 0, Title = "LX", InputType = InputType.AXIS, Category = BindingInfo.InputCategory.Range },
-                new BindingInfo() { InputIndex = 1, Title = "LY", InputType = InputType.AXIS, Category = BindingInfo.InputCategory.Range },
-                new BindingInfo() { InputIndex = 2, Title = "RX", InputType = InputType.AXIS, Category = BindingInfo.InputCategory.Range },
-                new BindingInfo() { InputIndex = 3, Title = "RY", InputType = InputType.AXIS, Category = BindingInfo.InputCategory.Range },
-                new BindingInfo() { InputIndex = 4, Title = "LT", InputType = InputType.AXIS, Category = BindingInfo.InputCategory.Trigger },
-                new BindingInfo() { InputIndex = 5, Title = "RT", InputType = InputType.AXIS, Category = BindingInfo.InputCategory.Trigger },
+                new BindingInfo() { Index = 0, Title = "LX", Type = BindingType.Axis, Category = BindingCategory.Signed },
+                new BindingInfo() { Index = 1, Title = "LY", Type = BindingType.Axis, Category = BindingCategory.Signed },
+                new BindingInfo() { Index = 2, Title = "RX", Type = BindingType.Axis, Category = BindingCategory.Signed },
+                new BindingInfo() { Index = 3, Title = "RY", Type = BindingType.Axis, Category = BindingCategory.Signed },
+                new BindingInfo() { Index = 4, Title = "LT", Type = BindingType.Axis, Category = BindingCategory.Unsigned },
+                new BindingInfo() { Index = 5, Title = "RT", Type = BindingType.Axis, Category = BindingCategory.Unsigned },
+            }
+        };
+
+        private readonly static DeviceNode povInfo = new DeviceNode()
+        {
+            Title = "D-Pad",
+            Bindings =
+            {
+                new BindingInfo() { Index = 0, Title = "Up", Type = BindingType.POV, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 2, Title = "Down", Type = BindingType.POV, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 3, Title = "Left", Type = BindingType.POV, Category = BindingCategory.Momentary },
+                new BindingInfo() { Index = 1, Title = "Right", Type = BindingType.POV, Category = BindingCategory.Momentary },
             }
         };
 
@@ -75,6 +85,11 @@ namespace SharpDX_XInput
             , GamepadButtonFlags.LeftShoulder, GamepadButtonFlags.RightShoulder
             , GamepadButtonFlags.LeftThumb, GamepadButtonFlags.RightThumb
             , GamepadButtonFlags.Back, GamepadButtonFlags.Start
+        };
+
+        private static List<GamepadButtonFlags> xinputPovDirectionIdentifiers = new List<GamepadButtonFlags>()
+        {
+            GamepadButtonFlags.DPadUp, GamepadButtonFlags.DPadRight, GamepadButtonFlags.DPadDown, GamepadButtonFlags.DPadLeft
         };
 
 
@@ -177,7 +192,10 @@ namespace SharpDX_XInput
 
         private void QueryDevices()
         {
-            providerReport = new ProviderReport();
+            providerReport = new ProviderReport() {
+                Title = "XInput (Core)",
+                Description = "Reads Xbox gamepads"
+            };
             for (int i = 0; i < 4; i++)
             {
                 var ctrlr = new Controller((UserIndex)i);
@@ -248,7 +266,7 @@ namespace SharpDX_XInput
             return false;
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, InputType inputType, uint inputIndex, int state)
+        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
         {
             return false;
         }
@@ -262,7 +280,7 @@ namespace SharpDX_XInput
                 DeviceName = "Xbox Controller " + (id + 1),
                 ProviderName = ProviderName,
                 API = "XInput",
-                Bindings = { buttonInfo, axisInfo }
+                Nodes = { buttonInfo, axisInfo , povInfo}
                 //ButtonCount = 11,
                 //ButtonList = buttonInfo,
                 //AxisList = axisInfo,
@@ -307,36 +325,38 @@ namespace SharpDX_XInput
 
             private Dictionary<uint, InputMonitor> axisMonitors = new Dictionary<uint, InputMonitor>();
             private Dictionary<uint, InputMonitor> buttonMonitors = new Dictionary<uint, InputMonitor>();
+            private Dictionary<uint, InputMonitor> povDirectionMonitors = new Dictionary<uint, InputMonitor>();
 
-            Dictionary<InputType, Dictionary<uint, InputMonitor>> monitors = new Dictionary<InputType, Dictionary<uint, InputMonitor>>();
+            Dictionary<BindingType, Dictionary<uint, InputMonitor>> monitors = new Dictionary<BindingType, Dictionary<uint, InputMonitor>>();
 
             public StickMonitor(int cid)
             {
                 controllerId = cid;
                 controller = new Controller((UserIndex)controllerId);
-                monitors.Add(InputType.AXIS, axisMonitors);
-                monitors.Add(InputType.BUTTON, buttonMonitors);
+                monitors.Add(BindingType.Axis, axisMonitors);
+                monitors.Add(BindingType.Button, buttonMonitors);
+                monitors.Add(BindingType.POV, povDirectionMonitors);
             }
 
             public bool Add(InputSubscriptionRequest subReq)
             {
-                var inputId = subReq.InputIndex;
-                var monitor = monitors[subReq.InputType];
+                var inputId = subReq.Index;
+                var monitor = monitors[subReq.Type];
                 if (!monitor.ContainsKey(inputId))
                 {
                     monitor.Add(inputId, new InputMonitor());
                 }
-                Log("Adding subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.InputType.ToString(), subReq.InputIndex);
+                Log("Adding subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.Type.ToString(), subReq.Index);
                 return monitor[inputId].Add(subReq);
             }
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
-                var inputId = subReq.InputIndex;
-                var monitor = monitors[subReq.InputType];
+                var inputId = subReq.Index;
+                var monitor = monitors[subReq.Type];
                 if (monitor.ContainsKey(inputId))
                 {
-                    Log("Removing subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.InputType.ToString(), subReq.InputIndex);
+                    Log("Removing subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.Type.ToString(), subReq.Index);
                     var ret = monitor[inputId].Remove(subReq);
                     if (!monitor[inputId].HasSubscriptions())
                     {
@@ -380,6 +400,13 @@ namespace SharpDX_XInput
                     var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
                     monitor.Value.ProcessPollResult(value);
                 }
+
+                foreach (var monitor in povDirectionMonitors)
+                {
+                    var flag = state.Gamepad.Buttons & xinputPovDirectionIdentifiers[(int)monitor.Key];
+                    var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
+                    monitor.Value.ProcessPollResult(value);
+                }
             }
         }
         #endregion
@@ -392,14 +419,14 @@ namespace SharpDX_XInput
 
             public bool Add(InputSubscriptionRequest subReq)
             {
-                Log("XI adding subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceHandle, subReq.InputIndex, subReq.SubscriberGuid);
+                Log("XI adding subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceHandle, subReq.Index, subReq.SubscriberGuid);
                 subscriptions.Add(subReq.SubscriberGuid, subReq);
                 return true;
             }
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
-                Log("XI removing subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceHandle, subReq.InputIndex, subReq.SubscriberGuid);
+                Log("XI removing subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceHandle, subReq.Index, subReq.SubscriberGuid);
                 if (subscriptions.ContainsKey(subReq.SubscriberGuid))
                 {
                     return subscriptions.Remove(subReq.SubscriberGuid);

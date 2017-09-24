@@ -46,9 +46,9 @@ namespace TobiiLean
                     SubscriberGuid = Guid.NewGuid(),
                     ProviderName = "Core_Interception",
                     DeviceHandle = keyboardHandle,
-                    InputType = InputType.BUTTON,
+                    Type = BindingType.Button,
                     //InputIndex = 81,    // Num 0
-                    InputIndex = 40,    // `
+                    Index = 40,    // `
                     Callback = new Action<int>((value) =>
                     {
                         if (value == 0)
@@ -63,9 +63,9 @@ namespace TobiiLean
                 {
                     SubscriberGuid = Guid.NewGuid(),
                     ProviderName = "Core_Tobii_Interaction",
-                    SubProviderName = "HeadPose",
-                    InputType = InputType.AXIS,
-                    InputIndex = 0,
+                    DeviceHandle = "HeadPose",
+                    Type = BindingType.Axis,
+                    Index = 0,
                     Callback = new Action<int>((value) =>
                     {
                         if (!macroEnabled)
@@ -83,11 +83,11 @@ namespace TobiiLean
                             return;
                         if (currState != 0)
                         {
-                            iow.SetOutputstate(interceptionKeyboardOutputSubReq, InputType.BUTTON, leanCodes[currState], 0);
+                            iow.SetOutputstate(interceptionKeyboardOutputSubReq, BindingType.Button, leanCodes[currState], 0);
                         }
                         if (newState != 0)
                         {
-                            iow.SetOutputstate(interceptionKeyboardOutputSubReq, InputType.BUTTON, leanCodes[newState], 1);
+                            iow.SetOutputstate(interceptionKeyboardOutputSubReq, BindingType.Button, leanCodes[newState], 1);
                         }
                         currState = newState;
 
