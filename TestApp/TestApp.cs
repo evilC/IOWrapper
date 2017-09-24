@@ -36,6 +36,12 @@ class Tester
     ProviderDescriptor interceptionProvider = new ProviderDescriptor() { ProviderName = "Core_Interception" };
     ProviderDescriptor tobiiProvider = new ProviderDescriptor() { ProviderName = "Core_Tobii_Interaction" };
 
+    BindingDescriptor buttonOneDescriptor = new BindingDescriptor() { Index = 0, Type = BindingType.Button };
+    BindingDescriptor buttonTwoDescriptor = new BindingDescriptor() { Index = 1, Type = BindingType.Button };
+    BindingDescriptor axisOneDescriptor = new BindingDescriptor() { Index = 0, Type = BindingType.Axis };
+    BindingDescriptor axisTwoDescriptor = new BindingDescriptor() { Index = 1, Type = BindingType.Axis };
+    BindingDescriptor povOneUpDescriptor = new BindingDescriptor() { Index = 0, Type = BindingType.POV };
+
     public Tester()
     {
         iow = new IOWrapper.IOController();
@@ -103,10 +109,10 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 0 Value: " + value);
-                iow.SetOutputstate(vJoyOutputSubReq, BindingType.Button, 0, value);
-                //iow.SetOutputstate(vJoyOutputSubReq, BindingType.POV, 0, value);
-                //iow.SetOutputstate(interceptionKeyboardOutputSubReq, InputType.BUTTON, 311, value); // Right Alt
-                //iow.SetOutputstate(interceptionMouseOutputSubReq, InputType.BUTTON, 1, value); // RMB
+                iow.SetOutputstate(vJoyOutputSubReq, buttonOneDescriptor, value);
+                //iow.SetOutputstate(vJoyOutputSubReq, povOneUpDescriptor, value);
+                //iow.SetOutputstate(interceptionKeyboardOutputSubReq, new BindingDescriptor() { Type = BindingType.Button, Index = 311 }, value); // Right Alt
+                //iow.SetOutputstate(interceptionMouseOutputSubReq, new BindingDescriptor() { Type = BindingType.Button, Index = 1 }, value); // RMB
             })
         };
         iow.SubscribeInput(diSub1);
@@ -136,8 +142,8 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 1 Value: " + value);
-                iow.SetOutputstate(vJoyOutputSubReq, BindingType.Button, 0, value);
-                //iow.SetOutputstate(vJoyOutputSubReq, BindingType.POV, 1, value);
+                iow.SetOutputstate(vJoyOutputSubReq, buttonOneDescriptor, value);
+                //iow.SetOutputstate(vJoyOutputSubReq, povOneUpDescriptor, value);
                 if (value == 1)
                 {
                     ToggleDefaultProfileState();
@@ -168,7 +174,7 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Axis 0 Value: " + value);
-                iow.SetOutputstate(vJoyOutputSubReq, BindingType.Axis, 0, value);
+                iow.SetOutputstate(vJoyOutputSubReq, axisOneDescriptor, value);
             })
         };
         //iow.SubscribeInput(sub2);
@@ -197,7 +203,7 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("XInput Axis 0 Value: " + value);
-                iow.SetOutputstate(vJoyOutputSubReq, BindingType.Axis, 0, value);
+                iow.SetOutputstate(vJoyOutputSubReq, axisOneDescriptor, value);
             })
         };
         //iow.SubscribeInput(xinputAxis);
@@ -223,7 +229,7 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("XInput Button 0 Value: " + value);
-                iow.SetOutputstate(vJoyOutputSubReq, BindingType.Button, 1, value);
+                iow.SetOutputstate(vJoyOutputSubReq, buttonTwoDescriptor, value);
             })
         };
         //ret = iow.SubscribeInput(xinputButton);
@@ -248,8 +254,8 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("XInput Button 0 Value: " + value);
-                //iow.SetOutputstate(vJoyOutputSubReq, BindingType.Button, 1, value);
-                iow.SetOutputstate(vJoyOutputSubReq, BindingType.POV, 8, value);
+                //iow.SetOutputstate(vJoyOutputSubReq, buttonTwoDescriptor, value);
+                iow.SetOutputstate(vJoyOutputSubReq, povOneUpDescriptor, value);
             })
         };
         //ret = iow.SubscribeInput(xinputPov);
@@ -321,8 +327,8 @@ class Tester
             },
             Callback = new Action<int>((value) =>
             {
-                //iow.SetOutputstate(interceptionOutputSubReq, InputType.BUTTON, 17, value);
-                //iow.SetOutputstate(vJoyOutputSubReq, InputType.BUTTON, 0, value);
+                //iow.SetOutputstate(interceptionKeyboardOutputSubReq, new BindingDescriptor() { Type = BindingType.Button, Index = 17 }, value);
+                //iow.SetOutputstate(vJoyOutputSubReq, buttonOneDescriptor, value);
                 Console.WriteLine("Mouse Axis Value: " + value);
             })
         };

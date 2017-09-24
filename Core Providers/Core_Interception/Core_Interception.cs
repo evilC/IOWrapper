@@ -255,7 +255,7 @@ namespace Core_Interception
             return true;
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
+        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
             int devId = deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle] + 1;
             //Log("SetOutputState. Type: {0}, Index: {1}, State: {2}, Device: {3}", inputType, inputIndex, state, devId);
@@ -263,7 +263,7 @@ namespace Core_Interception
             if (devId < 11)
             {
                 ushort st = (ushort)(1 - state);
-                ushort code = (ushort)(inputIndex + 1);
+                ushort code = (ushort)(bindingDescriptor.Index + 1);
                 if (code > 255)
                 {
                     st += 2;
@@ -274,7 +274,7 @@ namespace Core_Interception
             }
             else
             {
-                var bit = (int)inputIndex * 2;
+                int bit = bindingDescriptor.Index * 2;
                 if (state == 0)
                     bit += 1;
                 stroke.mouse.state = (ushort)(1 << bit);

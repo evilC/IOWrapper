@@ -213,24 +213,24 @@ namespace Core_vJoyInterfaceWrap
             return true;
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
+        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
             var devId = subscriptionToDevice[subReq.SubscriptionDescriptor.SubscriberGuid];
             if (!vJoyDevices[devId].IsAcquired)
             {
                 return false;
             }
-            switch (inputType)
+            switch (bindingDescriptor.Type)
             {
                 case BindingType.Axis:
-                    return vJ.SetAxis((state + 32768) / 2, devId + 1, AxisIdToUsage[(int)inputIndex]);
+                    return vJ.SetAxis((state + 32768) / 2, devId + 1, AxisIdToUsage[bindingDescriptor.Index]);
 
                 case BindingType.Button:
-                    return vJ.SetBtn(state == 1, devId + 1, inputIndex + 1);
+                    return vJ.SetBtn(state == 1, devId + 1, (uint)(bindingDescriptor.Index + 1));
 
                 case BindingType.POV:
-                    var pov = (int)(Math.Floor((decimal)(inputIndex / 4)));
-                    var dir = (int)(inputIndex % 4);
+                    int pov = (int)(Math.Floor((decimal)(bindingDescriptor.Index / 4)));
+                    int dir = bindingDescriptor.Index % 4;
                     //Log("vJoy POV output requested - POV {0}, Dir {1}, State {2}", pov, dir, state);
                     vJoyDevices[devId].SetPovState(pov, dir, state);
                     break;
