@@ -12,17 +12,23 @@ using System.Threading.Tasks;
 
 namespace Core_ViGEm
 {
-    [Export(typeof(IProvider))]
-    public class Core_ViGEm : IProvider
-    //public class Core_ViGEm
+    //[Export(typeof(IProvider))]
+    //public class Core_ViGEm : IProvider
+    public class Core_ViGEm
     {
-        private static readonly ViGEmClient client = new ViGEmClient();
+        private static ViGEmClient client;
         Xbox360Controller[] xboxControllers = new Xbox360Controller[4];
 
         private readonly ProviderReport providerReport;
 
         public Core_ViGEm()
         {
+            try
+            {
+                 client = new ViGEmClient();
+            }
+            catch { }
+
             providerReport = new ProviderReport()
             {
                 Title = "ViGEm",

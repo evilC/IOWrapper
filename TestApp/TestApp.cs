@@ -426,7 +426,7 @@ class Tester
             },
             ProviderDescriptor = vigemProvider,
         };
-        iow.SubscribeOutput(viGemXboxOutputSubReq);
+        //iow.SubscribeOutput(viGemXboxOutputSubReq);
         #endregion
     }
 
