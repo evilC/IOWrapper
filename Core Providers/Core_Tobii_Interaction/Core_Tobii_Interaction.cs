@@ -39,7 +39,7 @@ namespace Core_Tobii_Interaction
             var gazeDevice = new IOWrapperDevice()
             {
                 ProviderName = ProviderName,
-                DeviceName = "Gaze Point",
+                DeviceName = "Tobii Gaze Point",
                 DeviceHandle = "GazePoint",
                 API = "Tobii.Interaction",
             };
@@ -62,7 +62,7 @@ namespace Core_Tobii_Interaction
             var poseDevice = new IOWrapperDevice()
             {
                 ProviderName = ProviderName,
-                DeviceName = "Head Pose",
+                DeviceName = "Tobii Head Pose",
                 DeviceHandle = "HeadPose",
                 API = "Tobii.Interaction"
             };
