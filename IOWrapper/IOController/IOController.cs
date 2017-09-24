@@ -101,7 +101,7 @@ namespace IOWrapper
         {
             // Clone subreq before passing to provider, so if it gets altered outside, it does not affect the copy
             var subReq = _subReq.Clone();
-            Log("SubscribeInput: Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceInfo.DeviceHandle, subReq.BindingInfo.Index, subReq.SubscriberGuid);
+            Log("SubscribeInput: Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderInfo.ProviderName, subReq.DeviceInfo.DeviceHandle, subReq.BindingInfo.Index, subReq.SubscriberGuid);
             if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriberGuid))
             {
                 // If this Subscriber has an existing subscription...
@@ -110,7 +110,7 @@ namespace IOWrapper
                 var oldSub = ActiveInputSubscriptions[subReq.SubscriberGuid];
                 UnsubscribeInput(oldSub);
             }
-            var prov = GetProvider(subReq.ProviderName);
+            var prov = GetProvider(subReq.ProviderInfo.ProviderName);
             var ret = prov.SubscribeInput(subReq);
             if (ret)
             {
@@ -122,11 +122,11 @@ namespace IOWrapper
         public bool UnsubscribeInput(InputSubscriptionRequest _subReq)
         {
             var subReq = _subReq.Clone();
-            Log("UnsubscribeInput: Provider {0}, Device {1}, Input {2}", subReq.ProviderName, subReq.DeviceInfo.DeviceHandle, subReq.BindingInfo.Index);
+            Log("UnsubscribeInput: Provider {0}, Device {1}, Input {2}", subReq.ProviderInfo.ProviderName, subReq.DeviceInfo.DeviceHandle, subReq.BindingInfo.Index);
             var ret = false;
             if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriberGuid))
             {
-                var provider = GetProvider(subReq.ProviderName);
+                var provider = GetProvider(subReq.ProviderInfo.ProviderName);
                 ret = provider.UnsubscribeInput(ActiveInputSubscriptions[subReq.SubscriberGuid]);
                 if (ret)
                 {
@@ -146,7 +146,7 @@ namespace IOWrapper
                 // unsub output here
                 UnsubscribeOutput(ActiveOutputSubscriptions[subReq.SubscriberGuid]);
             }
-            var provider = GetProvider(subReq.ProviderName);
+            var provider = GetProvider(subReq.ProviderInfo.ProviderName);
             bool ret = false;
             ret = provider.SubscribeOutputDevice(subReq);
             if (ret)
@@ -162,7 +162,7 @@ namespace IOWrapper
             var ret = false;
             if (ActiveOutputSubscriptions.ContainsKey(subReq.SubscriberGuid))
             {
-                var provider = GetProvider(subReq.ProviderName);
+                var provider = GetProvider(subReq.ProviderInfo.ProviderName);
                 ret = provider.UnSubscribeOutputDevice(subReq);
                 if (ret)
                 {
@@ -174,7 +174,7 @@ namespace IOWrapper
 
         public bool SetOutputstate(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
         {
-            var provider = GetProvider(subReq.ProviderName);
+            var provider = GetProvider(subReq.ProviderInfo.ProviderName);
             return provider.SetOutputState(subReq, inputType, inputIndex, state);
         }
 

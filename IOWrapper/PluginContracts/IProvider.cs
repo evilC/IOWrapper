@@ -36,10 +36,10 @@ namespace Providers
         /// </summary>
         public Guid ProfileGuid { get; set; }
 
-        /// <summary>
-        /// Identifies which Provider this subscription is for
-        /// </summary>
-        public string ProviderName { get; set; }
+        ///// <summary>
+        ///// Identifies which Provider this subscription is for
+        ///// </summary>
+        //public string ProviderName { get; set; }
 
         ///// <summary>
         ///// Identifies which Device this subscription is for
@@ -50,6 +50,8 @@ namespace Providers
         /// Identifies which Device this subscription is for
         /// </summary>
         public DeviceInfo DeviceInfo { get; set; }
+
+        public ProviderInfo ProviderInfo { get; set; }
     }
 
     /// <summary>
@@ -194,6 +196,11 @@ namespace Providers
         /// It is intended that many providers could support a given API
         /// </summary>
         public string API { get; set; }
+    }
+
+    public class SubscriptionInfo
+    {
+
     }
 
     #region Binding Report

@@ -24,6 +24,9 @@ namespace TobiiLean
             private int currState = 0;
             private Dictionary<int, uint> leanCodes = new Dictionary<int, uint>() { { -1, 15 }, { 1, 17 } };
 
+            ProviderInfo interceptionProvider = new ProviderInfo() { ProviderName = "Core_Interception" };
+            ProviderInfo tobiiProvider = new ProviderInfo() { ProviderName = "Core_Tobii_Interaction" };
+
             private bool macroEnabled = false;
 
             public LeanMapper()
@@ -36,7 +39,7 @@ namespace TobiiLean
                 interceptionKeyboardOutputSubReq = new OutputSubscriptionRequest()
                 {
                     SubscriberGuid = Guid.NewGuid(),
-                    ProviderName = "Core_Interception",
+                    ProviderInfo = interceptionProvider,
                     DeviceInfo = new DeviceInfo()
                     {
                         DeviceHandle = keyboardHandle
@@ -47,7 +50,7 @@ namespace TobiiLean
                 var toggleSubReq = new InputSubscriptionRequest()
                 {
                     SubscriberGuid = Guid.NewGuid(),
-                    ProviderName = "Core_Interception",
+                    ProviderInfo = interceptionProvider,
                     DeviceInfo = new DeviceInfo()
                     {
                         DeviceHandle = keyboardHandle,
@@ -71,7 +74,7 @@ namespace TobiiLean
                 var subReq = new InputSubscriptionRequest()
                 {
                     SubscriberGuid = Guid.NewGuid(),
-                    ProviderName = "Core_Tobii_Interaction",
+                    ProviderInfo = tobiiProvider,
                     DeviceInfo = new DeviceInfo()
                     {
                         DeviceHandle = "HeadPose",

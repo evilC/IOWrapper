@@ -30,6 +30,12 @@ class Tester
     Guid defaultProfileGuid = Guid.NewGuid();
     IOWrapper.IOController iow;
 
+    ProviderInfo diProvider = new ProviderInfo() { ProviderName = "SharpDX_DirectInput" };
+    ProviderInfo xiProvider = new ProviderInfo() { ProviderName = "SharpDX_DirectInput" };
+    ProviderInfo vjoyProvider = new ProviderInfo() { ProviderName = "Core_vJoyInterfaceWrap" };
+    ProviderInfo interceptionProvider = new ProviderInfo() { ProviderName = "Core_Interception" };
+    ProviderInfo tobiiProvider = new ProviderInfo() { ProviderName = "Core_Tobii_Interaction" };
+
     public Tester()
     {
         iow = new IOWrapper.IOController();
@@ -49,7 +55,7 @@ class Tester
         vJoyOutputSubReq = new OutputSubscriptionRequest()
         {
             SubscriberGuid = Guid.NewGuid(),
-            ProviderName = "Core_vJoyInterfaceWrap",
+            ProviderInfo = vjoyProvider,
             DeviceInfo = new DeviceInfo()
             {
                 DeviceHandle = vjoyDeviceHandle
@@ -73,7 +79,10 @@ class Tester
         {
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
-            ProviderName = "SharpDX_DirectInput",
+            ProviderInfo = new ProviderInfo()
+            {
+                ProviderName = "SharpDX_DirectInput",
+            },
             BindingInfo = new BindingInfo()
             {
                 Type = BindingType.Button,
@@ -102,7 +111,10 @@ class Tester
         {
             ProfileGuid = Guid.NewGuid(),
             SubscriberGuid = Guid.NewGuid(),
-            ProviderName = "SharpDX_DirectInput",
+            ProviderInfo = new ProviderInfo()
+            {
+                ProviderName = "SharpDX_DirectInput",
+            },
             DeviceInfo = new DeviceInfo()
             {
                 DeviceHandle = directInputHandle,
@@ -131,7 +143,7 @@ class Tester
         {
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = defaultProfileGuid,
-            ProviderName = "SharpDX_DirectInput",
+            ProviderInfo = diProvider,
             DeviceInfo = new DeviceInfo()
             {
                 DeviceHandle = directInputHandle,
@@ -157,7 +169,7 @@ class Tester
         {
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
-            ProviderName = "SharpDX_XInput",
+            ProviderInfo = xiProvider,
             DeviceInfo = new DeviceInfo()
             {
                 DeviceHandle = "0",
@@ -180,7 +192,7 @@ class Tester
         {
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
-            ProviderName = "SharpDX_XInput",
+            ProviderInfo = xiProvider,
             DeviceInfo = new DeviceInfo()
             {
                 DeviceHandle = "0",
@@ -202,7 +214,7 @@ class Tester
         {
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
-            ProviderName = "SharpDX_XInput",
+            ProviderInfo = xiProvider,
             DeviceInfo = new DeviceInfo()
             {
                 DeviceHandle = "0",
@@ -242,7 +254,7 @@ class Tester
         interceptionKeyboardOutputSubReq = new OutputSubscriptionRequest()
         {
             SubscriberGuid = Guid.NewGuid(),
-            ProviderName = "Core_Interception",
+            ProviderInfo = interceptionProvider,
             DeviceInfo = new DeviceInfo()
             {
                 DeviceHandle = keyboardHandle
@@ -254,7 +266,7 @@ class Tester
         interceptionMouseOutputSubReq = new OutputSubscriptionRequest()
         {
             SubscriberGuid = Guid.NewGuid(),
-            ProviderName = "Core_Interception",
+            ProviderInfo = interceptionProvider,
             DeviceInfo = new DeviceInfo()
             {
                 DeviceHandle = mouseHandle
@@ -266,7 +278,7 @@ class Tester
         {
             ProfileGuid = Guid.NewGuid(),
             SubscriberGuid = Guid.NewGuid(),
-            ProviderName = "Core_Interception",
+            ProviderInfo = interceptionProvider,
             DeviceInfo = new DeviceInfo()
             {
                 //DeviceHandle = keyboardHandle,
@@ -291,7 +303,7 @@ class Tester
         {
             ProfileGuid = Guid.NewGuid(),
             SubscriberGuid = Guid.NewGuid(),
-            ProviderName = "Core_Interception",
+            ProviderInfo = interceptionProvider,
             //DeviceHandle = keyboardHandle,
             DeviceInfo = new DeviceInfo()
             {
@@ -315,37 +327,45 @@ class Tester
         #endregion
 
         #region Tobii Eye Tracker
-        /*
         var tobiiGazePointSubReq = new InputSubscriptionRequest()
         {
             SubscriberGuid = Guid.NewGuid(),
-            ProviderName = "Core_Tobii_Interaction",
-            DeviceHandle = "GazePoint",
-            Type = BindingType.Axis,
-            Index = 0,
+            ProviderInfo = tobiiProvider,
+            DeviceInfo = new DeviceInfo()
+            {
+                DeviceHandle = "GazePoint",
+            },
+            BindingInfo = new BindingInfo()
+            {
+                Type = BindingType.Axis,
+                Index = 0,
+            },
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Tobii Eye Gaxe X: {0}", value);
             })
         };
-        iow.SubscribeInput(tobiiGazePointSubReq);
-        */
+        //iow.SubscribeInput(tobiiGazePointSubReq);
 
-        /*
         var tobiiHeadPoseSubReq = new InputSubscriptionRequest()
         {
             SubscriberGuid = Guid.NewGuid(),
-            ProviderName = "Core_Tobii_Interaction",
-            DeviceHandle = "HeadPose",
-            Type = BindingType.Axis,
-            Index = 0,
+            ProviderInfo = tobiiProvider,
+            DeviceInfo = new DeviceInfo()
+            {
+                DeviceHandle = "HeadPose",
+            },
+            BindingInfo = new BindingInfo()
+            {
+                Type = BindingType.Axis,
+                Index = 0,
+            },
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Tobii Head Pose X: {0}", value);
             })
         };
-        iow.SubscribeInput(tobiiHeadPoseSubReq);
-        */
+        //iow.SubscribeInput(tobiiHeadPoseSubReq);
         #endregion
     }
 
