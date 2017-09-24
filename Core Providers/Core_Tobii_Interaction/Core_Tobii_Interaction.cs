@@ -173,15 +173,15 @@ namespace Core_Tobii_Interaction
         abstract class StreamHandler : IDisposable
         {
             protected Host host;
-            protected Dictionary<uint, AxisMonitor> axisMonitors = new Dictionary<uint, AxisMonitor>();
+            protected Dictionary<int, AxisMonitor> axisMonitors = new Dictionary<int, AxisMonitor>();
 
             public virtual bool SubscribeInput(InputSubscriptionRequest subReq)
             {
-                if (!axisMonitors.ContainsKey(subReq.Index))
+                if (!axisMonitors.ContainsKey(subReq.BindingInfo.Index))
                 {
-                    axisMonitors.Add(subReq.Index, new AxisMonitor());
+                    axisMonitors.Add(subReq.BindingInfo.Index, new AxisMonitor());
                 }
-                axisMonitors[subReq.Index].Add(subReq);
+                axisMonitors[subReq.BindingInfo.Index].Add(subReq);
                 return true;
             }
 
@@ -267,7 +267,7 @@ namespace Core_Tobii_Interaction
                 //Console.WriteLine("Unfiltered: Timestamp: {0}\t X: {1} Y:{2}", streamData.Data.Timestamp, streamData.Data.X, streamData.Data.Y);
                 var axisData = new double[] { streamData.Data.X, streamData.Data.Y };
 
-                for (uint i = 0; i < 2; i++)
+                for (int i = 0; i < 2; i++)
                 {
                     if (!axisMonitors.Keys.Contains(i))
                         continue;
@@ -299,7 +299,7 @@ namespace Core_Tobii_Interaction
                 {
                     var axisData = new double[] { headPose.Data.HeadPosition.X, headPose.Data.HeadPosition.Y, headPose.Data.HeadPosition.Z, headPose.Data.HeadRotation.X, headPose.Data.HeadRotation.Y, headPose.Data.HeadRotation.Z };
 
-                    for (uint i = 0; i < 2; i++)
+                    for (int i = 0; i < 2; i++)
                     {
                         if (!axisMonitors.Keys.Contains(i))
                             continue;

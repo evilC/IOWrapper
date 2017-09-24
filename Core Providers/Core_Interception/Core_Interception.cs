@@ -452,7 +452,7 @@ namespace Core_Interception
             {
                 try
                 {
-                    var code = (ushort)(subReq.Index + 1);
+                    var code = (ushort)(subReq.BindingInfo.Index + 1);
                     ushort stateDown = 0;
                     ushort stateUp = 1;
                     if (code > 256)
@@ -478,7 +478,7 @@ namespace Core_Interception
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
-                var code = (ushort)(subReq.Index + 1);
+                var code = (ushort)(subReq.BindingInfo.Index + 1);
                 if (code > 256)
                 {
                     code -= 256;
@@ -557,19 +557,19 @@ namespace Core_Interception
         private class MouseMonitor
         {
             private Dictionary<ushort, MouseButtonMonitor> monitoredStates = new Dictionary<ushort, MouseButtonMonitor>();
-            private Dictionary<uint, MouseAxisMonitor> monitoredAxes = new Dictionary<uint, MouseAxisMonitor>();
+            private Dictionary<int, MouseAxisMonitor> monitoredAxes = new Dictionary<int, MouseAxisMonitor>();
 
             public bool Add(InputSubscriptionRequest subReq)
             {
                 try
                 {
-                    if (subReq.Type == BindingType.Button)
+                    if (subReq.BindingInfo.Type == BindingType.Button)
                     {
-                        var i = (ushort)subReq.Index;
+                        var i = (ushort)subReq.BindingInfo.Index;
                         ushort downbit = (ushort)(1 << (i * 2));
                         ushort upbit = (ushort)(1 << ((i * 2) + 1));
 
-                        Log("Added subscription to mouse button {0}", subReq.Index);
+                        Log("Added subscription to mouse button {0}", subReq.BindingInfo.Index);
                         if (!monitoredStates.ContainsKey(downbit))
                         {
                             monitoredStates.Add(downbit, new MouseButtonMonitor() { MonitoredState = 1 });
@@ -583,13 +583,13 @@ namespace Core_Interception
                         monitoredStates[upbit].Add(subReq);
                         return true;
                     }
-                    else if (subReq.Type == BindingType.Axis)
+                    else if (subReq.BindingInfo.Type == BindingType.Axis)
                     {
-                        if (!monitoredAxes.ContainsKey(subReq.Index))
+                        if (!monitoredAxes.ContainsKey(subReq.BindingInfo.Index))
                         {
-                            monitoredAxes.Add(subReq.Index, new MouseAxisMonitor() { MonitoredAxis = subReq.Index });
+                            monitoredAxes.Add(subReq.BindingInfo.Index, new MouseAxisMonitor() { MonitoredAxis = subReq.BindingInfo.Index });
                         }
-                        monitoredAxes[subReq.Index].Add(subReq);
+                        monitoredAxes[subReq.BindingInfo.Index].Add(subReq);
                         return true;
                     }
                 }
@@ -604,7 +604,7 @@ namespace Core_Interception
             {
                 try
                 {
-                    var i = (ushort)subReq.Index;
+                    var i = (ushort)subReq.BindingInfo.Index;
                     ushort downbit = (ushort)(1 << (i * 2));
                     ushort upbit = (ushort)(1 << ((i * 2) + 1));
 
@@ -706,7 +706,7 @@ namespace Core_Interception
         private class MouseAxisMonitor
         {
             private Dictionary<Guid, InputSubscriptionRequest> subReqs = new Dictionary<Guid, InputSubscriptionRequest>();
-            public uint MonitoredAxis { get; set; }
+            public int MonitoredAxis { get; set; }
 
             public void Add(InputSubscriptionRequest subReq)
             {

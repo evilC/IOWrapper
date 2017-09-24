@@ -323,11 +323,11 @@ namespace SharpDX_XInput
             private int controllerId;
             private Controller controller;
 
-            private Dictionary<uint, InputMonitor> axisMonitors = new Dictionary<uint, InputMonitor>();
-            private Dictionary<uint, InputMonitor> buttonMonitors = new Dictionary<uint, InputMonitor>();
-            private Dictionary<uint, InputMonitor> povDirectionMonitors = new Dictionary<uint, InputMonitor>();
+            private Dictionary<int, InputMonitor> axisMonitors = new Dictionary<int, InputMonitor>();
+            private Dictionary<int, InputMonitor> buttonMonitors = new Dictionary<int, InputMonitor>();
+            private Dictionary<int, InputMonitor> povDirectionMonitors = new Dictionary<int, InputMonitor>();
 
-            Dictionary<BindingType, Dictionary<uint, InputMonitor>> monitors = new Dictionary<BindingType, Dictionary<uint, InputMonitor>>();
+            Dictionary<BindingType, Dictionary<int, InputMonitor>> monitors = new Dictionary<BindingType, Dictionary<int, InputMonitor>>();
 
             public StickMonitor(int cid)
             {
@@ -340,23 +340,23 @@ namespace SharpDX_XInput
 
             public bool Add(InputSubscriptionRequest subReq)
             {
-                var inputId = subReq.Index;
-                var monitor = monitors[subReq.Type];
+                var inputId = subReq.BindingInfo.Index;
+                var monitor = monitors[subReq.BindingInfo.Type];
                 if (!monitor.ContainsKey(inputId))
                 {
                     monitor.Add(inputId, new InputMonitor());
                 }
-                Log("Adding subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.Type.ToString(), subReq.Index);
+                Log("Adding subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.BindingInfo.Type.ToString(), subReq.BindingInfo.Index);
                 return monitor[inputId].Add(subReq);
             }
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
-                var inputId = subReq.Index;
-                var monitor = monitors[subReq.Type];
+                var inputId = subReq.BindingInfo.Index;
+                var monitor = monitors[subReq.BindingInfo.Type];
                 if (monitor.ContainsKey(inputId))
                 {
-                    Log("Removing subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.Type.ToString(), subReq.Index);
+                    Log("Removing subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.BindingInfo.Type.ToString(), subReq.BindingInfo.Index);
                     var ret = monitor[inputId].Remove(subReq);
                     if (!monitor[inputId].HasSubscriptions())
                     {
@@ -419,14 +419,14 @@ namespace SharpDX_XInput
 
             public bool Add(InputSubscriptionRequest subReq)
             {
-                Log("XI adding subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceHandle, subReq.Index, subReq.SubscriberGuid);
+                Log("XI adding subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceHandle, subReq.BindingInfo.Index, subReq.SubscriberGuid);
                 subscriptions.Add(subReq.SubscriberGuid, subReq);
                 return true;
             }
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
-                Log("XI removing subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceHandle, subReq.Index, subReq.SubscriberGuid);
+                Log("XI removing subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderName, subReq.DeviceHandle, subReq.BindingInfo.Index, subReq.SubscriberGuid);
                 if (subscriptions.ContainsKey(subReq.SubscriberGuid))
                 {
                     return subscriptions.Remove(subReq.SubscriberGuid);

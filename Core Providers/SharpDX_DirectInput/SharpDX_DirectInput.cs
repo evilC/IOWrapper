@@ -438,18 +438,18 @@ namespace SharpDX_DirectInput
 
             public bool Add(InputSubscriptionRequest subReq)
             {
-                var inputId = GetInputIdentifier(subReq.Type, (int)subReq.Index);
+                var inputId = GetInputIdentifier(subReq.BindingInfo.Type, (int)subReq.BindingInfo.Index);
                 if (!monitors.ContainsKey(inputId))
                 {
-                    monitors.Add(inputId, new InputMonitor( subReq.Type ));
+                    monitors.Add(inputId, new InputMonitor( subReq.BindingInfo.Type ));
                 }
-                Log("Adding subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.Type.ToString(), subReq.Index);
+                Log("Adding subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.BindingInfo.Type.ToString(), subReq.BindingInfo.Index);
                 return monitors[inputId].Add(subReq);
             }
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
-                var inputId = GetInputIdentifier(subReq.Type, (int)subReq.Index);
+                var inputId = GetInputIdentifier(subReq.BindingInfo.Type, (int)subReq.BindingInfo.Index);
                 if (monitors.ContainsKey(inputId))
                 {
                     var ret = monitors[inputId].Remove(subReq);
@@ -457,7 +457,7 @@ namespace SharpDX_DirectInput
                     {
                         monitors.Remove(inputId);
                     }
-                    Log("Removing subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.Type.ToString(), subReq.Index);
+                    Log("Removing subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.BindingInfo.Type.ToString(), subReq.BindingInfo.Index);
                     return ret;
                 }
                 return false;
@@ -506,9 +506,9 @@ namespace SharpDX_DirectInput
 
             public bool Add(InputSubscriptionRequest subReq)
             {
-                if (subReq.Type == BindingType.POV)
+                if (subReq.BindingInfo.Type == BindingType.POV)
                 {
-                    var dir = DirFromIndex(subReq.Index);
+                    var dir = DirFromIndex(subReq.BindingInfo.Index);
                     if (povDirectionMonitors[dir] == null)
                     {
                         povDirectionMonitors[dir] = new PovDirectionMonitor(dir);
@@ -802,7 +802,7 @@ namespace SharpDX_DirectInput
         //    return (int)(Math.Floor((decimal)(inputIndex / 4)));
         //}
 
-        private static int DirFromIndex(uint inputIndex)
+        private static int DirFromIndex(int inputIndex)
         {
             return (int)inputIndex % 3;
         }

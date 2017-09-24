@@ -55,15 +55,17 @@ namespace Providers
     /// </summary>
     public class InputSubscriptionRequest : SubscriptionRequest
     {
-        /// <summary>
-        /// Identifies the Type (Button / Axis / POV) of the subscription
-        /// </summary>
-        public BindingType Type { get; set; }
+        public BindingInfo BindingInfo { get; set; }
 
-        /// <summary>
-        /// For the given type, identifies which specific input this subscription is for
-        /// </summary>
-        public uint Index { get; set; }
+        ///// <summary>
+        ///// Identifies the Type (Button / Axis / POV) of the subscription
+        ///// </summary>
+        //public BindingType Type { get; set; }
+
+        ///// <summary>
+        ///// For the given type, identifies which specific input this subscription is for
+        ///// </summary>
+        //public uint Index { get; set; }
 
         /// <summary>
         /// Callback that is fired when this input changes state
@@ -192,7 +194,7 @@ namespace Providers
     }
     */
     #endregion
-
+    
     /// <summary>
     /// Enums used to categorize how a binding reports
     /// </summary>

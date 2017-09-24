@@ -75,18 +75,20 @@ class Tester
 
         #region DirectInput
         Console.WriteLine("Binding input to handle " + inputHandle);
-        /*
         // Subscribe to the found stick
         var diSub1 = new InputSubscriptionRequest()
         {
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_DirectInput",
-            Type = BindingType.Button,
-            //Type = BindingType.POV,
+            BindingInfo = new BindingInfo()
+            {
+                Type = BindingType.Button,
+                //Type = BindingType.POV,
+                Index = 0,
+                //Index = 4,
+            },
             DeviceHandle = inputHandle,
-            Index = 0,
-            //Index = 4,
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 0 Value: " + value);
@@ -96,10 +98,8 @@ class Tester
                 //iow.SetOutputstate(interceptionMouseOutputSubReq, InputType.BUTTON, 1, value); // RMB
             })
         };
-        iow.SubscribeInput(diSub1);
-        */
+        //iow.SubscribeInput(diSub1);
 
-        /*
         Console.WriteLine("Binding input to handle " + inputHandle);
         // Subscribe to the found stick
         var diSub2 = new InputSubscriptionRequest()
@@ -107,9 +107,12 @@ class Tester
             ProfileGuid = Guid.NewGuid(),
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_DirectInput",
-            Type = BindingType.Button,
             DeviceHandle = inputHandle,
-            Index = 1,
+            BindingInfo = new BindingInfo()
+            {
+                Type = BindingType.Button,
+                Index = 1,
+            },
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 1 Value: " + value);
@@ -121,49 +124,51 @@ class Tester
                 }
             })
         };
-        iow.SubscribeInput(diSub2);
+        //iow.SubscribeInput(diSub2);
         iow.SetProfileState(diSub2.ProfileGuid, true);
-        */
 
-        /*
 
         var sub2 = new InputSubscriptionRequest()
         {
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = defaultProfileGuid,
             ProviderName = "SharpDX_DirectInput",
-            Type = BindingType.Axis,
             DeviceHandle = inputHandle,
-            Index = 0,
+            BindingInfo = new BindingInfo()
+            {
+                Type = BindingType.Axis,
+                Index = 0,
+            },
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Axis 0 Value: " + value);
                 iow.SetOutputstate(vJoyOutputSubReq, BindingType.Axis, 0, value);
             })
         };
-        iow.SubscribeInput(sub2);
+        //iow.SubscribeInput(sub2);
         //iow.UnsubscribeInput(sub2);
         //iow.SubscribeInput(sub2);
-        */
         #endregion
 
         #region XInput
-        /*
         var xinputAxis = new InputSubscriptionRequest()
         {
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_XInput",
-            Type = BindingType.Axis,
             DeviceHandle = "0",
-            Index = 0,
+            BindingInfo = new BindingInfo()
+            {
+                Type = BindingType.Axis,
+                Index = 0,
+            },
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("XInput Axis 0 Value: " + value);
                 iow.SetOutputstate(vJoyOutputSubReq, BindingType.Axis, 0, value);
             })
         };
-        iow.SubscribeInput(xinputAxis);
+        //iow.SubscribeInput(xinputAxis);
 
 
         var xinputButton = new InputSubscriptionRequest()
@@ -171,27 +176,31 @@ class Tester
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_XInput",
-            Type = BindingType.Button,
             DeviceHandle = "0",
-            Index = 0,
+            BindingInfo = new BindingInfo()
+            {
+                Type = BindingType.Button,
+                Index = 0,
+            },
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("XInput Button 0 Value: " + value);
                 iow.SetOutputstate(vJoyOutputSubReq, BindingType.Button, 1, value);
             })
         };
-        ret = iow.SubscribeInput(xinputButton);
-        */
+        //ret = iow.SubscribeInput(xinputButton);
 
-        /*
         var xinputPov = new InputSubscriptionRequest()
         {
             ProfileGuid = defaultProfileGuid,
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "SharpDX_XInput",
-            Type = BindingType.POV,
             DeviceHandle = "0",
-            Index = 0,
+            BindingInfo = new BindingInfo()
+            {
+                Type = BindingType.POV,
+                Index = 0,
+            },
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("XInput Button 0 Value: " + value);
@@ -199,19 +208,17 @@ class Tester
                 iow.SetOutputstate(vJoyOutputSubReq, BindingType.POV, 8, value);
             })
         };
-        ret = iow.SubscribeInput(xinputPov);
-        */
+        //ret = iow.SubscribeInput(xinputPov);
         #endregion
 
         #region Interception
-        /*
         interceptionKeyboardOutputSubReq = new OutputSubscriptionRequest()
         {
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "Core_Interception",
             DeviceHandle = keyboardHandle
         };
-        iow.SubscribeOutput(interceptionKeyboardOutputSubReq);
+        //iow.SubscribeOutput(interceptionKeyboardOutputSubReq);
         //iow.UnsubscribeOutput(interceptionKeyboardOutputSubReq);
 
         interceptionMouseOutputSubReq = new OutputSubscriptionRequest()
@@ -220,19 +227,20 @@ class Tester
             ProviderName = "Core_Interception",
             DeviceHandle = mouseHandle
         };
-        iow.SubscribeOutput(interceptionKeyboardOutputSubReq);
-        */
+        //iow.SubscribeOutput(interceptionKeyboardOutputSubReq);
 
-        /*
         var subInterceptionMouseDelta = new InputSubscriptionRequest()
         {
             ProfileGuid = Guid.NewGuid(),
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "Core_Interception",
-            Type = BindingType.Axis,
             //DeviceHandle = keyboardHandle,
             DeviceHandle = mouseHandle,
-            Index = 0, // X Axis
+            BindingInfo = new BindingInfo()
+            {
+                Type = BindingType.Axis,
+                Index = 0, // X Axis
+            },
             Callback = new Action<int>((value) =>
             {
                 //iow.SetOutputstate(interceptionOutputSubReq, InputType.BUTTON, 17, value);
@@ -240,21 +248,23 @@ class Tester
                 Console.WriteLine("Mouse Axis Value: " + value);
             })
         };
-        iow.SubscribeInput(subInterceptionMouseDelta);
-        */
+        //iow.SubscribeInput(subInterceptionMouseDelta);
 
-        /*
+
         var subInterception = new InputSubscriptionRequest()
         {
             ProfileGuid = Guid.NewGuid(),
             SubscriberGuid = Guid.NewGuid(),
             ProviderName = "Core_Interception",
-            InputType = InputType.BUTTON,
             //DeviceHandle = keyboardHandle,
             DeviceHandle = mouseHandle,
-            //InputIndex = 1, // 1 key on keyboard
-            //InputIndex = 311, // Right ALT key on keyboard
-            InputIndex = 0, // LMB
+            BindingInfo = new BindingInfo()
+            {
+                Type = BindingType.Button,
+                //Index = 1, // 1 key on keyboard
+                //Index = 311, // Right ALT key on keyboard
+                Index = 0, // LMB
+            },
             Callback = new Action<int>((value) =>
             {
                 //iow.SetOutputstate(interceptionOutputSubReq, InputType.BUTTON, 17, value);
@@ -262,8 +272,7 @@ class Tester
                 Console.WriteLine("Keyboard Key Value: " + value);
             })
         };
-        iow.SubscribeInput(subInterception);
-        */
+        //iow.SubscribeInput(subInterception);
         #endregion
 
         #region Tobii Eye Tracker
