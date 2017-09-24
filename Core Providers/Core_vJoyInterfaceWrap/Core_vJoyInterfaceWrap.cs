@@ -94,7 +94,12 @@ namespace Core_vJoyInterfaceWrap
             var pr = new ProviderReport()
             {
                 Title = "vJoy (Core)",
-                Description = "Allows emulation of DirectInput sticks. Requires driver from http://vjoystick.sourceforge.net/"
+                Description = "Allows emulation of DirectInput sticks. Requires driver from http://vjoystick.sourceforge.net/",
+                ProviderInfo = new ProviderInfo()
+                {
+                    ProviderName = ProviderName,
+                    API = "vJoy",
+                },
             };
             for (uint i = 0; i < 16; i++)
             {
@@ -109,8 +114,6 @@ namespace Core_vJoyInterfaceWrap
                             DeviceHandle = handle,
                             DeviceName = String.Format("vJoy Stick {0}", id),
                         },
-                        ProviderName = ProviderName,
-                        API = "vJoy",
                     };
 
                     var axisNode = new DeviceNode()

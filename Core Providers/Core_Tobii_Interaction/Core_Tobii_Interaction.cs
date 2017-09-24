@@ -33,18 +33,21 @@ namespace Core_Tobii_Interaction
         {
             providerReport = new ProviderReport() {
                 Title = "Tobii Interaction (Core)",
-                Description = "Tracks head and eye movement. Requires a Tobii device, see https://tobiigaming.com/"
+                Description = "Tracks head and eye movement. Requires a Tobii device, see https://tobiigaming.com/",
+                ProviderInfo = new ProviderInfo()
+                {
+                    ProviderName = ProviderName,
+                    API = "Tobii.Interaction",
+                },
             };
 
             var gazeDevice = new IOWrapperDevice()
             {
-                ProviderName = ProviderName,
                 DeviceInfo = new DeviceInfo()
                 {
                     DeviceName = "Tobii Gaze Point",
                     DeviceHandle = "GazePoint",
                 },
-                API = "Tobii.Interaction",
             };
 
             var gazeNode = new DeviceNode() { Title = "Axes" };
@@ -69,8 +72,6 @@ namespace Core_Tobii_Interaction
                     DeviceName = "Tobii Head Pose",
                     DeviceHandle = "HeadPose",
                 },
-                ProviderName = ProviderName,
-                API = "Tobii.Interaction"
             };
 
             var poseNode = new DeviceNode() { Title = "Axes" };

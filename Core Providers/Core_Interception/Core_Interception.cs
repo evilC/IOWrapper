@@ -284,7 +284,12 @@ namespace Core_Interception
             deviceHandleToId = new Dictionary<string, int>();
             providerReport = new ProviderReport() {
                 Title = "Interception (Core)",
-                Description = "Supports per-device Keyboard and Mouse Input/Output, with blocking\nRequires custom driver from http://oblita.com/interception"
+                Description = "Supports per-device Keyboard and Mouse Input/Output, with blocking\nRequires custom driver from http://oblita.com/interception",
+                ProviderInfo = new ProviderInfo()
+                {
+                    ProviderName = ProviderName,
+                    API = "Interception",
+                },
             };
 
             UpdateKeyList();
@@ -312,8 +317,6 @@ namespace Core_Interception
                             DeviceHandle = handle,
                             DeviceName = name,
                         },
-                        ProviderName = ProviderName,
-                        API = "Interception",
                         //Bindings = { keyboardList }
                         Nodes = new List<DeviceNode>()
                         {
@@ -348,8 +351,6 @@ namespace Core_Interception
                             DeviceHandle = handle,
                             DeviceName = name,
                         },
-                        ProviderName = ProviderName,
-                        API = "Interception",
                         //Bindings = { mouseButtonList }
                         Nodes = new List<DeviceNode>()
                         {

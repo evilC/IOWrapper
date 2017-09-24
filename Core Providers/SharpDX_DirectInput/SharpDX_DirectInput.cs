@@ -236,7 +236,12 @@ namespace SharpDX_DirectInput
         {
             providerReport = new ProviderReport() {
                 Title = "DirectInput (Core)",
-                Description = "Allows reading of generic joysticks."
+                Description = "Allows reading of generic joysticks.",
+                ProviderInfo = new ProviderInfo()
+                {
+                    ProviderName = ProviderName,
+                    API = "DirectInput",
+                },
             };
             handleToInstanceGuid = new Dictionary<string, Guid>();
 
@@ -264,8 +269,6 @@ namespace SharpDX_DirectInput
                         DeviceHandle = handle,
                         DeviceName = deviceInstance.ProductName,
                     },
-                    ProviderName = ProviderName,
-                    API = "DirectInput",
                 };
 
                 // ----- Axes -----

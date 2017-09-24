@@ -121,6 +121,8 @@ namespace Providers
         /// </summary>
         public string Description { get; set; }
 
+        public ProviderInfo ProviderInfo { get; set; }
+
         public SortedDictionary<string, IOWrapperDevice> Devices { get; set; }
             = new SortedDictionary<string, IOWrapperDevice>();
     }
@@ -153,18 +155,6 @@ namespace Providers
 
         public DeviceInfo DeviceInfo { get; set; }
 
-        /// <summary>
-        /// The API implementation that handles this input
-        /// This should be unique
-        /// </summary>
-        public string ProviderName { get; set; }
-
-        /// <summary>
-        /// The underlying API that handles this input
-        /// It is intended that many providers could support a given API
-        /// </summary>
-        public string API { get; set; }
-
         //public List<BindingInfo> Bindings { get; set; } = new List<BindingInfo>();
 
         /// <summary>
@@ -189,6 +179,21 @@ namespace Providers
         /// </summary>
         public string DeviceHandle { get; set; }
 
+    }
+
+    public class ProviderInfo
+    {
+        /// <summary>
+        /// The API implementation that handles this input
+        /// This should be unique
+        /// </summary>
+        public string ProviderName { get; set; }
+
+        /// <summary>
+        /// The underlying API that handles this input
+        /// It is intended that many providers could support a given API
+        /// </summary>
+        public string API { get; set; }
     }
 
     #region Binding Report

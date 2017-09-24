@@ -37,7 +37,10 @@ namespace TobiiLean
                 {
                     SubscriberGuid = Guid.NewGuid(),
                     ProviderName = "Core_Interception",
-                    DeviceHandle = keyboardHandle
+                    DeviceInfo = new DeviceInfo()
+                    {
+                        DeviceHandle = keyboardHandle
+                    }
                 };
                 iow.SubscribeOutput(interceptionKeyboardOutputSubReq);
 
@@ -45,7 +48,10 @@ namespace TobiiLean
                 {
                     SubscriberGuid = Guid.NewGuid(),
                     ProviderName = "Core_Interception",
-                    DeviceHandle = keyboardHandle,
+                    DeviceInfo = new DeviceInfo()
+                    {
+                        DeviceHandle = keyboardHandle,
+                    },
                     BindingInfo = new BindingInfo()
                     {
                         Type = BindingType.Button,
@@ -66,7 +72,10 @@ namespace TobiiLean
                 {
                     SubscriberGuid = Guid.NewGuid(),
                     ProviderName = "Core_Tobii_Interaction",
-                    DeviceHandle = "HeadPose",
+                    DeviceInfo = new DeviceInfo()
+                    {
+                        DeviceHandle = "HeadPose",
+                    },
                     BindingInfo = new BindingInfo()
                     {
                         Type = BindingType.Axis,

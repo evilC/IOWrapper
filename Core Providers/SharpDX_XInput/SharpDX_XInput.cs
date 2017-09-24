@@ -194,7 +194,12 @@ namespace SharpDX_XInput
         {
             providerReport = new ProviderReport() {
                 Title = "XInput (Core)",
-                Description = "Reads Xbox gamepads"
+                Description = "Reads Xbox gamepads",
+                ProviderInfo = new ProviderInfo()
+                {
+                    ProviderName = ProviderName,
+                    API = "XInput",
+                }
             };
             for (int i = 0; i < 4; i++)
             {
@@ -281,8 +286,6 @@ namespace SharpDX_XInput
                     DeviceHandle = id.ToString(),
                     DeviceName = "Xbox Controller " + (id + 1),
                 },
-                ProviderName = ProviderName,
-                API = "XInput",
                 Nodes = { buttonInfo, axisInfo , povInfo}
                 //ButtonCount = 11,
                 //ButtonList = buttonInfo,
