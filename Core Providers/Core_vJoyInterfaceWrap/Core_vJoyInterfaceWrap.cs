@@ -124,6 +124,7 @@ namespace Core_vJoyInterfaceWrap
                         Title = "Axes"
                     };
 
+                    int axisCount = 0;
                     for (int ax = 0; ax < 8; ax++)
                     {
                         if (vJ.GetVJDAxisExist(id, AxisIdToUsage[ax]))
@@ -138,49 +139,59 @@ namespace Core_vJoyInterfaceWrap
                                     Type = BindingType.Axis,
                                 }
                             });
+                            axisCount++;
                         }
                     }
-
-                    device.Nodes.Add(axisNode);
+                    if (axisCount > 0)
+                    {
+                        device.Nodes.Add(axisNode);
+                    }
 
                     // ------ Buttons ------
-                    var length = vJ.GetVJDButtonNumber(id);
-                    var buttonNode = new DeviceReportNode()
+                    var buttonCount = vJ.GetVJDButtonNumber(id);
+                    if (buttonCount > 0)
                     {
-                        Title = "Buttons"
-                    };
-                    for (int btn = 0; btn < length; btn++)
-                    {
-                        buttonNode.Bindings.Add(new BindingReport()
+                        var buttonNode = new DeviceReportNode()
                         {
-                            Title = (btn + 1).ToString(),
-                            Category = BindingCategory.Momentary,
-                            BindingDescriptor = new BindingDescriptor()
+                            Title = "Buttons"
+                        };
+                        for (int btn = 0; btn < buttonCount; btn++)
+                        {
+                            buttonNode.Bindings.Add(new BindingReport()
                             {
-                                Index = btn,
-                                Type = BindingType.Button,
-                            }
-                        });
+                                Title = (btn + 1).ToString(),
+                                Category = BindingCategory.Momentary,
+                                BindingDescriptor = new BindingDescriptor()
+                                {
+                                    Index = btn,
+                                    Type = BindingType.Button,
+                                }
+                            });
+                        }
+                        device.Nodes.Add(buttonNode);
                     }
-                    device.Nodes.Add(buttonNode);
 
                     // ------ POVs ------
                     var povCount = vJ.GetVJDContPovNumber(id);
-                    var povsNode = new DeviceReportNode()
+                    if (povCount > 0)
                     {
-                        Title = "POVs"
-                    };
-
-                    for (int p = 0; p < 4; p++)
-                    {
-                        var povNode = new DeviceReportNode()
+                        var povsNode = new DeviceReportNode()
                         {
-                            Title = "POV #" + (p + 1)
+                            Title = "POVs"
                         };
-                        povNode.Bindings = povBindingInfos[p];
-                        povsNode.Nodes.Add(povNode);
+
+                        for (int p = 0; p < povCount; p++)
+                        {
+                            var povNode = new DeviceReportNode()
+                            {
+                                Title = "POV #" + (p + 1)
+                            };
+                            povNode.Bindings = povBindingInfos[p];
+                            povsNode.Nodes.Add(povNode);
+                        }
+                        device.Nodes.Add(povsNode);
                     }
-                    device.Nodes.Add(povsNode);
+
                     pr.Devices.Add(handle, device);
                 }
             }
