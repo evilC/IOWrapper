@@ -98,10 +98,10 @@ namespace Core_vJoyInterfaceWrap
             {
                 Title = "vJoy (Core)",
                 Description = "Allows emulation of DirectInput sticks. Requires driver from http://vjoystick.sourceforge.net/",
+                API = "vJoy",
                 ProviderDescriptor = new ProviderDescriptor()
                 {
                     ProviderName = ProviderName,
-                    API = "vJoy",
                 },
             };
             for (uint i = 0; i < 16; i++)

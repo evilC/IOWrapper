@@ -291,10 +291,10 @@ namespace Core_Interception
             providerReport = new ProviderReport() {
                 Title = "Interception (Core)",
                 Description = "Supports per-device Keyboard and Mouse Input/Output, with blocking\nRequires custom driver from http://oblita.com/interception",
+                API = "Interception",
                 ProviderDescriptor = new ProviderDescriptor()
                 {
                     ProviderName = ProviderName,
-                    API = "Interception",
                 },
             };
 

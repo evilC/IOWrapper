@@ -261,10 +261,10 @@ namespace SharpDX_XInput
             providerReport = new ProviderReport() {
                 Title = "XInput (Core)",
                 Description = "Reads Xbox gamepads",
+                API = "XInput",
                 ProviderDescriptor = new ProviderDescriptor()
                 {
                     ProviderName = ProviderName,
-                    API = "XInput",
                 }
             };
             for (int i = 0; i < 4; i++)

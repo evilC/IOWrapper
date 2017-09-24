@@ -34,10 +34,10 @@ namespace Core_Tobii_Interaction
             providerReport = new ProviderReport() {
                 Title = "Tobii Interaction (Core)",
                 Description = "Tracks head and eye movement. Requires a Tobii device, see https://tobiigaming.com/",
+                API = "Tobii.Interaction",
                 ProviderDescriptor = new ProviderDescriptor()
                 {
                     ProviderName = ProviderName,
-                    API = "Tobii.Interaction",
                 },
             };
 

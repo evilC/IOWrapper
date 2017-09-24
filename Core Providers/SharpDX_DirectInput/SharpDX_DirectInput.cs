@@ -240,10 +240,10 @@ namespace SharpDX_DirectInput
             providerReport = new ProviderReport() {
                 Title = "DirectInput (Core)",
                 Description = "Allows reading of generic joysticks.",
+                API = "DirectInput",
                 ProviderDescriptor = new ProviderDescriptor()
                 {
                     ProviderName = ProviderName,
-                    API = "DirectInput",
                 },
             };
             handleToInstanceGuid = new Dictionary<string, Guid>();

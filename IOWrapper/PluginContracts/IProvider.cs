@@ -109,6 +109,13 @@ namespace Providers
         /// </summary>
         public ProviderDescriptor ProviderDescriptor { get; set; }
 
+        /// <summary>
+        /// The underlying API that handles this input
+        /// It is intended that many providers could support a given API
+        /// This meta-data is intended to allow the front-end to present a user with alternatives
+        /// </summary>
+        public string API { get; set; }
+
         public SortedDictionary<string, DeviceReport> Devices { get; set; }
             = new SortedDictionary<string, DeviceReport>();
     }
@@ -203,13 +210,6 @@ namespace Providers
         /// This should be unique
         /// </summary>
         public string ProviderName { get; set; }
-
-        // ToDo: Move out of this class - is meta-data
-        /// <summary>
-        /// The underlying API that handles this input
-        /// It is intended that many providers could support a given API
-        /// </summary>
-        public string API { get; set; }
     }
 
     /// <summary>
