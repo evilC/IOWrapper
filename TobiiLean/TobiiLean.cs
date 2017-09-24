@@ -38,7 +38,10 @@ namespace TobiiLean
 
                 interceptionKeyboardOutputSubReq = new OutputSubscriptionRequest()
                 {
-                    SubscriberGuid = Guid.NewGuid(),
+                    SubscriptionInfo = new SubscriptionInfo()
+                    {
+                        SubscriberGuid = Guid.NewGuid()
+                    },
                     ProviderInfo = interceptionProvider,
                     DeviceInfo = new DeviceInfo()
                     {
@@ -49,7 +52,10 @@ namespace TobiiLean
 
                 var toggleSubReq = new InputSubscriptionRequest()
                 {
-                    SubscriberGuid = Guid.NewGuid(),
+                    SubscriptionInfo = new SubscriptionInfo()
+                    {
+                        SubscriberGuid = Guid.NewGuid()
+                    },
                     ProviderInfo = interceptionProvider,
                     DeviceInfo = new DeviceInfo()
                     {
@@ -73,7 +79,10 @@ namespace TobiiLean
 
                 var subReq = new InputSubscriptionRequest()
                 {
-                    SubscriberGuid = Guid.NewGuid(),
+                    SubscriptionInfo = new SubscriptionInfo()
+                    {
+                        SubscriberGuid = Guid.NewGuid(),
+                    },
                     ProviderInfo = tobiiProvider,
                     DeviceInfo = new DeviceInfo()
                     {

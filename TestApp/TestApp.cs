@@ -54,7 +54,10 @@ class Tester
         catch { return; }
         vJoyOutputSubReq = new OutputSubscriptionRequest()
         {
-            SubscriberGuid = Guid.NewGuid(),
+            SubscriptionInfo = new SubscriptionInfo()
+            {
+                SubscriberGuid = Guid.NewGuid(),
+            },
             ProviderInfo = vjoyProvider,
             DeviceInfo = new DeviceInfo()
             {
@@ -77,8 +80,11 @@ class Tester
         // Subscribe to the found stick
         var diSub1 = new InputSubscriptionRequest()
         {
-            ProfileGuid = defaultProfileGuid,
-            SubscriberGuid = Guid.NewGuid(),
+            SubscriptionInfo = new SubscriptionInfo()
+            {
+                ProfileGuid = defaultProfileGuid,
+                SubscriberGuid = Guid.NewGuid(),
+            },
             ProviderInfo = new ProviderInfo()
             {
                 ProviderName = "SharpDX_DirectInput",
@@ -109,8 +115,11 @@ class Tester
         // Subscribe to the found stick
         var diSub2 = new InputSubscriptionRequest()
         {
-            ProfileGuid = Guid.NewGuid(),
-            SubscriberGuid = Guid.NewGuid(),
+            SubscriptionInfo = new SubscriptionInfo()
+            {
+                ProfileGuid = Guid.NewGuid(),
+                SubscriberGuid = Guid.NewGuid()
+            },
             ProviderInfo = new ProviderInfo()
             {
                 ProviderName = "SharpDX_DirectInput",
@@ -136,13 +145,16 @@ class Tester
             })
         };
         //iow.SubscribeInput(diSub2);
-        iow.SetProfileState(diSub2.ProfileGuid, true);
+        iow.SetProfileState(diSub2.SubscriptionInfo.ProfileGuid, true);
 
 
         var sub2 = new InputSubscriptionRequest()
         {
-            ProfileGuid = defaultProfileGuid,
-            SubscriberGuid = defaultProfileGuid,
+            SubscriptionInfo = new SubscriptionInfo()
+            {
+                ProfileGuid = defaultProfileGuid,
+                SubscriberGuid = defaultProfileGuid
+            },
             ProviderInfo = diProvider,
             DeviceInfo = new DeviceInfo()
             {
@@ -167,8 +179,11 @@ class Tester
         #region XInput
         var xinputAxis = new InputSubscriptionRequest()
         {
-            ProfileGuid = defaultProfileGuid,
-            SubscriberGuid = Guid.NewGuid(),
+            SubscriptionInfo = new SubscriptionInfo()
+            {
+                ProfileGuid = defaultProfileGuid,
+                SubscriberGuid = Guid.NewGuid()
+            },
             ProviderInfo = xiProvider,
             DeviceInfo = new DeviceInfo()
             {
@@ -190,8 +205,11 @@ class Tester
 
         var xinputButton = new InputSubscriptionRequest()
         {
-            ProfileGuid = defaultProfileGuid,
-            SubscriberGuid = Guid.NewGuid(),
+            SubscriptionInfo = new SubscriptionInfo()
+            {
+                ProfileGuid = defaultProfileGuid,
+                SubscriberGuid = Guid.NewGuid()
+            },
             ProviderInfo = xiProvider,
             DeviceInfo = new DeviceInfo()
             {
@@ -212,8 +230,11 @@ class Tester
 
         var xinputPov = new InputSubscriptionRequest()
         {
-            ProfileGuid = defaultProfileGuid,
-            SubscriberGuid = Guid.NewGuid(),
+            SubscriptionInfo = new SubscriptionInfo()
+            {
+                ProfileGuid = defaultProfileGuid,
+                SubscriberGuid = Guid.NewGuid()
+            },
             ProviderInfo = xiProvider,
             DeviceInfo = new DeviceInfo()
             {
@@ -253,7 +274,10 @@ class Tester
 
         interceptionKeyboardOutputSubReq = new OutputSubscriptionRequest()
         {
-            SubscriberGuid = Guid.NewGuid(),
+            SubscriptionInfo = new SubscriptionInfo()
+            {
+                SubscriberGuid = Guid.NewGuid()
+            },
             ProviderInfo = interceptionProvider,
             DeviceInfo = new DeviceInfo()
             {
@@ -265,7 +289,10 @@ class Tester
 
         interceptionMouseOutputSubReq = new OutputSubscriptionRequest()
         {
-            SubscriberGuid = Guid.NewGuid(),
+            SubscriptionInfo = new SubscriptionInfo()
+            {
+                SubscriberGuid = Guid.NewGuid()
+            },
             ProviderInfo = interceptionProvider,
             DeviceInfo = new DeviceInfo()
             {
@@ -276,8 +303,11 @@ class Tester
 
         var subInterceptionMouseDelta = new InputSubscriptionRequest()
         {
-            ProfileGuid = Guid.NewGuid(),
-            SubscriberGuid = Guid.NewGuid(),
+            SubscriptionInfo = new SubscriptionInfo()
+            {
+                ProfileGuid = Guid.NewGuid(),
+                SubscriberGuid = Guid.NewGuid()
+            },
             ProviderInfo = interceptionProvider,
             DeviceInfo = new DeviceInfo()
             {
@@ -301,8 +331,11 @@ class Tester
 
         var subInterception = new InputSubscriptionRequest()
         {
-            ProfileGuid = Guid.NewGuid(),
-            SubscriberGuid = Guid.NewGuid(),
+            SubscriptionInfo = new SubscriptionInfo()
+            {
+                ProfileGuid = Guid.NewGuid(),
+                SubscriberGuid = Guid.NewGuid()
+            },
             ProviderInfo = interceptionProvider,
             //DeviceHandle = keyboardHandle,
             DeviceInfo = new DeviceInfo()
@@ -329,7 +362,10 @@ class Tester
         #region Tobii Eye Tracker
         var tobiiGazePointSubReq = new InputSubscriptionRequest()
         {
-            SubscriberGuid = Guid.NewGuid(),
+            SubscriptionInfo = new SubscriptionInfo()
+            {
+                SubscriberGuid = Guid.NewGuid(),
+            },
             ProviderInfo = tobiiProvider,
             DeviceInfo = new DeviceInfo()
             {
@@ -349,7 +385,10 @@ class Tester
 
         var tobiiHeadPoseSubReq = new InputSubscriptionRequest()
         {
-            SubscriberGuid = Guid.NewGuid(),
+            SubscriptionInfo = new SubscriptionInfo()
+            {
+                SubscriberGuid = Guid.NewGuid(),
+            },
             ProviderInfo = tobiiProvider,
             DeviceInfo = new DeviceInfo()
             {
