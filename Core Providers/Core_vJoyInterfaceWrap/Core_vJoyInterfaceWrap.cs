@@ -18,7 +18,7 @@ namespace Core_vJoyInterfaceWrap
         private Dictionary<Guid, uint> subscriptionToDevice = new Dictionary<Guid, uint>();
         static private Dictionary<int, string> axisNames = new Dictionary<int, string>()
             { { 0, "X" }, { 1,"Y" }, { 2, "Z" }, { 3, "Rx" }, { 4, "Ry" }, { 5, "Rz" }, { 6, "Sl0" }, { 7, "Sl1" } };
-        static private List<BindingInfo>[] povBindingInfos = new List<BindingInfo>[4];
+        static private List<BindingReport>[] povBindingInfos = new List<BindingReport>[4];
 
         public Core_vJoyInterfaceWrap()
         {
@@ -28,15 +28,18 @@ namespace Core_vJoyInterfaceWrap
             }
             for (int p = 0; p < 4; p++)
             {
-                povBindingInfos[p] = new List<BindingInfo>();
+                povBindingInfos[p] = new List<BindingReport>();
                 for (int d = 0; d < 4; d++)
                 {
-                    povBindingInfos[p].Add(new BindingInfo()
+                    povBindingInfos[p].Add(new BindingReport()
                     {
                         Title = povDirections[d],
-                        Type = BindingType.POV,
                         Category = BindingCategory.Momentary,
-                        Index = (p * 4) + d,
+                        BindingDescriptor = new BindingDescriptor()
+                        {
+                            Type = BindingType.POV,
+                            Index = (p * 4) + d,
+                        }
                     });
                 }
             }
@@ -94,7 +97,12 @@ namespace Core_vJoyInterfaceWrap
             var pr = new ProviderReport()
             {
                 Title = "vJoy (Core)",
-                Description = "Allows emulation of DirectInput sticks. Requires driver from http://vjoystick.sourceforge.net/"
+                Description = "Allows emulation of DirectInput sticks. Requires driver from http://vjoystick.sourceforge.net/",
+                API = "vJoy",
+                ProviderDescriptor = new ProviderDescriptor()
+                {
+                    ProviderName = ProviderName,
+                },
             };
             for (uint i = 0; i < 16; i++)
             {
@@ -102,15 +110,16 @@ namespace Core_vJoyInterfaceWrap
                 if (vJ.isVJDExists(id))
                 {
                     var handle = i.ToString();
-                    var device = new IOWrapperDevice()
+                    var device = new DeviceReport()
                     {
-                        DeviceHandle = handle,
                         DeviceName = String.Format("vJoy Stick {0}", id),
-                        ProviderName = ProviderName,
-                        API = "vJoy",
+                        DeviceDescriptor = new DeviceDescriptor()
+                        {
+                            DeviceHandle = handle,
+                        },
                     };
 
-                    var axisNode = new DeviceNode()
+                    var axisNode = new DeviceReportNode()
                     {
                         Title = "Axes"
                     };
@@ -119,12 +128,15 @@ namespace Core_vJoyInterfaceWrap
                     {
                         if (vJ.GetVJDAxisExist(id, AxisIdToUsage[ax]))
                         {
-                            axisNode.Bindings.Add(new BindingInfo()
+                            axisNode.Bindings.Add(new BindingReport()
                             {
-                                Index = ax,
                                 Title = axisNames[ax],
-                                Type = BindingType.Axis,
-                                Category = BindingCategory.Signed
+                                Category = BindingCategory.Signed,
+                                BindingDescriptor = new BindingDescriptor()
+                                {
+                                    Index = ax,
+                                    Type = BindingType.Axis,
+                                }
                             });
                         }
                     }
@@ -133,32 +145,35 @@ namespace Core_vJoyInterfaceWrap
 
                     // ------ Buttons ------
                     var length = vJ.GetVJDButtonNumber(id);
-                    var buttonNode = new DeviceNode()
+                    var buttonNode = new DeviceReportNode()
                     {
                         Title = "Buttons"
                     };
                     for (int btn = 0; btn < length; btn++)
                     {
-                        buttonNode.Bindings.Add(new BindingInfo()
+                        buttonNode.Bindings.Add(new BindingReport()
                         {
-                            Index = btn,
                             Title = (btn + 1).ToString(),
-                            Type = BindingType.Button,
-                            Category = BindingCategory.Momentary
+                            Category = BindingCategory.Momentary,
+                            BindingDescriptor = new BindingDescriptor()
+                            {
+                                Index = btn,
+                                Type = BindingType.Button,
+                            }
                         });
                     }
                     device.Nodes.Add(buttonNode);
 
                     // ------ POVs ------
                     var povCount = vJ.GetVJDContPovNumber(id);
-                    var povsNode = new DeviceNode()
+                    var povsNode = new DeviceReportNode()
                     {
                         Title = "POVs"
                     };
 
                     for (int p = 0; p < 4; p++)
                     {
-                        var povNode = new DeviceNode()
+                        var povNode = new DeviceReportNode()
                         {
                             Title = "POV #" + (p + 1)
                         };
@@ -184,38 +199,38 @@ namespace Core_vJoyInterfaceWrap
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            var devId = DevIdFromHandle(subReq.DeviceHandle);
+            var devId = DevIdFromHandle(subReq.DeviceDescriptor.DeviceHandle);
             vJoyDevices[devId].Add(subReq);
-            subscriptionToDevice.Add(subReq.SubscriberGuid, devId);
+            subscriptionToDevice.Add(subReq.SubscriptionDescriptor.SubscriberGuid, devId);
             return true;
         }
 
         public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            uint devId = subscriptionToDevice[subReq.SubscriberGuid];
+            uint devId = subscriptionToDevice[subReq.SubscriptionDescriptor.SubscriberGuid];
             vJoyDevices[devId].Remove(subReq);
-            subscriptionToDevice.Remove(subReq.SubscriberGuid);
+            subscriptionToDevice.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
             return true;
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
+        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
-            var devId = subscriptionToDevice[subReq.SubscriberGuid];
+            var devId = subscriptionToDevice[subReq.SubscriptionDescriptor.SubscriberGuid];
             if (!vJoyDevices[devId].IsAcquired)
             {
                 return false;
             }
-            switch (inputType)
+            switch (bindingDescriptor.Type)
             {
                 case BindingType.Axis:
-                    return vJ.SetAxis((state + 32768) / 2, devId + 1, AxisIdToUsage[(int)inputIndex]);
+                    return vJ.SetAxis((state + 32768) / 2, devId + 1, AxisIdToUsage[bindingDescriptor.Index]);
 
                 case BindingType.Button:
-                    return vJ.SetBtn(state == 1, devId + 1, inputIndex + 1);
+                    return vJ.SetBtn(state == 1, devId + 1, (uint)(bindingDescriptor.Index + 1));
 
                 case BindingType.POV:
-                    var pov = (int)(Math.Floor((decimal)(inputIndex / 4)));
-                    var dir = (int)(inputIndex % 4);
+                    int pov = (int)(Math.Floor((decimal)(bindingDescriptor.Index / 4)));
+                    int dir = bindingDescriptor.Index % 4;
                     //Log("vJoy POV output requested - POV {0}, Dir {1}, State {2}", pov, dir, state);
                     vJoyDevices[devId].SetPovState(pov, dir, state);
                     break;
@@ -261,12 +276,12 @@ namespace Core_vJoyInterfaceWrap
                 {
                     Acquire();
                 }
-                subReqs.Add(subReq.SubscriberGuid, subReq);
+                subReqs.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
             }
 
             public void Remove(OutputSubscriptionRequest subReq)
             {
-                subReqs.Remove(subReq.SubscriberGuid);
+                subReqs.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
                 if (subReqs.Count == 0)
                 {
                     Relinquish();

@@ -36,26 +36,32 @@ namespace Core_Interception
         private Dictionary<int, MouseMonitor> MonitoredMice = new Dictionary<int, MouseMonitor>();
         private Dictionary<string, int> deviceHandleToId;
 
-        private static DeviceNode keyboardList;
-        private static DeviceNode mouseButtonList;
-        private static DeviceNode mouseAxisList = new DeviceNode()
+        private static DeviceReportNode keyboardList;
+        private static DeviceReportNode mouseButtonList;
+        private static DeviceReportNode mouseAxisList = new DeviceReportNode()
         {
             Title = "Axes",
-            Bindings = new List<BindingInfo>()
+            Bindings = new List<BindingReport>()
             {
-                new BindingInfo()
+                new BindingReport()
                 {
                     Title = "X",
-                    Index = 0,
-                    Type = BindingType.Axis,
                     Category = BindingCategory.Delta,
+                    BindingDescriptor =   new BindingDescriptor()
+                    {
+                        Index = 0,
+                        Type = BindingType.Axis,
+                    }
                 },
-                new BindingInfo()
+                new BindingReport()
                 {
                     Title = "Y",
-                    Index = 1,
-                    Type = BindingType.Axis,
                     Category = BindingCategory.Delta,
+                    BindingDescriptor = new BindingDescriptor()
+                    {
+                        Index = 1,
+                        Type = BindingType.Axis,
+                    }
                 }
             }
         };
@@ -161,14 +167,14 @@ namespace Core_Interception
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
             bool ret = false;
-            if (deviceHandleToId.ContainsKey(subReq.DeviceHandle))
+            if (deviceHandleToId.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
             {
                 try
                 {
                     if (pollThreadRunning)
                         SetPollThreadState(false);
 
-                    var id = deviceHandleToId[subReq.DeviceHandle];
+                    var id = deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle];
                     var devId = id + 1;
                     if (id < 10)
                     {
@@ -204,9 +210,9 @@ namespace Core_Interception
 
             try
             {
-                if (deviceHandleToId.ContainsKey(subReq.DeviceHandle))
+                if (deviceHandleToId.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
                 {
-                    var id = deviceHandleToId[subReq.DeviceHandle];
+                    var id = deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle];
                     var devId = id + 1;
                     if (pollThreadRunning)
                         SetPollThreadState(false);
@@ -249,15 +255,15 @@ namespace Core_Interception
             return true;
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
+        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
-            int devId = deviceHandleToId[subReq.DeviceHandle] + 1;
+            int devId = deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle] + 1;
             //Log("SetOutputState. Type: {0}, Index: {1}, State: {2}, Device: {3}", inputType, inputIndex, state, devId);
             Stroke stroke = new Stroke();
             if (devId < 11)
             {
                 ushort st = (ushort)(1 - state);
-                ushort code = (ushort)(inputIndex + 1);
+                ushort code = (ushort)(bindingDescriptor.Index + 1);
                 if (code > 255)
                 {
                     st += 2;
@@ -268,7 +274,7 @@ namespace Core_Interception
             }
             else
             {
-                var bit = (int)inputIndex * 2;
+                int bit = bindingDescriptor.Index * 2;
                 if (state == 0)
                     bit += 1;
                 stroke.mouse.state = (ushort)(1 << bit);
@@ -284,7 +290,12 @@ namespace Core_Interception
             deviceHandleToId = new Dictionary<string, int>();
             providerReport = new ProviderReport() {
                 Title = "Interception (Core)",
-                Description = "Supports per-device Keyboard and Mouse Input/Output, with blocking\nRequires custom driver from http://oblita.com/interception"
+                Description = "Supports per-device Keyboard and Mouse Input/Output, with blocking\nRequires custom driver from http://oblita.com/interception",
+                API = "Interception",
+                ProviderDescriptor = new ProviderDescriptor()
+                {
+                    ProviderName = ProviderName,
+                },
             };
 
             UpdateKeyList();
@@ -305,14 +316,15 @@ namespace Core_Interception
                 if (name != "" && IsKeyboard(i) == 1)
                 {
                     handle = @"Keyboard\" + handle;
-                    providerReport.Devices.Add(handle, new IOWrapperDevice()
+                    providerReport.Devices.Add(handle, new DeviceReport()
                     {
-                        DeviceHandle = handle,
                         DeviceName = name,
-                        ProviderName = ProviderName,
-                        API = "Interception",
+                        DeviceDescriptor = new DeviceDescriptor()
+                        {
+                            DeviceHandle = handle,
+                        },
                         //Bindings = { keyboardList }
-                        Nodes = new List<DeviceNode>()
+                        Nodes = new List<DeviceReportNode>()
                         {
                             keyboardList
                         }
@@ -338,14 +350,15 @@ namespace Core_Interception
                 if (name != "" && IsMouse(i) == 1)
                 {
                     handle = @"Mouse\" + handle;
-                    providerReport.Devices.Add(handle, new IOWrapperDevice()
+                    providerReport.Devices.Add(handle, new DeviceReport()
                     {
-                        DeviceHandle = handle,
                         DeviceName = name,
-                        ProviderName = ProviderName,
-                        API = "Interception",
+                        DeviceDescriptor = new DeviceDescriptor()
+                        {
+                            DeviceHandle = handle,
+                        },
                         //Bindings = { mouseButtonList }
-                        Nodes = new List<DeviceNode>()
+                        Nodes = new List<DeviceReportNode>()
                         {
                             mouseButtonList,
                             mouseAxisList
@@ -361,29 +374,35 @@ namespace Core_Interception
 
         private void UpdateMouseButtonList()
         {
-            mouseButtonList = new DeviceNode()
+            mouseButtonList = new DeviceReportNode()
             {
                 Title = "Buttons"
             };
             for (int i = 0; i < 5; i++)
             {
-                mouseButtonList.Bindings.Add(new BindingInfo()
+                mouseButtonList.Bindings.Add(new BindingReport()
                 {
-                    Index = i,
                     Title = mouseButtonNames[i],
-                    Type = BindingType.Button,
-                    Category = BindingCategory.Momentary
+                    Category = BindingCategory.Momentary,
+                    BindingDescriptor = new BindingDescriptor()
+                    {
+                        Index = i,
+                        Type = BindingType.Button,
+                    }
                 });
             }
             
             for (int i = 5; i < 7; i++)
             {
-                mouseButtonList.Bindings.Add(new BindingInfo()
+                mouseButtonList.Bindings.Add(new BindingReport()
                 {
-                    Index = i,
                     Title = mouseButtonNames[i],
-                    Type = BindingType.Button,
-                    Category = BindingCategory.Event
+                    Category = BindingCategory.Event,
+                    BindingDescriptor = new BindingDescriptor()
+                    {
+                        Index = i,
+                        Type = BindingType.Button,
+                    }
                 });
             }
             
@@ -391,7 +410,7 @@ namespace Core_Interception
 
         private void UpdateKeyList()
         {
-            keyboardList = new DeviceNode() {
+            keyboardList = new DeviceReportNode() {
                 Title = "Keys"
             };
             //buttonNames = new Dictionary<int, string>();
@@ -411,11 +430,15 @@ namespace Core_Interception
                 if (keyName == "")
                     continue;
                 //Log("Button Index: {0}, name: '{1}'", i, keyName);
-                keyboardList.Bindings.Add(new BindingInfo() {
-                    Index = i,
+                keyboardList.Bindings.Add(new BindingReport()
+                {
                     Title = keyName,
-                    Type = BindingType.Button,
-                    Category = BindingCategory.Momentary
+                    Category = BindingCategory.Momentary,
+                    BindingDescriptor = new BindingDescriptor()
+                    {
+                        Index = i,
+                        Type = BindingType.Button,
+                    }
                 });
                 //buttonNames.Add(i, keyName);
 
@@ -429,11 +452,15 @@ namespace Core_Interception
                 if (altKeyName == "" || altKeyName == keyName)
                     continue;
                 //Log("ALT Button Index: {0}, name: '{1}'", i + 256, altKeyName);
-                keyboardList.Bindings.Add(new BindingInfo() {
-                    Index = i + 256,
+                keyboardList.Bindings.Add(new BindingReport()
+                {
                     Title = altKeyName,
-                    Type = BindingType.Button,
-                    Category = BindingCategory.Momentary
+                    Category = BindingCategory.Momentary,
+                    BindingDescriptor = new BindingDescriptor()
+                    {
+                        Index = i + 256,
+                        Type = BindingType.Button,
+                    }
                 });
                 //Log("Button Index: {0}, name: '{1}'", i + 256, altKeyName);
                 //buttonNames.Add(i + 256, altKeyName);
@@ -452,7 +479,7 @@ namespace Core_Interception
             {
                 try
                 {
-                    var code = (ushort)(subReq.Index + 1);
+                    var code = (ushort)(subReq.BindingDescriptor.Index + 1);
                     ushort stateDown = 0;
                     ushort stateUp = 1;
                     if (code > 256)
@@ -478,7 +505,7 @@ namespace Core_Interception
 
             public bool Remove(InputSubscriptionRequest subReq)
             {
-                var code = (ushort)(subReq.Index + 1);
+                var code = (ushort)(subReq.BindingDescriptor.Index + 1);
                 if (code > 256)
                 {
                     code -= 256;
@@ -524,12 +551,12 @@ namespace Core_Interception
 
             public void Add(InputSubscriptionRequest subReq)
             {
-                subReqs.Add(subReq.SubscriberGuid, subReq);
+                subReqs.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
             }
 
             public void Remove(InputSubscriptionRequest subReq)
             {
-                subReqs.Remove(subReq.SubscriberGuid);
+                subReqs.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
             }
 
             public bool HasSubscriptions()
@@ -557,19 +584,19 @@ namespace Core_Interception
         private class MouseMonitor
         {
             private Dictionary<ushort, MouseButtonMonitor> monitoredStates = new Dictionary<ushort, MouseButtonMonitor>();
-            private Dictionary<uint, MouseAxisMonitor> monitoredAxes = new Dictionary<uint, MouseAxisMonitor>();
+            private Dictionary<int, MouseAxisMonitor> monitoredAxes = new Dictionary<int, MouseAxisMonitor>();
 
             public bool Add(InputSubscriptionRequest subReq)
             {
                 try
                 {
-                    if (subReq.Type == BindingType.Button)
+                    if (subReq.BindingDescriptor.Type == BindingType.Button)
                     {
-                        var i = (ushort)subReq.Index;
+                        var i = (ushort)subReq.BindingDescriptor.Index;
                         ushort downbit = (ushort)(1 << (i * 2));
                         ushort upbit = (ushort)(1 << ((i * 2) + 1));
 
-                        Log("Added subscription to mouse button {0}", subReq.Index);
+                        Log("Added subscription to mouse button {0}", subReq.BindingDescriptor.Index);
                         if (!monitoredStates.ContainsKey(downbit))
                         {
                             monitoredStates.Add(downbit, new MouseButtonMonitor() { MonitoredState = 1 });
@@ -583,13 +610,13 @@ namespace Core_Interception
                         monitoredStates[upbit].Add(subReq);
                         return true;
                     }
-                    else if (subReq.Type == BindingType.Axis)
+                    else if (subReq.BindingDescriptor.Type == BindingType.Axis)
                     {
-                        if (!monitoredAxes.ContainsKey(subReq.Index))
+                        if (!monitoredAxes.ContainsKey(subReq.BindingDescriptor.Index))
                         {
-                            monitoredAxes.Add(subReq.Index, new MouseAxisMonitor() { MonitoredAxis = subReq.Index });
+                            monitoredAxes.Add(subReq.BindingDescriptor.Index, new MouseAxisMonitor() { MonitoredAxis = subReq.BindingDescriptor.Index });
                         }
-                        monitoredAxes[subReq.Index].Add(subReq);
+                        monitoredAxes[subReq.BindingDescriptor.Index].Add(subReq);
                         return true;
                     }
                 }
@@ -604,7 +631,7 @@ namespace Core_Interception
             {
                 try
                 {
-                    var i = (ushort)subReq.Index;
+                    var i = (ushort)subReq.BindingDescriptor.Index;
                     ushort downbit = (ushort)(1 << (i * 2));
                     ushort upbit = (ushort)(1 << ((i * 2) + 1));
 
@@ -668,13 +695,13 @@ namespace Core_Interception
 
             public void Add(InputSubscriptionRequest subReq)
             {
-                subReqs.Add(subReq.SubscriberGuid, subReq);
+                subReqs.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
                 //Log("Added Subscription to Mouse Button {0}", subReq.InputIndex);
             }
 
             public void Remove(InputSubscriptionRequest subReq)
             {
-                subReqs.Remove(subReq.SubscriberGuid);
+                subReqs.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
             }
 
             public bool HasSubscriptions()
@@ -706,17 +733,17 @@ namespace Core_Interception
         private class MouseAxisMonitor
         {
             private Dictionary<Guid, InputSubscriptionRequest> subReqs = new Dictionary<Guid, InputSubscriptionRequest>();
-            public uint MonitoredAxis { get; set; }
+            public int MonitoredAxis { get; set; }
 
             public void Add(InputSubscriptionRequest subReq)
             {
-                subReqs.Add(subReq.SubscriberGuid, subReq);
+                subReqs.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
                 //Log("Added Subscription to Mouse Button {0}", subReq.InputIndex);
             }
 
             public void Remove(InputSubscriptionRequest subReq)
             {
-                subReqs.Remove(subReq.SubscriberGuid);
+                subReqs.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
             }
 
             public bool HasSubscriptions()

@@ -33,49 +33,62 @@ namespace Core_Tobii_Interaction
         {
             providerReport = new ProviderReport() {
                 Title = "Tobii Interaction (Core)",
-                Description = "Tracks head and eye movement. Requires a Tobii device, see https://tobiigaming.com/"
-            };
-
-            var gazeDevice = new IOWrapperDevice()
-            {
-                ProviderName = ProviderName,
-                DeviceName = "Tobii Gaze Point",
-                DeviceHandle = "GazePoint",
+                Description = "Tracks head and eye movement. Requires a Tobii device, see https://tobiigaming.com/",
                 API = "Tobii.Interaction",
+                ProviderDescriptor = new ProviderDescriptor()
+                {
+                    ProviderName = ProviderName,
+                },
             };
 
-            var gazeNode = new DeviceNode() { Title = "Axes" };
+            var gazeDevice = new DeviceReport()
+            {
+                DeviceName = "Tobii Gaze Point",
+                DeviceDescriptor = new DeviceDescriptor()
+                {
+                    DeviceHandle = "GazePoint",
+                },
+            };
+
+            var gazeNode = new DeviceReportNode() { Title = "Axes" };
             for (int i = 0; i < 3; i++)
             {
-                gazeNode.Bindings.Add(new BindingInfo()
+                gazeNode.Bindings.Add(new BindingReport()
                 {
                     Title = sixDofAxisNames[i],
-                    Index = i,
-                    Type = BindingType.Axis,
-                    Category = BindingCategory.Signed
+                    Category = BindingCategory.Signed,
+                    BindingDescriptor = new BindingDescriptor()
+                    {
+                        Index = i,
+                        Type = BindingType.Axis,
+                    }
                 });
             }
             gazeDevice.Nodes.Add(gazeNode);
             providerReport.Devices.Add("GazePoint", gazeDevice);
 
 
-            var poseDevice = new IOWrapperDevice()
+            var poseDevice = new DeviceReport()
             {
-                ProviderName = ProviderName,
                 DeviceName = "Tobii Head Pose",
-                DeviceHandle = "HeadPose",
-                API = "Tobii.Interaction"
+                DeviceDescriptor = new DeviceDescriptor()
+                {
+                    DeviceHandle = "HeadPose",
+                },
             };
 
-            var poseNode = new DeviceNode() { Title = "Axes" };
+            var poseNode = new DeviceReportNode() { Title = "Axes" };
             for (int i = 0; i < 2; i++)
             {
-                poseNode.Bindings.Add(new BindingInfo()
+                poseNode.Bindings.Add(new BindingReport()
                 {
                     Title = sixDofAxisNames[i],
-                    Index = i,
-                    Type = BindingType.Axis,
-                    Category = BindingCategory.Signed
+                    Category = BindingCategory.Signed,
+                    BindingDescriptor = new BindingDescriptor()
+                    {
+                        Index = i,
+                        Type = BindingType.Axis,
+                    }
                 });
             }
             poseDevice.Nodes.Add(poseNode);
@@ -89,7 +102,7 @@ namespace Core_Tobii_Interaction
             return null;
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingType inputType, uint inputIndex, int state)
+        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
             return false;
         }
@@ -101,9 +114,9 @@ namespace Core_Tobii_Interaction
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            if (streamHandlers.ContainsKey(subReq.DeviceHandle))
+            if (streamHandlers.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
             {
-                streamHandlers[subReq.DeviceHandle].SubscribeInput(subReq);
+                streamHandlers[subReq.DeviceDescriptor.DeviceHandle].SubscribeInput(subReq);
                 return true;
             }
             return false;
@@ -173,15 +186,15 @@ namespace Core_Tobii_Interaction
         abstract class StreamHandler : IDisposable
         {
             protected Host host;
-            protected Dictionary<uint, AxisMonitor> axisMonitors = new Dictionary<uint, AxisMonitor>();
+            protected Dictionary<int, AxisMonitor> axisMonitors = new Dictionary<int, AxisMonitor>();
 
             public virtual bool SubscribeInput(InputSubscriptionRequest subReq)
             {
-                if (!axisMonitors.ContainsKey(subReq.Index))
+                if (!axisMonitors.ContainsKey(subReq.BindingDescriptor.Index))
                 {
-                    axisMonitors.Add(subReq.Index, new AxisMonitor());
+                    axisMonitors.Add(subReq.BindingDescriptor.Index, new AxisMonitor());
                 }
-                axisMonitors[subReq.Index].Add(subReq);
+                axisMonitors[subReq.BindingDescriptor.Index].Add(subReq);
                 return true;
             }
 
@@ -190,7 +203,7 @@ namespace Core_Tobii_Interaction
                 private Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
                 public bool Add(InputSubscriptionRequest subReq)
                 {
-                    subscriptions.Add(subReq.SubscriberGuid, subReq);
+                    subscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
                     return true;
                 }
 
@@ -267,7 +280,7 @@ namespace Core_Tobii_Interaction
                 //Console.WriteLine("Unfiltered: Timestamp: {0}\t X: {1} Y:{2}", streamData.Data.Timestamp, streamData.Data.X, streamData.Data.Y);
                 var axisData = new double[] { streamData.Data.X, streamData.Data.Y };
 
-                for (uint i = 0; i < 2; i++)
+                for (int i = 0; i < 2; i++)
                 {
                     if (!axisMonitors.Keys.Contains(i))
                         continue;
@@ -299,7 +312,7 @@ namespace Core_Tobii_Interaction
                 {
                     var axisData = new double[] { headPose.Data.HeadPosition.X, headPose.Data.HeadPosition.Y, headPose.Data.HeadPosition.Z, headPose.Data.HeadRotation.X, headPose.Data.HeadRotation.Y, headPose.Data.HeadRotation.Z };
 
-                    for (uint i = 0; i < 2; i++)
+                    for (int i = 0; i < 2; i++)
                     {
                         if (!axisMonitors.Keys.Contains(i))
                             continue;

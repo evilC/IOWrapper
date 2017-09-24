@@ -24,6 +24,9 @@ namespace TobiiLean
             private int currState = 0;
             private Dictionary<int, uint> leanCodes = new Dictionary<int, uint>() { { -1, 15 }, { 1, 17 } };
 
+            ProviderDescriptor interceptionProvider = new ProviderDescriptor() { ProviderName = "Core_Interception" };
+            ProviderDescriptor tobiiProvider = new ProviderDescriptor() { ProviderName = "Core_Tobii_Interaction" };
+
             private bool macroEnabled = false;
 
             public LeanMapper()
@@ -35,20 +38,35 @@ namespace TobiiLean
 
                 interceptionKeyboardOutputSubReq = new OutputSubscriptionRequest()
                 {
-                    SubscriberGuid = Guid.NewGuid(),
-                    ProviderName = "Core_Interception",
-                    DeviceHandle = keyboardHandle
+                    SubscriptionDescriptor = new SubscriptionDescriptor()
+                    {
+                        SubscriberGuid = Guid.NewGuid()
+                    },
+                    ProviderDescriptor = interceptionProvider,
+                    DeviceDescriptor = new DeviceDescriptor()
+                    {
+                        DeviceHandle = keyboardHandle
+                    }
                 };
                 iow.SubscribeOutput(interceptionKeyboardOutputSubReq);
 
                 var toggleSubReq = new InputSubscriptionRequest()
                 {
-                    SubscriberGuid = Guid.NewGuid(),
-                    ProviderName = "Core_Interception",
-                    DeviceHandle = keyboardHandle,
-                    Type = BindingType.Button,
-                    //InputIndex = 81,    // Num 0
-                    Index = 40,    // `
+                    SubscriptionDescriptor = new SubscriptionDescriptor()
+                    {
+                        SubscriberGuid = Guid.NewGuid()
+                    },
+                    ProviderDescriptor = interceptionProvider,
+                    DeviceDescriptor = new DeviceDescriptor()
+                    {
+                        DeviceHandle = keyboardHandle,
+                    },
+                    BindingDescriptor = new BindingDescriptor()
+                    {
+                        Type = BindingType.Button,
+                        //InputIndex = 81,    // Num 0
+                        Index = 40,    // `
+                    },
                     Callback = new Action<int>((value) =>
                     {
                         if (value == 0)
@@ -61,11 +79,20 @@ namespace TobiiLean
 
                 var subReq = new InputSubscriptionRequest()
                 {
-                    SubscriberGuid = Guid.NewGuid(),
-                    ProviderName = "Core_Tobii_Interaction",
-                    DeviceHandle = "HeadPose",
-                    Type = BindingType.Axis,
-                    Index = 0,
+                    SubscriptionDescriptor = new SubscriptionDescriptor()
+                    {
+                        SubscriberGuid = Guid.NewGuid(),
+                    },
+                    ProviderDescriptor = tobiiProvider,
+                    DeviceDescriptor = new DeviceDescriptor()
+                    {
+                        DeviceHandle = "HeadPose",
+                    },
+                    BindingDescriptor = new BindingDescriptor()
+                    {
+                        Type = BindingType.Axis,
+                        Index = 0,
+                    },
                     Callback = new Action<int>((value) =>
                     {
                         if (!macroEnabled)
