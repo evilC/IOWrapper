@@ -12,6 +12,9 @@ namespace Core_vJoyInterfaceWrap
     [Export(typeof(IProvider))]
     public class Core_vJoyInterfaceWrap : IProvider
     {
+        public bool IsLive { get { return isLive; } }
+        private bool isLive = false;
+
         bool disposed = false;
         public static vJoyInterfaceWrap.vJoy vJ = new vJoyInterfaceWrap.vJoy();
         private VjoyDevice[] vJoyDevices = new VjoyDevice[16];
@@ -250,6 +253,11 @@ namespace Core_vJoyInterfaceWrap
                     break;
             }
             return false;
+        }
+
+        public void RefreshLiveState()
+        {
+
         }
         #endregion
 

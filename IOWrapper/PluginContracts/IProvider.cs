@@ -7,6 +7,8 @@ namespace Providers
     public interface IProvider : IDisposable
     {
         string ProviderName { get; }
+        bool IsLive { get; }
+
         ProviderReport GetInputList();
         ProviderReport GetOutputList();
 
@@ -18,6 +20,7 @@ namespace Providers
         //bool SetOutputButton(string dev, uint button, bool state);
         bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state);
         //bool SubscribeAxis(string deviceHandle, uint axisId, dynamic callback);
+        void RefreshLiveState();
     }
 
     #region Subscription Requests

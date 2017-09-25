@@ -13,6 +13,9 @@ namespace Core_Tobii_Interaction
     [Export(typeof(IProvider))]
     public class Core_Tobii_Interaction : IProvider
     {
+        public bool IsLive { get { return isLive; } }
+        private bool isLive = false;
+
         //private GazePointHander gazePointHandler = new GazePointHander();
         private Dictionary<string, StreamHandler> streamHandlers = new Dictionary<string, StreamHandler>(StringComparer.OrdinalIgnoreCase);
         private List<string> sixDofAxisNames = new List<string>() { "X", "Y", "Z", "Rx", "Ry", "Rz" };
@@ -135,6 +138,11 @@ namespace Core_Tobii_Interaction
         public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
             return false;
+        }
+
+        public void RefreshLiveState()
+        {
+
         }
         #endregion
 

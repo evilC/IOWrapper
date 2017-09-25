@@ -178,6 +178,18 @@ namespace IOWrapper
             return provider.SetOutputState(subReq, bindingDescriptor, state);
         }
 
+        public void RefreshProviderLiveState(string providerName)
+        {
+            var provider = GetProvider(providerName);
+            provider.RefreshLiveState();
+        }
+
+        public bool IsProviderLive(string providerName)
+        {
+            var provider = GetProvider(providerName);
+            return provider.IsLive;
+        }
+
         private IProvider GetProvider(string providerName)
         {
             if (_Providers.ContainsKey(providerName))

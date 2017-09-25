@@ -11,6 +11,9 @@ namespace SharpDX_XInput
     [Export(typeof(IProvider))]
     public class SharpDX_XInput : IProvider
     {
+        public bool IsLive { get { return isLive; } }
+        private bool isLive = true;
+
         bool disposed = false;
 
         // The thread which handles input detection
@@ -340,6 +343,11 @@ namespace SharpDX_XInput
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
             return false;
+        }
+
+        public void RefreshLiveState()
+        {
+
         }
         #endregion
 

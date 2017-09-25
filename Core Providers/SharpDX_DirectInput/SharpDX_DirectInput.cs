@@ -13,6 +13,9 @@ namespace SharpDX_DirectInput
     [Export(typeof(IProvider))]
     public class SharpDX_DirectInput : IProvider
     {
+        public bool IsLive { get { return isLive; } }
+        private bool isLive = true;
+
         bool disposed = false;
         static private DirectInput directInput;
 
@@ -231,6 +234,11 @@ namespace SharpDX_DirectInput
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
             return false;
+        }
+
+        public void RefreshLiveState()
+        {
+
         }
         #endregion
 

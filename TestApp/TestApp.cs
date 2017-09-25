@@ -48,6 +48,7 @@ class Tester
     public Tester()
     {
         iow = new IOWrapper.IOController();
+
         var inputList = iow.GetInputList();
         var outputList = iow.GetOutputList();
         string directInputHandle = null;

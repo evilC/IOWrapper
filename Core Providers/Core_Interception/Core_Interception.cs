@@ -15,6 +15,9 @@ namespace Core_Interception
     [Export(typeof(IProvider))]
     public class Core_Interception : IProvider
     {
+        public bool IsLive { get { return isLive; } }
+        private bool isLive = false;
+
         bool disposed = false;
         private IntPtr deviceContext;
         private ProviderReport providerReport;
@@ -281,6 +284,11 @@ namespace Core_Interception
             }
             Send(deviceContext, devId, ref stroke, 1);
             return true;
+        }
+
+        public void RefreshLiveState()
+        {
+
         }
         #endregion
 
