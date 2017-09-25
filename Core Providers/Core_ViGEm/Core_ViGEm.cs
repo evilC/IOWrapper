@@ -27,12 +27,6 @@ namespace Core_ViGEm
 
         public Core_ViGEm()
         {
-            InitLibrary();
-            var x360 = new Xbox360Controller(client);
-            x360.Connect();
-            var report = new Xbox360Report();
-            //report.SetButtonState();
-
             providerReport = new ProviderReport()
             {
                 Title = "ViGEm",
