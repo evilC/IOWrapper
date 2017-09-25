@@ -27,7 +27,11 @@ namespace Core_ViGEm
 
         public Core_ViGEm()
         {
-            CheckLibraryLoaded();
+            InitLibrary();
+            var x360 = new Xbox360Controller(client);
+            x360.Connect();
+            var report = new Xbox360Report();
+            //report.SetButtonState();
 
             providerReport = new ProviderReport()
             {
@@ -66,19 +70,18 @@ namespace Core_ViGEm
             });
         }
 
-        private void CheckLibraryLoaded()
+        private void InitLibrary()
         {
-            try
+            if (client == null)
             {
-                client = new ViGEmClient();
-                isLive = true;
-                Log("ViGEm library is loaded!");
+                try
+                {
+                    client = new ViGEmClient();
+                }
+                catch { }
             }
-            catch
-            {
-                isLive = false;
-                Log("ViGEm library is NOT loaded!");
-            }
+            isLive = (client != null);
+            Log("ViGem Client is {0}!", (isLive ? "Loaded" : "NOT Loaded"));
         }
 
         #region IProvider Members
@@ -146,7 +149,7 @@ namespace Core_ViGEm
 
         public void RefreshLiveState()
         {
-            CheckLibraryLoaded();
+            InitLibrary();
         }
         #endregion
 
