@@ -27,6 +27,8 @@ namespace Core_ViGEm
 
         public Core_ViGEm()
         {
+            InitLibrary();
+
             providerReport = new ProviderReport()
             {
                 Title = "ViGEm",
