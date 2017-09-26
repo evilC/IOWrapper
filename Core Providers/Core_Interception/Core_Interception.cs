@@ -324,7 +324,7 @@ namespace Core_Interception
                 if (name != "" && IsKeyboard(i) == 1)
                 {
                     handle = @"Keyboard\" + handle;
-                    providerReport.Devices.Add(handle, new DeviceReport()
+                    providerReport.Devices.Add(new DeviceReport()
                     {
                         DeviceName = name,
                         DeviceDescriptor = new DeviceDescriptor()
@@ -358,7 +358,7 @@ namespace Core_Interception
                 if (name != "" && IsMouse(i) == 1)
                 {
                     handle = @"Mouse\" + handle;
-                    providerReport.Devices.Add(handle, new DeviceReport()
+                    providerReport.Devices.Add(new DeviceReport()
                     {
                         DeviceName = name,
                         DeviceDescriptor = new DeviceDescriptor()

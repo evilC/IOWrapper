@@ -195,7 +195,7 @@ namespace Core_vJoyInterfaceWrap
                         device.Nodes.Add(povsNode);
                     }
 
-                    pr.Devices.Add(handle, device);
+                    pr.Devices.Add(device);
                 }
             }
             return pr;

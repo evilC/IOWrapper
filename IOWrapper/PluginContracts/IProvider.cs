@@ -119,8 +119,7 @@ namespace Providers
         /// </summary>
         public string API { get; set; }
 
-        public SortedDictionary<string, DeviceReport> Devices { get; set; }
-            = new SortedDictionary<string, DeviceReport>();
+        public List<DeviceReport> Devices { get; set; } = new List<DeviceReport>();
     }
 
     #endregion

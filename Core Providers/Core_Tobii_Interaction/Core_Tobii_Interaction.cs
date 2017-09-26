@@ -68,7 +68,7 @@ namespace Core_Tobii_Interaction
                 });
             }
             gazeDevice.Nodes.Add(gazeNode);
-            providerReport.Devices.Add("GazePoint", gazeDevice);
+            providerReport.Devices.Add(gazeDevice);
 
 
             var poseDevice = new DeviceReport()
@@ -95,7 +95,7 @@ namespace Core_Tobii_Interaction
                 });
             }
             poseDevice.Nodes.Add(poseNode);
-            providerReport.Devices.Add("HeadPose", poseDevice);
+            providerReport.Devices.Add(poseDevice);
 
             return providerReport;
         }

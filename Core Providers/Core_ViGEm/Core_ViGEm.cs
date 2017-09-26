@@ -67,7 +67,7 @@ namespace Core_ViGEm
                 },
             };
             // --- Xb360 ---
-            providerReport.Devices.Add("xb360", new DeviceReport()
+            providerReport.Devices.Add(new DeviceReport()
             {
                 DeviceName = "ViGEm Xb360 Controller 1",
                 DeviceDescriptor = new DeviceDescriptor() { DeviceHandle = "xb360", DeviceInstance = 0 },
@@ -94,7 +94,7 @@ namespace Core_ViGEm
             });
 
             // --- PS4 ---
-            providerReport.Devices.Add("DS4", new DeviceReport()
+            providerReport.Devices.Add(new DeviceReport()
             {
                 DeviceName = "ViGEm DS4 Controller 1",
                 DeviceDescriptor = new DeviceDescriptor() { DeviceHandle = "ds4", DeviceInstance = 0 },

@@ -349,7 +349,7 @@ namespace SharpDX_DirectInput
                 }
                 device.Nodes.Add(povsInfo);
 
-                providerReport.Devices.Add(handle, device);
+                providerReport.Devices.Add(device);
 
                 handleToInstanceGuid.Add(handle, deviceInstance.InstanceGuid);
 

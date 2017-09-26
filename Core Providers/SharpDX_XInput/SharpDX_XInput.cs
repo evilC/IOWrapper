@@ -275,7 +275,7 @@ namespace SharpDX_XInput
                 var ctrlr = new Controller((UserIndex)i);
                 //if (ctrlr.IsConnected)
                 //{
-                    providerReport.Devices.Add(i.ToString(), BuildXInputDevice(i));
+                    providerReport.Devices.Add(BuildXInputDevice(i));
                 //}
             }
         }
