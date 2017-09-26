@@ -27,6 +27,7 @@ class Tester
     private OutputSubscriptionRequest interceptionKeyboardOutputSubReq;
     private OutputSubscriptionRequest interceptionMouseOutputSubReq;
     private OutputSubscriptionRequest viGemXboxOutputSubReq;
+    private OutputSubscriptionRequest viGemDs4OutputSubReq;
 
     bool defaultProfileState = false;
     Guid defaultProfileGuid = Guid.NewGuid();
@@ -60,7 +61,7 @@ class Tester
         // Acquire vJoy stick
         string vjoyDeviceHandle = null;
         // Get handle to 1st vJoy device
-        try { vjoyDeviceHandle = outputList["Core_vJoyInterfaceWrap"].Devices.FirstOrDefault().Key; }
+        try { vjoyDeviceHandle = outputList["Core_vJoyInterfaceWrap"].Devices.FirstOrDefault().DeviceDescriptor.DeviceHandle; }
         catch { return; }
         vJoyOutputSubReq = new OutputSubscriptionRequest()
         {
@@ -114,7 +115,10 @@ class Tester
             {
                 Console.WriteLine("Button 0 Value: " + value);
                 //iow.SetOutputstate(vJoyOutputSubReq, buttonOneDescriptor, value);
-                iow.SetOutputstate(viGemXboxOutputSubReq, buttonOneDescriptor, value);
+                //iow.SetOutputstate(viGemXboxOutputSubReq, buttonOneDescriptor, value);
+                //iow.SetOutputstate(viGemXboxOutputSubReq, povOneUpDescriptor, value);
+                //iow.SetOutputstate(viGemXboxOutputSubReq, axisOneDescriptor, value * 32767);
+                iow.SetOutputstate(viGemDs4OutputSubReq, povOneUpDescriptor, value);
                 //iow.SetOutputstate(vJoyOutputSubReq, povOneUpDescriptor, value);
                 //iow.SetOutputstate(interceptionKeyboardOutputSubReq, new BindingDescriptor() { Type = BindingType.Button, Index = 311 }, value); // Right Alt
                 //iow.SetOutputstate(interceptionMouseOutputSubReq, new BindingDescriptor() { Type = BindingType.Button, Index = 1 }, value); // RMB
@@ -268,7 +272,7 @@ class Tester
 
         #region Interception
         string keyboardHandle = null;
-        try { keyboardHandle = inputList["Core_Interception"].Devices.FirstOrDefault().Key; }
+        try { keyboardHandle = inputList["Core_Interception"].Devices.FirstOrDefault().DeviceDescriptor.DeviceHandle; }
         catch { return; }
         //keyboardHandle = @"Keyboard\HID\VID_04F2&PID_0112&REV_0103&MI_00";
         DeviceDescriptor interceptionKeyboard = new DeviceDescriptor()
@@ -426,8 +430,29 @@ class Tester
                 SubscriberGuid = Guid.NewGuid(),
             },
             ProviderDescriptor = vigemProvider,
+            DeviceDescriptor = new DeviceDescriptor()
+            {
+                DeviceHandle = "xb360",
+                DeviceInstance = 0
+            }
         };
         //iow.SubscribeOutput(viGemXboxOutputSubReq);
+
+        viGemDs4OutputSubReq = new OutputSubscriptionRequest()
+        {
+            SubscriptionDescriptor = new SubscriptionDescriptor()
+            {
+                SubscriberGuid = Guid.NewGuid(),
+            },
+            ProviderDescriptor = vigemProvider,
+            DeviceDescriptor = new DeviceDescriptor()
+            {
+                DeviceHandle = "ds4",
+                DeviceInstance = 0
+            }
+        };
+        //iow.SubscribeOutput(viGemDs4OutputSubReq);
+
         #endregion
     }
 
