@@ -219,6 +219,7 @@ namespace Core_ViGEm
             public OutputDevicesHandler()
             {
                 deviceHandlers["xb360"] = new Xb360Handler[1] { new Xb360Handler(0) };
+                deviceHandlers["ds4"] = new DS4Handler[1] { new DS4Handler(0) };
             }
 
             public bool SubscribeOutput(OutputSubscriptionRequest subReq)
@@ -411,14 +412,14 @@ namespace Core_ViGEm
             protected override void SetButtonState(BindingDescriptor bindingDescriptor, int state)
             {
                 var inputId = bindingDescriptor.Index;
-                report.SetButtonState(buttonIndexes[inputId], state == 1);
+                report.SetButtonState(buttonIndexes[inputId], state != 0);
                 SendReport();
             }
 
             protected override void SetPovState(BindingDescriptor bindingDescriptor, int state)
             {
-                var inputId = bindingDescriptor.Index;
-                report.SetButtonState(povIndexes[inputId], state == 1);
+                var inputId = bindingDescriptor.SubIndex;
+                report.SetButtonState(povIndexes[inputId], state != 0);
                 SendReport();
             }
 
@@ -428,6 +429,87 @@ namespace Core_ViGEm
             }
         }
         #endregion
+
+        #region DS4 (Playstation 4) Handler
+
+        /// <summary>
+        /// Handler for an individual DS4 controller
+        /// </summary>
+        private class DS4Handler : DeviceHandler
+        {
+            public override string GroupName { get; } = "DS4";
+            private DualShock4Report report = new DualShock4Report();
+
+            private static readonly List<DualShock4Axes> axisIndexes = new List<DualShock4Axes>() {
+                DualShock4Axes.LeftThumbX, DualShock4Axes.LeftThumbY, DualShock4Axes.RightThumbX, DualShock4Axes.RightThumbY,
+                DualShock4Axes.LeftTrigger, DualShock4Axes.RightTrigger
+            };
+
+            //private static readonly int numAxes = 6;
+
+            private static readonly List<DualShock4Buttons> buttonIndexes = new List<DualShock4Buttons>() {
+                DualShock4Buttons.Cross, DualShock4Buttons.Circle, DualShock4Buttons.Square, DualShock4Buttons.Triangle,
+                DualShock4Buttons.ShoulderLeft, DualShock4Buttons.ShoulderRight, DualShock4Buttons.ThumbLeft, DualShock4Buttons.ThumbRight,
+                DualShock4Buttons.Share, DualShock4Buttons.Options,
+                DualShock4Buttons.TriggerLeft, DualShock4Buttons.TriggerRight
+            };
+
+            //private static readonly int numButtons = 12;
+
+            private static readonly List<DualShock4DPadValues> povIndexes = new List<DualShock4DPadValues>()
+            {
+
+                DualShock4DPadValues.North, DualShock4DPadValues.East, DualShock4DPadValues.South, DualShock4DPadValues.West
+            };
+
+            public DS4Handler(int index) : base(index)
+            {
+
+            }
+
+            protected override void AcquireTarget()
+            {
+                target = new DualShock4Controller(client);
+                target.Connect();
+            }
+
+            protected override void RelinquishTarget()
+            {
+                target.Disconnect();
+                target = null;
+            }
+
+            protected override void SetAxisState(BindingDescriptor bindingDescriptor, int state)
+            {
+                var inputId = bindingDescriptor.Index;
+                report.SetAxis(axisIndexes[inputId], (byte)state);
+                SendReport();
+            }
+
+            protected override void SetButtonState(BindingDescriptor bindingDescriptor, int state)
+            {
+                var inputId = bindingDescriptor.Index;
+                report.SetButtonState(buttonIndexes[inputId], state != 0);
+                SendReport();
+            }
+
+            protected override void SetPovState(BindingDescriptor bindingDescriptor, int state)
+            {
+                var inputId = bindingDescriptor.SubIndex;
+                if (state == 0)
+                    report.SetDPad(DualShock4DPadValues.None);
+                else
+                    report.SetDPad(povIndexes[inputId]);
+                SendReport();
+            }
+
+            private void SendReport()
+            {
+                ((DualShock4Controller)target).SendReport(report);
+            }
+        }
+        #endregion
+
 
         #endregion
 
