@@ -24,12 +24,38 @@ namespace Core_ViGEm
         Xbox360Controller[] xboxControllers = new Xbox360Controller[4];
         private OutputDevicesHandler devicesHandler = new OutputDevicesHandler();
 
-        private readonly ProviderReport providerReport;
+        private ProviderReport providerReport;
 
         public Core_ViGEm()
         {
             InitLibrary();
+        }
 
+        private void InitLibrary()
+        {
+            if (client == null)
+            {
+                try
+                {
+                    client = new ViGEmClient();
+                }
+                catch { }
+            }
+            isLive = (client != null);
+            Log("ViGem Client is {0}!", (isLive ? "Loaded" : "NOT Loaded"));
+        }
+
+        #region IProvider Members
+        // ToDo: Need better way to handle this. MEF meta-data?
+        public string ProviderName { get { return typeof(Core_ViGEm).Namespace; } }
+
+        public ProviderReport GetInputList()
+        {
+            return null;
+        }
+
+        public ProviderReport GetOutputList()
+        {
             providerReport = new ProviderReport()
             {
                 Title = "ViGEm",
@@ -40,7 +66,6 @@ namespace Core_ViGEm
                     ProviderName = ProviderName
                 },
             };
-
             // --- Xb360 ---
             providerReport.Devices.Add("xb360", new DeviceReport()
             {
@@ -94,33 +119,6 @@ namespace Core_ViGEm
                     }
                 }
             });
-        }
-
-        private void InitLibrary()
-        {
-            if (client == null)
-            {
-                try
-                {
-                    client = new ViGEmClient();
-                }
-                catch { }
-            }
-            isLive = (client != null);
-            Log("ViGem Client is {0}!", (isLive ? "Loaded" : "NOT Loaded"));
-        }
-
-        #region IProvider Members
-        // ToDo: Need better way to handle this. MEF meta-data?
-        public string ProviderName { get { return typeof(Core_ViGEm).Namespace; } }
-
-        public ProviderReport GetInputList()
-        {
-            return null;
-        }
-
-        public ProviderReport GetOutputList()
-        {
             return providerReport;
         }
 
