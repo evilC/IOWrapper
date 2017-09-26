@@ -243,13 +243,13 @@ namespace Providers
         /// <summary>
         /// The Type-specific Index of the Binding
         /// </summary>
-        public int Index { get; set; }
+        public int Index { get; set; } = 0;
 
         // Currently un-used. May be desirable for POV directions
         /// <summary>
         /// The Type-specific SubIndex of the Binding
         /// </summary>
-        public int SubIndex { get; set; }
+        public int SubIndex { get; set; } = 0;
     }
 
     /// <summary>

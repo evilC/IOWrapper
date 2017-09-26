@@ -66,59 +66,7 @@ namespace Core_ViGEm
                     ProviderName = ProviderName
                 },
             };
-            // --- Xb360 ---
-            providerReport.Devices.Add(new DeviceReport()
-            {
-                DeviceName = "ViGEm Xb360 Controller 1",
-                DeviceDescriptor = new DeviceDescriptor() { DeviceHandle = "xb360", DeviceInstance = 0 },
-                Nodes = new List<DeviceReportNode>()
-                {
-                    new DeviceReportNode()
-                    {
-                        Title = "Buttons",
-                        Bindings = new List<BindingReport>()
-                        {
-                            new BindingReport()
-                            {
-                                Title = "A",
-                                Category = BindingCategory.Momentary,
-                                BindingDescriptor = new BindingDescriptor()
-                                {
-                                    Type = BindingType.Button,
-                                    Index = 0
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // --- PS4 ---
-            providerReport.Devices.Add(new DeviceReport()
-            {
-                DeviceName = "ViGEm DS4 Controller 1",
-                DeviceDescriptor = new DeviceDescriptor() { DeviceHandle = "ds4", DeviceInstance = 0 },
-                Nodes = new List<DeviceReportNode>()
-                {
-                    new DeviceReportNode()
-                    {
-                        Title = "Buttons",
-                        Bindings = new List<BindingReport>()
-                        {
-                            new BindingReport()
-                            {
-                                Title = "X",
-                                Category = BindingCategory.Momentary,
-                                BindingDescriptor = new BindingDescriptor()
-                                {
-                                    Type = BindingType.Button,
-                                    Index = 0
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+            providerReport.Devices = devicesHandler.GetDeviceList();
             return providerReport;
         }
 
@@ -216,8 +164,8 @@ namespace Core_ViGEm
             private Dictionary<string, DeviceHandler[]> deviceHandlers = new Dictionary<string, DeviceHandler[]>(StringComparer.OrdinalIgnoreCase);
             public OutputDevicesHandler()
             {
-                deviceHandlers["xb360"] = new Xb360Handler[1] { new Xb360Handler(0) };
-                deviceHandlers["ds4"] = new DS4Handler[1] { new DS4Handler(0) };
+                deviceHandlers["xb360"] = new Xb360Handler[1] { new Xb360Handler(new DeviceClassDescriptor() { classIdentifier = "xb360", classHumanName = "Xbox 360" } ,0) };
+                deviceHandlers["ds4"] = new DS4Handler[1] { new DS4Handler(new DeviceClassDescriptor() { classIdentifier = "ds4", classHumanName = "DS4" } ,0) };
             }
 
             public bool SubscribeOutput(OutputSubscriptionRequest subReq)
@@ -248,9 +196,28 @@ namespace Core_ViGEm
                 return false;
             }
 
+            public List<DeviceReport> GetDeviceList()
+            {
+                var report = new List<DeviceReport>();
+                foreach (var handlerClass in deviceHandlers.Values)
+                {
+                    for (int i = 0; i < handlerClass.Length; i++)
+                    {
+                        report.Add(handlerClass[i].GetDeviceReport());
+                    }
+                    
+                }
+                return report;
+            }
+
             private bool HasHandler(OutputSubscriptionRequest subReq)
             {
                 return deviceHandlers.ContainsKey(subReq.DeviceDescriptor.DeviceHandle);
+            }
+
+            private bool HasHandler(string deviceHandler)
+            {
+                return deviceHandlers.ContainsKey(deviceHandler);
             }
 
             private DeviceHandler GetHandler(OutputSubscriptionRequest subReq)
@@ -261,6 +228,21 @@ namespace Core_ViGEm
                 }
                 return null;
             }
+
+            private DeviceHandler[] GetHandlers(string deviceHandler)
+            {
+                if (HasHandler(deviceHandler))
+                {
+                    return deviceHandlers[deviceHandler];
+                }
+                return null;
+            }
+        }
+
+        public class DeviceClassDescriptor
+        {
+            public string classIdentifier { get; set; }
+            public string classHumanName { get; set; }
         }
         #endregion
 
@@ -275,19 +257,27 @@ namespace Core_ViGEm
         private abstract class DeviceHandler
         {
             public bool IsRequested { get; set; }
-
-            public abstract string GroupName { get; }
-
-            private int deviceId = 0;
             private Dictionary<Guid, OutputSubscriptionRequest> subscriptions = new Dictionary<Guid, OutputSubscriptionRequest>();
 
+            protected DeviceClassDescriptor deviceClassDescriptor;
+            protected int deviceId = 0;
             protected bool isAcquired = false;
             protected ViGEmTarget target;
 
+            protected abstract List<string> axisNames { get; set; }
+            protected static readonly List<BindingCategory> axisCategories = new List<BindingCategory>()
+            {
+                BindingCategory.Signed, BindingCategory.Signed, BindingCategory.Signed, BindingCategory.Signed, BindingCategory.Unsigned, BindingCategory.Unsigned
+            };
+            protected abstract List<string> buttonNames { get; set; }
+            protected static readonly List<string> povDirectionNames = new List<string>() {
+                "Up", "Right", "Down", "Left"
+            };
 
-            public DeviceHandler(int index)
+            public DeviceHandler(DeviceClassDescriptor descriptor,int index)
             {
                 deviceId = index;
+                deviceClassDescriptor = descriptor;
             }
 
             protected bool SubscribeOutput(OutputSubscriptionRequest subReq)
@@ -349,6 +339,90 @@ namespace Core_ViGEm
                 return false;
             }
 
+            public DeviceReport GetDeviceReport()
+            {
+                var report = new DeviceReport()
+                {
+                    DeviceName = String.Format("ViGEm {0} Controller {1}", deviceClassDescriptor.classHumanName, (deviceId + 1)),
+                    DeviceDescriptor = new DeviceDescriptor()
+                    {
+                        DeviceHandle = deviceClassDescriptor.classIdentifier,
+                        DeviceInstance = deviceId
+                    }
+                };
+                report.Nodes.Add(GetAxisReport());
+                report.Nodes.Add(GetButtonReport());
+                report.Nodes.Add(GetPovReport());
+                return report;
+            }
+
+            protected DeviceReportNode GetAxisReport()
+            {
+                var report = new DeviceReportNode()
+                {
+                    Title = "Axes",
+                };
+                for (int i = 0; i < axisNames.Count; i++)
+                {
+                    report.Bindings.Add(new BindingReport()
+                    {
+                        Title = axisNames[i],
+                        Category = axisCategories[i],
+                        BindingDescriptor = new BindingDescriptor()
+                        {
+                            Index = i,
+                            Type = BindingType.Axis
+                        }
+                    });
+                }
+                return report;
+            }
+
+            protected DeviceReportNode GetButtonReport()
+            {
+                var report = new DeviceReportNode()
+                {
+                    Title = "Buttons",
+                };
+                for (int i = 0; i < buttonNames.Count; i++)
+                {
+                    report.Bindings.Add(new BindingReport()
+                    {
+                        Title = buttonNames[i],
+                        Category = BindingCategory.Momentary,
+                        BindingDescriptor = new BindingDescriptor()
+                        {
+                            Index = i,
+                            Type = BindingType.Button
+                        }
+                    });
+                }
+                return report;
+            }
+
+            protected DeviceReportNode GetPovReport()
+            {
+                var report = new DeviceReportNode()
+                {
+                    Title = "DPad",
+                };
+                for (int i = 0; i < povDirectionNames.Count; i++)
+                {
+                    report.Bindings.Add(new BindingReport()
+                    {
+                        Title = povDirectionNames[i],
+                        Category = BindingCategory.Momentary,
+                        BindingDescriptor = new BindingDescriptor()
+                        {
+                            Index = 0,
+                            SubIndex = i,
+                            Type = BindingType.POV
+                        }
+                    });
+                }
+                return report;
+            }
+
             protected abstract void AcquireTarget();
             protected abstract void RelinquishTarget();
             protected abstract void SetAxisState(BindingDescriptor bindingDescriptor, int state);
@@ -364,12 +438,16 @@ namespace Core_ViGEm
         /// </summary>
         private class Xb360Handler : DeviceHandler
         {
-            public override string GroupName { get; } = "Xb360";
             private Xbox360Report report = new Xbox360Report();
 
             private static readonly List<Xbox360Axes> axisIndexes = new List<Xbox360Axes>() {
                 Xbox360Axes.LeftThumbX, Xbox360Axes.LeftThumbY, Xbox360Axes.RightThumbX, Xbox360Axes.RightThumbY,
                 Xbox360Axes.LeftTrigger, Xbox360Axes.RightTrigger
+            };
+
+            protected override List<string> axisNames { get; set; } = new List<string>()
+            {
+                "LX", "LY", "RX", "RY", "LT", "RT"
             };
 
             private static readonly List<Xbox360Buttons> buttonIndexes = new List<Xbox360Buttons>() {
@@ -378,12 +456,17 @@ namespace Core_ViGEm
                 Xbox360Buttons. Back, Xbox360Buttons.Start
             };
 
+            protected override List<string> buttonNames { get; set; } = new List<string>()
+            {
+                "A", "B", "X", "Y", "LS", "RS", "LS", "RS", "Back", "Start"
+            };
+
             private static readonly List<Xbox360Buttons> povIndexes = new List<Xbox360Buttons>()
             {
                 Xbox360Buttons.Up, Xbox360Buttons.Right, Xbox360Buttons.Down, Xbox360Buttons.Left
             };
 
-            public Xb360Handler(int index) : base(index)
+            public Xb360Handler(DeviceClassDescriptor descriptor, int index) : base(descriptor, index)
             {
 
             }
@@ -435,7 +518,6 @@ namespace Core_ViGEm
         /// </summary>
         private class DS4Handler : DeviceHandler
         {
-            public override string GroupName { get; } = "DS4";
             private DualShock4Report report = new DualShock4Report();
 
             private static readonly List<DualShock4Axes> axisIndexes = new List<DualShock4Axes>() {
@@ -443,7 +525,10 @@ namespace Core_ViGEm
                 DualShock4Axes.LeftTrigger, DualShock4Axes.RightTrigger
             };
 
-            //private static readonly int numAxes = 6;
+            protected override List<string> axisNames { get; set; } = new List<string>()
+            {
+                "LX", "LY", "RX", "RY", "LT", "RT"
+            };
 
             private static readonly List<DualShock4Buttons> buttonIndexes = new List<DualShock4Buttons>() {
                 DualShock4Buttons.Cross, DualShock4Buttons.Circle, DualShock4Buttons.Square, DualShock4Buttons.Triangle,
@@ -452,7 +537,10 @@ namespace Core_ViGEm
                 DualShock4Buttons.TriggerLeft, DualShock4Buttons.TriggerRight
             };
 
-            //private static readonly int numButtons = 12;
+            protected override List<string> buttonNames { get; set; } = new List<string>()
+            {
+                "Cross", "Circle", "Square", "Triangle", "LS", "RS", "LS", "RS", "Share", "Options", "LT", "RT"
+            };
 
             private static readonly List<DualShock4DPadValues> povIndexes = new List<DualShock4DPadValues>()
             {
@@ -460,9 +548,8 @@ namespace Core_ViGEm
                 DualShock4DPadValues.North, DualShock4DPadValues.East, DualShock4DPadValues.South, DualShock4DPadValues.West
             };
 
-            public DS4Handler(int index) : base(index)
+            public DS4Handler(DeviceClassDescriptor descriptor, int index) : base(descriptor, index)
             {
-
             }
 
             protected override void AcquireTarget()
@@ -507,7 +594,6 @@ namespace Core_ViGEm
             }
         }
         #endregion
-
 
         #endregion
 
