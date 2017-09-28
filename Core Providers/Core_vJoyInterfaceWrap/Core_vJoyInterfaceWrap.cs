@@ -374,11 +374,7 @@ namespace Core_vJoyInterfaceWrap
 
                 private int DirToAxis(int dir)
                 {
-                    if (dir == 0 || dir == 2)
-                    {
-                        return 1;
-                    }
-                    return 0;
+                    return Convert.ToInt32(dir == 0 || dir == 2);
                 }
 
                 private int GetAngle()
