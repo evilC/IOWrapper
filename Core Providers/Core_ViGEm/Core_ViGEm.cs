@@ -343,10 +343,12 @@ namespace Core_ViGEm
                 if (IsRequested && !isAcquired)
                 {
                     AcquireTarget();
+                    isAcquired = true;
                 }
                 else if (!IsRequested && isAcquired)
                 {
                     RelinquishTarget();
+                    isAcquired = false;
                 }
             }
 
