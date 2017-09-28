@@ -352,13 +352,13 @@ namespace Core_vJoyInterfaceWrap
                 public void SetState(int dir, int state)
                 {
                     var axis = DirToAxis(dir);
-                    var vector = DirAndAxisToVector(dir, axis);
+                    var vector = DirToCoordinate(dir);
                     //Log("POV Dir: {0} Axis: {1}, Vector: {2}", dir, axis, vector);
                     axes[axis] = state == 0 ? 0 : vector;
                     SetPovState();
                 }
 
-                private int DirAndAxisToVector(int dir, int axis)
+                private int DirToCoordinate(int dir)
                 {
                     if (dir == 0 || dir == 1)
                         return 1;
