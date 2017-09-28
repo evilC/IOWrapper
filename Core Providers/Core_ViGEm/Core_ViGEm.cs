@@ -164,8 +164,16 @@ namespace Core_ViGEm
             private Dictionary<string, DeviceHandler[]> deviceHandlers = new Dictionary<string, DeviceHandler[]>(StringComparer.OrdinalIgnoreCase);
             public OutputDevicesHandler()
             {
-                deviceHandlers["xb360"] = new Xb360Handler[1] { new Xb360Handler(new DeviceClassDescriptor() { classIdentifier = "xb360", classHumanName = "Xbox 360" } ,0) };
-                deviceHandlers["ds4"] = new DS4Handler[1] { new DS4Handler(new DeviceClassDescriptor() { classIdentifier = "ds4", classHumanName = "DS4" } ,0) };
+                deviceHandlers["xb360"] = new Xb360Handler[4];
+                for (int xb360Index = 0; xb360Index < 4; xb360Index++)
+                {
+                    deviceHandlers["xb360"][xb360Index] = new Xb360Handler(new DeviceClassDescriptor() { classIdentifier = "xb360", classHumanName = "Xbox 360" }, xb360Index);
+                }
+                deviceHandlers["ds4"] = new DS4Handler[4];
+                for (int ds4Index = 0; ds4Index < 4; ds4Index++)
+                {
+                    deviceHandlers["ds4"][ds4Index] = new DS4Handler(new DeviceClassDescriptor() { classIdentifier = "ds4", classHumanName = "DS4" }, ds4Index);
+                }
             }
 
             public bool SubscribeOutput(OutputSubscriptionRequest subReq)
