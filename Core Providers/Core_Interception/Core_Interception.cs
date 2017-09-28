@@ -167,6 +167,16 @@ namespace Core_Interception
             return providerReport;
         }
 
+        public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
+        {
+            return null;
+        }
+
+        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
+        {
+            return null;
+        }
+
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
             bool ret = false;

@@ -70,6 +70,16 @@ namespace Core_ViGEm
             return providerReport;
         }
 
+        public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
+        {
+            return null;
+        }
+
+        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
+        {
+            return devicesHandler.GetOutputDeviceReport(subReq);
+        }
+
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
             if (!isLive)
@@ -216,6 +226,16 @@ namespace Core_ViGEm
                     
                 }
                 return report;
+            }
+
+            public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
+            {
+                if (HasHandler(subReq))
+                {
+                    var handler = GetHandler(subReq);
+                    return handler.GetDeviceReport();
+                }
+                return null;
             }
 
             private bool HasHandler(OutputSubscriptionRequest subReq)

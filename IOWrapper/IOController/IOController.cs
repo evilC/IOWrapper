@@ -97,6 +97,16 @@ namespace IOWrapper
             return list;
         }
 
+        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
+        {
+            var provider = GetProvider(subReq.ProviderDescriptor.ProviderName);
+            if (provider != null)
+            {
+                return provider.GetOutputDeviceReport(subReq);
+            }
+            return null;
+        }
+
         public bool SubscribeInput(InputSubscriptionRequest _subReq)
         {
             // Clone subreq before passing to provider, so if it gets altered outside, it does not affect the copy

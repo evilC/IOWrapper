@@ -105,6 +105,16 @@ namespace Core_Tobii_Interaction
             return null;
         }
 
+        public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
+        {
+            return null;
+        }
+
+        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
+        {
+            return null;
+        }
+
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
             return false;

@@ -259,6 +259,16 @@ namespace SharpDX_XInput
             return null;
         }
 
+        public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
+        {
+            return null;
+        }
+
+        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
+        {
+            return null;
+        }
+
         private void QueryDevices()
         {
             providerReport = new ProviderReport() {

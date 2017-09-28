@@ -11,6 +11,8 @@ namespace Providers
 
         ProviderReport GetInputList();
         ProviderReport GetOutputList();
+        DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq);
+        DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq);
 
         bool SetProfileState(Guid profileGuid, bool state);
         bool SubscribeInput(InputSubscriptionRequest subReq);
