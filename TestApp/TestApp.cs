@@ -23,7 +23,8 @@ namespace TestApp
 
 class Tester
 {
-    private OutputSubscriptionRequest vJoyOutputSubReq;
+    private OutputSubscriptionRequest vJoyOutputSubReq1;
+    private OutputSubscriptionRequest vJoyOutputSubReq2;
     private OutputSubscriptionRequest interceptionKeyboardOutputSubReq;
     private OutputSubscriptionRequest interceptionMouseOutputSubReq;
     private OutputSubscriptionRequest viGemXboxOutputSubReq1;
@@ -64,7 +65,7 @@ class Tester
         // Get handle to 1st vJoy device
         try { vjoyDeviceHandle = outputList["Core_vJoyInterfaceWrap"].Devices.FirstOrDefault().DeviceDescriptor.DeviceHandle; }
         catch { return; }
-        vJoyOutputSubReq = new OutputSubscriptionRequest()
+        vJoyOutputSubReq1 = new OutputSubscriptionRequest()
         {
             SubscriptionDescriptor = new SubscriptionDescriptor()
             {
@@ -76,7 +77,25 @@ class Tester
                 DeviceHandle = vjoyDeviceHandle
             },
         };
-        iow.SubscribeOutput(vJoyOutputSubReq);
+        ret = iow.SubscribeOutput(vJoyOutputSubReq1);
+        
+        vJoyOutputSubReq2 = new OutputSubscriptionRequest()
+        {
+            SubscriptionDescriptor = new SubscriptionDescriptor()
+            {
+                SubscriberGuid = Guid.NewGuid(),
+            },
+            ProviderDescriptor = vjoyProvider,
+            DeviceDescriptor = new DeviceDescriptor()
+            {
+                DeviceHandle = "1"
+            },
+        };
+        ret = iow.SubscribeOutput(vJoyOutputSubReq2);
+
+        //ret = iow.UnsubscribeOutput(vJoyOutputSubReq1);
+        //ret = iow.UnsubscribeOutput(vJoyOutputSubReq2);
+        
         #endregion
 
         #region DirectInput
@@ -152,7 +171,7 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Button 1 Value: " + value);
-                iow.SetOutputstate(vJoyOutputSubReq, buttonOneDescriptor, value);
+                iow.SetOutputstate(vJoyOutputSubReq1, buttonOneDescriptor, value);
                 //iow.SetOutputstate(vJoyOutputSubReq, povOneUpDescriptor, value);
                 if (value == 1)
                 {
@@ -184,7 +203,7 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("Axis 0 Value: " + value);
-                iow.SetOutputstate(vJoyOutputSubReq, axisOneDescriptor, value);
+                iow.SetOutputstate(vJoyOutputSubReq1, axisOneDescriptor, value);
             })
         };
         //iow.SubscribeInput(sub2);
@@ -213,7 +232,7 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("XInput Axis 0 Value: " + value);
-                iow.SetOutputstate(vJoyOutputSubReq, axisOneDescriptor, value);
+                iow.SetOutputstate(vJoyOutputSubReq1, axisOneDescriptor, value);
             })
         };
         //iow.SubscribeInput(xinputAxis);
@@ -239,7 +258,7 @@ class Tester
             Callback = new Action<int>((value) =>
             {
                 Console.WriteLine("XInput Button 0 Value: " + value);
-                iow.SetOutputstate(vJoyOutputSubReq, buttonTwoDescriptor, value);
+                iow.SetOutputstate(vJoyOutputSubReq1, buttonTwoDescriptor, value);
             })
         };
         //ret = iow.SubscribeInput(xinputButton);
@@ -265,7 +284,7 @@ class Tester
             {
                 Console.WriteLine("XInput Button 0 Value: " + value);
                 //iow.SetOutputstate(vJoyOutputSubReq, buttonTwoDescriptor, value);
-                iow.SetOutputstate(vJoyOutputSubReq, povOneUpDescriptor, value);
+                iow.SetOutputstate(vJoyOutputSubReq1, povOneUpDescriptor, value);
             })
         };
         //ret = iow.SubscribeInput(xinputPov);
@@ -438,7 +457,7 @@ class Tester
             }
         };
         //iow.SubscribeOutput(viGemXboxOutputSubReq1);
-        //var test = iow.GetOutputDeviceReport(viGemXboxOutputSubReq1);
+        var test = iow.GetOutputDeviceReport(viGemXboxOutputSubReq1);
 
         viGemXboxOutputSubReq2 = new OutputSubscriptionRequest()
         {
@@ -459,6 +478,9 @@ class Tester
         //iow.SetOutputstate(viGemXboxOutputSubReq1, axisOneDescriptor, 32767);
         //iow.SetOutputstate(viGemXboxOutputSubReq2, buttonOneDescriptor, 1);
         //iow.SetOutputstate(viGemXboxOutputSubReq2, axisOneDescriptor, -32768);
+
+        //iow.UnsubscribeOutput(viGemXboxOutputSubReq1);
+        //iow.UnsubscribeOutput(viGemXboxOutputSubReq2);
 
         viGemDs4OutputSubReq = new OutputSubscriptionRequest()
         {
