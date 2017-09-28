@@ -26,7 +26,8 @@ class Tester
     private OutputSubscriptionRequest vJoyOutputSubReq;
     private OutputSubscriptionRequest interceptionKeyboardOutputSubReq;
     private OutputSubscriptionRequest interceptionMouseOutputSubReq;
-    private OutputSubscriptionRequest viGemXboxOutputSubReq;
+    private OutputSubscriptionRequest viGemXboxOutputSubReq1;
+    private OutputSubscriptionRequest viGemXboxOutputSubReq2;
     private OutputSubscriptionRequest viGemDs4OutputSubReq;
 
     bool defaultProfileState = false;
@@ -423,7 +424,7 @@ class Tester
         #endregion
 
         #region ViGEm
-        viGemXboxOutputSubReq = new OutputSubscriptionRequest()
+        viGemXboxOutputSubReq1 = new OutputSubscriptionRequest()
         {
             SubscriptionDescriptor = new SubscriptionDescriptor()
             {
@@ -436,7 +437,28 @@ class Tester
                 DeviceInstance = 0
             }
         };
-        //iow.SubscribeOutput(viGemXboxOutputSubReq);
+        //iow.SubscribeOutput(viGemXboxOutputSubReq1);
+        //var test = iow.GetOutputDeviceReport(viGemXboxOutputSubReq1);
+
+        viGemXboxOutputSubReq2 = new OutputSubscriptionRequest()
+        {
+            SubscriptionDescriptor = new SubscriptionDescriptor()
+            {
+                SubscriberGuid = Guid.NewGuid(),
+            },
+            ProviderDescriptor = vigemProvider,
+            DeviceDescriptor = new DeviceDescriptor()
+            {
+                DeviceHandle = "xb360",
+                DeviceInstance = 1
+            }
+        };
+        //iow.SubscribeOutput(viGemXboxOutputSubReq2);
+
+        //iow.SetOutputstate(viGemXboxOutputSubReq1, buttonOneDescriptor, 1);
+        //iow.SetOutputstate(viGemXboxOutputSubReq1, axisOneDescriptor, 32767);
+        //iow.SetOutputstate(viGemXboxOutputSubReq2, buttonOneDescriptor, 1);
+        //iow.SetOutputstate(viGemXboxOutputSubReq2, axisOneDescriptor, -32768);
 
         viGemDs4OutputSubReq = new OutputSubscriptionRequest()
         {
