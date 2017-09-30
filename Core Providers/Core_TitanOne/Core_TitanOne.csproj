@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D9447B59-4B62-4BD8-BE91-5F5AB1D8F1BD}</ProjectGuid>
+    <ProjectGuid>{081E0DB4-2B91-418E-A609-C1B70DDDFECB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IOWrapper</RootNamespace>
-    <AssemblyName>IOWrapper</AssemblyName>
+    <RootNamespace>Core_TitanOne</RootNamespace>
+    <AssemblyName>Core_TitanOne</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -29,9 +29,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -44,55 +41,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GenericMEFPluginLoader.cs" />
-    <Compile Include="IOController.cs" />
+    <Compile Include="Core_TitanOne.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\..\Core Providers\Core_Interception\Core_Interception.csproj">
-      <Project>{3473e273-6859-49b3-a782-e4c7a5bf51f4}</Project>
-      <Name>Core_Interception</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core Providers\Core_TitanOne\Core_TitanOne.csproj">
-      <Project>{081e0db4-2b91-418e-a609-c1b70dddfecb}</Project>
-      <Name>Core_TitanOne</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core Providers\Core_Tobii_Interaction\Core_Tobii_Interaction.csproj">
-      <Project>{4cba4863-015b-43e4-804b-199a198dd046}</Project>
-      <Name>Core_Tobii_Interaction</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core Providers\Core_ViGEm\Core_ViGEm.csproj">
-      <Project>{2a15af30-2919-42b1-95b4-ce0bfdb924fb}</Project>
-      <Name>Core_ViGEm</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core Providers\Core_vJoyInterfaceWrap\Core_vJoyInterfaceWrap.csproj">
-      <Project>{10a9a35a-9cec-4271-ad68-65a9661638f6}</Project>
-      <Name>Core_vJoyInterfaceWrap</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core Providers\SharpDX_DirectInput\SharpDX_DirectInput.csproj">
-      <Project>{aa825875-9cb0-4973-bb5c-cfc53962d1c2}</Project>
-      <Name>SharpDX_DirectInput</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core Providers\SharpDX_XInput\SharpDX_XInput.csproj">
-      <Project>{2072b5a7-8069-433c-b4db-e150c26e9a49}</Project>
-      <Name>SharpDX_XInput</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PluginContracts\Providers.csproj">
+    <ProjectReference Include="..\..\IOWrapper\PluginContracts\Providers.csproj">
       <Project>{f6eaf2bc-f362-4ecd-94e5-617ca37a4210}</Project>
       <Name>Providers</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)*.dll" "$(ProjectDir)"
-
-
-</PostBuildEvent>
+    <PreBuildEvent>IF EXIST "$(ProjectDir)Dependencies\*" xcopy /Y "$(ProjectDir)Dependencies\*" "$(TargetDir)"</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PostBuildEvent>if exist "$(SolutionDir)..\Built Providers\$(ProjectName)" rmdir "$(SolutionDir)..\Built Providers\$(ProjectName)" /s /q
+mkdir "$(SolutionDir)..\Built Providers\$(ProjectName)"
+xcopy /Y "$(TargetDir)*.dll" "$(SolutionDir)..\Built Providers\$(ProjectName)"
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

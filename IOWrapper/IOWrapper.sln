@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core_ViGEm", "..\Core Provi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TobiiLean", "..\TobiiLean\TobiiLean.csproj", "{73587511-24E0-41A4-822D-38131484653C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core_TitanOne", "..\Core Providers\Core_TitanOne\Core_TitanOne.csproj", "{081E0DB4-2B91-418E-A609-C1B70DDDFECB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{73587511-24E0-41A4-822D-38131484653C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73587511-24E0-41A4-822D-38131484653C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73587511-24E0-41A4-822D-38131484653C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{081E0DB4-2B91-418E-A609-C1B70DDDFECB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{081E0DB4-2B91-418E-A609-C1B70DDDFECB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{081E0DB4-2B91-418E-A609-C1B70DDDFECB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{081E0DB4-2B91-418E-A609-C1B70DDDFECB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -88,5 +94,6 @@ Global
 		{3473E273-6859-49B3-A782-E4C7A5BF51F4} = {0F3E0065-6DC2-4310-A7C4-E81283247A48}
 		{4CBA4863-015B-43E4-804B-199A198DD046} = {0F3E0065-6DC2-4310-A7C4-E81283247A48}
 		{2A15AF30-2919-42B1-95B4-CE0BFDB924FB} = {0F3E0065-6DC2-4310-A7C4-E81283247A48}
+		{081E0DB4-2B91-418E-A609-C1B70DDDFECB} = {0F3E0065-6DC2-4310-A7C4-E81283247A48}
 	EndGlobalSection
 EndGlobal
