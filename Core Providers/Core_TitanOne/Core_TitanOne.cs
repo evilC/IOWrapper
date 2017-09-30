@@ -75,22 +75,11 @@ namespace Core_TitanOne
                 },
             };
 
-            return providerReport;
-        }
-
-        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
-        {
-            var deviceReport = new DeviceReport()
+            foreach (var deviceClass in outputHandlers)
             {
-                DeviceName = "Titan One Xbox 360",
-                DeviceDescriptor = new DeviceDescriptor()
-                {
-                    DeviceHandle = "xb360",
-                    DeviceInstance = 0
-                }
-            };
-
-            return deviceReport;
+                providerReport.Devices.Add(deviceClass.Value.GetOutputReport());
+            }
+            return providerReport;
         }
 
         public void RefreshLiveState()
