@@ -1,4 +1,5 @@
-﻿using Providers;
+﻿using Core_TitanOne.Output;
+using Providers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -15,6 +16,10 @@ namespace Core_TitanOne
     public class Core_TitanOne : IProvider
     {
         sbyte[] outputState = new sbyte[GCMAPIConstants.Output];
+        private Dictionary<string, OutputHandler> outputHandlers = new Dictionary<string, OutputHandler>(StringComparer.OrdinalIgnoreCase)
+        {
+            {"ds4", new DS4OutputHandler() }
+        };
 
         private bool Loaded;
 
@@ -30,6 +35,14 @@ namespace Core_TitanOne
         {
             Dispose(true);
         }
+
+        #region Querying
+
+        #endregion
+
+        #region Output Devices
+
+        #endregion
 
         #region IProvider memebers
         public bool IsLive { get { return isLive; } }
@@ -49,14 +62,35 @@ namespace Core_TitanOne
             return null;
         }
 
-        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
-        {
-            return null;
-        }
-
         public ProviderReport GetOutputList()
         {
-            return null;
+            var providerReport = new ProviderReport()
+            {
+                Title = "Titan One",
+                Description = "Allows interaction with the ConsoleTuner Titan One device",
+                API = "TitanOne",
+                ProviderDescriptor = new ProviderDescriptor()
+                {
+                    ProviderName = "Core_TitanOne"
+                },
+            };
+
+            return providerReport;
+        }
+
+        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
+        {
+            var deviceReport = new DeviceReport()
+            {
+                DeviceName = "Titan One Xbox 360",
+                DeviceDescriptor = new DeviceDescriptor()
+                {
+                    DeviceHandle = "xb360",
+                    DeviceInstance = 0
+                }
+            };
+
+            return deviceReport;
         }
 
         public void RefreshLiveState()
@@ -66,6 +100,17 @@ namespace Core_TitanOne
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
+            if (outputHandlers.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
+            {
+                var slot = outputHandlers[subReq.DeviceDescriptor.DeviceHandle].GetSlot(bindingDescriptor);
+                if (slot != null)
+                {
+                    var value = OutputHandler.GetValue(bindingDescriptor, state);
+                    outputState[(int)slot] = value;
+                    Write(outputState);
+                    return true;
+                }
+            }
             return false;
         }
 
@@ -81,7 +126,7 @@ namespace Core_TitanOne
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            return false;
+            return true;    // No subscription required
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
@@ -91,7 +136,7 @@ namespace Core_TitanOne
 
         public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            return false;
+            return true;
         }
         #endregion
 
@@ -217,20 +262,20 @@ namespace Core_TitanOne
 
 #pragma warning disable 0649
 
-        private struct GCMAPIConstants
+        public struct GCMAPIConstants
         {
             public const int Input = 30;
             public const int Output = 36;
         }
 
-        private struct GCMAPIStatus
+        struct GCMAPIStatus
         {
             public sbyte Value;
             public sbyte Previous;
             public int Holding;
         }
 
-        private struct GCMAPIReport
+        struct GCMAPIReport
         {
             public byte Console;
             public byte Controller;
