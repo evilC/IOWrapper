@@ -18,7 +18,8 @@ namespace Core_TitanOne
         sbyte[] outputState = new sbyte[GCMAPIConstants.Output];
         private Dictionary<string, OutputHandler> outputHandlers = new Dictionary<string, OutputHandler>(StringComparer.OrdinalIgnoreCase)
         {
-            {"ds4", new DS4OutputHandler() }
+            {"ds4", new DS4OutputHandler() },
+            {"xb360", new Xb360OutputHandler() },
         };
 
         public Core_TitanOne()

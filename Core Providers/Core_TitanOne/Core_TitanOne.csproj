@@ -44,6 +44,7 @@
     <Compile Include="Core_TitanOne.cs" />
     <Compile Include="Output\OutputHandler.cs" />
     <Compile Include="Output\DS4.cs" />
+    <Compile Include="Output\Xb360.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
