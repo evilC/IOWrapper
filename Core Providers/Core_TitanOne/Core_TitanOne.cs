@@ -24,8 +24,6 @@ namespace Core_TitanOne
         public Core_TitanOne()
         {
             InitLibrary();
-            //outputState[19] = 100;
-            //Write(outputState);
         }
 
         ~Core_TitanOne()
