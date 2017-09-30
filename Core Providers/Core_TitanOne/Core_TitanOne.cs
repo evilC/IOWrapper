@@ -21,9 +21,6 @@ namespace Core_TitanOne
             {"ds4", new DS4OutputHandler() }
         };
 
-        private bool Loaded;
-
-
         public Core_TitanOne()
         {
             InitLibrary();
@@ -82,9 +79,14 @@ namespace Core_TitanOne
             return providerReport;
         }
 
+        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
+        {
+            return outputHandlers[subReq.DeviceDescriptor.DeviceHandle].GetOutputReport();
+        }
+
         public void RefreshLiveState()
         {
-
+            InitLibrary();
         }
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
@@ -195,7 +197,7 @@ namespace Core_TitanOne
             CalcPressTime = GetFunction<GCAPI_CalcPressTime>(hModule, "gcapi_CalcPressTime");
             //Console.WriteLine((CalcPressTime == null ? "Failed to obtain function '" : "Obtained function '") + "GCAPI_CalcPressTime" + "'");
 
-            Loaded = Load();
+            isLive = Load();
         }
 
 
