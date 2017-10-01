@@ -316,6 +316,7 @@ namespace Core_ViGEm
             public bool AddSubscription(OutputSubscriptionRequest subReq)
             {
                 subscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
+                Log("VIGEM: Adding subscription to {0} controller # {1}", subReq.DeviceDescriptor.DeviceHandle, subReq.DeviceDescriptor.DeviceInstance);
                 IsRequested = true;
                 SetAcquireState();
                 return true;
@@ -327,7 +328,7 @@ namespace Core_ViGEm
                 {
                     subscriptions.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
                 }
-
+                Log("VIGEM: Removing subscription to {0} controller # {1}", subReq.DeviceDescriptor.DeviceHandle, subReq.DeviceDescriptor.DeviceInstance);
                 IsRequested = HasSubscriptions();
                 SetAcquireState();
                 return true;
