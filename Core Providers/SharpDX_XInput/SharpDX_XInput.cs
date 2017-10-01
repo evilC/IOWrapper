@@ -31,7 +31,8 @@ namespace SharpDX_XInput
         private static List<Guid> ActiveProfiles = new List<Guid>();
         //private static List<> PluggedInControllers
 
-        ProviderReport providerReport;
+        //ProviderReport providerReport;
+        private List<DeviceReport> deviceReports;
 
         private static List<string> buttonNames = new List<string>() { "A", "B", "X", "Y", "LB", "RB", "LS", "RS", "Back", "Start" };
         private static List<string> axisNames = new List<string>() { "LX", "LY", "RX", "RY", "LT", "RT"};
@@ -251,6 +252,18 @@ namespace SharpDX_XInput
 
         public ProviderReport GetInputList()
         {
+            var providerReport = new ProviderReport()
+            {
+                Title = "XInput (Core)",
+                Description = "Reads Xbox gamepads",
+                API = "XInput",
+                ProviderDescriptor = new ProviderDescriptor()
+                {
+                    ProviderName = ProviderName,
+                },
+                Devices = deviceReports
+            };
+
             return providerReport;
         }
 
@@ -261,7 +274,7 @@ namespace SharpDX_XInput
 
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
         {
-            return null;
+            return deviceReports[subReq.DeviceDescriptor.DeviceInstance];
         }
 
         public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
@@ -271,21 +284,12 @@ namespace SharpDX_XInput
 
         private void QueryDevices()
         {
-            providerReport = new ProviderReport() {
-                Title = "XInput (Core)",
-                Description = "Reads Xbox gamepads",
-                API = "XInput",
-                ProviderDescriptor = new ProviderDescriptor()
-                {
-                    ProviderName = ProviderName,
-                }
-            };
             for (int i = 0; i < 4; i++)
             {
                 var ctrlr = new Controller((UserIndex)i);
                 //if (ctrlr.IsConnected)
                 //{
-                    providerReport.Devices.Add(BuildXInputDevice(i));
+                    deviceReports.Add(BuildXInputDevice(i));
                 //}
             }
         }
