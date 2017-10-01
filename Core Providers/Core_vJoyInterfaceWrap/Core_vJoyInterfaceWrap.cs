@@ -23,6 +23,8 @@ namespace Core_vJoyInterfaceWrap
             { { 0, "X" }, { 1,"Y" }, { 2, "Z" }, { 3, "Rx" }, { 4, "Ry" }, { 5, "Rz" }, { 6, "Sl0" }, { 7, "Sl1" } };
         static private List<BindingReport>[] povBindingInfos = new List<BindingReport>[4];
 
+        private List<DeviceReport> deviceReports;
+
         public Core_vJoyInterfaceWrap()
         {
             for (uint i = 0; i < 16; i++)
@@ -46,6 +48,7 @@ namespace Core_vJoyInterfaceWrap
                     });
                 }
             }
+            QueryDevices();
         }
 
         ~Core_vJoyInterfaceWrap()
@@ -106,7 +109,91 @@ namespace Core_vJoyInterfaceWrap
                 {
                     ProviderName = ProviderName,
                 },
+                Devices = deviceReports
             };
+            return pr;
+        }
+
+        public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
+        {
+            return null;
+        }
+
+        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
+        {
+            foreach (var deviceReport in deviceReports)
+            {
+                if (deviceReport.DeviceDescriptor.DeviceHandle == subReq.DeviceDescriptor.DeviceHandle && deviceReport.DeviceDescriptor.DeviceInstance == subReq.DeviceDescriptor.DeviceInstance)
+                {
+                    return deviceReport;
+                }
+            }
+            return null;
+        }
+
+        public bool SubscribeInput(InputSubscriptionRequest subReq)
+        {
+            return false;
+        }
+
+        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
+        {
+            return false;
+        }
+
+        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        {
+            var devId = DevIdFromHandle(subReq.DeviceDescriptor.DeviceHandle);
+            vJoyDevices[devId].Add(subReq);
+            subscriptionToDevice.Add(subReq.SubscriptionDescriptor.SubscriberGuid, devId);
+            return true;
+        }
+
+        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        {
+            uint devId = subscriptionToDevice[subReq.SubscriptionDescriptor.SubscriberGuid];
+            vJoyDevices[devId].Remove(subReq);
+            subscriptionToDevice.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
+            return true;
+        }
+
+        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
+        {
+            var devId = subscriptionToDevice[subReq.SubscriptionDescriptor.SubscriberGuid];
+            if (!vJoyDevices[devId].IsAcquired)
+            {
+                return false;
+            }
+            switch (bindingDescriptor.Type)
+            {
+                case BindingType.Axis:
+                    return vJ.SetAxis((state + 32768) / 2, devId + 1, AxisIdToUsage[bindingDescriptor.Index]);
+
+                case BindingType.Button:
+                    return vJ.SetBtn(state == 1, devId + 1, (uint)(bindingDescriptor.Index + 1));
+
+                case BindingType.POV:
+                    int pov = (int)(Math.Floor((decimal)(bindingDescriptor.Index / 4)));
+                    int dir = bindingDescriptor.Index % 4;
+                    //Log("vJoy POV output requested - POV {0}, Dir {1}, State {2}", pov, dir, state);
+                    vJoyDevices[devId].SetPovState(pov, dir, state);
+                    break;
+
+                default:
+                    break;
+            }
+            return false;
+        }
+
+        public void RefreshLiveState()
+        {
+
+        }
+        #endregion
+
+        private void QueryDevices()
+        {
+            deviceReports = new List<DeviceReport>();
             for (uint i = 0; i < 16; i++)
             {
                 var id = i + 1;
@@ -195,81 +282,11 @@ namespace Core_vJoyInterfaceWrap
                         device.Nodes.Add(povsNode);
                     }
 
-                    pr.Devices.Add(device);
+                    deviceReports.Add(device);
                 }
             }
-            return pr;
-        }
-
-        public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
-        {
-            return null;
-        }
-
-        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
-        {
-            return null;
-        }
-
-        public bool SubscribeInput(InputSubscriptionRequest subReq)
-        {
-            return false;
-        }
-
-        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
-        {
-            return false;
-        }
-
-        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
-        {
-            var devId = DevIdFromHandle(subReq.DeviceDescriptor.DeviceHandle);
-            vJoyDevices[devId].Add(subReq);
-            subscriptionToDevice.Add(subReq.SubscriptionDescriptor.SubscriberGuid, devId);
-            return true;
-        }
-
-        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
-        {
-            uint devId = subscriptionToDevice[subReq.SubscriptionDescriptor.SubscriberGuid];
-            vJoyDevices[devId].Remove(subReq);
-            subscriptionToDevice.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
-            return true;
-        }
-
-        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
-        {
-            var devId = subscriptionToDevice[subReq.SubscriptionDescriptor.SubscriberGuid];
-            if (!vJoyDevices[devId].IsAcquired)
-            {
-                return false;
-            }
-            switch (bindingDescriptor.Type)
-            {
-                case BindingType.Axis:
-                    return vJ.SetAxis((state + 32768) / 2, devId + 1, AxisIdToUsage[bindingDescriptor.Index]);
-
-                case BindingType.Button:
-                    return vJ.SetBtn(state == 1, devId + 1, (uint)(bindingDescriptor.Index + 1));
-
-                case BindingType.POV:
-                    int pov = (int)(Math.Floor((decimal)(bindingDescriptor.Index / 4)));
-                    int dir = bindingDescriptor.Index % 4;
-                    //Log("vJoy POV output requested - POV {0}, Dir {1}, State {2}", pov, dir, state);
-                    vJoyDevices[devId].SetPovState(pov, dir, state);
-                    break;
-
-                default:
-                    break;
-            }
-            return false;
-        }
-
-        public void RefreshLiveState()
-        {
 
         }
-        #endregion
 
         private uint DevIdFromHandle(string handle)
         {
