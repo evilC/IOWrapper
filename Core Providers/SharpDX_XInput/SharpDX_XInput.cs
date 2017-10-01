@@ -284,6 +284,7 @@ namespace SharpDX_XInput
 
         private void QueryDevices()
         {
+            deviceReports = new List<DeviceReport>();
             for (int i = 0; i < 4; i++)
             {
                 var ctrlr = new Controller((UserIndex)i);
