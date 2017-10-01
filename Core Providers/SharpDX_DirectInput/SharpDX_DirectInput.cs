@@ -34,7 +34,8 @@ namespace SharpDX_DirectInput
         private static List<Guid> ActiveProfiles = new List<Guid>();
 
         private static Dictionary<string, Guid> handleToInstanceGuid;
-        private ProviderReport providerReport;
+        //private ProviderReport providerReport;
+        private List<DeviceReport> deviceReports;
 
         static private List<BindingReport>[] povBindingInfos = new List<BindingReport>[4];
 
@@ -165,6 +166,18 @@ namespace SharpDX_DirectInput
 
         public ProviderReport GetInputList()
         {
+            var providerReport = new ProviderReport()
+            {
+                Title = "DirectInput (Core)",
+                Description = "Allows reading of generic joysticks.",
+                API = "DirectInput",
+                ProviderDescriptor = new ProviderDescriptor()
+                {
+                    ProviderName = ProviderName,
+                },
+                Devices = deviceReports
+            };
+
             return providerReport;
         }
 
@@ -175,6 +188,13 @@ namespace SharpDX_DirectInput
 
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
         {
+            foreach (var deviceReport in deviceReports)
+            {
+                if (deviceReport.DeviceDescriptor.DeviceHandle == subReq.DeviceDescriptor.DeviceHandle && deviceReport.DeviceDescriptor.DeviceInstance == subReq.DeviceDescriptor.DeviceInstance)
+                {
+                    return deviceReport;
+                }
+            }
             return null;
         }
 
@@ -255,16 +275,17 @@ namespace SharpDX_DirectInput
         #region Device Querying
         private void queryDevices()
         {
-            providerReport = new ProviderReport() {
-                Title = "DirectInput (Core)",
-                Description = "Allows reading of generic joysticks.",
-                API = "DirectInput",
-                ProviderDescriptor = new ProviderDescriptor()
-                {
-                    ProviderName = ProviderName,
-                },
-            };
+            //providerReport = new ProviderReport() {
+            //    Title = "DirectInput (Core)",
+            //    Description = "Allows reading of generic joysticks.",
+            //    API = "DirectInput",
+            //    ProviderDescriptor = new ProviderDescriptor()
+            //    {
+            //        ProviderName = ProviderName,
+            //    },
+            //};
             handleToInstanceGuid = new Dictionary<string, Guid>();
+            deviceReports = new List<DeviceReport>();
 
             // ToDo: device list should be returned in handle order for duplicate devices
             var devices = directInput.GetDevices();
@@ -359,7 +380,8 @@ namespace SharpDX_DirectInput
                 }
                 device.Nodes.Add(povsInfo);
 
-                providerReport.Devices.Add(device);
+                deviceReports.Add(device);
+                //providerReport.Devices.Add(device);
 
                 handleToInstanceGuid.Add(handle, deviceInstance.InstanceGuid);
 
