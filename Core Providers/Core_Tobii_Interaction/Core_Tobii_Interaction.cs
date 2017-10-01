@@ -19,10 +19,12 @@ namespace Core_Tobii_Interaction
         //private GazePointHander gazePointHandler = new GazePointHander();
         private Dictionary<string, StreamHandler> streamHandlers = new Dictionary<string, StreamHandler>(StringComparer.OrdinalIgnoreCase);
         private List<string> sixDofAxisNames = new List<string>() { "X", "Y", "Z", "Rx", "Ry", "Rz" };
-        private ProviderReport providerReport;
+        //private ProviderReport providerReport;
+        private List<DeviceReport> deviceReports;
 
         public Core_Tobii_Interaction()
         {
+            QueryDevices();
             streamHandlers.Add("GazePoint", new GazePointHandler());
             streamHandlers.Add("HeadPose", new HeadPoseHandler());
         }
@@ -34,7 +36,7 @@ namespace Core_Tobii_Interaction
 
         public ProviderReport GetInputList()
         {
-            providerReport = new ProviderReport() {
+            var providerReport = new ProviderReport() {
                 Title = "Tobii Interaction (Core)",
                 Description = "Tracks head and eye movement. Requires a Tobii device, see https://tobiigaming.com/",
                 API = "Tobii.Interaction",
@@ -42,61 +44,8 @@ namespace Core_Tobii_Interaction
                 {
                     ProviderName = ProviderName,
                 },
+                Devices = deviceReports
             };
-
-            var gazeDevice = new DeviceReport()
-            {
-                DeviceName = "Tobii Gaze Point",
-                DeviceDescriptor = new DeviceDescriptor()
-                {
-                    DeviceHandle = "GazePoint",
-                },
-            };
-
-            var gazeNode = new DeviceReportNode() { Title = "Axes" };
-            for (int i = 0; i < 3; i++)
-            {
-                gazeNode.Bindings.Add(new BindingReport()
-                {
-                    Title = sixDofAxisNames[i],
-                    Category = BindingCategory.Signed,
-                    BindingDescriptor = new BindingDescriptor()
-                    {
-                        Index = i,
-                        Type = BindingType.Axis,
-                    }
-                });
-            }
-            gazeDevice.Nodes.Add(gazeNode);
-            providerReport.Devices.Add(gazeDevice);
-
-
-            var poseDevice = new DeviceReport()
-            {
-                DeviceName = "Tobii Head Pose",
-                DeviceDescriptor = new DeviceDescriptor()
-                {
-                    DeviceHandle = "HeadPose",
-                },
-            };
-
-            var poseNode = new DeviceReportNode() { Title = "Axes" };
-            for (int i = 0; i < 2; i++)
-            {
-                poseNode.Bindings.Add(new BindingReport()
-                {
-                    Title = sixDofAxisNames[i],
-                    Category = BindingCategory.Signed,
-                    BindingDescriptor = new BindingDescriptor()
-                    {
-                        Index = i,
-                        Type = BindingType.Axis,
-                    }
-                });
-            }
-            poseDevice.Nodes.Add(poseNode);
-            providerReport.Devices.Add(poseDevice);
-
             return providerReport;
         }
 
@@ -107,6 +56,13 @@ namespace Core_Tobii_Interaction
 
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
         {
+            foreach (var deviceReport in deviceReports)
+            {
+                if (deviceReport.DeviceDescriptor.DeviceHandle == subReq.DeviceDescriptor.DeviceHandle && deviceReport.DeviceDescriptor.DeviceInstance == subReq.DeviceDescriptor.DeviceInstance)
+                {
+                    return deviceReport;
+                }
+            }
             return null;
         }
 
@@ -198,6 +154,65 @@ namespace Core_Tobii_Interaction
         private static void Log(string formatStr, params object[] arguments)
         {
             Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
+        }
+
+        private void QueryDevices()
+        {
+            deviceReports = new List<DeviceReport>();
+
+            var gazeDevice = new DeviceReport()
+            {
+                DeviceName = "Tobii Gaze Point",
+                DeviceDescriptor = new DeviceDescriptor()
+                {
+                    DeviceHandle = "GazePoint",
+                },
+            };
+
+            var gazeNode = new DeviceReportNode() { Title = "Axes" };
+            for (int i = 0; i < 3; i++)
+            {
+                gazeNode.Bindings.Add(new BindingReport()
+                {
+                    Title = sixDofAxisNames[i],
+                    Category = BindingCategory.Signed,
+                    BindingDescriptor = new BindingDescriptor()
+                    {
+                        Index = i,
+                        Type = BindingType.Axis,
+                    }
+                });
+            }
+            gazeDevice.Nodes.Add(gazeNode);
+            deviceReports.Add(gazeDevice);
+
+
+            var poseDevice = new DeviceReport()
+            {
+                DeviceName = "Tobii Head Pose",
+                DeviceDescriptor = new DeviceDescriptor()
+                {
+                    DeviceHandle = "HeadPose",
+                },
+            };
+
+            var poseNode = new DeviceReportNode() { Title = "Axes" };
+            for (int i = 0; i < 2; i++)
+            {
+                poseNode.Bindings.Add(new BindingReport()
+                {
+                    Title = sixDofAxisNames[i],
+                    Category = BindingCategory.Signed,
+                    BindingDescriptor = new BindingDescriptor()
+                    {
+                        Index = i,
+                        Type = BindingType.Axis,
+                    }
+                });
+            }
+            poseDevice.Nodes.Add(poseNode);
+            deviceReports.Add(poseDevice);
+
         }
 
         #region Stream Handlers
