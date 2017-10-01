@@ -20,7 +20,8 @@ namespace Core_Interception
 
         bool disposed = false;
         private IntPtr deviceContext;
-        private ProviderReport providerReport;
+        //private ProviderReport providerReport;
+        private List<DeviceReport> deviceReports;
 
         // The thread which handles input detection
         private Thread pollThread;
@@ -158,22 +159,50 @@ namespace Core_Interception
 
         public ProviderReport GetInputList()
         {
-            return providerReport;
+            return GetIOList();
         }
 
         public ProviderReport GetOutputList()
         {
-            //return null;
+            return GetIOList();
+        }
+
+        private ProviderReport GetIOList()
+        {
+            var providerReport = new ProviderReport()
+            {
+                Title = "Interception (Core)",
+                Description = "Supports per-device Keyboard and Mouse Input/Output, with blocking\nRequires custom driver from http://oblita.com/interception",
+                API = "Interception",
+                ProviderDescriptor = new ProviderDescriptor()
+                {
+                    ProviderName = ProviderName,
+                },
+                Devices = deviceReports
+            };
+
             return providerReport;
         }
 
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
         {
-            return null;
+            return GetIODeviceReport(subReq);
         }
 
         public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
         {
+            return GetIODeviceReport(subReq);
+        }
+
+        private DeviceReport GetIODeviceReport(SubscriptionRequest subReq)
+        {
+            foreach (var deviceReport in deviceReports)
+            {
+                if (deviceReport.DeviceDescriptor.DeviceHandle == subReq.DeviceDescriptor.DeviceHandle && deviceReport.DeviceDescriptor.DeviceInstance == subReq.DeviceDescriptor.DeviceInstance)
+                {
+                    return deviceReport;
+                }
+            }
             return null;
         }
 
@@ -306,15 +335,7 @@ namespace Core_Interception
         private void QueryDevices()
         {
             deviceHandleToId = new Dictionary<string, int>();
-            providerReport = new ProviderReport() {
-                Title = "Interception (Core)",
-                Description = "Supports per-device Keyboard and Mouse Input/Output, with blocking\nRequires custom driver from http://oblita.com/interception",
-                API = "Interception",
-                ProviderDescriptor = new ProviderDescriptor()
-                {
-                    ProviderName = ProviderName,
-                },
-            };
+            deviceReports = new List<DeviceReport>();
 
             UpdateKeyList();
             UpdateMouseButtonList();
@@ -334,7 +355,7 @@ namespace Core_Interception
                 if (name != "" && IsKeyboard(i) == 1)
                 {
                     handle = @"Keyboard\" + handle;
-                    providerReport.Devices.Add(new DeviceReport()
+                    deviceReports.Add(new DeviceReport()
                     {
                         DeviceName = name,
                         DeviceDescriptor = new DeviceDescriptor()
@@ -368,7 +389,7 @@ namespace Core_Interception
                 if (name != "" && IsMouse(i) == 1)
                 {
                     handle = @"Mouse\" + handle;
-                    providerReport.Devices.Add(new DeviceReport()
+                    deviceReports.Add(new DeviceReport()
                     {
                         DeviceName = name,
                         DeviceDescriptor = new DeviceDescriptor()
