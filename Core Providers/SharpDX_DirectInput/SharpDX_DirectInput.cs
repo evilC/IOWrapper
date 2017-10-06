@@ -33,7 +33,8 @@ namespace SharpDX_DirectInput
         private Dictionary<string, StickMonitor> MonitoredSticks = new Dictionary<string, StickMonitor>();
         private static List<Guid> ActiveProfiles = new List<Guid>();
 
-        private static Dictionary<string, Guid> handleToInstanceGuid;
+        private static Dictionary<string, List<DeviceInstance>> devicesList;
+
         //private ProviderReport providerReport;
         private List<DeviceReport> deviceReports;
 
@@ -275,113 +276,134 @@ namespace SharpDX_DirectInput
         #region Device Querying
         private void QueryDevices()
         {
-            handleToInstanceGuid = new Dictionary<string, Guid>();
+            devicesList = new Dictionary<string, List<DeviceInstance>>();
+
             deviceReports = new List<DeviceReport>();
 
             // ToDo: device list should be returned in handle order for duplicate devices
-            var devices = directInput.GetDevices();
-            foreach (var deviceInstance in devices)
+            var diDeviceInstances = directInput.GetDevices();
+
+            var unsortedInstances = new Dictionary<string, List<DeviceInstance>>();
+            foreach (var device in diDeviceInstances)
             {
-                if (!IsStickType(deviceInstance))
+                if (!IsStickType(device))
                     continue;
-                var joystick = new Joystick(directInput, deviceInstance.InstanceGuid);
+                var joystick = new Joystick(directInput, device.InstanceGuid);
                 joystick.Acquire();
 
-                var vidpid = string.Format("VID_{0}&PID_{1}"
+                var handle = string.Format("VID_{0}&PID_{1}"
                     , joystick.Properties.VendorId.ToString("X4")
                     , joystick.Properties.ProductId.ToString("X4"));
 
-                string handle = vidpid + "/";
-                var index = GetDeviceOrder(vidpid, deviceInstance.InstanceGuid);
-                handle += index;
-
-                var device = new DeviceReport()
+                if (!unsortedInstances.ContainsKey(handle))
                 {
-                    DeviceName = deviceInstance.ProductName,
-                    DeviceDescriptor = new DeviceDescriptor()
+                    unsortedInstances[handle] = new List<DeviceInstance>();
+                }
+                unsortedInstances[handle].Add(device);
+                joystick.Unacquire();
+            }
+
+            foreach (var diDeviceInstance in unsortedInstances)
+            {
+                devicesList.Add(diDeviceInstance.Key, OrderDevices(diDeviceInstance.Key, diDeviceInstance.Value));
+            }
+
+            foreach (var deviceList in devicesList.Values)
+            {
+                for (int index = 0; index < deviceList.Count; index++)
+                {
+                    var joystick = new Joystick(directInput, deviceList[index].InstanceGuid);
+                    joystick.Acquire();
+
+                    var handle = string.Format("VID_{0}&PID_{1}"
+                        , joystick.Properties.VendorId.ToString("X4")
+                        , joystick.Properties.ProductId.ToString("X4"));
+
+                    var device = new DeviceReport()
                     {
-                        DeviceHandle = handle,
-                    },
-                };
-
-                // ----- Axes -----
-                var axisInfo = new DeviceReportNode()
-                {
-                    Title = "Axes",
-                };
-
-                //var axisInfo = new List<AxisInfo>();
-                for (int i = 0; i < directInputMappings[BindingType.Axis].Count; i++)
-                {
-                    try
-                    {
-                        var deviceInfo = joystick.GetObjectInfoByName(directInputMappings[BindingType.Axis][i].ToString());
-                        axisInfo.Bindings.Add(new BindingReport()
+                        DeviceName = deviceList[index].ProductName,
+                        DeviceDescriptor = new DeviceDescriptor()
                         {
-                            Title = deviceInfo.Name,
-                            Category = BindingCategory.Signed,
+                            DeviceHandle = handle,
+                            DeviceInstance = index
+                        },
+                    };
+
+                    // ----- Axes -----
+                    var axisInfo = new DeviceReportNode()
+                    {
+                        Title = "Axes",
+                    };
+
+                    //var axisInfo = new List<AxisInfo>();
+                    for (int i = 0; i < directInputMappings[BindingType.Axis].Count; i++)
+                    {
+                        try
+                        {
+                            var deviceInfo = joystick.GetObjectInfoByName(directInputMappings[BindingType.Axis][i].ToString());
+                            axisInfo.Bindings.Add(new BindingReport()
+                            {
+                                Title = deviceInfo.Name,
+                                Category = BindingCategory.Signed,
+                                BindingDescriptor = new BindingDescriptor()
+                                {
+                                    Index = i,
+                                    //Name = axisNames[i],
+                                    Type = BindingType.Axis,
+                                }
+                            });
+                        }
+                        catch { }
+                    }
+
+                    device.Nodes.Add(axisInfo);
+
+                    // ----- Buttons -----
+                    var length = joystick.Capabilities.ButtonCount;
+                    var buttonInfo = new DeviceReportNode()
+                    {
+                        Title = "Buttons"
+                    };
+                    for (int btn = 0; btn < length; btn++)
+                    {
+                        buttonInfo.Bindings.Add(new BindingReport()
+                        {
+                            Title = (btn + 1).ToString(),
+                            Category = BindingCategory.Momentary,
                             BindingDescriptor = new BindingDescriptor()
                             {
-                                Index = i,
-                                //Name = axisNames[i],
-                                Type = BindingType.Axis,
+                                Index = btn,
+                                Type = BindingType.Button,
                             }
                         });
                     }
-                    catch { }
-                }
 
-                device.Nodes.Add(axisInfo);
+                    device.Nodes.Add(buttonInfo);
 
-                // ----- Buttons -----
-                var length = joystick.Capabilities.ButtonCount;
-                var buttonInfo = new DeviceReportNode() {
-                    Title = "Buttons"
-                };
-                for (int btn = 0; btn < length; btn++)
-                {
-                    buttonInfo.Bindings.Add(new BindingReport()
+                    // ----- POVs -----
+                    var povCount = joystick.Capabilities.PovCount;
+                    var povsInfo = new DeviceReportNode()
                     {
-                        Title = (btn + 1).ToString(),
-                        Category = BindingCategory.Momentary,
-                        BindingDescriptor = new BindingDescriptor()
-                        {
-                            Index = btn,
-                            Type = BindingType.Button,
-                        }
-                    });
-                }
-
-                device.Nodes.Add(buttonInfo);
-
-                // ----- POVs -----
-                var povCount = joystick.Capabilities.PovCount;
-                var povsInfo = new DeviceReportNode()
-                {
-                    Title = "POVs"
-                };
-                for (int p = 0; p < povCount; p++)
-                {
-                    var povInfo = new DeviceReportNode()
-                    {
-                        Title = "POV #" + (p + 1),
-                        Bindings = povBindingInfos[p]
+                        Title = "POVs"
                     };
-                    povsInfo.Nodes.Add(povInfo);
+                    for (int p = 0; p < povCount; p++)
+                    {
+                        var povInfo = new DeviceReportNode()
+                        {
+                            Title = "POV #" + (p + 1),
+                            Bindings = povBindingInfos[p]
+                        };
+                        povsInfo.Nodes.Add(povInfo);
+                    }
+                    device.Nodes.Add(povsInfo);
+
+                    deviceReports.Add(device);
+
+
+                    joystick.Unacquire();
                 }
-                device.Nodes.Add(povsInfo);
 
-                deviceReports.Add(device);
-                //providerReport.Devices.Add(device);
-
-                handleToInstanceGuid.Add(handle, deviceInstance.InstanceGuid);
-
-                //Log(String.Format("{0} #{1} GUID: {2} Handle: {3} NativePointer: {4}"
-                //    , deviceInstance.ProductName, index, deviceInstance.InstanceGuid, handle, joystick.NativePointer));
-
-                joystick.Unacquire();
             }
-            //return dr;
         }
         #endregion
 
@@ -428,6 +450,7 @@ namespace SharpDX_DirectInput
             bool disposed = false;
 
             private string deviceHandle;
+            private int deviceInstance;
 
             private Joystick joystick;
             private Guid stickGuid;
@@ -436,7 +459,8 @@ namespace SharpDX_DirectInput
             public StickMonitor(InputSubscriptionRequest subReq)
             {
                 deviceHandle = subReq.DeviceDescriptor.DeviceHandle;
-                if (handleToInstanceGuid.ContainsKey(deviceHandle))
+                deviceInstance = subReq.DeviceDescriptor.DeviceInstance;
+                if (devicesList.ContainsKey(deviceHandle))
                 {
                     SetAcquireState(true);
                 }
@@ -446,8 +470,7 @@ namespace SharpDX_DirectInput
             {
                 if (state && (joystick == null))
                 {
-                    var deviceGuid = handleToInstanceGuid[deviceHandle];
-                    stickGuid = deviceGuid;
+                    stickGuid = devicesList[deviceHandle][deviceInstance].InstanceGuid;
                     joystick = new Joystick(directInput, stickGuid);
                     joystick.Properties.BufferSize = 128;
                     joystick.Acquire();
@@ -712,12 +735,61 @@ namespace SharpDX_DirectInput
                     || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Supplemental;
         }
 
+        private List<DeviceInstance> OrderDevices(string vidpid, List<DeviceInstance> unorderedInstances)
+        {
+            var orderedGuids = new List<DeviceInstance>();
+
+            var keyname = String.Format(@"System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{0}\Calibration", vidpid);
+
+            // Build a list of all known devices matching this VID/PID
+            // This includes unplugged devices
+            var deviceOrders = new SortedDictionary<int, Guid>();
+            using (RegistryKey hkcu = Registry.CurrentUser)
+            {
+                using (RegistryKey calibkey = hkcu.OpenSubKey(keyname))
+                {
+                    foreach (string key in calibkey.GetSubKeyNames())
+                    {
+                        using (RegistryKey orderkey = calibkey.OpenSubKey(key))
+                        {
+                            byte[] reg_guid = (byte[])orderkey.GetValue("GUID");
+                            byte[] reg_id = (byte[])orderkey.GetValue("Joystick Id");
+                            if (reg_id == null)
+                                continue;
+                            int id = BitConverter.ToInt32(reg_id, 0);
+                            // Two duplicates can share the same JoystickID - use next ID in this case
+                            while (deviceOrders.ContainsKey(id))
+                            {
+                                id++;
+                            }
+                            deviceOrders.Add(id, new Guid(reg_guid));
+                        }
+                    }
+                }
+
+                // Now iterate the Ordered (sparse) array and assign IDs to the connected devices
+                foreach (var deviceGuid in deviceOrders.Values)
+                {
+                    for (int i = 0; i < unorderedInstances.Count; i++)
+                    {
+                        if (unorderedInstances[i].InstanceGuid == deviceGuid)
+                        {
+                            orderedGuids.Add(unorderedInstances[i]);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return orderedGuids;
+        }
+
         // In SharpDX, when you call GetDevices(), the order that devices comes back is not always in a useful order
         // This code aims to match each stick with a "Joystick ID" from the registry via VID/PID.
         // Joystick IDs in the registry do not always start with 0
         // The joystick with the lowest "Joystick Id" key in the registry is considered the first stick...
         // ... regardless of the order that SharpDX sees them or the number of the key that they are in
-        // TL/DR: As long as vJoy Stick #1 has a lower Joystick Id than vJoy stick #2...
+        // TL/DR: As long as Stick A has a lower Joystick Id than Stick B...
         // ... then this code should return a DI handle that is in the same order as the vJoy stick order.
         private int GetDeviceOrder(string vidpid, Guid guid)
         {
