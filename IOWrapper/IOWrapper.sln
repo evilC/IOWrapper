@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Providers", "PluginContracts\Providers.csproj", "{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IOController", "IOController\IOController.csproj", "{D9447B59-4B62-4BD8-BE91-5F5AB1D8F1BD}"
 	ProjectSection(ProjectDependencies) = postProject
 		{10A9A35A-9CEC-4271-AD68-65A9661638F6} = {10A9A35A-9CEC-4271-AD68-65A9661638F6}
@@ -33,16 +31,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TobiiLean", "..\TobiiLean\T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core_TitanOne", "..\Core Providers\Core_TitanOne\Core_TitanOne.csproj", "{081E0DB4-2B91-418E-A609-C1B70DDDFECB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Providers", "..\IProvider\Providers.csproj", "{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D9447B59-4B62-4BD8-BE91-5F5AB1D8F1BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D9447B59-4B62-4BD8-BE91-5F5AB1D8F1BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9447B59-4B62-4BD8-BE91-5F5AB1D8F1BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -83,6 +79,10 @@ Global
 		{081E0DB4-2B91-418E-A609-C1B70DDDFECB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{081E0DB4-2B91-418E-A609-C1B70DDDFECB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{081E0DB4-2B91-418E-A609-C1B70DDDFECB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

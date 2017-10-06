@@ -54,7 +54,7 @@
       <Project>{d9447b59-4b62-4bd8-be91-5f5ab1d8f1bd}</Project>
       <Name>IOController</Name>
     </ProjectReference>
-    <ProjectReference Include="..\IOWrapper\PluginContracts\Providers.csproj">
+    <ProjectReference Include="..\IProvider\Providers.csproj">
       <Project>{f6eaf2bc-f362-4ecd-94e5-617ca37a4210}</Project>
       <Name>Providers</Name>
     </ProjectReference>

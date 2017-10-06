@@ -78,8 +78,8 @@
       <Project>{2072b5a7-8069-433c-b4db-e150c26e9a49}</Project>
       <Name>SharpDX_XInput</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PluginContracts\Providers.csproj">
-      <Project>{f6eaf2bc-f362-4ecd-94e5-617ca37a4210}</Project>
+    <ProjectReference Include="..\..\IProvider\Providers.csproj">
+      <Project>{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}</Project>
       <Name>Providers</Name>
     </ProjectReference>
   </ItemGroup>
