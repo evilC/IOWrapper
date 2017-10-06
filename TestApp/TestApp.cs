@@ -61,10 +61,7 @@ class Tester
 
         #region vJoy
         // Acquire vJoy stick
-        string vjoyDeviceHandle = null;
-        // Get handle to 1st vJoy device
-        try { vjoyDeviceHandle = outputList["Core_vJoyInterfaceWrap"].Devices.FirstOrDefault().DeviceDescriptor.DeviceHandle; }
-        catch { return; }
+        string vjoyDeviceHandle = "0";
         vJoyOutputSubReq1 = new OutputSubscriptionRequest()
         {
             SubscriptionDescriptor = new SubscriptionDescriptor()
@@ -102,10 +99,11 @@ class Tester
         // Get handle to 1st DirectInput device
         //try { directInputHandle = inputList["SharpDX_DirectInput"].Devices.FirstOrDefault().Key; }
         //catch { return; }
-        //directInputHandle = "VID_1234&PID_BEAD/0";    // vJoy
-        //directInputHandle = "VID_0C45&PID_7403/0";   // XBox
-        //directInputHandle = "VID_054C&PID_09CC/0";   // DS4
-        directInputHandle = "VID_044F&PID_B10A/0";   // T.16000M
+        //directInputHandle = "VID_1234&PID_BEAD";    // vJoy
+        //directInputHandle = "VID_0C45&PID_7403";   // XBox
+        //directInputHandle = "VID_054C&PID_09CC";   // DS4
+        directInputHandle = "VID_044F&PID_B10A";   // T.16000M
+        //directInputHandle = "VID_0810&PID_E501";   // SNES Pad
 
         Console.WriteLine("Binding input to handle " + directInputHandle);
         // Subscribe to the found stick
@@ -130,6 +128,7 @@ class Tester
             DeviceDescriptor = new DeviceDescriptor()
             {
                 DeviceHandle = directInputHandle,
+                DeviceInstance = 3
             },
             Callback = new Action<int>((value) =>
             {
@@ -138,7 +137,7 @@ class Tester
                 //iow.SetOutputstate(viGemXboxOutputSubReq, buttonOneDescriptor, value);
                 //iow.SetOutputstate(viGemXboxOutputSubReq, povOneUpDescriptor, value);
                 //iow.SetOutputstate(viGemXboxOutputSubReq, axisOneDescriptor, value * 32767);
-                iow.SetOutputstate(viGemDs4OutputSubReq, povOneUpDescriptor, value);
+                //iow.SetOutputstate(viGemDs4OutputSubReq, povOneUpDescriptor, value);
                 //iow.SetOutputstate(vJoyOutputSubReq, povOneUpDescriptor, value);
                 //iow.SetOutputstate(interceptionKeyboardOutputSubReq, new BindingDescriptor() { Type = BindingType.Button, Index = 311 }, value); // Right Alt
                 //iow.SetOutputstate(interceptionMouseOutputSubReq, new BindingDescriptor() { Type = BindingType.Button, Index = 1 }, value); // RMB
