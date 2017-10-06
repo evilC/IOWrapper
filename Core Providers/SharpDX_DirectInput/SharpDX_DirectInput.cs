@@ -63,7 +63,7 @@ namespace SharpDX_DirectInput
             }
 
             directInput = new DirectInput();
-            queryDevices();
+            QueryDevices();
             pollThreadDesired = true;
             pollThread = new Thread(PollThread);
             pollThread.Start();
@@ -273,17 +273,8 @@ namespace SharpDX_DirectInput
         #endregion
 
         #region Device Querying
-        private void queryDevices()
+        private void QueryDevices()
         {
-            //providerReport = new ProviderReport() {
-            //    Title = "DirectInput (Core)",
-            //    Description = "Allows reading of generic joysticks.",
-            //    API = "DirectInput",
-            //    ProviderDescriptor = new ProviderDescriptor()
-            //    {
-            //        ProviderName = ProviderName,
-            //    },
-            //};
             handleToInstanceGuid = new Dictionary<string, Guid>();
             deviceReports = new List<DeviceReport>();
 
