@@ -454,7 +454,8 @@ namespace SharpDX_DirectInput
 
             private Joystick joystick;
             private Guid stickGuid;
-            private Dictionary<JoystickOffset, InputMonitor> monitors = new Dictionary<JoystickOffset, InputMonitor>();
+            private Dictionary<JoystickOffset, SharpDXDirectInputBindingHandler> monitors = 
+                new Dictionary<JoystickOffset, SharpDXDirectInputBindingHandler>();
 
             public StickMonitor(InputSubscriptionRequest subReq)
             {
@@ -512,7 +513,7 @@ namespace SharpDX_DirectInput
                 var inputId = GetInputIdentifier(subReq.BindingDescriptor.Type, (int)subReq.BindingDescriptor.Index);
                 if (!monitors.ContainsKey(inputId))
                 {
-                    monitors.Add(inputId, new InputMonitor( subReq.BindingDescriptor.Type ));
+                    monitors.Add(inputId, new SharpDXDirectInputBindingHandler( subReq.BindingDescriptor.Type ));
                 }
                 Log("Adding subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.BindingDescriptor.Type.ToString(), subReq.BindingDescriptor.Index);
                 return monitors[inputId].Add(subReq);
@@ -564,6 +565,7 @@ namespace SharpDX_DirectInput
         #endregion
 
         #region Input Detection
+        /*
         public class InputMonitor
         {
             private Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
@@ -619,6 +621,54 @@ namespace SharpDX_DirectInput
                     int pov = (state.Offset - JoystickOffset.PointOfViewControllers0) / 4;
                     if (povDirectionMonitors[pov] != null)
                         povDirectionMonitors[pov].Poll(state.Value);
+                }
+                else
+                {
+                    int reportedValue;
+                    foreach (var subscription in subscriptions.Values)
+                    {
+                        if (ActiveProfiles.Contains(subscription.SubscriptionDescriptor.ProfileGuid))
+                        {
+                            switch (bindingType)
+                            {
+                                case BindingType.Axis:
+                                    // DirectInput reports as 0..65535 with center of 32767
+                                    // All axes are normalized for now to int16 (-32768...32767) with center being 0
+                                    // So for now, this means flipping the axis.
+                                    reportedValue = (state.Value - 32767) * -1;
+                                    subscription.Callback(reportedValue);
+                                    break;
+                                case BindingType.Button:
+                                    // DirectInput reports as 0..128 for buttons
+                                    // PS controllers can report in an analog fashion, so supporting this at some point may be cool
+                                    // However, these could be handled like axes
+                                    // For now, a button is a digital device, so convert to 1 or 0
+                                    reportedValue = state.Value / 128;
+                                    subscription.Callback(reportedValue);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        */
+
+        public class SharpDXDirectInputBindingHandler : PolledBindingHandler<JoystickUpdate>
+        {
+            public SharpDXDirectInputBindingHandler(BindingType type) : base(type)
+            {
+            }
+
+            public override void ProcessPollResult(JoystickUpdate state)
+            {
+                if (state.Offset >= JoystickOffset.PointOfViewControllers0 && state.Offset <= JoystickOffset.PointOfViewControllers3)
+                {
+                    //int pov = (state.Offset - JoystickOffset.PointOfViewControllers0) / 4;
+                    //if (povDirectionMonitors[pov] != null)
+                    //    povDirectionMonitors[pov].Poll(state.Value);
                 }
                 else
                 {

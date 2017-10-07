@@ -418,11 +418,11 @@ namespace SharpDX_XInput
             private int controllerId;
             private Controller controller;
 
-            private Dictionary<int, InputMonitor> axisMonitors = new Dictionary<int, InputMonitor>();
-            private Dictionary<int, InputMonitor> buttonMonitors = new Dictionary<int, InputMonitor>();
-            private Dictionary<int, InputMonitor> povDirectionMonitors = new Dictionary<int, InputMonitor>();
+            private Dictionary<int, SharpDXXInputBindingHandler> axisMonitors = new Dictionary<int, SharpDXXInputBindingHandler>();
+            private Dictionary<int, SharpDXXInputBindingHandler> buttonMonitors = new Dictionary<int, SharpDXXInputBindingHandler>();
+            private Dictionary<int, SharpDXXInputBindingHandler> povDirectionMonitors = new Dictionary<int, SharpDXXInputBindingHandler>();
 
-            Dictionary<BindingType, Dictionary<int, InputMonitor>> monitors = new Dictionary<BindingType, Dictionary<int, InputMonitor>>();
+            Dictionary<BindingType, Dictionary<int, SharpDXXInputBindingHandler>> monitors = new Dictionary<BindingType, Dictionary<int, SharpDXXInputBindingHandler>>();
 
             public StickMonitor(int cid)
             {
@@ -439,7 +439,7 @@ namespace SharpDX_XInput
                 var monitor = monitors[subReq.BindingDescriptor.Type];
                 if (!monitor.ContainsKey(inputId))
                 {
-                    monitor.Add(inputId, new InputMonitor());
+                    monitor.Add(inputId, new SharpDXXInputBindingHandler(subReq.BindingDescriptor.Type));
                 }
                 Log("Adding subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.BindingDescriptor.Type.ToString(), subReq.BindingDescriptor.Index);
                 return monitor[inputId].Add(subReq);
@@ -507,44 +507,26 @@ namespace SharpDX_XInput
         #endregion
 
         #region Input
-        public class InputMonitor
+
+        public class SharpDXXInputBindingHandler : PolledBindingHandler<int>
         {
-            Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
             private int currentValue = 0;
 
-            public bool Add(InputSubscriptionRequest subReq)
+            public SharpDXXInputBindingHandler(BindingType type) : base(type)
             {
-                Log("XI adding subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderDescriptor.ProviderName, subReq.DeviceDescriptor.DeviceHandle, subReq.BindingDescriptor.Index, subReq.SubscriptionDescriptor.SubscriberGuid);
-                subscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
-                return true;
             }
 
-            public bool Remove(InputSubscriptionRequest subReq)
-            {
-                Log("XI removing subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderDescriptor.ProviderName, subReq.DeviceDescriptor.DeviceHandle, subReq.BindingDescriptor.Index, subReq.SubscriptionDescriptor.SubscriberGuid);
-                if (subscriptions.ContainsKey(subReq.SubscriptionDescriptor.SubscriberGuid))
-                {
-                    return subscriptions.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
-                }
-                return false;
-            }
-
-            public bool HasSubscriptions()
-            {
-                return subscriptions.Count > 0;
-            }
-
-            public void ProcessPollResult(int value)
+            public override void ProcessPollResult(int state)
             {
                 // XInput does not report just the changed values, so filter out anything that has not changed
-                if (currentValue == value)
+                if (currentValue == state)
                     return;
-                currentValue = value;
+                currentValue = state;
                 foreach (var subscription in subscriptions.Values)
                 {
                     if (ActiveProfiles.Contains(subscription.SubscriptionDescriptor.ProfileGuid))
                     {
-                        subscription.Callback(value);
+                        subscription.Callback(state);
                     }
                 }
             }

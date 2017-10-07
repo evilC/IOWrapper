@@ -1,4 +1,5 @@
 ﻿using HidSharp;
+using Providers;
 using System;
 using System.Collections.Generic;
 
@@ -324,4 +325,51 @@ namespace Providers
         }
     }
     #endregion
+
+    public class BindingHandler
+    {
+        protected Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
+        protected BindingType bindingType;
+
+        public BindingHandler(BindingType type)
+        {
+            bindingType = type;
+        }
+
+        public bool Add(InputSubscriptionRequest subReq)
+        {
+            var subscriberGuid = subReq.SubscriptionDescriptor.SubscriberGuid;
+            if (!subscriptions.ContainsKey(subscriberGuid))
+            {
+                subscriptions.Add(subscriberGuid, subReq);
+                return true;
+            }
+            return false;
+        }
+
+        public bool Remove(InputSubscriptionRequest subReq)
+        {
+            var subscriberGuid = subReq.SubscriptionDescriptor.SubscriberGuid;
+            if (subscriptions.ContainsKey(subscriberGuid))
+            {
+                subscriptions.Remove(subscriberGuid);
+                return true;
+            }
+            return false;
+        }
+
+        public bool HasSubscriptions()
+        {
+            return subscriptions.Count > 0;
+        }
+    }
+
+    public abstract class PolledBindingHandler<T> : BindingHandler
+    {
+        public PolledBindingHandler(BindingType type) : base(type)
+        {
+        }
+
+        public abstract void ProcessPollResult(T state);
+    }
 }
