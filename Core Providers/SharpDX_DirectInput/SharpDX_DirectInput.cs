@@ -556,7 +556,7 @@ namespace SharpDX_DirectInput
                 {
                     if (monitors.ContainsKey(state.Offset))
                     {
-                        monitors[state.Offset].ProcessPollResult(state);
+                        monitors[state.Offset].ProcessPollResult(state.Value);
                     }
                 }
                 Thread.Sleep(1);
@@ -656,51 +656,64 @@ namespace SharpDX_DirectInput
         }
         */
 
-        public class SharpDXDirectInputBindingHandler : PolledBindingHandler<JoystickUpdate>
+        public class SharpDXDirectInputBindingHandler : PolledBindingHandler
         {
             public SharpDXDirectInputBindingHandler(BindingType type) : base(type)
             {
             }
 
-            public override void ProcessPollResult(JoystickUpdate state)
+            public override int ConvertValue(BindingType bindingType, int state)
             {
-                if (state.Offset >= JoystickOffset.PointOfViewControllers0 && state.Offset <= JoystickOffset.PointOfViewControllers3)
+                int reportedValue = 0;
+                switch (bindingType)
                 {
+                    case BindingType.Axis:
+                        // DirectInput reports as 0..65535 with center of 32767
+                        // All axes are normalized for now to int16 (-32768...32767) with center being 0
+                        // So for now, this means flipping the axis.
+                        reportedValue = (state - 32767) * -1;
+                        break;
+                    case BindingType.Button:
+                        // DirectInput reports as 0..128 for buttons
+                        // PS controllers can report in an analog fashion, so supporting this at some point may be cool
+                        // However, these could be handled like axes
+                        // For now, a button is a digital device, so convert to 1 or 0
+                        reportedValue = state / 128;
+                        break;
+                    default:
+                        break;
+                }
+                return reportedValue;
+            }
+
+            public override bool ProfileIsActive(Guid profileGuid)
+            {
+                return ActiveProfiles.Contains(profileGuid);
+            }
+
+            /*
+            public override void ProcessPollResult(int state)
+            {
+                //if (state.Offset >= JoystickOffset.PointOfViewControllers0 && state.Offset <= JoystickOffset.PointOfViewControllers3)
+                //{
                     //int pov = (state.Offset - JoystickOffset.PointOfViewControllers0) / 4;
                     //if (povDirectionMonitors[pov] != null)
                     //    povDirectionMonitors[pov].Poll(state.Value);
-                }
-                else
-                {
+                //}
+                //else
+                //{
                     int reportedValue;
                     foreach (var subscription in subscriptions.Values)
                     {
                         if (ActiveProfiles.Contains(subscription.SubscriptionDescriptor.ProfileGuid))
                         {
-                            switch (bindingType)
-                            {
-                                case BindingType.Axis:
-                                    // DirectInput reports as 0..65535 with center of 32767
-                                    // All axes are normalized for now to int16 (-32768...32767) with center being 0
-                                    // So for now, this means flipping the axis.
-                                    reportedValue = (state.Value - 32767) * -1;
-                                    subscription.Callback(reportedValue);
-                                    break;
-                                case BindingType.Button:
-                                    // DirectInput reports as 0..128 for buttons
-                                    // PS controllers can report in an analog fashion, so supporting this at some point may be cool
-                                    // However, these could be handled like axes
-                                    // For now, a button is a digital device, so convert to 1 or 0
-                                    reportedValue = state.Value / 128;
-                                    subscription.Callback(reportedValue);
-                                    break;
-                                default:
-                                    break;
-                            }
+                            reportedValue = ConvertAxis(subscription.BindingDescriptor.Type, state);
+                            subscription.Callback(reportedValue);
                         }
                     }
-                }
+                //}
             }
+            */
         }
 
         #endregion

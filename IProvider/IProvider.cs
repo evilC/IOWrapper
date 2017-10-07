@@ -326,10 +326,16 @@ namespace Providers
     }
     #endregion
 
-    public class BindingHandler
+    public abstract class BindingHandler
     {
         protected Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
         protected BindingType bindingType;
+        protected int currentState = 0;
+
+        public virtual bool ProfileIsActive(Guid profileGuid)
+        {
+            return true;
+        }
 
         public BindingHandler(BindingType type)
         {
@@ -364,12 +370,32 @@ namespace Providers
         }
     }
 
-    public abstract class PolledBindingHandler<T> : BindingHandler
+    public class PolledBindingHandler : BindingHandler
     {
         public PolledBindingHandler(BindingType type) : base(type)
         {
         }
 
-        public abstract void ProcessPollResult(T state);
+        public virtual void ProcessPollResult(int state)
+        {
+            int reportedValue = ConvertValue(bindingType, state);
+            if (currentState == reportedValue)
+                return;
+            currentState = reportedValue;
+
+            foreach (var subscription in subscriptions.Values)
+            {
+                if (ProfileIsActive(subscription.SubscriptionDescriptor.ProfileGuid))
+                {
+                    subscription.Callback(reportedValue);
+                }
+            }
+
+        }
+
+        public virtual int ConvertValue(BindingType bindingType, int state)
+        {
+            return state;
+        }
     }
 }

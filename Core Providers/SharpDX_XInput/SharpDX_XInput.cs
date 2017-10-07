@@ -418,11 +418,11 @@ namespace SharpDX_XInput
             private int controllerId;
             private Controller controller;
 
-            private Dictionary<int, SharpDXXInputBindingHandler> axisMonitors = new Dictionary<int, SharpDXXInputBindingHandler>();
-            private Dictionary<int, SharpDXXInputBindingHandler> buttonMonitors = new Dictionary<int, SharpDXXInputBindingHandler>();
-            private Dictionary<int, SharpDXXInputBindingHandler> povDirectionMonitors = new Dictionary<int, SharpDXXInputBindingHandler>();
+            private Dictionary<int, PolledBindingHandler> axisMonitors = new Dictionary<int, PolledBindingHandler>();
+            private Dictionary<int, PolledBindingHandler> buttonMonitors = new Dictionary<int, PolledBindingHandler>();
+            private Dictionary<int, PolledBindingHandler> povDirectionMonitors = new Dictionary<int, PolledBindingHandler>();
 
-            Dictionary<BindingType, Dictionary<int, SharpDXXInputBindingHandler>> monitors = new Dictionary<BindingType, Dictionary<int, SharpDXXInputBindingHandler>>();
+            Dictionary<BindingType, Dictionary<int, PolledBindingHandler>> monitors = new Dictionary<BindingType, Dictionary<int, PolledBindingHandler>>();
 
             public StickMonitor(int cid)
             {
@@ -439,7 +439,7 @@ namespace SharpDX_XInput
                 var monitor = monitors[subReq.BindingDescriptor.Type];
                 if (!monitor.ContainsKey(inputId))
                 {
-                    monitor.Add(inputId, new SharpDXXInputBindingHandler(subReq.BindingDescriptor.Type));
+                    monitor.Add(inputId, new PolledBindingHandler(subReq.BindingDescriptor.Type));
                 }
                 Log("Adding subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.BindingDescriptor.Type.ToString(), subReq.BindingDescriptor.Index);
                 return monitor[inputId].Add(subReq);
@@ -506,33 +506,6 @@ namespace SharpDX_XInput
         }
         #endregion
 
-        #region Input
-
-        public class SharpDXXInputBindingHandler : PolledBindingHandler<int>
-        {
-            private int currentValue = 0;
-
-            public SharpDXXInputBindingHandler(BindingType type) : base(type)
-            {
-            }
-
-            public override void ProcessPollResult(int state)
-            {
-                // XInput does not report just the changed values, so filter out anything that has not changed
-                if (currentValue == state)
-                    return;
-                currentValue = state;
-                foreach (var subscription in subscriptions.Values)
-                {
-                    if (ActiveProfiles.Contains(subscription.SubscriptionDescriptor.ProfileGuid))
-                    {
-                        subscription.Callback(state);
-                    }
-                }
-            }
-        }
-
-        #endregion
 
         #endregion
     }
