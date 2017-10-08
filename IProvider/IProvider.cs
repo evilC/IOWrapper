@@ -2,6 +2,7 @@
 using Providers;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Providers
 {
@@ -538,6 +539,165 @@ namespace Providers
             disposed = true;
         }
         #endregion
+    }
 
+    public abstract class PollManager<T> : IDisposable
+    {
+        // The thread which handles input detection
+        protected Thread pollThread;
+        // Is the thread currently running? This is set by the thread itself.
+        protected volatile bool pollThreadRunning = false;
+        // Do we want the thread to be on or off?
+        // This is independent of whether or not the thread is running...
+        // ... for example, we may be updating bindings, so the thread may be temporarily stopped
+        protected bool pollThreadDesired = false;
+        // Is the thread in an Active or Inactive state?
+        protected bool pollThreadActive = false;
+
+        protected Dictionary<T, StickHandler> MonitoredSticks = new Dictionary<T, StickHandler>();
+
+        public abstract T GetMonitorKey(DeviceDescriptor descriptor);
+
+        public bool SubscribeInput(InputSubscriptionRequest subReq)
+        {
+            var prev_state = pollThreadActive;
+            if (pollThreadActive)
+                SetPollThreadState(false);
+
+            var monitorId = GetMonitorKey(subReq.DeviceDescriptor);
+            if (!MonitoredSticks.ContainsKey(monitorId))
+            {
+                MonitoredSticks.Add(monitorId, CreateHandler(subReq));
+            }
+            var result = MonitoredSticks[monitorId].Add(subReq);
+            if (result || prev_state)
+            {
+                SetPollThreadState(true);
+                return true;
+            }
+            return false;
+        }
+
+        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
+        {
+            var prev_state = pollThreadActive;
+            if (pollThreadActive)
+                SetPollThreadState(false);
+
+            bool ret = false;
+            var monitorId = GetMonitorKey(subReq.DeviceDescriptor);
+            if (MonitoredSticks.ContainsKey(monitorId))
+            {
+                // Remove from monitor lookup table
+                MonitoredSticks[monitorId].Remove(subReq);
+                // If this was the last thing monitored on this stick...
+                ///...remove the stick from the monitor lookup table
+                if (!MonitoredSticks[monitorId].HasSubscriptions())
+                {
+                    MonitoredSticks.Remove(monitorId);
+                }
+                ret = true;
+            }
+            if (prev_state)
+            {
+                SetPollThreadState(true);
+            }
+            return ret;
+        }
+
+        public abstract StickHandler CreateHandler(InputSubscriptionRequest subReq);
+
+        public void SetPollThreadState(bool state)
+        {
+            if (state && !pollThreadRunning)
+            {
+                pollThread = new Thread(PollThread);
+                pollThread.Start();
+                while (!pollThreadRunning)
+                {
+                    Thread.Sleep(10);
+                }
+            }
+
+            if (!pollThreadRunning)
+                return;
+
+            if (state && !pollThreadActive)
+            {
+                pollThreadDesired = true;
+                while (!pollThreadActive)
+                {
+                    Thread.Sleep(10);
+                }
+                //Log("PollThread for {0} Activated", ProviderName);
+            }
+            else if (!state && pollThreadActive)
+            {
+                pollThreadDesired = false;
+                while (pollThreadActive)
+                {
+                    Thread.Sleep(10);
+                }
+                //Log("PollThread for {0} De-Activated", ProviderName);
+            }
+        }
+
+        private void PollThread()
+        {
+            pollThreadRunning = true;
+            //Log("Started PollThread for {0}", ProviderName);
+            while (true)
+            {
+                if (pollThreadDesired)
+                {
+                    pollThreadActive = true;
+                    while (pollThreadDesired)
+                    {
+                        foreach (var monitoredStick in MonitoredSticks)
+                        {
+                            monitoredStick.Value.Poll();
+                        }
+                        Thread.Sleep(1);
+                    }
+                }
+                else
+                {
+                    pollThreadActive = false;
+                    while (!pollThreadDesired)
+                    {
+                        Thread.Sleep(1);
+                    }
+                }
+            }
+        }
+
+        #region IDisposable
+        bool disposed = false;
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+            if (disposing)
+            {
+                pollThread.Abort();
+                pollThreadRunning = false;
+                //Log("Stopped PollThread for {0}", ProviderName);
+                foreach (var stick in MonitoredSticks.Values)
+                {
+                    //stick.Dispose();
+                }
+                MonitoredSticks = null;
+            }
+            disposed = true;
+            //Log("Provider {0} was Disposed", ProviderName);
+        }
+
+        #endregion
     }
 }

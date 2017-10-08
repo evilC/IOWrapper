@@ -19,18 +19,8 @@ namespace SharpDX_DirectInput
         bool disposed = false;
         static private DirectInput directInput;
 
-        // The thread which handles input detection
-        private Thread pollThread;
-        // Is the thread currently running? This is set by the thread itself.
-        private volatile bool pollThreadRunning = false;
-        // Do we want the thread to be on or off?
-        // This is independent of whether or not the thread is running...
-        // ... for example, we may be updating bindings, so the thread may be temporarily stopped
-        private bool pollThreadDesired = false;
-        // Is the thread in an Active or Inactive state?
-        private bool pollThreadActive = false;
+        private DIPollManager pollManager = new DIPollManager();
 
-        private Dictionary<string, DIStickHandler> MonitoredSticks = new Dictionary<string, DIStickHandler>();
         private static List<Guid> ActiveProfiles = new List<Guid>();
 
         private static Dictionary<string, List<DeviceInstance>> devicesList;
@@ -66,10 +56,6 @@ namespace SharpDX_DirectInput
 
             directInput = new DirectInput();
             QueryDevices();
-            pollThreadDesired = true;
-            pollThread = new Thread(PollThread);
-            pollThread.Start();
-            SetPollThreadState(true);
         }
 
         public void Dispose()
@@ -83,48 +69,9 @@ namespace SharpDX_DirectInput
                 return;
             if (disposing)
             {
-                pollThread.Abort();
-                pollThreadRunning = false;
-                Log("Stopped PollThread for {0}", ProviderName);
-                foreach (var stick in MonitoredSticks.Values)
-                {
-                    //stick.Dispose();
-                }
-                MonitoredSticks = null;
+                pollManager.Dispose();
             }
             disposed = true;
-            Log("Provider {0} was Disposed", ProviderName);
-        }
-
-        private void SetPollThreadState(bool state)
-        {
-            if (!pollThreadRunning)
-                return;
-
-            if (state && !pollThreadActive)
-            {
-                //Log("Starting PollThread for {0}", ProviderName);
-                pollThreadDesired = true;
-                while (!pollThreadActive)
-                {
-                    //Log("Waiting for poll thread to activate");
-                    Thread.Sleep(10);
-                }
-                Log("PollThread for {0} Activated", ProviderName);
-            }
-            else if (!state && pollThreadActive)
-            {
-                //Log("Stopping PollThread for {0}", ProviderName);
-                //pollThreadStopRequested = true;
-                pollThreadDesired = false;
-                while (pollThreadActive)
-                {
-                    //Log("Waiting for poll thread to de-activate");
-                    Thread.Sleep(10);
-                }
-                Log("PollThread for {0} De-Activated", ProviderName);
-                //pollThread = null;
-            }
         }
 
         private static void Log(string formatStr, params object[] arguments)
@@ -141,7 +88,7 @@ namespace SharpDX_DirectInput
         // https://github.com/dotnet/csharplang/blob/master/proposals/default-interface-methods.md
         public bool SetProfileState(Guid profileGuid, bool state)
         {
-            var prev_state = pollThreadActive;
+            //var prev_state = pollThreadActive;
             //if (pollThreadActive)
             //    SetPollThreadState(false);
 
@@ -207,51 +154,12 @@ namespace SharpDX_DirectInput
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            var prev_state = pollThreadActive;
-            if (pollThreadActive)
-                SetPollThreadState(false);
-
-            if (!MonitoredSticks.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
-            {
-                MonitoredSticks.Add(subReq.DeviceDescriptor.DeviceHandle, new DIStickHandler(subReq));
-            }
-            var handler = MonitoredSticks[subReq.DeviceDescriptor.DeviceHandle];
-            var success =  handler.Add(subReq);
-            if (success)
-            {
-                if (prev_state)
-                {
-                    SetPollThreadState(true);
-                }
-                return true;
-            }
-            return false;
+            return pollManager.SubscribeInput(subReq);
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            var ret = false;
-            var prev_state = pollThreadActive;
-            if (pollThreadActive)
-                SetPollThreadState(false);
-
-            if (MonitoredSticks.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
-            {
-                ret = MonitoredSticks[subReq.DeviceDescriptor.DeviceHandle].Remove(subReq);
-                if (ret)
-                {
-                    if (!MonitoredSticks[subReq.DeviceDescriptor.DeviceHandle].HasSubscriptions())
-                    {
-                        //MonitoredSticks[subReq.DeviceDescriptor.DeviceHandle].Dispose();
-                        MonitoredSticks.Remove(subReq.DeviceDescriptor.DeviceHandle);
-                    }
-                }
-            }
-            if (prev_state)
-            {
-                SetPollThreadState(true);
-            }
-            return ret;
+            return pollManager.UnsubscribeInput(subReq);
         }
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
@@ -412,36 +320,16 @@ namespace SharpDX_DirectInput
         #region Stick Monitoring
 
         #region Main Monitor Loop
-        private void PollThread()
+        class DIPollManager : PollManager<string>
         {
-            pollThreadRunning = true;
-            Log("Started PollThread for {0}", ProviderName);
-            while (true)
+            public override StickHandler CreateHandler(InputSubscriptionRequest subReq)
             {
-                if (pollThreadDesired)
-                {
-                    pollThreadActive = true;
-                    //pollThreadActive = true;
-                    while (pollThreadDesired)
-                    {
-                        //Log("Active");
-                        foreach (var stick in MonitoredSticks.Values)
-                        {
-                            stick.Poll();
-                        }
-                        Thread.Sleep(1);
-                    }
-                }
-                else
-                {
-                    //Log("De-Activating Poll Thread");
-                    pollThreadActive = false;
-                    while (!pollThreadDesired)
-                    {
-                        //Log("In-Active");
-                        Thread.Sleep(1);
-                    }
-                }
+                return new DIStickHandler(subReq);
+            }
+
+            public override string GetMonitorKey(DeviceDescriptor descriptor)
+            {
+                return descriptor.DeviceHandle;
             }
         }
         #endregion

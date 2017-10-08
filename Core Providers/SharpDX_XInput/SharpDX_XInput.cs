@@ -16,22 +16,11 @@ namespace SharpDX_XInput
 
         bool disposed = false;
 
-        // The thread which handles input detection
-        private Thread pollThread;
-        // Is the thread currently running? This is set by the thread itself.
-        private volatile bool pollThreadRunning = false;
-        // Do we want the thread to be on or off?
-        // This is independent of whether or not the thread is running...
-        // ... for example, we may be updating bindings, so the thread may be temporarily stopped
-        private bool pollThreadDesired = false;
-        // Is the thread in an Active or Inactive state?
-        private bool pollThreadActive = false;
+        private XIPollManager pollManager = new XIPollManager();
 
-        private Dictionary<int, XIStickHandler> MonitoredSticks = new Dictionary<int, XIStickHandler>();
         private static List<Guid> ActiveProfiles = new List<Guid>();
         //private static List<> PluggedInControllers
 
-        //ProviderReport providerReport;
         private List<DeviceReport> deviceReports;
 
         private static List<string> buttonNames = new List<string>() { "A", "B", "X", "Y", "LB", "RB", "LS", "RS", "Back", "Start" };
@@ -108,10 +97,7 @@ namespace SharpDX_XInput
         public SharpDX_XInput()
         {
             BuildButtonList();
-            pollThreadDesired = true;
             QueryDevices();
-            pollThread = new Thread(PollThread);
-            pollThread.Start();
         }
 
         private void BuildButtonList()
@@ -183,37 +169,10 @@ namespace SharpDX_XInput
                 return;
             if (disposing)
             {
-                pollThread.Abort();
-                pollThreadRunning = false;
-                Log("Stopped PollThread for {0}", ProviderName);
+                pollManager.Dispose();
             }
             disposed = true;
             Log("Provider {0} was Disposed", ProviderName);
-        }
-
-        private void SetPollThreadState(bool state)
-        {
-            if (!pollThreadRunning)
-                return;
-
-            if (state && !pollThreadActive)
-            {
-                pollThreadDesired = true;
-                while (!pollThreadActive)
-                {
-                    Thread.Sleep(10);
-                }
-                Log("PollThread for {0} Activated", ProviderName);
-            }
-            else if (!state && pollThreadActive)
-            {
-                pollThreadDesired = false;
-                while (pollThreadActive)
-                {
-                    Thread.Sleep(10);
-                }
-                Log("PollThread for {0} De-Activated", ProviderName);
-            }
         }
 
         private static void Log(string formatStr, params object[] arguments)
@@ -298,52 +257,12 @@ namespace SharpDX_XInput
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            var prev_state = pollThreadActive;
-            if (pollThreadActive)
-                SetPollThreadState(false);
-
-            var stickId = Convert.ToInt32(subReq.DeviceDescriptor.DeviceHandle);
-            if (!MonitoredSticks.ContainsKey(stickId))
-            {
-                MonitoredSticks.Add(stickId, new XIStickHandler(subReq));
-            }
-            var result = MonitoredSticks[stickId].Add(subReq);
-            if (result)
-            {
-                if (prev_state)
-                {
-                    SetPollThreadState(true);
-                }
-                return true;
-            }
-            return false;
+            return pollManager.SubscribeInput(subReq);
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            var prev_state = pollThreadActive;
-            if (pollThreadActive)
-                SetPollThreadState(false);
-
-            bool ret = false;
-            var stickId = Convert.ToInt32(subReq.DeviceDescriptor.DeviceHandle);
-            if (MonitoredSticks.ContainsKey(stickId))
-            {
-                // Remove from monitor lookup table
-                MonitoredSticks[stickId].Remove(subReq);
-                // If this was the last thing monitored on this stick...
-                ///...remove the stick from the monitor lookup table
-                if (!MonitoredSticks[stickId].HasSubscriptions())
-                {
-                    MonitoredSticks.Remove(stickId);
-                }
-                ret = true;
-            }
-            if (prev_state)
-            {
-                SetPollThreadState(true);
-            }
-            return ret;
+            return pollManager.UnsubscribeInput(subReq);
         }
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
@@ -384,32 +303,16 @@ namespace SharpDX_XInput
         }
 
         #region Stick Monitoring
-        private void PollThread()
+        class XIPollManager : PollManager<int>
         {
-            pollThreadRunning = true;
-            Log("Started PollThread for {0}", ProviderName);
-            while (true)
+            public override StickHandler CreateHandler(InputSubscriptionRequest subReq)
             {
-                if (pollThreadDesired)
-                {
-                    pollThreadActive = true;
-                    while (pollThreadDesired)
-                    {
-                        foreach (var monitoredStick in MonitoredSticks)
-                        {
-                            monitoredStick.Value.Poll();
-                        }
-                        Thread.Sleep(1);
-                    }
-                }
-                else
-                {
-                    pollThreadActive = false;
-                    while (!pollThreadDesired)
-                    {
-                        Thread.Sleep(1);
-                    }
-                }
+                return new XIStickHandler(subReq);
+            }
+
+            public override int GetMonitorKey(DeviceDescriptor descriptor)
+            {
+                return Convert.ToInt32(descriptor.DeviceHandle);
             }
         }
 
