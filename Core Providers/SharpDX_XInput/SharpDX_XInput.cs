@@ -609,6 +609,9 @@ namespace SharpDX_XInput
                         // XInput reports as 0..1 for buttons
                         reportedValue = state;
                         break;
+                    case BindingType.POV:
+                        reportedValue = state;
+                        break;
                     default:
                         break;
                 }
