@@ -560,14 +560,14 @@ namespace Providers
         public bool Subscribe(InputSubscriptionRequest subReq)
         {
             var bindingType = subReq.BindingDescriptor.Type;
-            var bindingIndex = GetInputIdentifier(bindingType, subReq.BindingDescriptor.Index);
+            var bindingHandlerKey = GetBindingHandlerKey(bindingType, subReq.BindingDescriptor.Index);
             var subBindingHandlerKey = subReq.BindingDescriptor.SubIndex;
 
-            if (!bindingHandlers[bindingType].ContainsKey(bindingIndex))
+            if (!bindingHandlers[bindingType].ContainsKey(bindingHandlerKey))
             {
-                bindingHandlers[bindingType].Add(bindingIndex, new Dictionary<int, BindingHandler>());
+                bindingHandlers[bindingType].Add(bindingHandlerKey, new Dictionary<int, BindingHandler>());
             }
-            var subBindingHandlers = bindingHandlers[bindingType][bindingIndex];
+            var subBindingHandlers = bindingHandlers[bindingType][bindingHandlerKey];
             if (!subBindingHandlers.ContainsKey(subBindingHandlerKey))
             {
                 subBindingHandlers.Add(subBindingHandlerKey, CreateBindingHandler(subReq.BindingDescriptor));
@@ -578,12 +578,12 @@ namespace Providers
         public bool Unsubscribe(InputSubscriptionRequest subReq)
         {
             var bindingType = subReq.BindingDescriptor.Type;
-            var bindingIndex = GetInputIdentifier(bindingType, subReq.BindingDescriptor.Index);
+            var bindingHandlerKey = GetBindingHandlerKey(bindingType, subReq.BindingDescriptor.Index);
             var subBindingHandlerKey = subReq.BindingDescriptor.SubIndex;
 
-            if (bindingHandlers[bindingType].ContainsKey(bindingIndex))
+            if (bindingHandlers[bindingType].ContainsKey(bindingHandlerKey))
             {
-                var subBindingHandlers = bindingHandlers[bindingType][bindingIndex];
+                var subBindingHandlers = bindingHandlers[bindingType][bindingHandlerKey];
                 var ret = subBindingHandlers[subBindingHandlerKey].Unsubscribe(subReq);
                 if (!subBindingHandlers[subBindingHandlerKey].HasSubscriptions())
                 {
@@ -594,7 +594,7 @@ namespace Providers
             return false;
         }
 
-        public abstract int GetInputIdentifier(BindingType bindingType, int bindingIndex);
+        public abstract int GetBindingHandlerKey(BindingType bindingType, int bindingIndex);
 
         public bool HasSubscriptions()
         {

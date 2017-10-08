@@ -332,7 +332,7 @@ namespace SharpDX_XInput
                 return new XIBindingHandler(descriptor);
             }
 
-            public override int GetInputIdentifier(BindingType bindingType, int bindingIndex)
+            public override int GetBindingHandlerKey(BindingType bindingType, int bindingIndex)
             {
                 return bindingIndex;
             }

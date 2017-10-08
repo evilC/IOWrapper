@@ -372,7 +372,7 @@ namespace SharpDX_DirectInput
                 return new DIBindingHandler(bindingDescriptor);
             }
 
-            public override int GetInputIdentifier(BindingType bindingType, int bindingIndex)
+            public override int GetBindingHandlerKey(BindingType bindingType, int bindingIndex)
             {
                 switch (bindingType)
                 {
