@@ -30,17 +30,19 @@ class Tester
     private OutputSubscriptionRequest viGemXboxOutputSubReq1;
     private OutputSubscriptionRequest viGemXboxOutputSubReq2;
     private OutputSubscriptionRequest viGemDs4OutputSubReq;
+    private OutputSubscriptionRequest TitanOneDs4OutputSubReq;
 
     bool defaultProfileState = false;
     Guid defaultProfileGuid = Guid.NewGuid();
     IOWrapper.IOController iow;
 
     ProviderDescriptor diProvider = new ProviderDescriptor() { ProviderName = "SharpDX_DirectInput" };
-    ProviderDescriptor xiProvider = new ProviderDescriptor() { ProviderName = "SharpDX_DirectInput" };
+    ProviderDescriptor xiProvider = new ProviderDescriptor() { ProviderName = "SharpDX_XInput" };
     ProviderDescriptor vjoyProvider = new ProviderDescriptor() { ProviderName = "Core_vJoyInterfaceWrap" };
     ProviderDescriptor interceptionProvider = new ProviderDescriptor() { ProviderName = "Core_Interception" };
     ProviderDescriptor tobiiProvider = new ProviderDescriptor() { ProviderName = "Core_Tobii_Interaction" };
     ProviderDescriptor vigemProvider = new ProviderDescriptor() { ProviderName = "Core_ViGEm" };
+    ProviderDescriptor titanOneProvider = new ProviderDescriptor() { ProviderName = "Core_TitanOne" };
 
     BindingDescriptor buttonOneDescriptor = new BindingDescriptor() { Index = 0, Type = BindingType.Button };
     BindingDescriptor buttonTwoDescriptor = new BindingDescriptor() { Index = 1, Type = BindingType.Button };
@@ -74,7 +76,7 @@ class Tester
                 DeviceHandle = vjoyDeviceHandle
             },
         };
-        ret = iow.SubscribeOutput(vJoyOutputSubReq1);
+        //ret = iow.SubscribeOutput(vJoyOutputSubReq1);
         
         vJoyOutputSubReq2 = new OutputSubscriptionRequest()
         {
@@ -88,7 +90,7 @@ class Tester
                 DeviceHandle = "1"
             },
         };
-        ret = iow.SubscribeOutput(vJoyOutputSubReq2);
+        //ret = iow.SubscribeOutput(vJoyOutputSubReq2);
 
         //ret = iow.UnsubscribeOutput(vJoyOutputSubReq1);
         //ret = iow.UnsubscribeOutput(vJoyOutputSubReq2);
@@ -105,9 +107,9 @@ class Tester
         directInputHandle = "VID_044F&PID_B10A";   // T.16000M
         //directInputHandle = "VID_0810&PID_E501";   // SNES Pad
 
-        Console.WriteLine("Binding input to handle " + directInputHandle);
+        //Console.WriteLine("Binding input to handle " + directInputHandle);
         // Subscribe to the found stick
-        var diSub1 = new InputSubscriptionRequest()
+        var diAxisSub1 = new InputSubscriptionRequest()
         {
             SubscriptionDescriptor = new SubscriptionDescriptor()
             {
@@ -120,19 +122,17 @@ class Tester
             },
             BindingDescriptor = new BindingDescriptor()
             {
-                Type = BindingType.Button,
-                //Type = BindingType.POV,
+                Type = BindingType.Axis,
                 Index = 0,
-                //Index = 4,
             },
             DeviceDescriptor = new DeviceDescriptor()
             {
                 DeviceHandle = directInputHandle,
-                DeviceInstance = 3
+                DeviceInstance = 0
             },
             Callback = new Action<int>((value) =>
             {
-                Console.WriteLine("Button 0 Value: " + value);
+                Console.WriteLine("DI Axis Value: " + value);
                 //iow.SetOutputstate(vJoyOutputSubReq, buttonOneDescriptor, value);
                 //iow.SetOutputstate(viGemXboxOutputSubReq, buttonOneDescriptor, value);
                 //iow.SetOutputstate(viGemXboxOutputSubReq, povOneUpDescriptor, value);
@@ -143,15 +143,15 @@ class Tester
                 //iow.SetOutputstate(interceptionMouseOutputSubReq, new BindingDescriptor() { Type = BindingType.Button, Index = 1 }, value); // RMB
             })
         };
-        iow.SubscribeInput(diSub1);
+        //iow.SubscribeInput(diAxisSub1);
 
-        Console.WriteLine("Binding input to handle " + directInputHandle);
+        //Console.WriteLine("Binding input to handle " + directInputHandle);
         // Subscribe to the found stick
-        var diSub2 = new InputSubscriptionRequest()
+        var diButtonSub1 = new InputSubscriptionRequest()
         {
             SubscriptionDescriptor = new SubscriptionDescriptor()
             {
-                ProfileGuid = Guid.NewGuid(),
+                ProfileGuid = defaultProfileGuid,
                 SubscriberGuid = Guid.NewGuid()
             },
             ProviderDescriptor = new ProviderDescriptor()
@@ -165,24 +165,24 @@ class Tester
             BindingDescriptor = new BindingDescriptor()
             {
                 Type = BindingType.Button,
-                Index = 1,
+                Index = 0,
             },
             Callback = new Action<int>((value) =>
             {
-                Console.WriteLine("Button 1 Value: " + value);
-                iow.SetOutputstate(vJoyOutputSubReq1, buttonOneDescriptor, value);
+                Console.WriteLine("DI Button Value: " + value);
+                //iow.SetOutputstate(vJoyOutputSubReq1, buttonOneDescriptor, value);
                 //iow.SetOutputstate(vJoyOutputSubReq, povOneUpDescriptor, value);
-                if (value == 1)
-                {
-                    ToggleDefaultProfileState();
-                }
+                //if (value == 1)
+                //{
+                //    ToggleDefaultProfileState();
+                //}
             })
         };
-        //iow.SubscribeInput(diSub2);
-        iow.SetProfileState(diSub2.SubscriptionDescriptor.ProfileGuid, true);
+        //iow.SubscribeInput(diButtonSub1);
+        //iow.SetProfileState(diButtonSub1.SubscriptionDescriptor.ProfileGuid, true);
 
 
-        var sub2 = new InputSubscriptionRequest()
+        var diPovSub1 = new InputSubscriptionRequest()
         {
             SubscriptionDescriptor = new SubscriptionDescriptor()
             {
@@ -196,18 +196,17 @@ class Tester
             },
             BindingDescriptor = new BindingDescriptor()
             {
-                Type = BindingType.Axis,
+                Type = BindingType.POV,
                 Index = 0,
+                SubIndex = 2, // POV Down
             },
             Callback = new Action<int>((value) =>
             {
-                Console.WriteLine("Axis 0 Value: " + value);
-                iow.SetOutputstate(vJoyOutputSubReq1, axisOneDescriptor, value);
+                Console.WriteLine("DI POV Value: " + value);
+                //iow.SetOutputstate(vJoyOutputSubReq1, axisOneDescriptor, value);
             })
         };
-        //iow.SubscribeInput(sub2);
-        //iow.UnsubscribeInput(sub2);
-        //iow.SubscribeInput(sub2);
+        //iow.SubscribeInput(diPovSub1);
         #endregion
 
         #region XInput
@@ -230,8 +229,8 @@ class Tester
             },
             Callback = new Action<int>((value) =>
             {
-                Console.WriteLine("XInput Axis 0 Value: " + value);
-                iow.SetOutputstate(vJoyOutputSubReq1, axisOneDescriptor, value);
+                Console.WriteLine("XI Axis Value: " + value);
+                //iow.SetOutputstate(vJoyOutputSubReq1, axisOneDescriptor, value);
             })
         };
         //iow.SubscribeInput(xinputAxis);
@@ -256,8 +255,8 @@ class Tester
             },
             Callback = new Action<int>((value) =>
             {
-                Console.WriteLine("XInput Button 0 Value: " + value);
-                iow.SetOutputstate(vJoyOutputSubReq1, buttonTwoDescriptor, value);
+                Console.WriteLine("XI Button Value: " + value);
+                //iow.SetOutputstate(vJoyOutputSubReq1, buttonTwoDescriptor, value);
             })
         };
         //ret = iow.SubscribeInput(xinputButton);
@@ -278,12 +277,13 @@ class Tester
             {
                 Type = BindingType.POV,
                 Index = 0,
+                SubIndex = 2
             },
             Callback = new Action<int>((value) =>
             {
-                Console.WriteLine("XInput Button 0 Value: " + value);
+                Console.WriteLine("XI POV Value: " + value);
                 //iow.SetOutputstate(vJoyOutputSubReq, buttonTwoDescriptor, value);
-                iow.SetOutputstate(vJoyOutputSubReq1, povOneUpDescriptor, value);
+                //iow.SetOutputstate(vJoyOutputSubReq1, povOneUpDescriptor, value);
             })
         };
         //ret = iow.SubscribeInput(xinputPov);
@@ -456,7 +456,7 @@ class Tester
             }
         };
         //iow.SubscribeOutput(viGemXboxOutputSubReq1);
-        var test = iow.GetOutputDeviceReport(viGemXboxOutputSubReq1);
+        //var test = iow.GetOutputDeviceReport(viGemXboxOutputSubReq1);
 
         viGemXboxOutputSubReq2 = new OutputSubscriptionRequest()
         {
@@ -468,7 +468,7 @@ class Tester
             DeviceDescriptor = new DeviceDescriptor()
             {
                 DeviceHandle = "xb360",
-                DeviceInstance = 1
+                DeviceInstance = 0
             }
         };
         //iow.SubscribeOutput(viGemXboxOutputSubReq2);
@@ -496,6 +496,28 @@ class Tester
         };
         //iow.SubscribeOutput(viGemDs4OutputSubReq);
 
+        #endregion
+
+        #region Titan One
+        var titanOneSubReq = new InputSubscriptionRequest()
+        {
+            DeviceDescriptor = new DeviceDescriptor()
+            {
+                DeviceHandle = "xb360",
+                DeviceInstance = 0
+            },
+            BindingDescriptor = buttonOneDescriptor,
+            ProviderDescriptor = titanOneProvider,
+            SubscriptionDescriptor = new SubscriptionDescriptor()
+            {
+                SubscriberGuid = Guid.NewGuid(),
+            },
+            Callback = new Action<int>((value) =>
+            {
+                Console.WriteLine("Button 0 Value: " + value);
+            })
+        };
+        //iow.SubscribeInput(titanOneSubReq);
         #endregion
     }
 
