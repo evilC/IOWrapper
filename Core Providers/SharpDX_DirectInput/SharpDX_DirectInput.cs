@@ -595,7 +595,7 @@ namespace SharpDX_DirectInput
 
             public override BindingHandler CreateBindingHandler(BindingDescriptor bindingDescriptor)
             {
-                return new SharpDXDirectInputBindingHandler(bindingDescriptor.Type);
+                return new SharpDXDirectInputBindingHandler(bindingDescriptor);
             }
 
             public override int GetInputIdentifier(BindingType bindingType, int bindingIndex)
@@ -607,6 +607,9 @@ namespace SharpDX_DirectInput
 
                     case BindingType.Button:
                         return (int)JoystickOffset.Buttons0 + bindingIndex;
+
+                    case BindingType.POV:
+                        return (int)JoystickOffset.PointOfViewControllers0 + (bindingIndex * 4);
                 }
                 return 0;   // ToDo: should not happen. Properly handle
             }
@@ -616,14 +619,21 @@ namespace SharpDX_DirectInput
                 if (joystick == null)
                     return;
                 JoystickUpdate[] data = joystick.GetBufferedData();
-                //var thismonitor = monitors[BindingType.Axis];
                 foreach (var state in data)
                 {
-                    var monitor = monitors[OffsetToType(state.Offset)];
-                    int offset = (int)state.Offset;
-                    if (monitor.ContainsKey(offset))
+                    var bindingType = OffsetToType(state.Offset);
+                    int monitorIndex = (int)state.Offset;
+
+                    var monitorList = monitors[bindingType];
+                    if (!monitorList.ContainsKey(monitorIndex))
                     {
-                        monitor[offset].ProcessPollResult(state.Value);
+                        continue;
+                    }
+
+                    var subMonitors = monitorList[monitorIndex];
+                    foreach (var monitor in subMonitors.Values)
+                    {
+                        monitor.ProcessPollResult(state.Value);
                     }
                 }
                 Thread.Sleep(1);
@@ -637,6 +647,21 @@ namespace SharpDX_DirectInput
             if (index <= (int)JoystickOffset.PointOfViewControllers3) return BindingType.POV;
             return BindingType.Button;
         }
+
+        /*
+        private static int OffsetToSubIndex(BindingType bindingType, JoystickOffset offset)
+        {
+            if (bindingType == BindingType.POV)
+            {
+                offset -= (int)JoystickOffset.PointOfViewControllers0;
+                return (int)offset / 4;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        */
         #endregion
 
         #region Input Detection
@@ -733,14 +758,14 @@ namespace SharpDX_DirectInput
 
         public class SharpDXDirectInputBindingHandler : PolledBindingHandler
         {
-            public SharpDXDirectInputBindingHandler(BindingType type) : base(type)
+            public SharpDXDirectInputBindingHandler(BindingDescriptor descriptor) : base(descriptor)
             {
             }
 
-            public override int ConvertValue(BindingType bindingType, int state)
+            public override int ConvertValue(int state)
             {
-                int reportedValue = 0;
-                switch (bindingType)
+                int reportedValue = state;
+                switch (bindingDescriptor.Type)
                 {
                     case BindingType.Axis:
                         // DirectInput reports as 0..65535 with center of 32767
@@ -755,7 +780,9 @@ namespace SharpDX_DirectInput
                         // For now, a button is a digital device, so convert to 1 or 0
                         reportedValue = state / 128;
                         break;
-                    default:
+                    case BindingType.POV:
+                        bool isPressed = ValueMatchesAngle(state, povAngle);
+                        reportedValue = isPressed ? 1 : 0;
                         break;
                 }
                 return reportedValue;

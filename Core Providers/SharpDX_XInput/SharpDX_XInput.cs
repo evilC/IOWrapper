@@ -515,9 +515,9 @@ namespace SharpDX_XInput
             {
             }
 
-            public override BindingHandler CreateBindingHandler(BindingDescriptor bindingDescriptor)
+            public override BindingHandler CreateBindingHandler(BindingDescriptor descriptor)
             {
-                return new SharpDXXInputBindingHandler(bindingDescriptor.Type);
+                return new SharpDXXInputBindingHandler(descriptor);
             }
 
             public override int GetInputIdentifier(BindingType bindingType, int bindingIndex)
@@ -531,17 +531,39 @@ namespace SharpDX_XInput
                     return;
                 var state = controller.GetState();
 
-                foreach (var monitor in axisMonitors)
+                if (axisMonitors.ContainsKey(0))
                 {
-                    var value = Convert.ToInt32(state.Gamepad.GetType().GetField(xinputAxisIdentifiers[monitor.Key]).GetValue(state.Gamepad));
-                    monitor.Value.ProcessPollResult(value);
+                    foreach (var monitor in axisMonitors[0])
+                    {
+                        var value = Convert.ToInt32(state.Gamepad.GetType().GetField(xinputAxisIdentifiers[monitor.Key]).GetValue(state.Gamepad));
+                        monitor.Value.ProcessPollResult(value);
+                    }
                 }
 
-                foreach (var monitor in buttonMonitors)
+                if (buttonMonitors.ContainsKey(0))
                 {
-                    var flag = state.Gamepad.Buttons & xinputButtonIdentifiers[(int)monitor.Key];
-                    var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
-                    monitor.Value.ProcessPollResult(value);
+                    foreach (var monitor in buttonMonitors[0])
+                    {
+                        var flag = state.Gamepad.Buttons & xinputButtonIdentifiers[(int)monitor.Key];
+                        var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
+                        monitor.Value.ProcessPollResult(value);
+                    }
+                }
+
+                foreach (var povMonitor in povDirectionMonitors)
+                {
+                    foreach (var monitor in povMonitor.Value)
+                    {
+                        var flag = state.Gamepad.Buttons & xinputPovDirectionIdentifiers[monitor.Key];
+                        var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
+                        monitor.Value.ProcessPollResult(value);
+                    }
+                    //foreach (var monitor in povDirectionMonitors[povMonitor])
+                    //{
+                    //    var flag = state.Gamepad.Buttons & xinputPovDirectionIdentifiers[(int)monitor.Key];
+                    //    var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
+                    //    monitor.Value.ProcessPollResult(value);
+                    //}
                 }
 
                 //foreach (var monitor in povDirectionMonitors)
@@ -570,14 +592,14 @@ namespace SharpDX_XInput
         #region Input Detection
         public class SharpDXXInputBindingHandler : PolledBindingHandler
         {
-            public SharpDXXInputBindingHandler(BindingType type) : base(type)
+            public SharpDXXInputBindingHandler(BindingDescriptor descriptor) : base(descriptor)
             {
             }
 
-            public override int ConvertValue(BindingType bindingType, int state)
+            public override int ConvertValue(int state)
             {
                 int reportedValue = 0;
-                switch (bindingType)
+                switch (bindingDescriptor.Type)
                 {
                     case BindingType.Axis:
                         // XI reports as a signed int
