@@ -520,7 +520,7 @@ namespace Providers
         protected Dictionary<int, Dictionary<int, BindingHandler>> povDirectionMonitors
             = new Dictionary<int, Dictionary<int, BindingHandler>>();
 
-        protected Dictionary<BindingType, Dictionary<int, Dictionary<int, BindingHandler>>> monitors
+        protected Dictionary<BindingType, Dictionary<int, Dictionary<int, BindingHandler>>> bindingHandlers
             = new Dictionary<BindingType, Dictionary<int, Dictionary<int, BindingHandler>>>();
 
         protected abstract bool GetAcquireState();
@@ -530,9 +530,9 @@ namespace Providers
 
         public StickHandler(InputSubscriptionRequest subReq)
         {
-            monitors.Add(BindingType.Axis, axisMonitors);
-            monitors.Add(BindingType.Button, buttonMonitors);
-            monitors.Add(BindingType.POV, povDirectionMonitors);
+            bindingHandlers.Add(BindingType.Axis, axisMonitors);
+            bindingHandlers.Add(BindingType.Button, buttonMonitors);
+            bindingHandlers.Add(BindingType.POV, povDirectionMonitors);
 
             deviceHandle = subReq.DeviceDescriptor.DeviceHandle;
             deviceInstance = subReq.DeviceDescriptor.DeviceInstance;
@@ -561,30 +561,30 @@ namespace Providers
         {
             var bindingType = subReq.BindingDescriptor.Type;
             var bindingIndex = GetInputIdentifier(bindingType, subReq.BindingDescriptor.Index);
-            var bindingSubIndex = subReq.BindingDescriptor.SubIndex;
+            var subBindingHandlerKey = subReq.BindingDescriptor.SubIndex;
 
-            if (!monitors[bindingType].ContainsKey(bindingIndex))
+            if (!bindingHandlers[bindingType].ContainsKey(bindingIndex))
             {
-                monitors[bindingType].Add(bindingIndex, new Dictionary<int, BindingHandler>());
+                bindingHandlers[bindingType].Add(bindingIndex, new Dictionary<int, BindingHandler>());
             }
-            var monitorList = monitors[bindingType][bindingIndex];
-            if (!monitorList.ContainsKey(bindingSubIndex))
+            var subBindingHandlers = bindingHandlers[bindingType][bindingIndex];
+            if (!subBindingHandlers.ContainsKey(subBindingHandlerKey))
             {
-                monitorList.Add(bindingSubIndex, CreateBindingHandler(subReq.BindingDescriptor));
+                subBindingHandlers.Add(subBindingHandlerKey, CreateBindingHandler(subReq.BindingDescriptor));
             }
-            return monitorList[bindingSubIndex].Add(subReq);
+            return subBindingHandlers[subBindingHandlerKey].Add(subReq);
         }
 
         public bool Remove(InputSubscriptionRequest subReq)
         {
-            var monitorList = monitors[subReq.BindingDescriptor.Type][subReq.DeviceDescriptor.DeviceInstance];
-            var inputId = GetInputIdentifier(subReq.BindingDescriptor.Type, subReq.BindingDescriptor.Index);
-            if (monitorList.ContainsKey(inputId))
+            var monitorList = bindingHandlers[subReq.BindingDescriptor.Type][subReq.DeviceDescriptor.DeviceInstance];
+            var bindingHandlerKey = GetInputIdentifier(subReq.BindingDescriptor.Type, subReq.BindingDescriptor.Index);
+            if (monitorList.ContainsKey(bindingHandlerKey))
             {
-                var ret = monitorList[inputId].Remove(subReq);
-                if (!monitorList[inputId].HasSubscriptions())
+                var ret = monitorList[bindingHandlerKey].Remove(subReq);
+                if (!monitorList[bindingHandlerKey].HasSubscriptions())
                 {
-                    monitorList.Remove(inputId);
+                    monitorList.Remove(bindingHandlerKey);
                 }
                 return ret;
             }
@@ -595,7 +595,7 @@ namespace Providers
 
         public bool HasSubscriptions()
         {
-            foreach (var monitorList in monitors.Values)
+            foreach (var monitorList in bindingHandlers.Values)
             {
                 foreach (var monitorInstance in monitorList.Values)
                 {

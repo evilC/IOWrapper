@@ -398,7 +398,7 @@ namespace SharpDX_DirectInput
                     var bindingType = OffsetToType(state.Offset);
                     int monitorIndex = (int)state.Offset;
 
-                    var monitorList = monitors[bindingType];
+                    var monitorList = bindingHandlers[bindingType];
                     if (!monitorList.ContainsKey(monitorIndex))
                     {
                         continue;
