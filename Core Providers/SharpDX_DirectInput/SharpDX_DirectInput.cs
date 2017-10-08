@@ -57,7 +57,8 @@ namespace SharpDX_DirectInput
                         BindingDescriptor = new BindingDescriptor()
                         {
                             Type = BindingType.POV,
-                            Index = (p * 4) + d,
+                            Index = p,
+                            SubIndex = d
                         }
                     });
                 }

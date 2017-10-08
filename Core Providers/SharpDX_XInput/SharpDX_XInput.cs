@@ -164,7 +164,8 @@ namespace SharpDX_XInput
                     Category = BindingCategory.Momentary,
                     BindingDescriptor = new BindingDescriptor()
                     {
-                        Index = d,
+                        Index = 0,
+                        SubIndex = d,
                         Type = BindingType.POV,
                     }
                 });
