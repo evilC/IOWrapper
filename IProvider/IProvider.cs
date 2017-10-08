@@ -2,6 +2,7 @@
 using Providers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
 namespace Providers
@@ -329,6 +330,22 @@ namespace Providers
             return str;
         }
     }
+
+    public class Logger
+    {
+        private string providerName;
+
+        public Logger(string name)
+        {
+            providerName = name;
+        }
+
+        public void Log(string formatStr, params object[] arguments)
+        {
+            var str = string.Format(string.Format("IOWrapper| Provider: {0}| {1}", providerName, formatStr), arguments);
+            Debug.WriteLine(str);
+        }
+    }
     #endregion
 
     #region Handlers
@@ -510,6 +527,8 @@ namespace Providers
     {
         protected string deviceHandle;
         protected int deviceInstance;
+        protected string providerName;
+        protected Logger logger;
 
         protected Dictionary<int, Dictionary<int, BindingHandler>> buttonMonitors
             = new Dictionary<int, Dictionary<int, BindingHandler>>();
@@ -530,12 +549,14 @@ namespace Providers
 
         public StickHandler(InputSubscriptionRequest subReq)
         {
+            logger = new Logger(subReq.ProviderDescriptor.ProviderName);
             bindingHandlers.Add(BindingType.Axis, axisMonitors);
             bindingHandlers.Add(BindingType.Button, buttonMonitors);
             bindingHandlers.Add(BindingType.POV, povDirectionMonitors);
 
             deviceHandle = subReq.DeviceDescriptor.DeviceHandle;
             deviceInstance = subReq.DeviceDescriptor.DeviceInstance;
+            providerName = subReq.ProviderDescriptor.ProviderName;
             SetAcquireState(true);
         }
 
@@ -613,6 +634,12 @@ namespace Providers
             }
             return false;
         }
+
+
+        //protected void Log(string formatStr, params object[] arguments)
+        //{
+        //    OldLogger.Log(String.Format("{0} StickHandler | ", providerName) + formatStr, arguments);
+        //}
 
         #region IDisposable Members
         bool disposed = false;

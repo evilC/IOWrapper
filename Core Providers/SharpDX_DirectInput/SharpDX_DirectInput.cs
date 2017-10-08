@@ -16,6 +16,8 @@ namespace SharpDX_DirectInput
         public bool IsLive { get { return isLive; } }
         private bool isLive = true;
 
+        private Logger logger;
+
         bool disposed = false;
         static private DirectInput directInput;
 
@@ -35,6 +37,7 @@ namespace SharpDX_DirectInput
 
         public SharpDX_DirectInput()
         {
+            logger = new Logger(ProviderName);
             for (int p = 0; p < 4; p++)
             {
                 povBindingInfos[p] = new List<BindingReport>();
@@ -72,11 +75,6 @@ namespace SharpDX_DirectInput
                 pollHandler.Dispose();
             }
             disposed = true;
-        }
-
-        private static void Log(string formatStr, params object[] arguments)
-        {
-            Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
         }
 
         #region IProvider Members
@@ -352,13 +350,13 @@ namespace SharpDX_DirectInput
                     joystick = new Joystick(directInput, stickGuid);
                     joystick.Properties.BufferSize = 128;
                     joystick.Acquire();
-                    Log("Aquired DirectInput stick {0}", stickGuid);
+                    logger.Log("Aquired stick {0}", stickGuid);
                 }
                 else
                 {
                     joystick.Unacquire();
                     joystick = null;
-                    Log("Relinquished DirectInput stick {0}", stickGuid);
+                    logger.Log("Relinquished stick {0}", stickGuid);
                 }
             }
 

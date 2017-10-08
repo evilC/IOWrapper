@@ -19,13 +19,13 @@ namespace IOWrapper
             GenericMEFPluginLoader<IProvider> loader = new GenericMEFPluginLoader<IProvider>("Providers");
             _Providers = new Dictionary<string, IProvider>();
             IEnumerable<IProvider> providers = loader.Plugins;
-            Log("IOController is initializing...");
+            Log("Initializing...");
             foreach (var provider in providers)
             {
                 _Providers[provider.ProviderName] = provider;
                 Log("Initialized Provider {0}", provider.ProviderName);
             }
-            Log("IOController initialization complete");
+            Log("Initialization complete");
         }
 
         ~IOController()
@@ -51,12 +51,12 @@ namespace IOWrapper
                 _Providers = null;
             }
             disposed = true;
-            Log("IOController Disposed");
+            Log("Disposed");
         }
 
         private static void Log(string formatStr, params object[] arguments)
         {
-            Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
+            Debug.WriteLine(String.Format("IOWrapper| IOController| " + formatStr, arguments));
         }
 
         public bool SetProfileState(Guid profileGuid, bool state)

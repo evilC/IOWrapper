@@ -14,6 +14,8 @@ namespace SharpDX_XInput
         public bool IsLive { get { return isLive; } }
         private bool isLive = true;
 
+        private Logger logger;
+
         bool disposed = false;
 
         private XIPollHandler pollHandler = new XIPollHandler();
@@ -96,6 +98,7 @@ namespace SharpDX_XInput
 
         public SharpDX_XInput()
         {
+            logger = new Logger(ProviderName);
             BuildButtonList();
             QueryDevices();
         }
@@ -172,13 +175,9 @@ namespace SharpDX_XInput
                 pollHandler.Dispose();
             }
             disposed = true;
-            Log("Provider {0} was Disposed", ProviderName);
+            logger.Log("Disposed");
         }
 
-        private static void Log(string formatStr, params object[] arguments)
-        {
-            Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
-        }
         #region IProvider Members
         public string ProviderName { get { return typeof(SharpDX_XInput).Namespace; } }
 
@@ -378,10 +377,12 @@ namespace SharpDX_XInput
                 if (state)
                 {
                     controller = new Controller((UserIndex)deviceInstance);
+                    logger.Log("Aquired controller {0}", deviceInstance + 1);
                 }
                 else
                 {
                     controller = null;
+                    logger.Log("Relinquished controller {0}", deviceInstance + 1);
                 }
             }
 
