@@ -523,6 +523,11 @@ namespace Providers
         protected Dictionary<BindingType, Dictionary<int, Dictionary<int, BindingHandler>>> monitors
             = new Dictionary<BindingType, Dictionary<int, Dictionary<int, BindingHandler>>>();
 
+        protected abstract bool GetAcquireState();
+        protected abstract void _SetAcquireState(bool state);
+        public abstract void Poll();
+        public abstract BindingHandler CreateBindingHandler(BindingDescriptor bindingDescriptor);
+
         public StickHandler(InputSubscriptionRequest subReq)
         {
             monitors.Add(BindingType.Axis, axisMonitors);
@@ -539,10 +544,18 @@ namespace Providers
             Dispose(true);
         }
 
-        protected abstract void SetAcquireState(bool state);
-
-        public abstract void Poll();
-        public abstract BindingHandler CreateBindingHandler(BindingDescriptor bindingDescriptor);
+        protected void SetAcquireState(bool state)
+        {
+            var acquiredState = GetAcquireState();
+            if (state && !acquiredState)
+            {
+                _SetAcquireState(true);
+            }
+            else if (!state && acquiredState)
+            {
+                _SetAcquireState(false);
+            }
+        }
 
         public bool Add(InputSubscriptionRequest subReq)
         {

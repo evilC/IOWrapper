@@ -344,9 +344,9 @@ namespace SharpDX_DirectInput
             {
             }
 
-            protected override void SetAcquireState(bool state)
+            protected override void _SetAcquireState(bool state)
             {
-                if (state && (joystick == null))
+                if (state)
                 {
                     stickGuid = devicesList[deviceHandle][deviceInstance].InstanceGuid;
                     joystick = new Joystick(directInput, stickGuid);
@@ -354,12 +354,17 @@ namespace SharpDX_DirectInput
                     joystick.Acquire();
                     Log("Aquired DirectInput stick {0}", stickGuid);
                 }
-                else if (!state && (joystick != null))
+                else
                 {
-                    Log("Relinquished DirectInput stick {0}", stickGuid);
                     joystick.Unacquire();
                     joystick = null;
+                    Log("Relinquished DirectInput stick {0}", stickGuid);
                 }
+            }
+
+            protected override bool GetAcquireState()
+            {
+                return joystick != null;
             }
 
             public override BindingHandler CreateBindingHandler(BindingDescriptor bindingDescriptor)

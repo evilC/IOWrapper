@@ -373,16 +373,21 @@ namespace SharpDX_XInput
                 }
             }
 
-            protected override void SetAcquireState(bool state)
+            protected override void _SetAcquireState(bool state)
             {
-                if (state && (controller == null))
+                if (state)
                 {
                     controller = new Controller((UserIndex)deviceInstance);
                 }
-                else if (!state && (controller != null))
+                else
                 {
                     controller = null;
                 }
+            }
+
+            protected override bool GetAcquireState()
+            {
+                return controller != null;
             }
         }
 
