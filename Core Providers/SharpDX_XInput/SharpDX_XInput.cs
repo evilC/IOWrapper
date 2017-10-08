@@ -413,100 +413,6 @@ namespace SharpDX_XInput
         }
 
         #region Stick
-        /*
-        public class StickMonitor
-        {
-            private int controllerId;
-            private Controller controller;
-
-            private Dictionary<int, PolledBindingHandler> axisMonitors = new Dictionary<int, PolledBindingHandler>();
-            private Dictionary<int, PolledBindingHandler> buttonMonitors = new Dictionary<int, PolledBindingHandler>();
-            private Dictionary<int, PolledBindingHandler> povDirectionMonitors = new Dictionary<int, PolledBindingHandler>();
-
-            Dictionary<BindingType, Dictionary<int, PolledBindingHandler>> monitors = new Dictionary<BindingType, Dictionary<int, PolledBindingHandler>>();
-
-            public StickMonitor(int cid)
-            {
-                controllerId = cid;
-                controller = new Controller((UserIndex)controllerId);
-                monitors.Add(BindingType.Axis, axisMonitors);
-                monitors.Add(BindingType.Button, buttonMonitors);
-                monitors.Add(BindingType.POV, povDirectionMonitors);
-            }
-
-            public bool Add(InputSubscriptionRequest subReq)
-            {
-                var inputId = subReq.BindingDescriptor.Index;
-                var monitor = monitors[subReq.BindingDescriptor.Type];
-                if (!monitor.ContainsKey(inputId))
-                {
-                    monitor.Add(inputId, new PolledBindingHandler() { BindingType = subReq.BindingDescriptor.Type });
-                }
-                Log("Adding subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.BindingDescriptor.Type.ToString(), subReq.BindingDescriptor.Index);
-                return monitor[inputId].Add(subReq);
-            }
-
-            public bool Remove(InputSubscriptionRequest subReq)
-            {
-                var inputId = subReq.BindingDescriptor.Index;
-                var monitor = monitors[subReq.BindingDescriptor.Type];
-                if (monitor.ContainsKey(inputId))
-                {
-                    Log("Removing subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.BindingDescriptor.Type.ToString(), subReq.BindingDescriptor.Index);
-                    var ret = monitor[inputId].Remove(subReq);
-                    if (!monitor[inputId].HasSubscriptions())
-                    {
-                        monitor.Remove(inputId);
-                    }
-                    return ret;
-                }
-                return false;
-            }
-
-            public bool HasSubscriptions()
-            {
-                foreach (var monitorSet in monitors)
-                {
-                    foreach (var monitor in monitorSet.Value)
-                    {
-                        if (monitor.Value.HasSubscriptions())
-                        {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-
-            public void Poll()
-            {
-                if (!controller.IsConnected)
-                    return;
-                var state = controller.GetState();
-
-                foreach (var monitor in axisMonitors)
-                {
-                    var value = Convert.ToInt32(state.Gamepad.GetType().GetField(xinputAxisIdentifiers[(int)monitor.Key]).GetValue(state.Gamepad));
-                    monitor.Value.ProcessPollResult(value);
-                }
-
-                foreach (var monitor in buttonMonitors)
-                {
-                    var flag = state.Gamepad.Buttons & xinputButtonIdentifiers[(int)monitor.Key];
-                    var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
-                    monitor.Value.ProcessPollResult(value);
-                }
-
-                foreach (var monitor in povDirectionMonitors)
-                {
-                    var flag = state.Gamepad.Buttons & xinputPovDirectionIdentifiers[(int)monitor.Key];
-                    var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
-                    monitor.Value.ProcessPollResult(value);
-                }
-            }
-        }
-        */
-
         public class XIStickHandler : StickHandler
         {
             private Controller controller;
@@ -558,20 +464,7 @@ namespace SharpDX_XInput
                         var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
                         monitor.Value.ProcessPollResult(value);
                     }
-                    //foreach (var monitor in povDirectionMonitors[povMonitor])
-                    //{
-                    //    var flag = state.Gamepad.Buttons & xinputPovDirectionIdentifiers[(int)monitor.Key];
-                    //    var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
-                    //    monitor.Value.ProcessPollResult(value);
-                    //}
                 }
-
-                //foreach (var monitor in povDirectionMonitors)
-                //{
-                //    var flag = state.Gamepad.Buttons & xinputPovDirectionIdentifiers[(int)monitor.Key];
-                //    var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
-                //    monitor.Value.ProcessPollResult(value);
-                //}
             }
 
             protected override void SetAcquireState(bool state)
