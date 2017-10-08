@@ -571,61 +571,6 @@ namespace SharpDX_DirectInput
 
         #endregion
 
-        #region POV Input Detection
-        class PovDirectionMonitor
-        {
-            private Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
-            private bool state = false;
-            private static int tolerance = 4500;
-            private int angle;
-
-            public PovDirectionMonitor(int dir)
-            {
-                angle = dir * 900;
-            }
-
-            public bool Add(InputSubscriptionRequest subReq)
-            {
-                subscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
-                return true;
-            }
-
-            public void Poll(int value)
-            {
-                bool newState = ValueMatchesAngle(value);
-                if (newState != state)
-                {
-                    state = newState;
-                    var ret = Convert.ToInt32(state);
-                    foreach (var subscription in subscriptions.Values)
-                    {
-                        subscription.Callback(ret);
-                    }
-                }
-            }
-
-            private bool ValueMatchesAngle(int value)
-            {
-                if (value == -1)
-                    return false;
-                var diff = AngleDiff(value, angle);
-                return value != -1 && AngleDiff(value, angle) <= tolerance;
-            }
-
-            private int AngleDiff(int a, int b)
-            {
-                var result1 = a - b;
-                if (result1 < 0)
-                    result1 += 36000;
-
-                var result2 = b - a;
-                if (result2 < 0)
-                    result2 += 36000;
-
-                return Math.Min(result1, result2);
-            }
-        }
-        #endregion
         #endregion
 
         #region Helper Methods
