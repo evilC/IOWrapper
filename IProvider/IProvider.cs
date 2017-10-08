@@ -332,14 +332,15 @@ namespace Providers
         protected BindingType bindingType;
         protected int currentState = 0;
 
-        public virtual bool ProfileIsActive(Guid profileGuid)
-        {
-            return true;
-        }
-
+        //public BindingType bindingType { get; set; }
         public BindingHandler(BindingType type)
         {
             bindingType = type;
+        }
+
+        public virtual bool ProfileIsActive(Guid profileGuid)
+        {
+            return true;
         }
 
         public bool Add(InputSubscriptionRequest subReq)
@@ -364,19 +365,21 @@ namespace Providers
             return false;
         }
 
+        public abstract void ProcessPollResult(int state);
+
         public bool HasSubscriptions()
         {
             return subscriptions.Count > 0;
         }
     }
 
-    public class PolledBindingHandler : BindingHandler
+    public abstract class PolledBindingHandler : BindingHandler
     {
         public PolledBindingHandler(BindingType type) : base(type)
         {
         }
 
-        public virtual void ProcessPollResult(int state)
+        public override void ProcessPollResult(int state)
         {
             int reportedValue = ConvertValue(bindingType, state);
             if (currentState == reportedValue)
@@ -390,12 +393,86 @@ namespace Providers
                     subscription.Callback(reportedValue);
                 }
             }
-
         }
 
         public virtual int ConvertValue(BindingType bindingType, int state)
         {
             return state;
+        }
+    }
+
+    public abstract class StickHandler
+    {
+        protected string deviceHandle;
+        protected int deviceInstance;
+
+        protected Dictionary<int, BindingHandler> buttonMonitors
+            = new Dictionary<int, BindingHandler>();
+
+        protected Dictionary<int, BindingHandler> axisMonitors
+            = new Dictionary<int, BindingHandler>();
+
+        protected Dictionary<BindingType, Dictionary<int, BindingHandler>> monitors
+            = new Dictionary<BindingType, Dictionary<int, BindingHandler>>();
+
+        public StickHandler(InputSubscriptionRequest subReq)
+        {
+            monitors.Add(BindingType.Axis, axisMonitors);
+            monitors.Add(BindingType.Button, buttonMonitors);
+            deviceHandle = subReq.DeviceDescriptor.DeviceHandle;
+            deviceInstance = subReq.DeviceDescriptor.DeviceInstance;
+            //monitors.Add(BindingType.POV, povDirectionMonitors);
+            SetAcquireState(true);
+        }
+
+        protected abstract void SetAcquireState(bool state);
+
+        public abstract void Poll();
+        public abstract BindingHandler CreateBindingHandler(BindingDescriptor bindingDescriptor);
+
+        public bool Add(InputSubscriptionRequest subReq)
+        {
+            var monitorList = monitors[subReq.BindingDescriptor.Type];
+            var inputId = GetInputIdentifier(subReq.BindingDescriptor.Type, subReq.BindingDescriptor.Index);
+            if (!monitorList.ContainsKey(inputId))
+            {
+                //monitorList.Add(inputId, new T() { bindingType = BindingType.Axis });
+                monitorList.Add(inputId, CreateBindingHandler(subReq.BindingDescriptor));
+            }
+            return monitorList[inputId].Add(subReq);
+        }
+
+        public bool Remove(InputSubscriptionRequest subReq)
+        {
+            var monitorList = monitors[subReq.BindingDescriptor.Type];
+            var inputId = GetInputIdentifier(subReq.BindingDescriptor.Type, subReq.BindingDescriptor.Index);
+            if (monitorList.ContainsKey(inputId))
+            {
+                var ret = monitorList[inputId].Remove(subReq);
+                if (!monitorList[inputId].HasSubscriptions())
+                {
+                    monitorList.Remove(inputId);
+                }
+                return ret;
+            }
+            return false;
+        }
+
+        public abstract int GetInputIdentifier(BindingType bindingType, int bindingIndex);
+
+        public bool HasSubscriptions()
+        {
+            foreach (var monitorList in monitors.Values)
+            {
+                foreach (var monitor in monitorList.Values)
+                {
+                    if (monitor.HasSubscriptions())
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

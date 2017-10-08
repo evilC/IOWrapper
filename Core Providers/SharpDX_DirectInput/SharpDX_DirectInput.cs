@@ -30,7 +30,7 @@ namespace SharpDX_DirectInput
         // Is the thread in an Active or Inactive state?
         private bool pollThreadActive = false;
 
-        private Dictionary<string, StickMonitor> MonitoredSticks = new Dictionary<string, StickMonitor>();
+        private Dictionary<string, DIStickHandler> MonitoredSticks = new Dictionary<string, DIStickHandler>();
         private static List<Guid> ActiveProfiles = new List<Guid>();
 
         private static Dictionary<string, List<DeviceInstance>> devicesList;
@@ -87,7 +87,7 @@ namespace SharpDX_DirectInput
                 Log("Stopped PollThread for {0}", ProviderName);
                 foreach (var stick in MonitoredSticks.Values)
                 {
-                    stick.Dispose();
+                    //stick.Dispose();
                 }
                 MonitoredSticks = null;
             }
@@ -212,9 +212,10 @@ namespace SharpDX_DirectInput
 
             if (!MonitoredSticks.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
             {
-                MonitoredSticks.Add(subReq.DeviceDescriptor.DeviceHandle, new StickMonitor(subReq));
+                MonitoredSticks.Add(subReq.DeviceDescriptor.DeviceHandle, new DIStickHandler(subReq));
             }
-            var success =  MonitoredSticks[subReq.DeviceDescriptor.DeviceHandle].Add(subReq);
+            var handler = MonitoredSticks[subReq.DeviceDescriptor.DeviceHandle];
+            var success =  handler.Add(subReq);
             if (success)
             {
                 if (prev_state)
@@ -240,7 +241,7 @@ namespace SharpDX_DirectInput
                 {
                     if (!MonitoredSticks[subReq.DeviceDescriptor.DeviceHandle].HasSubscriptions())
                     {
-                        MonitoredSticks[subReq.DeviceDescriptor.DeviceHandle].Dispose();
+                        //MonitoredSticks[subReq.DeviceDescriptor.DeviceHandle].Dispose();
                         MonitoredSticks.Remove(subReq.DeviceDescriptor.DeviceHandle);
                     }
                 }
@@ -445,6 +446,7 @@ namespace SharpDX_DirectInput
         #endregion
 
         #region Stick Poller
+        /*
         public class StickMonitor : IDisposable
         {
             bool disposed = false;
@@ -513,7 +515,7 @@ namespace SharpDX_DirectInput
                 var inputId = GetInputIdentifier(subReq.BindingDescriptor.Type, (int)subReq.BindingDescriptor.Index);
                 if (!monitors.ContainsKey(inputId))
                 {
-                    monitors.Add(inputId, new SharpDXDirectInputBindingHandler( subReq.BindingDescriptor.Type ));
+                    monitors.Add(inputId, new SharpDXDirectInputBindingHandler() { bindingType = subReq.BindingDescriptor.Type });
                 }
                 Log("Adding subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.BindingDescriptor.Type.ToString(), subReq.BindingDescriptor.Index);
                 return monitors[inputId].Add(subReq);
@@ -561,6 +563,79 @@ namespace SharpDX_DirectInput
                 }
                 Thread.Sleep(1);
             }
+        }
+        */
+
+        public class DIStickHandler : StickHandler
+        {
+            private Joystick joystick;
+            private Guid stickGuid;
+
+            public DIStickHandler(InputSubscriptionRequest subReq) : base(subReq)
+            {
+            }
+
+            protected override void SetAcquireState(bool state)
+            {
+                if (state && (joystick == null))
+                {
+                    stickGuid = devicesList[deviceHandle][deviceInstance].InstanceGuid;
+                    joystick = new Joystick(directInput, stickGuid);
+                    joystick.Properties.BufferSize = 128;
+                    joystick.Acquire();
+                    Log("Aquired DirectInput stick {0}", stickGuid);
+                }
+                else if (!state && (joystick != null))
+                {
+                    Log("Relinquished DirectInput stick {0}", stickGuid);
+                    joystick.Unacquire();
+                    joystick = null;
+                }
+            }
+
+            public override BindingHandler CreateBindingHandler(BindingDescriptor bindingDescriptor)
+            {
+                return new SharpDXDirectInputBindingHandler(bindingDescriptor.Type);
+            }
+
+            public override int GetInputIdentifier(BindingType bindingType, int bindingIndex)
+            {
+                switch (bindingType)
+                {
+                    case BindingType.Axis:
+                        return (int)JoystickOffset.X + bindingIndex;
+
+                    case BindingType.Button:
+                        return (int)JoystickOffset.Buttons0 + bindingIndex;
+                }
+                return 0;   // ToDo: should not happen. Properly handle
+            }
+
+            public override void Poll()
+            {
+                if (joystick == null)
+                    return;
+                JoystickUpdate[] data = joystick.GetBufferedData();
+                //var thismonitor = monitors[BindingType.Axis];
+                foreach (var state in data)
+                {
+                    var monitor = monitors[OffsetToType(state.Offset)];
+                    int offset = (int)state.Offset;
+                    if (monitor.ContainsKey(offset))
+                    {
+                        monitor[offset].ProcessPollResult(state.Value);
+                    }
+                }
+                Thread.Sleep(1);
+            }
+        }
+
+        private static BindingType OffsetToType(JoystickOffset offset)
+        {
+            int index = (int)offset;
+            if (index <= (int)JoystickOffset.Sliders1) return BindingType.Axis;
+            if (index <= (int)JoystickOffset.PointOfViewControllers3) return BindingType.POV;
+            return BindingType.Button;
         }
         #endregion
 

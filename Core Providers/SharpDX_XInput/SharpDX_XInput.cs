@@ -27,7 +27,7 @@ namespace SharpDX_XInput
         // Is the thread in an Active or Inactive state?
         private bool pollThreadActive = false;
 
-        private Dictionary<int, StickMonitor> MonitoredSticks = new Dictionary<int, StickMonitor>();
+        private Dictionary<int, XIStickHandler> MonitoredSticks = new Dictionary<int, XIStickHandler>();
         private static List<Guid> ActiveProfiles = new List<Guid>();
         //private static List<> PluggedInControllers
 
@@ -35,7 +35,7 @@ namespace SharpDX_XInput
         private List<DeviceReport> deviceReports;
 
         private static List<string> buttonNames = new List<string>() { "A", "B", "X", "Y", "LB", "RB", "LS", "RS", "Back", "Start" };
-        private static List<string> axisNames = new List<string>() { "LX", "LY", "RX", "RY", "LT", "RT"};
+        private static List<string> axisNames = new List<string>() { "LX", "LY", "RX", "RY", "LT", "RT" };
         private static List<string> povNames = new List<string>() { "Up", "Right", "Down", "Left" };
 
         private static DeviceReportNode buttonInfo;
@@ -143,7 +143,7 @@ namespace SharpDX_XInput
                 axisInfo.Bindings.Add(new BindingReport()
                 {
                     Title = axisNames[a],
-                    Category = ( a < 4 ? BindingCategory.Signed : BindingCategory.Unsigned),
+                    Category = (a < 4 ? BindingCategory.Signed : BindingCategory.Unsigned),
                     BindingDescriptor = new BindingDescriptor()
                     {
                         Index = a,
@@ -290,7 +290,7 @@ namespace SharpDX_XInput
                 var ctrlr = new Controller((UserIndex)i);
                 //if (ctrlr.IsConnected)
                 //{
-                    deviceReports.Add(BuildXInputDevice(i));
+                deviceReports.Add(BuildXInputDevice(i));
                 //}
             }
         }
@@ -304,7 +304,7 @@ namespace SharpDX_XInput
             var stickId = Convert.ToInt32(subReq.DeviceDescriptor.DeviceHandle);
             if (!MonitoredSticks.ContainsKey(stickId))
             {
-                MonitoredSticks.Add(stickId, new StickMonitor(stickId));
+                MonitoredSticks.Add(stickId, new XIStickHandler(subReq));
             }
             var result = MonitoredSticks[stickId].Add(subReq);
             if (result)
@@ -375,7 +375,7 @@ namespace SharpDX_XInput
                 {
                     DeviceHandle = id.ToString(),
                 },
-                Nodes = { buttonInfo, axisInfo , povInfo}
+                Nodes = { buttonInfo, axisInfo, povInfo }
                 //ButtonCount = 11,
                 //ButtonList = buttonInfo,
                 //AxisList = axisInfo,
@@ -413,6 +413,7 @@ namespace SharpDX_XInput
         }
 
         #region Stick
+        /*
         public class StickMonitor
         {
             private int controllerId;
@@ -439,7 +440,7 @@ namespace SharpDX_XInput
                 var monitor = monitors[subReq.BindingDescriptor.Type];
                 if (!monitor.ContainsKey(inputId))
                 {
-                    monitor.Add(inputId, new PolledBindingHandler(subReq.BindingDescriptor.Type));
+                    monitor.Add(inputId, new PolledBindingHandler() { BindingType = subReq.BindingDescriptor.Type });
                 }
                 Log("Adding subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.BindingDescriptor.Type.ToString(), subReq.BindingDescriptor.Index);
                 return monitor[inputId].Add(subReq);
@@ -504,9 +505,98 @@ namespace SharpDX_XInput
                 }
             }
         }
+        */
+
+        public class XIStickHandler : StickHandler
+        {
+            private Controller controller;
+
+            public XIStickHandler(InputSubscriptionRequest subReq) : base(subReq)
+            {
+            }
+
+            public override BindingHandler CreateBindingHandler(BindingDescriptor bindingDescriptor)
+            {
+                return new SharpDXXInputBindingHandler(bindingDescriptor.Type);
+            }
+
+            public override int GetInputIdentifier(BindingType bindingType, int bindingIndex)
+            {
+                return bindingIndex;
+            }
+
+            public override void Poll()
+            {
+                if (!controller.IsConnected)
+                    return;
+                var state = controller.GetState();
+
+                foreach (var monitor in axisMonitors)
+                {
+                    var value = Convert.ToInt32(state.Gamepad.GetType().GetField(xinputAxisIdentifiers[monitor.Key]).GetValue(state.Gamepad));
+                    monitor.Value.ProcessPollResult(value);
+                }
+
+                foreach (var monitor in buttonMonitors)
+                {
+                    var flag = state.Gamepad.Buttons & xinputButtonIdentifiers[(int)monitor.Key];
+                    var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
+                    monitor.Value.ProcessPollResult(value);
+                }
+
+                //foreach (var monitor in povDirectionMonitors)
+                //{
+                //    var flag = state.Gamepad.Buttons & xinputPovDirectionIdentifiers[(int)monitor.Key];
+                //    var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
+                //    monitor.Value.ProcessPollResult(value);
+                //}
+            }
+
+            protected override void SetAcquireState(bool state)
+            {
+                if (state && (controller == null))
+                {
+                    controller = new Controller((UserIndex)deviceInstance);
+                }
+                else if (!state && (controller != null))
+                {
+                    controller = null;
+                }
+            }
+        }
+
         #endregion
 
+        #region Input Detection
+        public class SharpDXXInputBindingHandler : PolledBindingHandler
+        {
+            public SharpDXXInputBindingHandler(BindingType type) : base(type)
+            {
+            }
 
-        #endregion
+            public override int ConvertValue(BindingType bindingType, int state)
+            {
+                int reportedValue = 0;
+                switch (bindingType)
+                {
+                    case BindingType.Axis:
+                        // XI reports as a signed int
+                        reportedValue = state;
+                        break;
+                    case BindingType.Button:
+                        // XInput reports as 0..1 for buttons
+                        reportedValue = state;
+                        break;
+                    default:
+                        break;
+                }
+                return reportedValue;
+            }
+
+
+            #endregion
+
+            #endregion
+        }
     }
 }
