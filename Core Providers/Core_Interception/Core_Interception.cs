@@ -369,8 +369,7 @@ namespace Core_Interception
                         }
                     });
                     deviceHandleToId.Add(handle, i - 1);
-                    //Log(String.Format("{0} (Keyboard) = VID/PID: {1}", i, handle));
-                    Log(String.Format("{0} (Keyboard) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
+                    //Log(String.Format("{0} (Keyboard) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
                 }
                 i++;
             }
@@ -405,7 +404,7 @@ namespace Core_Interception
                     });
                     deviceHandleToId.Add(handle, i - 1);
                     //Log(String.Format("{0} (Mouse) = VID/PID: {1}", i, handle));
-                    Log(String.Format("{0} (Mouse) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
+                    //Log(String.Format("{0} (Mouse) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
                 }
                 i++;
             }

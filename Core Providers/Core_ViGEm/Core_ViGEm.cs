@@ -20,6 +20,8 @@ namespace Core_ViGEm
         public bool IsLive { get { return isLive; } }
         private bool isLive = false;
 
+        private Logger logger;
+
         private static ViGEmClient client;
         Xbox360Controller[] xboxControllers = new Xbox360Controller[4];
         private OutputDevicesHandler devicesHandler = new OutputDevicesHandler();
@@ -28,6 +30,7 @@ namespace Core_ViGEm
 
         public Core_ViGEm()
         {
+            logger = new Logger(ProviderName);
             InitLibrary();
         }
 
@@ -42,7 +45,7 @@ namespace Core_ViGEm
                 catch { }
             }
             isLive = (client != null);
-            Log("ViGem Client is {0}!", (isLive ? "Loaded" : "NOT Loaded"));
+            logger.Log("ViGem Client is {0}!", (isLive ? "Loaded" : "NOT Loaded"));
         }
 
         #region IProvider Members
@@ -157,10 +160,10 @@ namespace Core_ViGEm
         }
         #endregion
 
-        private static void Log(string formatStr, params object[] arguments)
-        {
-            Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
-        }
+        //private static void Log(string formatStr, params object[] arguments)
+        //{
+        //    Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
+        //}
 
         #region Device Handling
 
@@ -287,6 +290,8 @@ namespace Core_ViGEm
             public bool IsRequested { get; set; }
             private Dictionary<Guid, OutputSubscriptionRequest> subscriptions = new Dictionary<Guid, OutputSubscriptionRequest>();
 
+            private Logger logger;
+
             protected DeviceClassDescriptor deviceClassDescriptor;
             protected int deviceId = 0;
             protected bool isAcquired = false;
@@ -304,6 +309,7 @@ namespace Core_ViGEm
 
             public DeviceHandler(DeviceClassDescriptor descriptor,int index)
             {
+                logger = new Logger(string.Format("Core_ViGEm ({0})", descriptor.classIdentifier));
                 deviceId = index;
                 deviceClassDescriptor = descriptor;
             }
@@ -316,7 +322,7 @@ namespace Core_ViGEm
             public bool AddSubscription(OutputSubscriptionRequest subReq)
             {
                 subscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
-                Log("VIGEM: Adding subscription to {0} controller # {1}", subReq.DeviceDescriptor.DeviceHandle, subReq.DeviceDescriptor.DeviceInstance);
+                logger.Log("Adding subscription to controller # {0}", subReq.DeviceDescriptor.DeviceInstance);
                 IsRequested = true;
                 SetAcquireState();
                 return true;
@@ -328,7 +334,7 @@ namespace Core_ViGEm
                 {
                     subscriptions.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
                 }
-                Log("VIGEM: Removing subscription to {0} controller # {1}", subReq.DeviceDescriptor.DeviceHandle, subReq.DeviceDescriptor.DeviceInstance);
+                logger.Log("Removing subscription to controller # {0}", subReq.DeviceDescriptor.DeviceInstance);
                 IsRequested = HasSubscriptions();
                 SetAcquireState();
                 return true;
