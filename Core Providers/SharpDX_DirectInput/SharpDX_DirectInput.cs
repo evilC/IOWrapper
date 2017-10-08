@@ -781,8 +781,7 @@ namespace SharpDX_DirectInput
                         reportedValue = state / 128;
                         break;
                     case BindingType.POV:
-                        bool isPressed = ValueMatchesAngle(state, povAngle);
-                        reportedValue = isPressed ? 1 : 0;
+                        reportedValue = ValueMatchesAngle(state, povAngle) ? 1 : 0;
                         break;
                 }
                 return reportedValue;
