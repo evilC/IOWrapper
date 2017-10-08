@@ -160,11 +160,6 @@ namespace Core_ViGEm
         }
         #endregion
 
-        //private static void Log(string formatStr, params object[] arguments)
-        //{
-        //    Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
-        //}
-
         #region Device Handling
 
         #region Main Handler
