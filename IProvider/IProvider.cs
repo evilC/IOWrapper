@@ -557,7 +557,6 @@ namespace Providers
             deviceHandle = subReq.DeviceDescriptor.DeviceHandle;
             deviceInstance = subReq.DeviceDescriptor.DeviceInstance;
             providerName = subReq.ProviderDescriptor.ProviderName;
-            SetAcquireState(true);
         }
 
         ~StickHandler()
@@ -593,7 +592,12 @@ namespace Providers
             {
                 subBindingHandlers.Add(subBindingHandlerKey, CreateBindingHandler(subReq.BindingDescriptor));
             }
-            return subBindingHandlers[subBindingHandlerKey].Subscribe(subReq);
+            var ret = subBindingHandlers[subBindingHandlerKey].Subscribe(subReq);
+            if (HasSubscriptions())
+            {
+                SetAcquireState(true);
+            }
+            return ret;
         }
 
         public bool Unsubscribe(InputSubscriptionRequest subReq)
@@ -609,6 +613,10 @@ namespace Providers
                 if (!subBindingHandlers[subBindingHandlerKey].HasSubscriptions())
                 {
                     subBindingHandlers.Remove(subBindingHandlerKey);
+                }
+                if (!HasSubscriptions())
+                {
+                    SetAcquireState(false);
                 }
                 return ret;
             }
