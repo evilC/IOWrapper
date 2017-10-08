@@ -326,14 +326,14 @@ namespace SharpDX_XInput
             {
             }
 
-            public override BindingHandler CreateBindingHandler(BindingDescriptor descriptor)
+            public override BindingHandler CreateBindingHandler(BindingDescriptor bindingDescriptor)
             {
-                return new XIBindingHandler(descriptor);
+                return new XIBindingHandler(bindingDescriptor);
             }
 
-            public override int GetBindingHandlerKey(BindingType bindingType, int bindingIndex)
+            public override int GetBindingHandlerKey(BindingDescriptor bindingDescriptor)
             {
-                return bindingIndex;
+                return bindingDescriptor.Index;
             }
 
             public override void Poll()

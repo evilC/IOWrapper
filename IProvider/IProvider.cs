@@ -581,7 +581,7 @@ namespace Providers
         public bool Subscribe(InputSubscriptionRequest subReq)
         {
             var bindingType = subReq.BindingDescriptor.Type;
-            var bindingHandlerKey = GetBindingHandlerKey(bindingType, subReq.BindingDescriptor.Index);
+            var bindingHandlerKey = GetBindingHandlerKey(subReq.BindingDescriptor);
             var subBindingHandlerKey = subReq.BindingDescriptor.SubIndex;
 
             if (!bindingHandlers[bindingType].ContainsKey(bindingHandlerKey))
@@ -599,7 +599,7 @@ namespace Providers
         public bool Unsubscribe(InputSubscriptionRequest subReq)
         {
             var bindingType = subReq.BindingDescriptor.Type;
-            var bindingHandlerKey = GetBindingHandlerKey(bindingType, subReq.BindingDescriptor.Index);
+            var bindingHandlerKey = GetBindingHandlerKey(subReq.BindingDescriptor);
             var subBindingHandlerKey = subReq.BindingDescriptor.SubIndex;
 
             if (bindingHandlers[bindingType].ContainsKey(bindingHandlerKey))
@@ -615,7 +615,8 @@ namespace Providers
             return false;
         }
 
-        public abstract int GetBindingHandlerKey(BindingType bindingType, int bindingIndex);
+        //public abstract int GetBindingHandlerKey(BindingType bindingType, int bindingIndex);
+        public abstract int GetBindingHandlerKey(BindingDescriptor descriptor);
 
         public bool HasSubscriptions()
         {

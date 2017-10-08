@@ -370,18 +370,18 @@ namespace SharpDX_DirectInput
                 return new DIBindingHandler(bindingDescriptor);
             }
 
-            public override int GetBindingHandlerKey(BindingType bindingType, int bindingIndex)
+            public override int GetBindingHandlerKey(BindingDescriptor bindingDescriptor)
             {
-                switch (bindingType)
+                switch (bindingDescriptor.Type)
                 {
                     case BindingType.Axis:
-                        return (int)JoystickOffset.X + bindingIndex;
+                        return (int)JoystickOffset.X + bindingDescriptor.Index;
 
                     case BindingType.Button:
-                        return (int)JoystickOffset.Buttons0 + bindingIndex;
+                        return (int)JoystickOffset.Buttons0 + bindingDescriptor.Index;
 
                     case BindingType.POV:
-                        return (int)JoystickOffset.PointOfViewControllers0 + (bindingIndex * 4);
+                        return (int)JoystickOffset.PointOfViewControllers0 + (bindingDescriptor.Index * 4);
                 }
                 return 0;   // ToDo: should not happen. Properly handle
             }
