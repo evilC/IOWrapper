@@ -575,16 +575,16 @@ namespace SharpDX_DirectInput
 
         #region Helper Methods
 
-        /// <summary>
-        /// Converts index (eg button 0, axis 1) into DirectX Offsets
-        /// </summary>
-        /// <param name="inputType">The type of input (Axis, Button etc)</param>
-        /// <param name="inputId">The index of the input. 0 based</param>
-        /// <returns></returns>
-        private static JoystickOffset GetInputIdentifier(BindingType inputType, int inputId)
-        {
-            return directInputMappings[inputType][inputId];
-        }
+        ///// <summary>
+        ///// Converts index (eg button 0, axis 1) into DirectX Offsets
+        ///// </summary>
+        ///// <param name="inputType">The type of input (Axis, Button etc)</param>
+        ///// <param name="inputId">The index of the input. 0 based</param>
+        ///// <returns></returns>
+        //private static JoystickOffset GetInputIdentifier(BindingType inputType, int inputId)
+        //{
+        //    return directInputMappings[inputType][inputId];
+        //}
 
         private bool IsStickType(DeviceInstance deviceInstance)
         {
