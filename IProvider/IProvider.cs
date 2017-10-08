@@ -370,7 +370,7 @@ namespace Providers
             {
                 stickHandlers.Add(handlerKey, CreateStickHandler(subReq));
             }
-            var result = stickHandlers[handlerKey].Add(subReq);
+            var result = stickHandlers[handlerKey].Subscribe(subReq);
             if (result || prev_state)
             {
                 SetPollThreadState(true);
@@ -390,7 +390,7 @@ namespace Providers
             if (stickHandlers.ContainsKey(monitorId))
             {
                 // Remove from monitor lookup table
-                stickHandlers[monitorId].Remove(subReq);
+                stickHandlers[monitorId].Unsubscribe(subReq);
                 // If this was the last thing monitored on this stick...
                 ///...remove the stick from the monitor lookup table
                 if (!stickHandlers[monitorId].HasSubscriptions())
@@ -557,7 +557,7 @@ namespace Providers
             }
         }
 
-        public bool Add(InputSubscriptionRequest subReq)
+        public bool Subscribe(InputSubscriptionRequest subReq)
         {
             var bindingType = subReq.BindingDescriptor.Type;
             var bindingIndex = GetInputIdentifier(bindingType, subReq.BindingDescriptor.Index);
@@ -572,10 +572,10 @@ namespace Providers
             {
                 subBindingHandlers.Add(subBindingHandlerKey, CreateBindingHandler(subReq.BindingDescriptor));
             }
-            return subBindingHandlers[subBindingHandlerKey].Add(subReq);
+            return subBindingHandlers[subBindingHandlerKey].Subscribe(subReq);
         }
 
-        public bool Remove(InputSubscriptionRequest subReq)
+        public bool Unsubscribe(InputSubscriptionRequest subReq)
         {
             var bindingType = subReq.BindingDescriptor.Type;
             var bindingIndex = GetInputIdentifier(bindingType, subReq.BindingDescriptor.Index);
@@ -584,7 +584,7 @@ namespace Providers
             if (bindingHandlers[bindingType].ContainsKey(bindingIndex))
             {
                 var subBindingHandlers = bindingHandlers[bindingType][bindingIndex];
-                var ret = subBindingHandlers[subBindingHandlerKey].Remove(subReq);
+                var ret = subBindingHandlers[subBindingHandlerKey].Unsubscribe(subReq);
                 if (!subBindingHandlers[subBindingHandlerKey].HasSubscriptions())
                 {
                     subBindingHandlers.Remove(subBindingHandlerKey);
@@ -663,7 +663,7 @@ namespace Providers
             return true;
         }
 
-        public bool Add(InputSubscriptionRequest subReq)
+        public bool Subscribe(InputSubscriptionRequest subReq)
         {
             var subscriberGuid = subReq.SubscriptionDescriptor.SubscriberGuid;
             if (!subscriptions.ContainsKey(subscriberGuid))
@@ -674,7 +674,7 @@ namespace Providers
             return false;
         }
 
-        public bool Remove(InputSubscriptionRequest subReq)
+        public bool Unsubscribe(InputSubscriptionRequest subReq)
         {
             var subscriberGuid = subReq.SubscriptionDescriptor.SubscriberGuid;
             if (subscriptions.ContainsKey(subscriberGuid))
