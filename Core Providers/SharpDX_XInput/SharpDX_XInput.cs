@@ -16,7 +16,7 @@ namespace SharpDX_XInput
 
         bool disposed = false;
 
-        private XIPollManager pollManager = new XIPollManager();
+        private XIPollHandler pollHandler = new XIPollHandler();
 
         private static List<Guid> ActiveProfiles = new List<Guid>();
         //private static List<> PluggedInControllers
@@ -169,7 +169,7 @@ namespace SharpDX_XInput
                 return;
             if (disposing)
             {
-                pollManager.Dispose();
+                pollHandler.Dispose();
             }
             disposed = true;
             Log("Provider {0} was Disposed", ProviderName);
@@ -257,12 +257,12 @@ namespace SharpDX_XInput
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            return pollManager.SubscribeInput(subReq);
+            return pollHandler.SubscribeInput(subReq);
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            return pollManager.UnsubscribeInput(subReq);
+            return pollHandler.UnsubscribeInput(subReq);
         }
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
@@ -302,21 +302,23 @@ namespace SharpDX_XInput
             };
         }
 
-        #region Stick Monitoring
-        class XIPollManager : PollManager<int>
+        #region Handlers
+        #region Poll Handler
+        class XIPollHandler : PollHandler<int>
         {
-            public override StickHandler CreateHandler(InputSubscriptionRequest subReq)
+            public override StickHandler CreateStickHandler(InputSubscriptionRequest subReq)
             {
                 return new XIStickHandler(subReq);
             }
 
-            public override int GetMonitorKey(DeviceDescriptor descriptor)
+            public override int GetStickHandlerKey(DeviceDescriptor descriptor)
             {
                 return Convert.ToInt32(descriptor.DeviceHandle);
             }
         }
+        #endregion
 
-        #region Stick
+        #region Stick Handler
         public class XIStickHandler : StickHandler
         {
             private Controller controller;
@@ -327,7 +329,7 @@ namespace SharpDX_XInput
 
             public override BindingHandler CreateBindingHandler(BindingDescriptor descriptor)
             {
-                return new SharpDXXInputBindingHandler(descriptor);
+                return new XIBindingHandler(descriptor);
             }
 
             public override int GetInputIdentifier(BindingType bindingType, int bindingIndex)
@@ -386,10 +388,10 @@ namespace SharpDX_XInput
 
         #endregion
 
-        #region Input Detection
-        public class SharpDXXInputBindingHandler : PolledBindingHandler
+        #region Binding Handler
+        public class XIBindingHandler : PolledBindingHandler
         {
-            public SharpDXXInputBindingHandler(BindingDescriptor descriptor) : base(descriptor)
+            public XIBindingHandler(BindingDescriptor descriptor) : base(descriptor)
             {
             }
 

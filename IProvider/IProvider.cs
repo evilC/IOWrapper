@@ -6,6 +6,7 @@ using System.Threading;
 
 namespace Providers
 {
+    #region IProvider
     public interface IProvider : IDisposable
     {
         string ProviderName { get; }
@@ -26,6 +27,7 @@ namespace Providers
         //bool SubscribeAxis(string deviceHandle, uint axisId, dynamic callback);
         void RefreshLiveState();
     }
+    #endregion
 
     #region Subscription Requests
     /// <summary>
@@ -88,11 +90,11 @@ namespace Providers
     }
     #endregion
 
+    #region Reporting
     // Reports allow the back-end to tell the front-end what capabilities are available
     // Reports comprise of two parts:
     // Descriptors allow the front-end to subscribe to Bindings
     // Other meta-data allows the front-end to interpret capabilities, report style etc
-    #region Reporting
 
     #region Provider Report
 
@@ -275,9 +277,10 @@ namespace Providers
     }
     #endregion
 
+    #region Enums
     // Enums used to categorize how a binding reports
     #region Category Enums
-    
+
     /// <summary>
     /// Describes what kind of input or output you are trying to read or emulate
     /// </summary>
@@ -291,6 +294,7 @@ namespace Providers
     //public enum AxisCategory { Signed, Unsigned, Delta }
     //public enum ButtonCategory { Momentary, Event }
     //public enum POVCategory { POV1, POV2, POV3, POV4 }
+    #endregion
     #endregion
 
     #region Helper Classes
@@ -327,108 +331,181 @@ namespace Providers
     }
     #endregion
 
-    public abstract class BindingHandler
+    #region Handlers
+    // Helper classes that assist in:
+    // Subscribing / Unsubscribing
+    // Polling for input
+
+    #region Poll Handler
+    /// <summary>
+    /// Maintains a list of subscribed sticks, and polls them
+    /// </summary>
+    /// <typeparam name="T">The type used for the index of the stickHandlers dictionary</typeparam>
+    public abstract class PollHandler<T> : IDisposable
     {
-        protected Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
-        protected BindingDescriptor bindingDescriptor;
-        protected int currentState = 0;
+        // The thread which handles input detection
+        protected Thread pollThread;
+        // Is the thread currently running? This is set by the thread itself.
+        protected volatile bool pollThreadRunning = false;
+        // Do we want the thread to be on or off?
+        // This is independent of whether or not the thread is running...
+        // ... for example, we may be updating bindings, so the thread may be temporarily stopped
+        protected bool pollThreadDesired = false;
+        // Is the thread in an Active or Inactive state?
+        protected bool pollThreadActive = false;
 
-        private static int povTolerance = 4500;
-        protected int povAngle;
+        protected Dictionary<T, StickHandler> stickHandlers = new Dictionary<T, StickHandler>();
 
-        public BindingHandler(BindingDescriptor descriptor)
+        public abstract T GetStickHandlerKey(DeviceDescriptor descriptor);
+        public abstract StickHandler CreateStickHandler(InputSubscriptionRequest subReq);
+
+        public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            bindingDescriptor = descriptor;
-            if (bindingDescriptor.Type == BindingType.POV)
+            var prev_state = pollThreadActive;
+            if (pollThreadActive)
+                SetPollThreadState(false);
+
+            var handlerKey = GetStickHandlerKey(subReq.DeviceDescriptor);
+            if (!stickHandlers.ContainsKey(handlerKey))
             {
-                povAngle = bindingDescriptor.SubIndex * 9000;
+                stickHandlers.Add(handlerKey, CreateStickHandler(subReq));
             }
-        }
-
-        public virtual bool ProfileIsActive(Guid profileGuid)
-        {
-            return true;
-        }
-
-        public bool Add(InputSubscriptionRequest subReq)
-        {
-            var subscriberGuid = subReq.SubscriptionDescriptor.SubscriberGuid;
-            if (!subscriptions.ContainsKey(subscriberGuid))
+            var result = stickHandlers[handlerKey].Add(subReq);
+            if (result || prev_state)
             {
-                subscriptions.Add(subscriberGuid, subReq);
+                SetPollThreadState(true);
                 return true;
             }
             return false;
         }
 
-        public bool Remove(InputSubscriptionRequest subReq)
+        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            var subscriberGuid = subReq.SubscriptionDescriptor.SubscriberGuid;
-            if (subscriptions.ContainsKey(subscriberGuid))
+            var prev_state = pollThreadActive;
+            if (pollThreadActive)
+                SetPollThreadState(false);
+
+            bool ret = false;
+            var monitorId = GetStickHandlerKey(subReq.DeviceDescriptor);
+            if (stickHandlers.ContainsKey(monitorId))
             {
-                subscriptions.Remove(subscriberGuid);
-                return true;
-            }
-            return false;
-        }
-
-        public abstract void ProcessPollResult(int state);
-
-        public bool HasSubscriptions()
-        {
-            return subscriptions.Count > 0;
-        }
-
-        protected bool ValueMatchesAngle(int value, int angle)
-        {
-            if (value == -1)
-                return false;
-            var diff = AngleDiff(value, angle);
-            return value != -1 && AngleDiff(value, angle) <= povTolerance;
-        }
-
-        private int AngleDiff(int a, int b)
-        {
-            var result1 = a - b;
-            if (result1 < 0)
-                result1 += 36000;
-
-            var result2 = b - a;
-            if (result2 < 0)
-                result2 += 36000;
-
-            return Math.Min(result1, result2);
-        }
-    }
-
-    public abstract class PolledBindingHandler : BindingHandler
-    {
-        public PolledBindingHandler(BindingDescriptor descriptor) : base(descriptor)
-        {
-        }
-
-        public override void ProcessPollResult(int state)
-        {
-            int reportedValue = ConvertValue(state);
-            if (currentState == reportedValue)
-                return;
-            currentState = reportedValue;
-
-            foreach (var subscription in subscriptions.Values)
-            {
-                if (ProfileIsActive(subscription.SubscriptionDescriptor.ProfileGuid))
+                // Remove from monitor lookup table
+                stickHandlers[monitorId].Remove(subReq);
+                // If this was the last thing monitored on this stick...
+                ///...remove the stick from the monitor lookup table
+                if (!stickHandlers[monitorId].HasSubscriptions())
                 {
-                    subscription.Callback(reportedValue);
+                    stickHandlers.Remove(monitorId);
+                }
+                ret = true;
+            }
+            if (prev_state)
+            {
+                SetPollThreadState(true);
+            }
+            return ret;
+        }
+
+        public void SetPollThreadState(bool state)
+        {
+            if (state && !pollThreadRunning)
+            {
+                pollThread = new Thread(PollThread);
+                pollThread.Start();
+                while (!pollThreadRunning)
+                {
+                    Thread.Sleep(10);
+                }
+            }
+
+            if (!pollThreadRunning)
+                return;
+
+            if (state && !pollThreadActive)
+            {
+                pollThreadDesired = true;
+                while (!pollThreadActive)
+                {
+                    Thread.Sleep(10);
+                }
+                //Log("PollThread for {0} Activated", ProviderName);
+            }
+            else if (!state && pollThreadActive)
+            {
+                pollThreadDesired = false;
+                while (pollThreadActive)
+                {
+                    Thread.Sleep(10);
+                }
+                //Log("PollThread for {0} De-Activated", ProviderName);
+            }
+        }
+
+        private void PollThread()
+        {
+            pollThreadRunning = true;
+            //Log("Started PollThread for {0}", ProviderName);
+            while (true)
+            {
+                if (pollThreadDesired)
+                {
+                    pollThreadActive = true;
+                    while (pollThreadDesired)
+                    {
+                        foreach (var monitoredStick in stickHandlers)
+                        {
+                            monitoredStick.Value.Poll();
+                        }
+                        Thread.Sleep(1);
+                    }
+                }
+                else
+                {
+                    pollThreadActive = false;
+                    while (!pollThreadDesired)
+                    {
+                        Thread.Sleep(1);
+                    }
                 }
             }
         }
 
-        public virtual int ConvertValue(int state)
-        {
-            return state;
-        }
-    }
+        #region IDisposable
+        bool disposed = false;
 
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+            if (disposing)
+            {
+                pollThread.Abort();
+                pollThreadRunning = false;
+                //Log("Stopped PollThread for {0}", ProviderName);
+                foreach (var stick in stickHandlers.Values)
+                {
+                    //stick.Dispose();
+                }
+                stickHandlers = null;
+            }
+            disposed = true;
+            //Log("Provider {0} was Disposed", ProviderName);
+        }
+
+        #endregion
+    }
+    #endregion
+
+    #region Stick Handler
+    /// <summary>
+    /// Maintains a list of subscribed bindings for a given stick
+    /// Also processes the results of a polled stick
+    /// </summary>
     public abstract class StickHandler : IDisposable
     {
         protected string deviceHandle;
@@ -540,164 +617,119 @@ namespace Providers
         }
         #endregion
     }
+    #endregion
 
-    public abstract class PollManager<T> : IDisposable
+    #region Binding Handlers
+    /// <summary>
+    /// Base class that all bindings derive from
+    /// Handles subscribing / unsubscribing
+    /// </summary>
+    public abstract class BindingHandler
     {
-        // The thread which handles input detection
-        protected Thread pollThread;
-        // Is the thread currently running? This is set by the thread itself.
-        protected volatile bool pollThreadRunning = false;
-        // Do we want the thread to be on or off?
-        // This is independent of whether or not the thread is running...
-        // ... for example, we may be updating bindings, so the thread may be temporarily stopped
-        protected bool pollThreadDesired = false;
-        // Is the thread in an Active or Inactive state?
-        protected bool pollThreadActive = false;
+        protected Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
+        protected BindingDescriptor bindingDescriptor;
+        protected int currentState = 0;
 
-        protected Dictionary<T, StickHandler> MonitoredSticks = new Dictionary<T, StickHandler>();
+        private static int povTolerance = 4500;
+        protected int povAngle;
 
-        public abstract T GetMonitorKey(DeviceDescriptor descriptor);
-
-        public bool SubscribeInput(InputSubscriptionRequest subReq)
+        public BindingHandler(BindingDescriptor descriptor)
         {
-            var prev_state = pollThreadActive;
-            if (pollThreadActive)
-                SetPollThreadState(false);
-
-            var monitorId = GetMonitorKey(subReq.DeviceDescriptor);
-            if (!MonitoredSticks.ContainsKey(monitorId))
+            bindingDescriptor = descriptor;
+            if (bindingDescriptor.Type == BindingType.POV)
             {
-                MonitoredSticks.Add(monitorId, CreateHandler(subReq));
+                povAngle = bindingDescriptor.SubIndex * 9000;
             }
-            var result = MonitoredSticks[monitorId].Add(subReq);
-            if (result || prev_state)
+        }
+
+        public virtual bool ProfileIsActive(Guid profileGuid)
+        {
+            return true;
+        }
+
+        public bool Add(InputSubscriptionRequest subReq)
+        {
+            var subscriberGuid = subReq.SubscriptionDescriptor.SubscriberGuid;
+            if (!subscriptions.ContainsKey(subscriberGuid))
             {
-                SetPollThreadState(true);
+                subscriptions.Add(subscriberGuid, subReq);
                 return true;
             }
             return false;
         }
 
-        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
+        public bool Remove(InputSubscriptionRequest subReq)
         {
-            var prev_state = pollThreadActive;
-            if (pollThreadActive)
-                SetPollThreadState(false);
-
-            bool ret = false;
-            var monitorId = GetMonitorKey(subReq.DeviceDescriptor);
-            if (MonitoredSticks.ContainsKey(monitorId))
+            var subscriberGuid = subReq.SubscriptionDescriptor.SubscriberGuid;
+            if (subscriptions.ContainsKey(subscriberGuid))
             {
-                // Remove from monitor lookup table
-                MonitoredSticks[monitorId].Remove(subReq);
-                // If this was the last thing monitored on this stick...
-                ///...remove the stick from the monitor lookup table
-                if (!MonitoredSticks[monitorId].HasSubscriptions())
-                {
-                    MonitoredSticks.Remove(monitorId);
-                }
-                ret = true;
+                subscriptions.Remove(subscriberGuid);
+                return true;
             }
-            if (prev_state)
-            {
-                SetPollThreadState(true);
-            }
-            return ret;
+            return false;
         }
 
-        public abstract StickHandler CreateHandler(InputSubscriptionRequest subReq);
+        public abstract void ProcessPollResult(int state);
 
-        public void SetPollThreadState(bool state)
+        public bool HasSubscriptions()
         {
-            if (state && !pollThreadRunning)
-            {
-                pollThread = new Thread(PollThread);
-                pollThread.Start();
-                while (!pollThreadRunning)
-                {
-                    Thread.Sleep(10);
-                }
-            }
-
-            if (!pollThreadRunning)
-                return;
-
-            if (state && !pollThreadActive)
-            {
-                pollThreadDesired = true;
-                while (!pollThreadActive)
-                {
-                    Thread.Sleep(10);
-                }
-                //Log("PollThread for {0} Activated", ProviderName);
-            }
-            else if (!state && pollThreadActive)
-            {
-                pollThreadDesired = false;
-                while (pollThreadActive)
-                {
-                    Thread.Sleep(10);
-                }
-                //Log("PollThread for {0} De-Activated", ProviderName);
-            }
+            return subscriptions.Count > 0;
         }
 
-        private void PollThread()
+        protected bool ValueMatchesAngle(int value, int angle)
         {
-            pollThreadRunning = true;
-            //Log("Started PollThread for {0}", ProviderName);
-            while (true)
-            {
-                if (pollThreadDesired)
-                {
-                    pollThreadActive = true;
-                    while (pollThreadDesired)
-                    {
-                        foreach (var monitoredStick in MonitoredSticks)
-                        {
-                            monitoredStick.Value.Poll();
-                        }
-                        Thread.Sleep(1);
-                    }
-                }
-                else
-                {
-                    pollThreadActive = false;
-                    while (!pollThreadDesired)
-                    {
-                        Thread.Sleep(1);
-                    }
-                }
-            }
+            if (value == -1)
+                return false;
+            var diff = AngleDiff(value, angle);
+            return value != -1 && AngleDiff(value, angle) <= povTolerance;
         }
 
-        #region IDisposable
-        bool disposed = false;
-
-        public void Dispose()
+        private int AngleDiff(int a, int b)
         {
-            Dispose(true);
-        }
+            var result1 = a - b;
+            if (result1 < 0)
+                result1 += 36000;
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposed)
-                return;
-            if (disposing)
-            {
-                pollThread.Abort();
-                pollThreadRunning = false;
-                //Log("Stopped PollThread for {0}", ProviderName);
-                foreach (var stick in MonitoredSticks.Values)
-                {
-                    //stick.Dispose();
-                }
-                MonitoredSticks = null;
-            }
-            disposed = true;
-            //Log("Provider {0} was Disposed", ProviderName);
-        }
+            var result2 = b - a;
+            if (result2 < 0)
+                result2 += 36000;
 
-        #endregion
+            return Math.Min(result1, result2);
+        }
     }
+
+    /// <summary>
+    /// Base class for Polled Binding Handlers to derive from
+    /// Processes poll results and decides whether to fire the callbacks
+    /// </summary>
+    public abstract class PolledBindingHandler : BindingHandler
+    {
+        public PolledBindingHandler(BindingDescriptor descriptor) : base(descriptor)
+        {
+        }
+
+        public override void ProcessPollResult(int state)
+        {
+            int reportedValue = ConvertValue(state);
+            if (currentState == reportedValue)
+                return;
+            currentState = reportedValue;
+
+            foreach (var subscription in subscriptions.Values)
+            {
+                if (ProfileIsActive(subscription.SubscriptionDescriptor.ProfileGuid))
+                {
+                    subscription.Callback(reportedValue);
+                }
+            }
+        }
+
+        public virtual int ConvertValue(int state)
+        {
+            return state;
+        }
+    }
+    #endregion
+
+    #endregion
 }

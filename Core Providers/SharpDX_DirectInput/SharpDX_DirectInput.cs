@@ -19,7 +19,7 @@ namespace SharpDX_DirectInput
         bool disposed = false;
         static private DirectInput directInput;
 
-        private DIPollManager pollManager = new DIPollManager();
+        private DIPollHandler pollHandler = new DIPollHandler();
 
         private static List<Guid> ActiveProfiles = new List<Guid>();
 
@@ -69,7 +69,7 @@ namespace SharpDX_DirectInput
                 return;
             if (disposing)
             {
-                pollManager.Dispose();
+                pollHandler.Dispose();
             }
             disposed = true;
         }
@@ -154,12 +154,12 @@ namespace SharpDX_DirectInput
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            return pollManager.SubscribeInput(subReq);
+            return pollHandler.SubscribeInput(subReq);
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            return pollManager.UnsubscribeInput(subReq);
+            return pollHandler.UnsubscribeInput(subReq);
         }
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
@@ -317,24 +317,24 @@ namespace SharpDX_DirectInput
         }
         #endregion
 
-        #region Stick Monitoring
+        #region Handlers
 
-        #region Main Monitor Loop
-        class DIPollManager : PollManager<string>
+        #region Poll Handler
+        class DIPollHandler : PollHandler<string>
         {
-            public override StickHandler CreateHandler(InputSubscriptionRequest subReq)
+            public override StickHandler CreateStickHandler(InputSubscriptionRequest subReq)
             {
                 return new DIStickHandler(subReq);
             }
 
-            public override string GetMonitorKey(DeviceDescriptor descriptor)
+            public override string GetStickHandlerKey(DeviceDescriptor descriptor)
             {
                 return descriptor.DeviceHandle;
             }
         }
         #endregion
 
-        #region Stick Poller
+        #region Stick Handler
         public class DIStickHandler : StickHandler
         {
             private Joystick joystick;
@@ -364,7 +364,7 @@ namespace SharpDX_DirectInput
 
             public override BindingHandler CreateBindingHandler(BindingDescriptor bindingDescriptor)
             {
-                return new SharpDXDirectInputBindingHandler(bindingDescriptor);
+                return new DIBindingHandler(bindingDescriptor);
             }
 
             public override int GetInputIdentifier(BindingType bindingType, int bindingIndex)
@@ -419,11 +419,11 @@ namespace SharpDX_DirectInput
 
         #endregion
 
-        #region Input Detection
+        #region Binding Handler
         
-        public class SharpDXDirectInputBindingHandler : PolledBindingHandler
+        public class DIBindingHandler : PolledBindingHandler
         {
-            public SharpDXDirectInputBindingHandler(BindingDescriptor descriptor) : base(descriptor)
+            public DIBindingHandler(BindingDescriptor descriptor) : base(descriptor)
             {
             }
 
