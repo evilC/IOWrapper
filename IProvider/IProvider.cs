@@ -577,14 +577,17 @@ namespace Providers
 
         public bool Remove(InputSubscriptionRequest subReq)
         {
-            var monitorList = bindingHandlers[subReq.BindingDescriptor.Type][subReq.DeviceDescriptor.DeviceInstance];
-            var bindingHandlerKey = GetInputIdentifier(subReq.BindingDescriptor.Type, subReq.BindingDescriptor.Index);
-            if (monitorList.ContainsKey(bindingHandlerKey))
+            var bindingType = subReq.BindingDescriptor.Type;
+            var bindingIndex = GetInputIdentifier(bindingType, subReq.BindingDescriptor.Index);
+            var subBindingHandlerKey = subReq.BindingDescriptor.SubIndex;
+
+            if (bindingHandlers[bindingType].ContainsKey(bindingIndex))
             {
-                var ret = monitorList[bindingHandlerKey].Remove(subReq);
-                if (!monitorList[bindingHandlerKey].HasSubscriptions())
+                var subBindingHandlers = bindingHandlers[bindingType][bindingIndex];
+                var ret = subBindingHandlers[subBindingHandlerKey].Remove(subReq);
+                if (!subBindingHandlers[subBindingHandlerKey].HasSubscriptions())
                 {
-                    monitorList.Remove(bindingHandlerKey);
+                    subBindingHandlers.Remove(subBindingHandlerKey);
                 }
                 return ret;
             }
