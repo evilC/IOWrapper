@@ -428,7 +428,7 @@ namespace Providers
         }
     }
 
-    public abstract class StickHandler
+    public abstract class StickHandler : IDisposable
     {
         protected string deviceHandle;
         protected int deviceInstance;
@@ -456,6 +456,11 @@ namespace Providers
             SetAcquireState(true);
         }
 
+        ~StickHandler()
+        {
+            Dispose(true);
+        }
+
         protected abstract void SetAcquireState(bool state);
 
         public abstract void Poll();
@@ -472,10 +477,8 @@ namespace Providers
                 monitors[bindingType].Add(bindingIndex, new Dictionary<int, BindingHandler>());
             }
             var monitorList = monitors[bindingType][bindingIndex];
-            //var monitorIndex = GetInputIdentifier(subReq.BindingDescriptor.Type, subReq.BindingDescriptor.Index);
             if (!monitorList.ContainsKey(bindingSubIndex))
             {
-                //monitorList.Add(inputId, new T() { bindingType = BindingType.Axis });
                 monitorList.Add(bindingSubIndex, CreateBindingHandler(subReq.BindingDescriptor));
             }
             return monitorList[bindingSubIndex].Add(subReq);
@@ -516,5 +519,25 @@ namespace Providers
             }
             return false;
         }
+
+        #region IDisposable Members
+        bool disposed = false;
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+            if (disposing)
+            {
+                SetAcquireState(false);
+            }
+            disposed = true;
+        }
+        #endregion
+
     }
 }
