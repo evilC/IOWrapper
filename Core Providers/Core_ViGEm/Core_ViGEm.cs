@@ -490,7 +490,7 @@ namespace Core_ViGEm
 
             protected override List<string> buttonNames { get; set; } = new List<string>()
             {
-                "A", "B", "X", "Y", "LS", "RS", "LS", "RS", "Back", "Start"
+                "A", "B", "X", "Y", "LB", "RB", "LS", "RS", "Back", "Start"
             };
 
             private static readonly List<Xbox360Buttons> povIndexes = new List<Xbox360Buttons>()
@@ -571,7 +571,7 @@ namespace Core_ViGEm
 
             protected override List<string> buttonNames { get; set; } = new List<string>()
             {
-                "Cross", "Circle", "Square", "Triangle", "LS", "RS", "LS", "RS", "Share", "Options", "LT", "RT"
+                "Cross", "Circle", "Square", "Triangle", "L1", "R1", "LS", "RS", "Share", "Options", "L2", "R2"
             };
 
             private static readonly List<DualShock4DPadValues> povIndexes = new List<DualShock4DPadValues>()
