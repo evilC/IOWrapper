@@ -537,6 +537,7 @@ namespace SharpDX_DirectInput
             return orderedGuids;
         }
 
+        /*
         // In SharpDX, when you call GetDevices(), the order that devices comes back is not always in a useful order
         // This code aims to match each stick with a "Joystick ID" from the registry via VID/PID.
         // Joystick IDs in the registry do not always start with 0
@@ -591,6 +592,7 @@ namespace SharpDX_DirectInput
             }
             return -1;
         }
+        */
         #endregion
 
         #region Lookup Tables
