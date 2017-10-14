@@ -599,7 +599,7 @@ namespace Core_ViGEm
             protected override void SetAxisState(BindingDescriptor bindingDescriptor, int state)
             {
                 var inputId = bindingDescriptor.Index;
-                report.SetAxis(axisIndexes[inputId], (byte)state);
+                report.SetAxis(axisIndexes[inputId], (byte)((state + 32768) / 256));
                 SendReport();
             }
 
