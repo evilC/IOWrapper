@@ -501,7 +501,10 @@ namespace Providers
                 return;
             if (disposing)
             {
-                pollThread.Abort();
+                if (pollThread != null)
+                {
+                    pollThread.Abort();
+                }
                 pollThreadRunning = false;
                 //Log("Stopped PollThread for {0}", ProviderName);
                 foreach (var stick in stickHandlers.Values)

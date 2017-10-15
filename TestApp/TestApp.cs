@@ -519,6 +519,9 @@ class Tester
         };
         //iow.SubscribeInput(titanOneSubReq);
         #endregion
+
+        // Test disposal
+        //iow.Dispose();
     }
 
     void ToggleDefaultProfileState()
