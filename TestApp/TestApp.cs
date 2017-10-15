@@ -136,8 +136,8 @@ class Tester
                 //iow.SetOutputstate(vJoyOutputSubReq, buttonOneDescriptor, value);
                 //iow.SetOutputstate(viGemXboxOutputSubReq, buttonOneDescriptor, value);
                 //iow.SetOutputstate(viGemXboxOutputSubReq, povOneUpDescriptor, value);
-                //iow.SetOutputstate(viGemXboxOutputSubReq, axisOneDescriptor, value * 32767);
-                //iow.SetOutputstate(viGemDs4OutputSubReq, povOneUpDescriptor, value);
+                //iow.SetOutputstate(viGemXboxOutputSubReq1, axisOneDescriptor, value);
+                //iow.SetOutputstate(viGemDs4OutputSubReq, axisOneDescriptor, value);
                 //iow.SetOutputstate(vJoyOutputSubReq, povOneUpDescriptor, value);
                 //iow.SetOutputstate(interceptionKeyboardOutputSubReq, new BindingDescriptor() { Type = BindingType.Button, Index = 311 }, value); // Right Alt
                 //iow.SetOutputstate(interceptionMouseOutputSubReq, new BindingDescriptor() { Type = BindingType.Button, Index = 1 }, value); // RMB
