@@ -283,6 +283,11 @@ namespace SharpDX_XInput
         {
 
         }
+
+        public void RefreshDevices()
+        {
+
+        }
         #endregion
 
         private DeviceReport BuildXInputDevice(int id)

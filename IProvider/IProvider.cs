@@ -27,6 +27,7 @@ namespace Providers
         bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state);
         //bool SubscribeAxis(string deviceHandle, uint axisId, dynamic callback);
         void RefreshLiveState();
+        void RefreshDevices();
     }
     #endregion
 

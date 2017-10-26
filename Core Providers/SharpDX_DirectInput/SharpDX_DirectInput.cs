@@ -177,7 +177,12 @@ namespace SharpDX_DirectInput
 
         public void RefreshLiveState()
         {
+            
+        }
 
+        public void RefreshDevices()
+        {
+            QueryDevices();
         }
         #endregion
 
@@ -346,11 +351,21 @@ namespace SharpDX_DirectInput
             {
                 if (state)
                 {
-                    stickGuid = devicesList[deviceHandle][deviceInstance].InstanceGuid;
-                    joystick = new Joystick(directInput, stickGuid);
-                    joystick.Properties.BufferSize = 128;
-                    joystick.Acquire();
-                    logger.Log("Aquired stick {0}", stickGuid);
+                    try
+                    {
+                        stickGuid = devicesList[deviceHandle][deviceInstance].InstanceGuid;
+                        joystick = new Joystick(directInput, stickGuid);
+                        joystick.Properties.BufferSize = 128;
+                        joystick.Acquire();
+                        logger.Log("Aquired stick {0}", stickGuid);
+                    }
+                    catch
+                    {
+                        stickGuid = Guid.Empty;
+                        joystick = null;
+                        return;
+                    }
+
                 }
                 else
                 {
@@ -388,7 +403,7 @@ namespace SharpDX_DirectInput
 
             public override void Poll()
             {
-                if (joystick == null)
+                if (joystick == null || !directInput.IsDeviceAttached(stickGuid))
                     return;
                 JoystickUpdate[] data = joystick.GetBufferedData();
                 foreach (var state in data)

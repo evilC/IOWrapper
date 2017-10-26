@@ -88,6 +88,11 @@ namespace Core_TitanOne
             InitLibrary();
         }
 
+        public void RefreshDevices()
+        {
+
+        }
+
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
             if (outputHandlers.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))

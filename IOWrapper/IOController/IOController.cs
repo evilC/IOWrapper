@@ -200,6 +200,20 @@ namespace IOWrapper
             return provider.IsLive;
         }
 
+        public void RefreshDevices()
+        {
+            foreach (var provider in _Providers.Values)
+            {
+                provider.RefreshDevices();
+            }
+        }
+
+        public void RefreshDevices(string providerName)
+        {
+            var provider = GetProvider(providerName);
+            provider.RefreshDevices();
+        }
+
         private IProvider GetProvider(string providerName)
         {
             if (_Providers.ContainsKey(providerName))

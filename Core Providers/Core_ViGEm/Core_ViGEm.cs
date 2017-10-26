@@ -123,6 +123,11 @@ namespace Core_ViGEm
         {
             InitLibrary();
         }
+
+        public void RefreshDevices()
+        {
+
+        }
         #endregion
 
         #region IDisposable Support

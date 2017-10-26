@@ -110,6 +110,11 @@ namespace Core_Tobii_Interaction
         {
 
         }
+
+        public void RefreshDevices()
+        {
+
+        }
         #endregion
 
         #region IDisposable Support

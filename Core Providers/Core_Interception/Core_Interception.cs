@@ -329,6 +329,11 @@ namespace Core_Interception
         {
 
         }
+
+        public void RefreshDevices()
+        {
+
+        }
         #endregion
 
         #region Device Querying

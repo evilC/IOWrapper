@@ -189,6 +189,11 @@ namespace Core_vJoyInterfaceWrap
         {
 
         }
+
+        public void RefreshDevices()
+        {
+
+        }
         #endregion
 
         private void QueryDevices()
