@@ -291,8 +291,10 @@ class Tester
 
         #region Interception
         string keyboardHandle = null;
-        try { keyboardHandle = inputList["Core_Interception"].Devices.FirstOrDefault().DeviceDescriptor.DeviceHandle; }
-        catch { return; }
+        //try { keyboardHandle = inputList["Core_Interception"].Devices.FirstOrDefault().DeviceDescriptor.DeviceHandle; }
+        //catch { return; }
+        keyboardHandle = "Keyboard\\HID\\VID_04F2&PID_0112&REV_0103&MI_00";
+
         //keyboardHandle = @"Keyboard\HID\VID_04F2&PID_0112&REV_0103&MI_00";
         DeviceDescriptor interceptionKeyboard = new DeviceDescriptor()
         {
@@ -374,14 +376,15 @@ class Tester
             //DeviceHandle = keyboardHandle,
             DeviceDescriptor = new DeviceDescriptor()
             {
-                DeviceHandle = mouseHandle,
+                //DeviceHandle = mouseHandle,
+                DeviceHandle = keyboardHandle,
             },
             BindingDescriptor = new BindingDescriptor()
             {
                 Type = BindingType.Button,
-                //Index = 1, // 1 key on keyboard
+                Index = 1, // 1 key on keyboard
                 //Index = 311, // Right ALT key on keyboard
-                Index = 0, // LMB
+                //Index = 0, // LMB
             },
             Callback = new Action<int>((value) =>
             {
@@ -390,7 +393,7 @@ class Tester
                 Console.WriteLine("Keyboard Key Value: " + value);
             })
         };
-        //iow.SubscribeInput(subInterception);
+        //ret = iow.SubscribeInput(subInterception);
         #endregion
 
         #region Tobii Eye Tracker
@@ -522,6 +525,12 @@ class Tester
 
         // Test disposal
         //iow.Dispose();
+        //while (true)
+        //{
+        //    iow.RefreshDevices("SharpDX_DirectInput");
+        //    iow.SubscribeInput(diButtonSub1);
+        //    Thread.Sleep(100);
+        //}
     }
 
     void ToggleDefaultProfileState()
