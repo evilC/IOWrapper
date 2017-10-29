@@ -43,6 +43,7 @@ class Tester
     ProviderDescriptor tobiiProvider = new ProviderDescriptor() { ProviderName = "Core_Tobii_Interaction" };
     ProviderDescriptor vigemProvider = new ProviderDescriptor() { ProviderName = "Core_ViGEm" };
     ProviderDescriptor titanOneProvider = new ProviderDescriptor() { ProviderName = "Core_TitanOne" };
+    ProviderDescriptor ds4WindowsApiProvider = new ProviderDescriptor() { ProviderName = "Core_DS4WindowsApi" };
 
     BindingDescriptor buttonOneDescriptor = new BindingDescriptor() { Index = 0, Type = BindingType.Button };
     BindingDescriptor buttonTwoDescriptor = new BindingDescriptor() { Index = 1, Type = BindingType.Button };
@@ -521,6 +522,28 @@ class Tester
             })
         };
         //iow.SubscribeInput(titanOneSubReq);
+        #endregion
+
+        #region ds4WindowsApiProvider
+        var ds4WindowsApiAxisSubReq = new InputSubscriptionRequest()
+        {
+            DeviceDescriptor = new DeviceDescriptor()
+            {
+                DeviceHandle = "ds4",
+                DeviceInstance = 0
+            },
+            BindingDescriptor = axisOneDescriptor,
+            ProviderDescriptor = ds4WindowsApiProvider,
+            SubscriptionDescriptor = new SubscriptionDescriptor()
+            {
+                SubscriberGuid = Guid.NewGuid(),
+            },
+            Callback = new Action<int>((value) =>
+            {
+                Console.WriteLine("DS4 Value: " + value);
+            })
+        };
+        //iow.SubscribeInput(ds4WindowsApiAxisSubReq);
         #endregion
 
         // Test disposal
