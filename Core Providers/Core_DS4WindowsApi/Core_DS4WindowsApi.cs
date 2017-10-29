@@ -86,7 +86,18 @@ namespace Core_DS4WindowsApi
 
         public ProviderReport GetInputList()
         {
-            return null;
+            var providerReport = new ProviderReport()
+            {
+                API = "DS4WindowsApi",
+                Description = "Provides access to DS4 controllers",
+                Title = "DS4Windows",
+                ProviderDescriptor = new ProviderDescriptor()
+                {
+                    ProviderName = ProviderName
+                }
+            };
+            providerReport.Devices.Add(GetInputDeviceReport(0));
+            return providerReport;
         }
 
         public ProviderReport GetOutputList()
@@ -96,8 +107,62 @@ namespace Core_DS4WindowsApi
 
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
         {
-            return null;
+            return GetInputDeviceReport(subReq.BindingDescriptor.Index);
         }
+
+        private DeviceReport GetInputDeviceReport(int id)
+        {
+            return new DeviceReport()
+            {
+                DeviceDescriptor = new DeviceDescriptor()
+                {
+                    DeviceHandle = "0",
+                    DeviceInstance = id
+                },
+                DeviceName = "DS4 Controller #" + (id + 1),
+                Nodes = new List<DeviceReportNode>()
+                {
+                    new DeviceReportNode()
+                    {
+                        Title = "Axes",
+                        Bindings = new List<BindingReport>()
+                        {
+                            new BindingReport()
+                            {
+                                Title = "LS X",
+                                BindingDescriptor = new BindingDescriptor()
+                                {
+                                    Index = 0,
+                                    SubIndex = 0,
+                                    Type = BindingType.Axis
+                                },
+                                Category = BindingCategory.Delta
+                            }
+                        },
+                    },
+                    new DeviceReportNode()
+                    {
+                        Title = "TouchPad",
+                        Bindings = new List<BindingReport>()
+                        {
+                            new BindingReport()
+                            {
+                                Title = "Touch X",
+                                BindingDescriptor = new BindingDescriptor()
+                                {
+                                    Index = 0,
+                                    SubIndex = 1,
+                                    Type = BindingType.Axis
+                                },
+                                Category = BindingCategory.Delta
+                            }
+                        }
+                    }
+
+                }
+            };
+        }
+
 
         public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
         {
