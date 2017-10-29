@@ -1,4 +1,9 @@
-﻿using DS4Windows;
+﻿/*
+Uses a cut-down version of DS4Windows to read input from DS4 controllers
+https://github.com/evilC/DS4WindowsApi
+*/
+
+using DS4Windows;
 using Providers;
 using System;
 using System.Collections.Generic;
