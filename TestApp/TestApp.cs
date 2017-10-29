@@ -532,7 +532,10 @@ class Tester
                 DeviceHandle = "ds4",
                 DeviceInstance = 0
             },
-            BindingDescriptor = axisOneDescriptor,
+            BindingDescriptor = new BindingDescriptor()
+            {
+                Index = 0
+            },
             ProviderDescriptor = ds4WindowsApiProvider,
             SubscriptionDescriptor = new SubscriptionDescriptor()
             {
@@ -540,10 +543,34 @@ class Tester
             },
             Callback = new Action<int>((value) =>
             {
-                Console.WriteLine("DS4 Value: " + value);
+                Console.WriteLine("DS4 Axis Value: " + value);
             })
         };
         //iow.SubscribeInput(ds4WindowsApiAxisSubReq);
+
+        var ds4WindowsApiDeltaSubReq = new InputSubscriptionRequest()
+        {
+            DeviceDescriptor = new DeviceDescriptor()
+            {
+                DeviceHandle = "ds4",
+                DeviceInstance = 0
+            },
+            BindingDescriptor = new BindingDescriptor()
+            {
+                Index = 0,
+                SubIndex = 1
+            },
+            ProviderDescriptor = ds4WindowsApiProvider,
+            SubscriptionDescriptor = new SubscriptionDescriptor()
+            {
+                SubscriberGuid = Guid.NewGuid(),
+            },
+            Callback = new Action<int>((value) =>
+            {
+                Console.WriteLine("DS4 Delta Value: " + value);
+            })
+        };
+        //iow.SubscribeInput(ds4WindowsApiDeltaSubReq);
         #endregion
 
         // Test disposal

@@ -25,7 +25,8 @@ namespace Core_DS4WindowsApi
             private int id;
             private DS4Device ds4Device;
 
-            private InputSubscriptionRequest tmpSubReq;
+            private InputSubscriptionRequest axisSubReq;
+            private InputSubscriptionRequest deltaSubReq;
 
             public DS4Controller(int _id, DS4Device device)
             {
@@ -38,7 +39,14 @@ namespace Core_DS4WindowsApi
 
             public bool SubscribeInput(InputSubscriptionRequest subReq)
             {
-                tmpSubReq = subReq;
+                if (subReq.BindingDescriptor.SubIndex == 0)
+                {
+                    axisSubReq = subReq;
+                }
+                else
+                {
+                    deltaSubReq = subReq;
+                }
                 return false;
             }
 
@@ -52,9 +60,9 @@ namespace Core_DS4WindowsApi
                 if (currentState.LX != previousState.LX)
                 {
                     //Console.WriteLine("LSX: {0}", currentState.LX);
-                    if (tmpSubReq != null)
+                    if (axisSubReq != null)
                     {
-                        //tmpSubReq.Callback((int)currentState.LX);
+                        axisSubReq.Callback((int)currentState.LX);
                     }
                 }
             }
@@ -63,9 +71,9 @@ namespace Core_DS4WindowsApi
             {
                 var args = (TouchpadEventArgs)e;
                 //Console.WriteLine("TouchX: {0}, TouchY: {1}", args.touches[0].deltaX, args.touches[0].deltaY);
-                if (tmpSubReq != null)
+                if (deltaSubReq != null)
                 {
-                    tmpSubReq.Callback((int)args.touches[0].deltaX);
+                    deltaSubReq.Callback((int)args.touches[0].deltaX);
                 }
             }
         }
