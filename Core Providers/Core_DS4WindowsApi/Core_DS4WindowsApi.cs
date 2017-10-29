@@ -13,22 +13,52 @@ namespace Core_DS4WindowsApi
     public class Core_DS4WindowsApi : IProvider
     {
         private Logger logger;
-        DS4Controller[] connectedControllers = new DS4Controller[4];
+        DS4ControllerHandler[] connectedControllers = new DS4ControllerHandler[4];
+
+        private static List<string> axisNames = new List<string>() { "LS X", "LS Y", "RS X", "RS Y", "L2", "R2" };
 
         public Core_DS4WindowsApi()
         {
             RefreshDevices();
         }
 
-        private class DS4Controller
+        private class DS4StateWrapper : DS4State
+        {
+            public int GetAxis(int id)
+            {
+                switch (id)
+                {
+                    case 0: return ConvertAxis(LX);
+                    case 1: return ConvertAxis(LY);
+                    case 2: return ConvertAxis(RX);
+                    case 3: return ConvertAxis(RY);
+                    case 4: return ConvertAxis(L2);
+                    case 5: return ConvertAxis(R2);
+                    default: return ConvertAxis(0);
+                }
+            }
+
+            private int ConvertAxis(int value)
+            {
+                return (value * 257) - 32768;
+            }
+        }
+
+        #region Controller Handler
+        private class DS4ControllerHandler
         {
             private int id;
             private DS4Device ds4Device;
+            private DS4StateWrapper currentState = new DS4StateWrapper();
+            private DS4StateWrapper previousState = new DS4StateWrapper();
 
-            private InputSubscriptionRequest axisSubReq;
-            private InputSubscriptionRequest deltaSubReq;
+            private Dictionary<Guid, InputSubscriptionRequest>[] axisSubscriptions
+                = new Dictionary<Guid, InputSubscriptionRequest>[6];
 
-            public DS4Controller(int _id, DS4Device device)
+            private Dictionary<Guid, InputSubscriptionRequest>[] touchpadSubscriptions
+                = new Dictionary<Guid, InputSubscriptionRequest>[2];
+
+            public DS4ControllerHandler(int _id, DS4Device device)
             {
                 id = _id;
                 ds4Device = device;
@@ -39,30 +69,39 @@ namespace Core_DS4WindowsApi
 
             public bool SubscribeInput(InputSubscriptionRequest subReq)
             {
+                var axisIndex = subReq.BindingDescriptor.Index;
                 if (subReq.BindingDescriptor.SubIndex == 0)
                 {
-                    axisSubReq = subReq;
+                    if (axisSubscriptions[axisIndex] == null)
+                    {
+                        axisSubscriptions[axisIndex] = new Dictionary<Guid, InputSubscriptionRequest>();
+                    }
+                    axisSubscriptions[axisIndex][subReq.SubscriptionDescriptor.SubscriberGuid] = subReq;
                 }
                 else
                 {
-                    deltaSubReq = subReq;
+                    if (touchpadSubscriptions[axisIndex] == null)
+                    {
+                        touchpadSubscriptions[axisIndex] = new Dictionary<Guid, InputSubscriptionRequest>();
+                    }
+                    touchpadSubscriptions[axisIndex][subReq.SubscriptionDescriptor.SubscriberGuid] = subReq;
                 }
                 return false;
             }
 
             protected virtual void OnReport(object sender, EventArgs e)
             {
-                DS4Device device = (DS4Device)sender;
-                var currentState = new DS4State();
-                device.getCurrentState(currentState);
-                var previousState = new DS4State();
-                device.getPreviousState(previousState);
-                if (currentState.LX != previousState.LX)
+                UpdateAxisState();
+                for (int a = 0; a < 6; a++)
                 {
-                    //Console.WriteLine("LSX: {0}", currentState.LX);
-                    if (axisSubReq != null)
+                    var axisChanged = AxisChanged(a);
+                    if (axisSubscriptions[a] != null && axisChanged)
                     {
-                        axisSubReq.Callback((int)currentState.LX);
+                        var newState = currentState.GetAxis(a);
+                        foreach (var axisSubscription in axisSubscriptions[a].Values)
+                        {
+                            axisSubscription.Callback((int)newState);
+                        }
                     }
                 }
             }
@@ -70,13 +109,37 @@ namespace Core_DS4WindowsApi
             protected virtual void OnTouchpadMove(object sender, EventArgs e)
             {
                 var args = (TouchpadEventArgs)e;
-                //Console.WriteLine("TouchX: {0}, TouchY: {1}", args.touches[0].deltaX, args.touches[0].deltaY);
-                if (deltaSubReq != null)
+                var touch = args.touches[0];
+                for (int a = 0; a < 2; a++)
                 {
-                    deltaSubReq.Callback((int)args.touches[0].deltaX);
+                    if (touchpadSubscriptions[a] == null)
+                    {
+                        continue;
+                    }
+                    int value = a == 0 ? touch.deltaX : touch.deltaY;
+                    foreach (var touchpadSubscription in touchpadSubscriptions[a].Values)
+                    {
+                        touchpadSubscription.Callback(value);
+                    }
                 }
             }
+
+            private bool AxisChanged(int id)
+            {
+                var curr = currentState.GetAxis(id);
+                var prev = previousState.GetAxis(id);
+                return curr != prev;
+            }
+
+            private void UpdateAxisState()
+            {
+                //currentState = new DS4StateWrapper();
+                ds4Device.getCurrentState(currentState);
+                //previousState = new DS4StateWrapper();
+                ds4Device.getCurrentState(currentState);
+            }
         }
+        #endregion
 
         #region IProvider
         public bool IsLive { get { return isLive; } }
@@ -112,6 +175,21 @@ namespace Core_DS4WindowsApi
 
         private DeviceReport GetInputDeviceReport(int id)
         {
+            var axes = new List<BindingReport>();
+            for (int a = 0; a < axes.Count; a++)
+            {
+                axes.Add(new BindingReport()
+                {
+                    Title = axisNames[a],
+                    BindingDescriptor = new BindingDescriptor()
+                    {
+                        Index = 0,
+                        SubIndex = 0,
+                        Type = BindingType.Axis
+                    },
+                    Category = a > 3 ? BindingCategory.Unsigned : BindingCategory.Signed
+                });
+            }
             return new DeviceReport()
             {
                 DeviceDescriptor = new DeviceDescriptor()
@@ -125,20 +203,7 @@ namespace Core_DS4WindowsApi
                     new DeviceReportNode()
                     {
                         Title = "Axes",
-                        Bindings = new List<BindingReport>()
-                        {
-                            new BindingReport()
-                            {
-                                Title = "LS X",
-                                BindingDescriptor = new BindingDescriptor()
-                                {
-                                    Index = 0,
-                                    SubIndex = 0,
-                                    Type = BindingType.Axis
-                                },
-                                Category = BindingCategory.Delta
-                            }
-                        },
+                        Bindings = axes
                     },
                     new DeviceReportNode()
                     {
@@ -151,6 +216,17 @@ namespace Core_DS4WindowsApi
                                 BindingDescriptor = new BindingDescriptor()
                                 {
                                     Index = 0,
+                                    SubIndex = 1,
+                                    Type = BindingType.Axis
+                                },
+                                Category = BindingCategory.Delta
+                            },
+                            new BindingReport()
+                            {
+                                Title = "Touch Y",
+                                BindingDescriptor = new BindingDescriptor()
+                                {
+                                    Index = 1,
                                     SubIndex = 1,
                                     Type = BindingType.Axis
                                 },
@@ -214,7 +290,7 @@ namespace Core_DS4WindowsApi
             DS4Device[] devs = DS4Devices.getDS4Controllers().ToArray();
             for (int i = 0; i < devs.Length; i++)
             {
-                connectedControllers[i] = new DS4Controller(i, devs[i]);
+                connectedControllers[i] = new DS4ControllerHandler(i, devs[i]);
             }
         }
         #endregion
