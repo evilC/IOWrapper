@@ -535,7 +535,7 @@ class Tester
             BindingDescriptor = new BindingDescriptor()
             {
                 Type = BindingType.Button,
-                Index = 1
+                Index = 0
             },
             ProviderDescriptor = ds4WindowsApiProvider,
             SubscriptionDescriptor = new SubscriptionDescriptor()
@@ -599,7 +599,7 @@ class Tester
                 Console.WriteLine("DS4 Delta Value: " + value);
             })
         };
-        //iow.SubscribeInput(ds4WindowsApiDeltaSubReq);
+        iow.SubscribeInput(ds4WindowsApiDeltaSubReq);
         #endregion
 
         // Test disposal

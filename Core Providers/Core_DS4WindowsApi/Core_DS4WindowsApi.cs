@@ -40,7 +40,7 @@ namespace Core_DS4WindowsApi
 
         private class DS4StateWrapper : DS4State
         {
-            public int GetAxis(int id)
+            public int GetAxisValue(int id)
             {
                 switch (id)
                 {
@@ -54,7 +54,7 @@ namespace Core_DS4WindowsApi
                 return 0;
             }
 
-            public int GetButton(int id)
+            public int GetButtonValue(int id)
             {
                 switch (id)
                 {
@@ -258,7 +258,7 @@ namespace Core_DS4WindowsApi
                 {
                     if (axisSubscriptions[i] != null && AxisChanged(i))
                     {
-                        var newState = currentState.GetAxis(i);
+                        var newState = currentState.GetAxisValue(i);
                         foreach (var subscription in axisSubscriptions[i].Values)
                         {
                             subscription.Callback((int)newState);
@@ -270,7 +270,7 @@ namespace Core_DS4WindowsApi
                 {
                     if (buttonSubscriptions[i] != null && ButtonChanged(i))
                     {
-                        var newState = currentState.GetButton(i);
+                        var newState = currentState.GetButtonValue(i);
                         foreach (var subscription in buttonSubscriptions[i].Values)
                         {
                             subscription.Callback((int)newState);
@@ -283,14 +283,14 @@ namespace Core_DS4WindowsApi
             {
                 var args = (TouchpadEventArgs)e;
                 var touch = args.touches[0];
-                for (int a = 0; a < 2; a++)
+                for (int i = 0; i < touchAxisNames.Count; i++)
                 {
-                    if (touchpadSubscriptions[a] == null)
+                    if (touchpadSubscriptions[i] == null)
                     {
                         continue;
                     }
-                    int value = a == 0 ? touch.deltaX : touch.deltaY;
-                    foreach (var touchpadSubscription in touchpadSubscriptions[a].Values)
+                    int value = GetTouchAxisValue(touch, i);
+                    foreach (var touchpadSubscription in touchpadSubscriptions[i].Values)
                     {
                         touchpadSubscription.Callback(value);
                     }
@@ -299,15 +299,15 @@ namespace Core_DS4WindowsApi
 
             private bool AxisChanged(int id)
             {
-                var curr = currentState.GetAxis(id);
-                var prev = previousState.GetAxis(id);
+                var curr = currentState.GetAxisValue(id);
+                var prev = previousState.GetAxisValue(id);
                 return curr != prev;
             }
 
             private bool ButtonChanged(int id)
             {
-                var curr = currentState.GetButton(id);
-                var prev = previousState.GetButton(id);
+                var curr = currentState.GetButtonValue(id);
+                var prev = previousState.GetButtonValue(id);
                 return curr != prev;
             }
 
@@ -315,6 +315,24 @@ namespace Core_DS4WindowsApi
             {
                 previousState = currentState.Clone();
                 ds4Device.getCurrentState(currentState);
+            }
+
+            private int GetTouchAxisValue(Touch touch, int axis)
+            {
+                switch (axis)
+                {
+                    // x 32
+                    case 0: return touch.deltaX;
+                    case 1: return touch.deltaY;
+                    case 2: return ConvertTouchAxisAbsoluteValue(touch.hwX);
+                    case 3: return ConvertTouchAxisAbsoluteValue(touch.hwY);
+                }
+                return 0;
+            }
+
+            private int ConvertTouchAxisAbsoluteValue(int value)
+            {
+                return (value * 34) - 32768;
             }
         }
         #endregion
@@ -353,22 +371,6 @@ namespace Core_DS4WindowsApi
 
         private DeviceReport GetInputDeviceReport(int id)
         {
-            var axes = new List<BindingReport>();
-            for (int i = 0; i < axisNames.Count; i++)
-            {
-                axes.Add(new BindingReport()
-                {
-                    Title = axisNames[i],
-                    BindingDescriptor = new BindingDescriptor()
-                    {
-                        Index = i,
-                        SubIndex = 0,
-                        Type = BindingType.Axis
-                    },
-                    Category = i > 3 ? BindingCategory.Unsigned : BindingCategory.Signed
-                });
-            }
-
             var buttons = new List<BindingReport>();
             for (int i = 0; i < buttonNames.Count; i++)
             {
@@ -385,6 +387,38 @@ namespace Core_DS4WindowsApi
                 });
             }
 
+            var axes = new List<BindingReport>();
+            for (int i = 0; i < axisNames.Count; i++)
+            {
+                axes.Add(new BindingReport()
+                {
+                    Title = axisNames[i],
+                    BindingDescriptor = new BindingDescriptor()
+                    {
+                        Index = i,
+                        SubIndex = 0,
+                        Type = BindingType.Axis
+                    },
+                    Category = i > 3 ? BindingCategory.Unsigned : BindingCategory.Signed
+                });
+            }
+
+            var touchAxes = new List<BindingReport>();
+            for (int i = 0; i < touchAxisNames.Count; i++)
+            {
+                touchAxes.Add(new BindingReport()
+                {
+                    Title = touchAxisNames[i],
+                    BindingDescriptor = new BindingDescriptor()
+                    {
+                        Index = i,
+                        SubIndex = 1,
+                        Type = BindingType.Axis
+                    },
+                    Category = i > 1 ? BindingCategory.Signed : BindingCategory.Delta
+                });
+            }
+
             return new DeviceReport()
             {
                 DeviceDescriptor = new DeviceDescriptor()
@@ -397,42 +431,18 @@ namespace Core_DS4WindowsApi
                 {
                     new DeviceReportNode()
                     {
-                        Title = "Axes",
-                        Bindings = axes
-                    },
-                    new DeviceReportNode()
-                    {
                         Title = "Buttons",
                         Bindings = buttons
                     },
                     new DeviceReportNode()
                     {
+                        Title = "Axes",
+                        Bindings = axes
+                    },
+                    new DeviceReportNode()
+                    {
                         Title = "TouchPad",
-                        Bindings = new List<BindingReport>()
-                        {
-                            new BindingReport()
-                            {
-                                Title = "Touch X",
-                                BindingDescriptor = new BindingDescriptor()
-                                {
-                                    Index = 0,
-                                    SubIndex = 1,
-                                    Type = BindingType.Axis
-                                },
-                                Category = BindingCategory.Delta
-                            },
-                            new BindingReport()
-                            {
-                                Title = "Touch Y",
-                                BindingDescriptor = new BindingDescriptor()
-                                {
-                                    Index = 1,
-                                    SubIndex = 1,
-                                    Type = BindingType.Axis
-                                },
-                                Category = BindingCategory.Delta
-                            }
-                        }
+                        Bindings = touchAxes
                     }
 
                 }
