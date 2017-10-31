@@ -241,7 +241,7 @@ namespace Core_DS4WindowsApi
 
             public bool HasTouchSubscriptions()
             {
-                for (int i = 0; i < 2; i++)
+                for (int i = 0; i < touchAxisNames.Count; i++)
                 {
                     if (touchpadSubscriptions[i] != null)
                     {
