@@ -28,6 +28,10 @@ namespace Core_DS4WindowsApi
             "Touch X (Relative)", "Touch Y (Relative)", "Touch X (Absolute)", "Touch Y (Absolute)"
         };
 
+        private static List<string> gyroAxisNames = new List<string>() {
+            "Gyro Roll", "Gyro Pitch", "Gyro Yaw", "Accel X", "Accel Y", "Accel Z"
+        };
+
         private static List<string> buttonNames = new List<string>() {
             "Cross", "Circle", "Square", "Triangle", "L1", "L3", "R1", "R3", "Share", "Options", 
             "PS", "TouchButton", "Touch1", "Touch2", "TouchL", "TouchR"
@@ -50,6 +54,20 @@ namespace Core_DS4WindowsApi
                     case 3: return ConvertAxis(RY);
                     case 4: return ConvertAxis(L2);
                     case 5: return ConvertAxis(R2);
+                }
+                return 0;
+            }
+
+            public int GetGyroValue(int id)
+            {
+                switch (id)
+                {
+                    case 0: return Motion.gyroRollFull;
+                    case 1: return Motion.gyroPitchFull;
+                    case 2: return Motion.gyroYawFull;
+                    case 3: return Motion.accelXFull;
+                    case 4: return Motion.accelYFull;
+                    case 5: return Motion.accelZFull;
                 }
                 return 0;
             }
@@ -101,8 +119,11 @@ namespace Core_DS4WindowsApi
             private DS4Device ds4Device;
             private DS4StateWrapper currentState = new DS4StateWrapper();
             private DS4StateWrapper previousState = new DS4StateWrapper();
+            private DS4StateWrapper currentGyroState = new DS4StateWrapper();
+            //private DS4StateWrapper previousGyroState = new DS4StateWrapper();
 
             private bool reportCallbackEnabled = false;
+            private bool gyroCallbackEnabled = false;
             private bool touchCallbackEnabled = false;
 
             private Dictionary<Guid, InputSubscriptionRequest>[] buttonSubscriptions
@@ -110,6 +131,9 @@ namespace Core_DS4WindowsApi
 
             private Dictionary<Guid, InputSubscriptionRequest>[] axisSubscriptions
                 = new Dictionary<Guid, InputSubscriptionRequest>[axisNames.Count];
+
+            private Dictionary<Guid, InputSubscriptionRequest>[] gyroAxisSubscriptions
+                = new Dictionary<Guid, InputSubscriptionRequest>[gyroAxisNames.Count];
 
             private Dictionary<Guid, InputSubscriptionRequest>[] touchpadSubscriptions
                 = new Dictionary<Guid, InputSubscriptionRequest>[touchAxisNames.Count];
@@ -123,7 +147,8 @@ namespace Core_DS4WindowsApi
 
             private void SetCallbackState()
             {
-                bool hasReportSubscriptions = HasReportSubscriptions();
+                //bool hasReportSubscriptions = HasReportSubscriptions();
+                bool hasReportSubscriptions = true;
                 if (!reportCallbackEnabled && hasReportSubscriptions)
                 {
                     reportCallbackEnabled = true;
@@ -133,6 +158,18 @@ namespace Core_DS4WindowsApi
                 {
                     reportCallbackEnabled = false;
                     ds4Device.Report -= OnReport;
+                }
+
+                bool hasGyroSubscriptons = HasGyroSubscriptions();
+                if (!gyroCallbackEnabled && hasGyroSubscriptons)
+                {
+                    gyroCallbackEnabled = true;
+                    ds4Device.SixAxis.SixAccelMoved += OnGyro;
+                }
+                else if (gyroCallbackEnabled && !hasGyroSubscriptons)
+                {
+                    gyroCallbackEnabled = false;
+                    ds4Device.SixAxis.SixAccelMoved -= OnGyro;
                 }
 
                 bool hasTouchSubscriptions = HasTouchSubscriptions();
@@ -146,6 +183,8 @@ namespace Core_DS4WindowsApi
                     touchCallbackEnabled = false;
                     ds4Device.Touchpad.TouchesMoved -= OnTouchpadMove;
                 }
+
+
             }
 
             public bool SubscribeInput(InputSubscriptionRequest subReq)
@@ -154,13 +193,17 @@ namespace Core_DS4WindowsApi
                 switch (subReq.BindingDescriptor.Type)
                 {
                     case BindingType.Axis:
-                        if (subReq.BindingDescriptor.SubIndex == 0)
+                        switch (subReq.BindingDescriptor.SubIndex)
                         {
-                            ret = AddSubscription(axisSubscriptions, subReq);
-                        }
-                        else
-                        {
-                            ret = AddSubscription(touchpadSubscriptions, subReq);
+                            case 0:
+                                ret = AddSubscription(axisSubscriptions, subReq);
+                                break;
+                            case 1:
+                                ret = AddSubscription(touchpadSubscriptions, subReq);
+                                break;
+                            case 2:
+                                ret = AddSubscription(gyroAxisSubscriptions, subReq);
+                                break;
                         }
                         break;
                     case BindingType.Button:
@@ -188,13 +231,17 @@ namespace Core_DS4WindowsApi
                 switch (subReq.BindingDescriptor.Type)
                 {
                     case BindingType.Axis:
-                        if (subReq.BindingDescriptor.SubIndex == 0)
+                        switch (subReq.BindingDescriptor.SubIndex)
                         {
-                            ret = RemoveSubscription(axisSubscriptions, subReq);
-                        }
-                        else
-                        {
-                            ret = RemoveSubscription(touchpadSubscriptions, subReq);
+                            case 0:
+                                ret = RemoveSubscription(axisSubscriptions, subReq);
+                                break;
+                            case 1:
+                                ret = RemoveSubscription(touchpadSubscriptions, subReq);
+                                break;
+                            case 2:
+                                ret = RemoveSubscription(gyroAxisSubscriptions, subReq);
+                                break;
                         }
                         break;
                     case BindingType.Button:
@@ -239,6 +286,18 @@ namespace Core_DS4WindowsApi
                 return false;
             }
 
+            public bool HasGyroSubscriptions()
+            {
+                for (int i = 0; i < gyroAxisNames.Count; i++)
+                {
+                    if (gyroAxisSubscriptions[i] != null)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
             public bool HasTouchSubscriptions()
             {
                 for (int i = 0; i < touchAxisNames.Count; i++)
@@ -249,6 +308,23 @@ namespace Core_DS4WindowsApi
                     }
                 }
                 return false;
+            }
+
+            protected virtual void OnGyro(object sender, EventArgs e)
+            {
+                UpdateGyroState();
+                for (int i = 0; i < gyroAxisNames.Count; i++)
+                {
+                    //if (gyroAxisSubscriptions[i] != null && GyroChanged(i))
+                    if (gyroAxisSubscriptions[i] != null)
+                    {
+                        var newState = currentGyroState.GetGyroValue(i);
+                        foreach (var subscription in gyroAxisSubscriptions[i].Values)
+                        {
+                            subscription.Callback((int)newState);
+                        }
+                    }
+                }
             }
 
             protected virtual void OnReport(object sender, EventArgs e)
@@ -304,6 +380,13 @@ namespace Core_DS4WindowsApi
                 return curr != prev;
             }
 
+            //private bool GyroChanged(int id)
+            //{
+            //    var curr = currentGyroState.GetGyroValue(id);
+            //    var prev = previousGyroState.GetGyroValue(id);
+            //    return curr != prev;
+            //}
+
             private bool ButtonChanged(int id)
             {
                 var curr = currentState.GetButtonValue(id);
@@ -315,6 +398,12 @@ namespace Core_DS4WindowsApi
             {
                 previousState = currentState.Clone();
                 ds4Device.getCurrentState(currentState);
+            }
+
+            private void UpdateGyroState()
+            {
+                //previousGyroState = currentGyroState.Clone();
+                ds4Device.getCurrentState(currentGyroState);
             }
 
             private int GetTouchAxisValue(Touch touch, int axis)
@@ -403,6 +492,22 @@ namespace Core_DS4WindowsApi
                 });
             }
 
+            var gyros = new List<BindingReport>();
+            for (int i = 0; i < gyroAxisNames.Count; i++)
+            {
+                gyros.Add(new BindingReport()
+                {
+                    Title = gyroAxisNames[i],
+                    BindingDescriptor = new BindingDescriptor()
+                    {
+                        Index = i,
+                        SubIndex = 0,
+                        Type = BindingType.Axis
+                    },
+                    Category = BindingCategory.Signed
+                });
+            }
+
             var touchAxes = new List<BindingReport>();
             for (int i = 0; i < touchAxisNames.Count; i++)
             {
@@ -438,6 +543,11 @@ namespace Core_DS4WindowsApi
                     {
                         Title = "Axes",
                         Bindings = axes
+                    },
+                    new DeviceReportNode()
+                    {
+                        Title = "Gyro",
+                        Bindings = gyros
                     },
                     new DeviceReportNode()
                     {
