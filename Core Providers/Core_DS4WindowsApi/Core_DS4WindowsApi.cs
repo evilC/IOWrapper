@@ -188,8 +188,7 @@ namespace Core_DS4WindowsApi
                 UpdateAxisState();
                 for (int a = 0; a < NUM_AXES; a++)
                 {
-                    var axisChanged = AxisChanged(a);
-                    if (axisSubscriptions[a] != null && axisChanged)
+                    if (axisSubscriptions[a] != null && AxisChanged(a))
                     {
                         var newState = currentState.GetAxis(a);
                         foreach (var axisSubscription in axisSubscriptions[a].Values)
