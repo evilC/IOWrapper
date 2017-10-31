@@ -277,7 +277,6 @@ namespace Core_DS4WindowsApi
                         }
                     }
                 }
-                //previousState = 
             }
 
             protected virtual void OnTouchpadMove(object sender, EventArgs e)
