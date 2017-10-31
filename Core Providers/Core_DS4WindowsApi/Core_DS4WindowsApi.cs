@@ -253,7 +253,7 @@ namespace Core_DS4WindowsApi
 
             protected virtual void OnReport(object sender, EventArgs e)
             {
-                UpdateAxisState();
+                UpdateReportState();
                 for (int i = 0; i < axisNames.Count; i++)
                 {
                     if (axisSubscriptions[i] != null && AxisChanged(i))
@@ -311,7 +311,7 @@ namespace Core_DS4WindowsApi
                 return curr != prev;
             }
 
-            private void UpdateAxisState()
+            private void UpdateReportState()
             {
                 previousState = currentState.Clone();
                 ds4Device.getCurrentState(currentState);
