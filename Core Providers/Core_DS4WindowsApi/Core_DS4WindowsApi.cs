@@ -17,6 +17,7 @@ namespace Core_DS4WindowsApi
     [Export(typeof(IProvider))]
     public class Core_DS4WindowsApi : IProvider
     {
+        const int NUM_AXES = 6;
         private Logger logger;
         DS4ControllerHandler[] connectedControllers = new DS4ControllerHandler[4];
 
@@ -57,8 +58,11 @@ namespace Core_DS4WindowsApi
             private DS4StateWrapper currentState = new DS4StateWrapper();
             private DS4StateWrapper previousState = new DS4StateWrapper();
 
+            private bool reportCallbackEnabled = false;
+            private bool touchCallbackEnabled = false;
+
             private Dictionary<Guid, InputSubscriptionRequest>[] axisSubscriptions
-                = new Dictionary<Guid, InputSubscriptionRequest>[6];
+                = new Dictionary<Guid, InputSubscriptionRequest>[NUM_AXES];
 
             private Dictionary<Guid, InputSubscriptionRequest>[] touchpadSubscriptions
                 = new Dictionary<Guid, InputSubscriptionRequest>[2];
@@ -67,29 +71,114 @@ namespace Core_DS4WindowsApi
             {
                 id = _id;
                 ds4Device = device;
-                ds4Device.Report += OnReport;
-                device.Touchpad.TouchesMoved += OnTouchpadMove;
                 ds4Device.StartUpdate();
+            }
+
+            private void SetCallbackState()
+            {
+                bool hasReportSubscriptions = HasReportSubscriptions();
+                if (!reportCallbackEnabled && hasReportSubscriptions)
+                {
+                    reportCallbackEnabled = true;
+                    ds4Device.Report += OnReport;
+                }
+                else if (reportCallbackEnabled && !hasReportSubscriptions)
+                {
+                    reportCallbackEnabled = false;
+                    ds4Device.Report -= OnReport;
+                }
+
+                bool hasTouchSubscriptions = HasTouchSubscriptions();
+                if (!touchCallbackEnabled && hasTouchSubscriptions)
+                {
+                    touchCallbackEnabled = true;
+                    ds4Device.Touchpad.TouchesMoved += OnTouchpadMove;
+                }
+                else if (touchCallbackEnabled && !hasTouchSubscriptions)
+                {
+                    touchCallbackEnabled = false;
+                    ds4Device.Touchpad.TouchesMoved -= OnTouchpadMove;
+                }
             }
 
             public bool SubscribeInput(InputSubscriptionRequest subReq)
             {
                 var axisIndex = subReq.BindingDescriptor.Index;
+                bool ret;
                 if (subReq.BindingDescriptor.SubIndex == 0)
                 {
-                    if (axisSubscriptions[axisIndex] == null)
-                    {
-                        axisSubscriptions[axisIndex] = new Dictionary<Guid, InputSubscriptionRequest>();
-                    }
-                    axisSubscriptions[axisIndex][subReq.SubscriptionDescriptor.SubscriberGuid] = subReq;
+                    ret = AddSubscription(axisSubscriptions, subReq);
                 }
                 else
                 {
-                    if (touchpadSubscriptions[axisIndex] == null)
+                    ret = AddSubscription(touchpadSubscriptions, subReq);
+                }
+                SetCallbackState();
+                return ret;
+            }
+
+            private bool AddSubscription(Dictionary<Guid, InputSubscriptionRequest>[] dict, InputSubscriptionRequest subReq)
+            {
+                var axisIndex = subReq.BindingDescriptor.Index;
+                if (dict[axisIndex] == null)
+                {
+                    dict[axisIndex] = new Dictionary<Guid, InputSubscriptionRequest>();
+                }
+                dict[axisIndex][subReq.SubscriptionDescriptor.SubscriberGuid] = subReq;
+                return true;
+            }
+
+            public bool UnsubscribeInput(InputSubscriptionRequest subReq)
+            {
+                var axisIndex = subReq.BindingDescriptor.Index;
+                bool ret;
+                if (subReq.BindingDescriptor.SubIndex == 0)
+                {
+                    ret = RemoveSubscription(axisSubscriptions, subReq);
+                }
+                else
+                {
+                    ret = RemoveSubscription(touchpadSubscriptions, subReq);
+                }
+                SetCallbackState();
+                return ret;
+            }
+
+            private bool RemoveSubscription(Dictionary<Guid, InputSubscriptionRequest>[] dict, InputSubscriptionRequest subReq)
+            {
+                var axisIndex = subReq.BindingDescriptor.Index;
+                if (dict[axisIndex] != null)
+                {
+                    dict[axisIndex].Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
+                    if (dict[axisIndex].Count == 0)
                     {
-                        touchpadSubscriptions[axisIndex] = new Dictionary<Guid, InputSubscriptionRequest>();
+                        dict[axisIndex] = null;
                     }
-                    touchpadSubscriptions[axisIndex][subReq.SubscriptionDescriptor.SubscriberGuid] = subReq;
+                    return true;
+                }
+                return false;
+            }
+
+            public bool HasReportSubscriptions()
+            {
+                for (int i = 0; i < NUM_AXES; i++)
+                {
+                    if (axisSubscriptions[i] != null)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            public bool HasTouchSubscriptions()
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    if (touchpadSubscriptions[i] != null)
+                    {
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -97,7 +186,7 @@ namespace Core_DS4WindowsApi
             protected virtual void OnReport(object sender, EventArgs e)
             {
                 UpdateAxisState();
-                for (int a = 0; a < 6; a++)
+                for (int a = 0; a < NUM_AXES; a++)
                 {
                     var axisChanged = AxisChanged(a);
                     if (axisSubscriptions[a] != null && axisChanged)
@@ -266,6 +355,10 @@ namespace Core_DS4WindowsApi
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
+            if (connectedControllers[subReq.DeviceDescriptor.DeviceInstance] != null)
+            {
+                return connectedControllers[subReq.DeviceDescriptor.DeviceInstance].UnsubscribeInput(subReq);
+            }
             return false;
         }
 
