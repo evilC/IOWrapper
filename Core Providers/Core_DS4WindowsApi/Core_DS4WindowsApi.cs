@@ -17,11 +17,19 @@ namespace Core_DS4WindowsApi
     [Export(typeof(IProvider))]
     public class Core_DS4WindowsApi : IProvider
     {
+        const int NUM_BUTTONS = 16;
         const int NUM_AXES = 6;
         private Logger logger;
         DS4ControllerHandler[] connectedControllers = new DS4ControllerHandler[4];
 
-        private static List<string> axisNames = new List<string>() { "LS X", "LS Y", "RS X", "RS Y", "L2", "R2" };
+        private static List<string> axisNames = new List<string>() {
+            "LS X", "LS Y", "RS X", "RS Y", "L2", "R2"
+        };
+
+        private static List<string> buttonNames = new List<string>() {
+            "Cross", "Circle", "Square", "Triangle", "L1", "L3", "R1", "R3", "Share", "Options", 
+            "PS", "TouchButton", "Touch1", "Touch2", "TouchL", "TouchR"
+        };
 
         public Core_DS4WindowsApi()
         {
@@ -40,13 +48,47 @@ namespace Core_DS4WindowsApi
                     case 3: return ConvertAxis(RY);
                     case 4: return ConvertAxis(L2);
                     case 5: return ConvertAxis(R2);
-                    default: return ConvertAxis(0);
                 }
+                return 0;
+            }
+
+            public int GetButton(int id)
+            {
+                switch (id)
+                {
+                    case 0: return ConvertButton(Cross);
+                    case 1: return ConvertButton(Circle);
+                    case 2: return ConvertButton(Square);
+                    case 3: return ConvertButton(Triangle);
+                    case 4: return ConvertButton(L1);
+                    case 5: return ConvertButton(R1);
+                    case 6: return ConvertButton(L3);
+                    case 7: return ConvertButton(R3);
+                    case 8: return ConvertButton(Share);
+                    case 9: return ConvertButton(Options);
+                    case 10: return ConvertButton(PS);
+                    case 11: return ConvertButton(TouchButton); // Touchpad click
+                    case 12: return ConvertButton(Touch1);      // Is one finger touching the pad?
+                    case 13: return ConvertButton(Touch2);      // Are two fingers touching the pad?
+                    case 14: return ConvertButton(TouchLeft);   // Was the left side of the touchpad touched last?
+                    case 15: return ConvertButton(TouchRight);  // Was the right side of the touchpad touched last?
+                }
+                return 0;
             }
 
             private int ConvertAxis(int value)
             {
                 return (value * 257) - 32768;
+            }
+
+            private int ConvertButton(bool value)
+            {
+                return value ? 1 : 0;
+            }
+
+            public DS4StateWrapper Clone()
+            {
+                return (DS4StateWrapper)MemberwiseClone();
             }
         }
 
@@ -60,6 +102,9 @@ namespace Core_DS4WindowsApi
 
             private bool reportCallbackEnabled = false;
             private bool touchCallbackEnabled = false;
+
+            private Dictionary<Guid, InputSubscriptionRequest>[] buttonSubscriptions
+                = new Dictionary<Guid, InputSubscriptionRequest>[NUM_BUTTONS];
 
             private Dictionary<Guid, InputSubscriptionRequest>[] axisSubscriptions
                 = new Dictionary<Guid, InputSubscriptionRequest>[NUM_AXES];
@@ -103,15 +148,22 @@ namespace Core_DS4WindowsApi
 
             public bool SubscribeInput(InputSubscriptionRequest subReq)
             {
-                var axisIndex = subReq.BindingDescriptor.Index;
-                bool ret;
-                if (subReq.BindingDescriptor.SubIndex == 0)
+                bool ret = false;
+                switch (subReq.BindingDescriptor.Type)
                 {
-                    ret = AddSubscription(axisSubscriptions, subReq);
-                }
-                else
-                {
-                    ret = AddSubscription(touchpadSubscriptions, subReq);
+                    case BindingType.Axis:
+                        if (subReq.BindingDescriptor.SubIndex == 0)
+                        {
+                            ret = AddSubscription(axisSubscriptions, subReq);
+                        }
+                        else
+                        {
+                            ret = AddSubscription(touchpadSubscriptions, subReq);
+                        }
+                        break;
+                    case BindingType.Button:
+                        ret = AddSubscription(buttonSubscriptions, subReq);
+                        break;
                 }
                 SetCallbackState();
                 return ret;
@@ -130,15 +182,22 @@ namespace Core_DS4WindowsApi
 
             public bool UnsubscribeInput(InputSubscriptionRequest subReq)
             {
-                var axisIndex = subReq.BindingDescriptor.Index;
-                bool ret;
-                if (subReq.BindingDescriptor.SubIndex == 0)
+                bool ret = false;
+                switch (subReq.BindingDescriptor.Type)
                 {
-                    ret = RemoveSubscription(axisSubscriptions, subReq);
-                }
-                else
-                {
-                    ret = RemoveSubscription(touchpadSubscriptions, subReq);
+                    case BindingType.Axis:
+                        if (subReq.BindingDescriptor.SubIndex == 0)
+                        {
+                            ret = RemoveSubscription(axisSubscriptions, subReq);
+                        }
+                        else
+                        {
+                            ret = RemoveSubscription(touchpadSubscriptions, subReq);
+                        }
+                        break;
+                    case BindingType.Button:
+                        ret = RemoveSubscription(buttonSubscriptions, subReq);
+                        break;
                 }
                 SetCallbackState();
                 return ret;
@@ -168,6 +227,13 @@ namespace Core_DS4WindowsApi
                         return true;
                     }
                 }
+                for (int i = 0; i < NUM_BUTTONS; i++)
+                {
+                    if (buttonSubscriptions[i] != null)
+                    {
+                        return true;
+                    }
+                }
                 return false;
             }
 
@@ -186,17 +252,30 @@ namespace Core_DS4WindowsApi
             protected virtual void OnReport(object sender, EventArgs e)
             {
                 UpdateAxisState();
-                for (int a = 0; a < NUM_AXES; a++)
+                for (int i = 0; i < NUM_AXES; i++)
                 {
-                    if (axisSubscriptions[a] != null && AxisChanged(a))
+                    if (axisSubscriptions[i] != null && AxisChanged(i))
                     {
-                        var newState = currentState.GetAxis(a);
-                        foreach (var axisSubscription in axisSubscriptions[a].Values)
+                        var newState = currentState.GetAxis(i);
+                        foreach (var subscription in axisSubscriptions[i].Values)
                         {
-                            axisSubscription.Callback((int)newState);
+                            subscription.Callback((int)newState);
                         }
                     }
                 }
+
+                for (int i = 0; i < NUM_BUTTONS; i++)
+                {
+                    if (buttonSubscriptions[i] != null && ButtonChanged(i))
+                    {
+                        var newState = currentState.GetButton(i);
+                        foreach (var subscription in buttonSubscriptions[i].Values)
+                        {
+                            subscription.Callback((int)newState);
+                        }
+                    }
+                }
+                //previousState = 
             }
 
             protected virtual void OnTouchpadMove(object sender, EventArgs e)
@@ -224,11 +303,16 @@ namespace Core_DS4WindowsApi
                 return curr != prev;
             }
 
+            private bool ButtonChanged(int id)
+            {
+                var curr = currentState.GetButton(id);
+                var prev = previousState.GetButton(id);
+                return curr != prev;
+            }
+
             private void UpdateAxisState()
             {
-                //currentState = new DS4StateWrapper();
-                ds4Device.getCurrentState(currentState);
-                //previousState = new DS4StateWrapper();
+                previousState = currentState.Clone();
                 ds4Device.getCurrentState(currentState);
             }
         }
@@ -269,20 +353,37 @@ namespace Core_DS4WindowsApi
         private DeviceReport GetInputDeviceReport(int id)
         {
             var axes = new List<BindingReport>();
-            for (int a = 0; a < axes.Count; a++)
+            for (int i = 0; i < axisNames.Count; i++)
             {
                 axes.Add(new BindingReport()
                 {
-                    Title = axisNames[a],
+                    Title = axisNames[i],
                     BindingDescriptor = new BindingDescriptor()
                     {
-                        Index = 0,
+                        Index = i,
                         SubIndex = 0,
                         Type = BindingType.Axis
                     },
-                    Category = a > 3 ? BindingCategory.Unsigned : BindingCategory.Signed
+                    Category = i > 3 ? BindingCategory.Unsigned : BindingCategory.Signed
                 });
             }
+
+            var buttons = new List<BindingReport>();
+            for (int i = 0; i < buttonNames.Count; i++)
+            {
+                buttons.Add(new BindingReport()
+                {
+                    Title = buttonNames[i],
+                    BindingDescriptor = new BindingDescriptor()
+                    {
+                        Index = i,
+                        SubIndex = 0,
+                        Type = BindingType.Button
+                    },
+                    Category = BindingCategory.Momentary
+                });
+            }
+
             return new DeviceReport()
             {
                 DeviceDescriptor = new DeviceDescriptor()
@@ -297,6 +398,11 @@ namespace Core_DS4WindowsApi
                     {
                         Title = "Axes",
                         Bindings = axes
+                    },
+                    new DeviceReportNode()
+                    {
+                        Title = "Buttons",
+                        Bindings = buttons
                     },
                     new DeviceReportNode()
                     {
