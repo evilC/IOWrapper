@@ -17,13 +17,15 @@ namespace Core_DS4WindowsApi
     [Export(typeof(IProvider))]
     public class Core_DS4WindowsApi : IProvider
     {
-        const int NUM_BUTTONS = 16;
-        const int NUM_AXES = 6;
         private Logger logger;
         DS4ControllerHandler[] connectedControllers = new DS4ControllerHandler[4];
 
         private static List<string> axisNames = new List<string>() {
             "LS X", "LS Y", "RS X", "RS Y", "L2", "R2"
+        };
+
+        private static List<string> touchAxisNames = new List<string>() {
+            "Touch X (Relative)", "Touch Y (Relative)", "Touch X (Absolute)", "Touch Y (Absolute)"
         };
 
         private static List<string> buttonNames = new List<string>() {
@@ -104,13 +106,13 @@ namespace Core_DS4WindowsApi
             private bool touchCallbackEnabled = false;
 
             private Dictionary<Guid, InputSubscriptionRequest>[] buttonSubscriptions
-                = new Dictionary<Guid, InputSubscriptionRequest>[NUM_BUTTONS];
+                = new Dictionary<Guid, InputSubscriptionRequest>[buttonNames.Count];
 
             private Dictionary<Guid, InputSubscriptionRequest>[] axisSubscriptions
-                = new Dictionary<Guid, InputSubscriptionRequest>[NUM_AXES];
+                = new Dictionary<Guid, InputSubscriptionRequest>[axisNames.Count];
 
             private Dictionary<Guid, InputSubscriptionRequest>[] touchpadSubscriptions
-                = new Dictionary<Guid, InputSubscriptionRequest>[2];
+                = new Dictionary<Guid, InputSubscriptionRequest>[touchAxisNames.Count];
 
             public DS4ControllerHandler(int _id, DS4Device device)
             {
@@ -220,14 +222,14 @@ namespace Core_DS4WindowsApi
 
             public bool HasReportSubscriptions()
             {
-                for (int i = 0; i < NUM_AXES; i++)
+                for (int i = 0; i < axisNames.Count; i++)
                 {
                     if (axisSubscriptions[i] != null)
                     {
                         return true;
                     }
                 }
-                for (int i = 0; i < NUM_BUTTONS; i++)
+                for (int i = 0; i < buttonNames.Count; i++)
                 {
                     if (buttonSubscriptions[i] != null)
                     {
@@ -252,7 +254,7 @@ namespace Core_DS4WindowsApi
             protected virtual void OnReport(object sender, EventArgs e)
             {
                 UpdateAxisState();
-                for (int i = 0; i < NUM_AXES; i++)
+                for (int i = 0; i < axisNames.Count; i++)
                 {
                     if (axisSubscriptions[i] != null && AxisChanged(i))
                     {
@@ -264,7 +266,7 @@ namespace Core_DS4WindowsApi
                     }
                 }
 
-                for (int i = 0; i < NUM_BUTTONS; i++)
+                for (int i = 0; i < buttonNames.Count; i++)
                 {
                     if (buttonSubscriptions[i] != null && ButtonChanged(i))
                     {
