@@ -525,6 +525,31 @@ class Tester
         #endregion
 
         #region ds4WindowsApiProvider
+        var ds4WindowsApiButtonSubReq = new InputSubscriptionRequest()
+        {
+            DeviceDescriptor = new DeviceDescriptor()
+            {
+                DeviceHandle = "ds4",
+                DeviceInstance = 0
+            },
+            BindingDescriptor = new BindingDescriptor()
+            {
+                Type = BindingType.Button,
+                Index = 1
+            },
+            ProviderDescriptor = ds4WindowsApiProvider,
+            SubscriptionDescriptor = new SubscriptionDescriptor()
+            {
+                SubscriberGuid = Guid.NewGuid(),
+            },
+            Callback = new Action<int>((value) =>
+            {
+                Console.WriteLine("DS4 Button Value: " + value);
+            })
+        };
+        //iow.SubscribeInput(ds4WindowsApiButtonSubReq);
+
+
         var ds4WindowsApiAxisSubReq = new InputSubscriptionRequest()
         {
             DeviceDescriptor = new DeviceDescriptor()
@@ -534,6 +559,7 @@ class Tester
             },
             BindingDescriptor = new BindingDescriptor()
             {
+                Type = BindingType.Axis,
                 Index = 0
             },
             ProviderDescriptor = ds4WindowsApiProvider,
@@ -547,6 +573,8 @@ class Tester
             })
         };
         //iow.SubscribeInput(ds4WindowsApiAxisSubReq);
+        //iow.UnsubscribeInput(ds4WindowsApiAxisSubReq);
+        //iow.SubscribeInput(ds4WindowsApiAxisSubReq);
 
         var ds4WindowsApiDeltaSubReq = new InputSubscriptionRequest()
         {
@@ -557,6 +585,7 @@ class Tester
             },
             BindingDescriptor = new BindingDescriptor()
             {
+                Type = BindingType.Axis,
                 Index = 0,
                 SubIndex = 1
             },
