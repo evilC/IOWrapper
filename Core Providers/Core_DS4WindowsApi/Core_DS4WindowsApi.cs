@@ -29,7 +29,7 @@ namespace Core_DS4WindowsApi
         };
 
         private static List<string> gyroAxisNames = new List<string>() {
-            "Gyro Roll", "Gyro Pitch", "Gyro Yaw", "Accel X", "Accel Y", "Accel Z"
+            "Gyro Absolute X", "Gyro Absolute Y", "Gyro Absolute Z", "Gyro Relative X", "Gyro Relative Y", "Gyro Relative Z"
         };
 
         private static List<string> buttonNames = new List<string>() {
@@ -62,12 +62,12 @@ namespace Core_DS4WindowsApi
             {
                 switch (id)
                 {
-                    case 0: return Motion.gyroRollFull;
-                    case 1: return Motion.gyroPitchFull;
-                    case 2: return Motion.gyroYawFull;
-                    case 3: return Motion.accelXFull;
-                    case 4: return Motion.accelYFull;
-                    case 5: return Motion.accelZFull;
+                    case 0: return Motion.accelXFull * 4;
+                    case 1: return Motion.accelYFull * 4;
+                    case 2: return Motion.accelZFull * 4;
+                    case 3: return Motion.gyroYaw;
+                    case 4: return Motion.gyroPitch;
+                    case 5: return Motion.gyroRoll;
                 }
                 return 0;
             }
@@ -504,7 +504,7 @@ namespace Core_DS4WindowsApi
                         SubIndex = 2,
                         Type = BindingType.Axis
                     },
-                    Category = BindingCategory.Signed
+                    Category = i > 2 ? BindingCategory.Delta : BindingCategory.Signed
                 });
             }
 
