@@ -37,6 +37,11 @@ namespace Core_DS4WindowsApi
             "PS", "TouchButton", "Touch1", "Touch2", "TouchL", "TouchR"
         };
 
+        private static List<string> povDirectionNames = new List<string>()
+        {
+            "Up", "Right", "Down", "Left"
+        };
+
         public Core_DS4WindowsApi()
         {
             RefreshDevices();
@@ -96,6 +101,18 @@ namespace Core_DS4WindowsApi
                 return 0;
             }
 
+            public int GetPovDirectionValue(int id)
+            {
+                switch (id)
+                {
+                    case 0: return ConvertButton(DpadUp);
+                    case 1: return ConvertButton(DpadRight);
+                    case 2: return ConvertButton(DpadDown);
+                    case 3: return ConvertButton(DpadLeft);
+                }
+                return 0;
+            }
+
             private int ConvertAxis(int value)
             {
                 return (value * 257) - 32768;
@@ -128,6 +145,9 @@ namespace Core_DS4WindowsApi
 
             private Dictionary<Guid, InputSubscriptionRequest>[] buttonSubscriptions
                 = new Dictionary<Guid, InputSubscriptionRequest>[buttonNames.Count];
+
+            private Dictionary<Guid, InputSubscriptionRequest>[] povDirectionSubscriptions
+                = new Dictionary<Guid, InputSubscriptionRequest>[povDirectionNames.Count];
 
             private Dictionary<Guid, InputSubscriptionRequest>[] axisSubscriptions
                 = new Dictionary<Guid, InputSubscriptionRequest>[axisNames.Count];
@@ -209,6 +229,9 @@ namespace Core_DS4WindowsApi
                     case BindingType.Button:
                         ret = AddSubscription(buttonSubscriptions, subReq);
                         break;
+                    case BindingType.POV:
+                        ret = AddSubscription(povDirectionSubscriptions, subReq);
+                        break;
                 }
                 SetCallbackState();
                 return ret;
@@ -216,12 +239,12 @@ namespace Core_DS4WindowsApi
 
             private bool AddSubscription(Dictionary<Guid, InputSubscriptionRequest>[] dict, InputSubscriptionRequest subReq)
             {
-                var axisIndex = subReq.BindingDescriptor.Index;
-                if (dict[axisIndex] == null)
+                var inputIndex = subReq.BindingDescriptor.Index;
+                if (dict[inputIndex] == null)
                 {
-                    dict[axisIndex] = new Dictionary<Guid, InputSubscriptionRequest>();
+                    dict[inputIndex] = new Dictionary<Guid, InputSubscriptionRequest>();
                 }
-                dict[axisIndex][subReq.SubscriptionDescriptor.SubscriberGuid] = subReq;
+                dict[inputIndex][subReq.SubscriptionDescriptor.SubscriberGuid] = subReq;
                 return true;
             }
 
@@ -246,6 +269,8 @@ namespace Core_DS4WindowsApi
                         break;
                     case BindingType.Button:
                         ret = RemoveSubscription(buttonSubscriptions, subReq);
+                        break;
+                    case BindingType.POV:
                         break;
                 }
                 SetCallbackState();
@@ -353,6 +378,18 @@ namespace Core_DS4WindowsApi
                         }
                     }
                 }
+
+                for (int i = 0; i < povDirectionNames.Count; i++)
+                {
+                    if (povDirectionSubscriptions[i] != null && PovDirectionChanged(i))
+                    {
+                        var newState = currentState.GetPovDirectionValue(i);
+                        foreach (var subscription in povDirectionSubscriptions[i].Values)
+                        {
+                            subscription.Callback((int)newState);
+                        }
+                    }
+                }
             }
 
             protected virtual void OnTouchpadMove(object sender, EventArgs e)
@@ -391,6 +428,13 @@ namespace Core_DS4WindowsApi
             {
                 var curr = currentState.GetButtonValue(id);
                 var prev = previousState.GetButtonValue(id);
+                return curr != prev;
+            }
+
+            private bool PovDirectionChanged(int id)
+            {
+                var curr = currentState.GetPovDirectionValue(id);
+                var prev = previousState.GetPovDirectionValue(id);
                 return curr != prev;
             }
 
@@ -476,6 +520,22 @@ namespace Core_DS4WindowsApi
                 });
             }
 
+            var povDirections = new List<BindingReport>();
+            for (int i = 0; i < povDirectionNames.Count; i++)
+            {
+                povDirections.Add(new BindingReport()
+                {
+                    Title = povDirectionNames[i],
+                    BindingDescriptor = new BindingDescriptor()
+                    {
+                        Index = i,
+                        SubIndex = 0,
+                        Type = BindingType.POV
+                    },
+                    Category = BindingCategory.Momentary
+                });
+            }
+
             var axes = new List<BindingReport>();
             for (int i = 0; i < axisNames.Count; i++)
             {
@@ -543,6 +603,11 @@ namespace Core_DS4WindowsApi
                     {
                         Title = "Axes",
                         Bindings = axes
+                    },
+                    new DeviceReportNode()
+                    {
+                        Title = "DPad",
+                        Bindings = povDirections
                     },
                     new DeviceReportNode()
                     {

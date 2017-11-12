@@ -549,6 +549,30 @@ class Tester
         };
         //iow.SubscribeInput(ds4WindowsApiButtonSubReq);
 
+        var ds4WindowsApiDpadSubReq = new InputSubscriptionRequest()
+        {
+            DeviceDescriptor = new DeviceDescriptor()
+            {
+                DeviceHandle = "ds4",
+                DeviceInstance = 0
+            },
+            BindingDescriptor = new BindingDescriptor()
+            {
+                Type = BindingType.POV,
+                Index = 0
+            },
+            ProviderDescriptor = ds4WindowsApiProvider,
+            SubscriptionDescriptor = new SubscriptionDescriptor()
+            {
+                SubscriberGuid = Guid.NewGuid(),
+            },
+            Callback = new Action<int>((value) =>
+            {
+                Console.WriteLine("DS4 POV Value: " + value);
+            })
+        };
+        //iow.SubscribeInput(ds4WindowsApiDpadSubReq);
+
 
         var ds4WindowsApiAxisSubReq = new InputSubscriptionRequest()
         {
@@ -560,7 +584,8 @@ class Tester
             BindingDescriptor = new BindingDescriptor()
             {
                 Type = BindingType.Axis,
-                Index = 0
+                Index = 3,
+                SubIndex = 2
             },
             ProviderDescriptor = ds4WindowsApiProvider,
             SubscriptionDescriptor = new SubscriptionDescriptor()
@@ -599,7 +624,7 @@ class Tester
                 Console.WriteLine("DS4 Delta Value: " + value);
             })
         };
-        iow.SubscribeInput(ds4WindowsApiDeltaSubReq);
+        //iow.SubscribeInput(ds4WindowsApiDeltaSubReq);
         #endregion
 
         // Test disposal
