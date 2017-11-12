@@ -14,28 +14,19 @@ namespace SharpDX_XInput
         public bool IsLive { get { return isLive; } }
         private bool isLive = true;
 
+        private Logger logger;
+
         bool disposed = false;
 
-        // The thread which handles input detection
-        private Thread pollThread;
-        // Is the thread currently running? This is set by the thread itself.
-        private volatile bool pollThreadRunning = false;
-        // Do we want the thread to be on or off?
-        // This is independent of whether or not the thread is running...
-        // ... for example, we may be updating bindings, so the thread may be temporarily stopped
-        private bool pollThreadDesired = false;
-        // Is the thread in an Active or Inactive state?
-        private bool pollThreadActive = false;
+        private XIPollHandler pollHandler = new XIPollHandler();
 
-        private Dictionary<int, StickMonitor> MonitoredSticks = new Dictionary<int, StickMonitor>();
         private static List<Guid> ActiveProfiles = new List<Guid>();
         //private static List<> PluggedInControllers
 
-        //ProviderReport providerReport;
         private List<DeviceReport> deviceReports;
 
         private static List<string> buttonNames = new List<string>() { "A", "B", "X", "Y", "LB", "RB", "LS", "RS", "Back", "Start" };
-        private static List<string> axisNames = new List<string>() { "LX", "LY", "RX", "RY", "LT", "RT"};
+        private static List<string> axisNames = new List<string>() { "LX", "LY", "RX", "RY", "LT", "RT" };
         private static List<string> povNames = new List<string>() { "Up", "Right", "Down", "Left" };
 
         private static DeviceReportNode buttonInfo;
@@ -107,11 +98,9 @@ namespace SharpDX_XInput
 
         public SharpDX_XInput()
         {
+            logger = new Logger(ProviderName);
             BuildButtonList();
-            pollThreadDesired = true;
             QueryDevices();
-            pollThread = new Thread(PollThread);
-            pollThread.Start();
         }
 
         private void BuildButtonList()
@@ -143,7 +132,7 @@ namespace SharpDX_XInput
                 axisInfo.Bindings.Add(new BindingReport()
                 {
                     Title = axisNames[a],
-                    Category = ( a < 4 ? BindingCategory.Signed : BindingCategory.Unsigned),
+                    Category = (a < 4 ? BindingCategory.Signed : BindingCategory.Unsigned),
                     BindingDescriptor = new BindingDescriptor()
                     {
                         Index = a,
@@ -164,7 +153,8 @@ namespace SharpDX_XInput
                     Category = BindingCategory.Momentary,
                     BindingDescriptor = new BindingDescriptor()
                     {
-                        Index = d,
+                        Index = 0,
+                        SubIndex = d,
                         Type = BindingType.POV,
                     }
                 });
@@ -182,43 +172,12 @@ namespace SharpDX_XInput
                 return;
             if (disposing)
             {
-                pollThread.Abort();
-                pollThreadRunning = false;
-                Log("Stopped PollThread for {0}", ProviderName);
+                pollHandler.Dispose();
             }
             disposed = true;
-            Log("Provider {0} was Disposed", ProviderName);
+            logger.Log("Disposed");
         }
 
-        private void SetPollThreadState(bool state)
-        {
-            if (!pollThreadRunning)
-                return;
-
-            if (state && !pollThreadActive)
-            {
-                pollThreadDesired = true;
-                while (!pollThreadActive)
-                {
-                    Thread.Sleep(10);
-                }
-                Log("PollThread for {0} Activated", ProviderName);
-            }
-            else if (!state && pollThreadActive)
-            {
-                pollThreadDesired = false;
-                while (pollThreadActive)
-                {
-                    Thread.Sleep(10);
-                }
-                Log("PollThread for {0} De-Activated", ProviderName);
-            }
-        }
-
-        private static void Log(string formatStr, params object[] arguments)
-        {
-            Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
-        }
         #region IProvider Members
         public string ProviderName { get { return typeof(SharpDX_XInput).Namespace; } }
 
@@ -290,59 +249,19 @@ namespace SharpDX_XInput
                 var ctrlr = new Controller((UserIndex)i);
                 //if (ctrlr.IsConnected)
                 //{
-                    deviceReports.Add(BuildXInputDevice(i));
+                deviceReports.Add(BuildXInputDevice(i));
                 //}
             }
         }
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            var prev_state = pollThreadActive;
-            if (pollThreadActive)
-                SetPollThreadState(false);
-
-            var stickId = Convert.ToInt32(subReq.DeviceDescriptor.DeviceHandle);
-            if (!MonitoredSticks.ContainsKey(stickId))
-            {
-                MonitoredSticks.Add(stickId, new StickMonitor(stickId));
-            }
-            var result = MonitoredSticks[stickId].Add(subReq);
-            if (result)
-            {
-                if (prev_state)
-                {
-                    SetPollThreadState(true);
-                }
-                return true;
-            }
-            return false;
+            return pollHandler.SubscribeInput(subReq);
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            var prev_state = pollThreadActive;
-            if (pollThreadActive)
-                SetPollThreadState(false);
-
-            bool ret = false;
-            var stickId = Convert.ToInt32(subReq.DeviceDescriptor.DeviceHandle);
-            if (MonitoredSticks.ContainsKey(stickId))
-            {
-                // Remove from monitor lookup table
-                MonitoredSticks[stickId].Remove(subReq);
-                // If this was the last thing monitored on this stick...
-                ///...remove the stick from the monitor lookup table
-                if (!MonitoredSticks[stickId].HasSubscriptions())
-                {
-                    MonitoredSticks.Remove(stickId);
-                }
-                ret = true;
-            }
-            if (prev_state)
-            {
-                SetPollThreadState(true);
-            }
-            return ret;
+            return pollHandler.UnsubscribeInput(subReq);
         }
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
@@ -364,6 +283,11 @@ namespace SharpDX_XInput
         {
 
         }
+
+        public void RefreshDevices()
+        {
+
+        }
         #endregion
 
         private DeviceReport BuildXInputDevice(int id)
@@ -375,183 +299,139 @@ namespace SharpDX_XInput
                 {
                     DeviceHandle = id.ToString(),
                 },
-                Nodes = { buttonInfo, axisInfo , povInfo}
+                Nodes = { buttonInfo, axisInfo, povInfo }
                 //ButtonCount = 11,
                 //ButtonList = buttonInfo,
                 //AxisList = axisInfo,
             };
         }
 
-        #region Stick Monitoring
-        private void PollThread()
+        #region Handlers
+        #region Poll Handler
+        class XIPollHandler : PollHandler<int>
         {
-            pollThreadRunning = true;
-            Log("Started PollThread for {0}", ProviderName);
-            while (true)
+            public override StickHandler CreateStickHandler(InputSubscriptionRequest subReq)
             {
-                if (pollThreadDesired)
-                {
-                    pollThreadActive = true;
-                    while (pollThreadDesired)
-                    {
-                        foreach (var monitoredStick in MonitoredSticks)
-                        {
-                            monitoredStick.Value.Poll();
-                        }
-                        Thread.Sleep(1);
-                    }
-                }
-                else
-                {
-                    pollThreadActive = false;
-                    while (!pollThreadDesired)
-                    {
-                        Thread.Sleep(1);
-                    }
-                }
+                return new XIStickHandler(subReq);
+            }
+
+            public override int GetStickHandlerKey(DeviceDescriptor descriptor)
+            {
+                return Convert.ToInt32(descriptor.DeviceHandle);
             }
         }
+        #endregion
 
-        #region Stick
-        public class StickMonitor
+        #region Stick Handler
+        public class XIStickHandler : StickHandler
         {
-            private int controllerId;
             private Controller controller;
 
-            private Dictionary<int, InputMonitor> axisMonitors = new Dictionary<int, InputMonitor>();
-            private Dictionary<int, InputMonitor> buttonMonitors = new Dictionary<int, InputMonitor>();
-            private Dictionary<int, InputMonitor> povDirectionMonitors = new Dictionary<int, InputMonitor>();
-
-            Dictionary<BindingType, Dictionary<int, InputMonitor>> monitors = new Dictionary<BindingType, Dictionary<int, InputMonitor>>();
-
-            public StickMonitor(int cid)
+            public XIStickHandler(InputSubscriptionRequest subReq) : base(subReq)
             {
-                controllerId = cid;
-                controller = new Controller((UserIndex)controllerId);
-                monitors.Add(BindingType.Axis, axisMonitors);
-                monitors.Add(BindingType.Button, buttonMonitors);
-                monitors.Add(BindingType.POV, povDirectionMonitors);
             }
 
-            public bool Add(InputSubscriptionRequest subReq)
+            public override BindingHandler CreateBindingHandler(BindingDescriptor bindingDescriptor)
             {
-                var inputId = subReq.BindingDescriptor.Index;
-                var monitor = monitors[subReq.BindingDescriptor.Type];
-                if (!monitor.ContainsKey(inputId))
-                {
-                    monitor.Add(inputId, new InputMonitor());
-                }
-                Log("Adding subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.BindingDescriptor.Type.ToString(), subReq.BindingDescriptor.Index);
-                return monitor[inputId].Add(subReq);
+                return new XIBindingHandler(bindingDescriptor);
             }
 
-            public bool Remove(InputSubscriptionRequest subReq)
+            public override int GetBindingHandlerKey(BindingDescriptor bindingDescriptor)
             {
-                var inputId = subReq.BindingDescriptor.Index;
-                var monitor = monitors[subReq.BindingDescriptor.Type];
-                if (monitor.ContainsKey(inputId))
-                {
-                    Log("Removing subscription to XI device Handle {0}, Type {1}, Input {2}", controllerId, subReq.BindingDescriptor.Type.ToString(), subReq.BindingDescriptor.Index);
-                    var ret = monitor[inputId].Remove(subReq);
-                    if (!monitor[inputId].HasSubscriptions())
-                    {
-                        monitor.Remove(inputId);
-                    }
-                    return ret;
-                }
-                return false;
+                return bindingDescriptor.Index;
             }
 
-            public bool HasSubscriptions()
-            {
-                foreach (var monitorSet in monitors)
-                {
-                    foreach (var monitor in monitorSet.Value)
-                    {
-                        if (monitor.Value.HasSubscriptions())
-                        {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-
-            public void Poll()
+            public override void Poll()
             {
                 if (!controller.IsConnected)
                     return;
                 var state = controller.GetState();
 
-                foreach (var monitor in axisMonitors)
+                if (axisMonitors.ContainsKey(0))
                 {
-                    var value = Convert.ToInt32(state.Gamepad.GetType().GetField(xinputAxisIdentifiers[(int)monitor.Key]).GetValue(state.Gamepad));
-                    monitor.Value.ProcessPollResult(value);
-                }
-
-                foreach (var monitor in buttonMonitors)
-                {
-                    var flag = state.Gamepad.Buttons & xinputButtonIdentifiers[(int)monitor.Key];
-                    var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
-                    monitor.Value.ProcessPollResult(value);
-                }
-
-                foreach (var monitor in povDirectionMonitors)
-                {
-                    var flag = state.Gamepad.Buttons & xinputPovDirectionIdentifiers[(int)monitor.Key];
-                    var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
-                    monitor.Value.ProcessPollResult(value);
-                }
-            }
-        }
-        #endregion
-
-        #region Input
-        public class InputMonitor
-        {
-            Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
-            private int currentValue = 0;
-
-            public bool Add(InputSubscriptionRequest subReq)
-            {
-                Log("XI adding subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderDescriptor.ProviderName, subReq.DeviceDescriptor.DeviceHandle, subReq.BindingDescriptor.Index, subReq.SubscriptionDescriptor.SubscriberGuid);
-                subscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
-                return true;
-            }
-
-            public bool Remove(InputSubscriptionRequest subReq)
-            {
-                Log("XI removing subreq. Provider {0}, Device {1}, Input {2}, Guid {3}", subReq.ProviderDescriptor.ProviderName, subReq.DeviceDescriptor.DeviceHandle, subReq.BindingDescriptor.Index, subReq.SubscriptionDescriptor.SubscriberGuid);
-                if (subscriptions.ContainsKey(subReq.SubscriptionDescriptor.SubscriberGuid))
-                {
-                    return subscriptions.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
-                }
-                return false;
-            }
-
-            public bool HasSubscriptions()
-            {
-                return subscriptions.Count > 0;
-            }
-
-            public void ProcessPollResult(int value)
-            {
-                // XInput does not report just the changed values, so filter out anything that has not changed
-                if (currentValue == value)
-                    return;
-                currentValue = value;
-                foreach (var subscription in subscriptions.Values)
-                {
-                    if (ActiveProfiles.Contains(subscription.SubscriptionDescriptor.ProfileGuid))
+                    foreach (var monitor in axisMonitors[0])
                     {
-                        subscription.Callback(value);
+                        var value = Convert.ToInt32(state.Gamepad.GetType().GetField(xinputAxisIdentifiers[monitor.Key]).GetValue(state.Gamepad));
+                        monitor.Value.ProcessPollResult(value);
+                    }
+                }
+
+                if (buttonMonitors.ContainsKey(0))
+                {
+                    foreach (var monitor in buttonMonitors[0])
+                    {
+                        var flag = state.Gamepad.Buttons & xinputButtonIdentifiers[(int)monitor.Key];
+                        var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
+                        monitor.Value.ProcessPollResult(value);
+                    }
+                }
+
+                foreach (var povMonitor in povDirectionMonitors)
+                {
+                    foreach (var monitor in povMonitor.Value)
+                    {
+                        var flag = state.Gamepad.Buttons & xinputPovDirectionIdentifiers[monitor.Key];
+                        var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
+                        monitor.Value.ProcessPollResult(value);
                     }
                 }
             }
+
+            protected override void _SetAcquireState(bool state)
+            {
+                if (state)
+                {
+                    controller = new Controller((UserIndex)deviceInstance);
+                    logger.Log("Aquired controller {0}", deviceInstance + 1);
+                }
+                else
+                {
+                    controller = null;
+                    logger.Log("Relinquished controller {0}", deviceInstance + 1);
+                }
+            }
+
+            protected override bool GetAcquireState()
+            {
+                return controller != null;
+            }
         }
 
         #endregion
 
-        #endregion
+        #region Binding Handler
+        public class XIBindingHandler : PolledBindingHandler
+        {
+            public XIBindingHandler(BindingDescriptor descriptor) : base(descriptor)
+            {
+            }
+
+            public override int ConvertValue(int state)
+            {
+                int reportedValue = 0;
+                switch (bindingDescriptor.Type)
+                {
+                    case BindingType.Axis:
+                        // XI reports as a signed int
+                        reportedValue = state;
+                        break;
+                    case BindingType.Button:
+                        // XInput reports as 0..1 for buttons
+                        reportedValue = state;
+                        break;
+                    case BindingType.POV:
+                        reportedValue = state;
+                        break;
+                    default:
+                        break;
+                }
+                return reportedValue;
+            }
+
+
+            #endregion
+
+            #endregion
+        }
     }
 }

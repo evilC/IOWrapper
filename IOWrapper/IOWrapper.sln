@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core_TitanOne", "..\Core Pr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Providers", "..\IProvider\Providers.csproj", "{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core_DS4WindowsApi", "..\Core Providers\Core_DS4WindowsApi\Core_DS4WindowsApi.csproj", "{45FB25BC-4826-4CD1-8FD0-B669176496E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,10 @@ Global
 		{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45FB25BC-4826-4CD1-8FD0-B669176496E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45FB25BC-4826-4CD1-8FD0-B669176496E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45FB25BC-4826-4CD1-8FD0-B669176496E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45FB25BC-4826-4CD1-8FD0-B669176496E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,5 +101,6 @@ Global
 		{4CBA4863-015B-43E4-804B-199A198DD046} = {0F3E0065-6DC2-4310-A7C4-E81283247A48}
 		{2A15AF30-2919-42B1-95B4-CE0BFDB924FB} = {0F3E0065-6DC2-4310-A7C4-E81283247A48}
 		{081E0DB4-2B91-418E-A609-C1B70DDDFECB} = {0F3E0065-6DC2-4310-A7C4-E81283247A48}
+		{45FB25BC-4826-4CD1-8FD0-B669176496E1} = {0F3E0065-6DC2-4310-A7C4-E81283247A48}
 	EndGlobalSection
 EndGlobal

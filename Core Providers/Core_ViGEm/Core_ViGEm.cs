@@ -20,6 +20,8 @@ namespace Core_ViGEm
         public bool IsLive { get { return isLive; } }
         private bool isLive = false;
 
+        private Logger logger;
+
         private static ViGEmClient client;
         Xbox360Controller[] xboxControllers = new Xbox360Controller[4];
         private OutputDevicesHandler devicesHandler = new OutputDevicesHandler();
@@ -28,6 +30,7 @@ namespace Core_ViGEm
 
         public Core_ViGEm()
         {
+            logger = new Logger(ProviderName);
             InitLibrary();
         }
 
@@ -42,7 +45,7 @@ namespace Core_ViGEm
                 catch { }
             }
             isLive = (client != null);
-            Log("ViGem Client is {0}!", (isLive ? "Loaded" : "NOT Loaded"));
+            logger.Log("ViGem Client is {0}!", (isLive ? "Loaded" : "NOT Loaded"));
         }
 
         #region IProvider Members
@@ -120,6 +123,11 @@ namespace Core_ViGEm
         {
             InitLibrary();
         }
+
+        public void RefreshDevices()
+        {
+
+        }
         #endregion
 
         #region IDisposable Support
@@ -156,11 +164,6 @@ namespace Core_ViGEm
             // GC.SuppressFinalize(this);
         }
         #endregion
-
-        private static void Log(string formatStr, params object[] arguments)
-        {
-            Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
-        }
 
         #region Device Handling
 
@@ -287,6 +290,8 @@ namespace Core_ViGEm
             public bool IsRequested { get; set; }
             private Dictionary<Guid, OutputSubscriptionRequest> subscriptions = new Dictionary<Guid, OutputSubscriptionRequest>();
 
+            private Logger logger;
+
             protected DeviceClassDescriptor deviceClassDescriptor;
             protected int deviceId = 0;
             protected bool isAcquired = false;
@@ -304,6 +309,7 @@ namespace Core_ViGEm
 
             public DeviceHandler(DeviceClassDescriptor descriptor,int index)
             {
+                logger = new Logger(string.Format("Core_ViGEm ({0})", descriptor.classIdentifier));
                 deviceId = index;
                 deviceClassDescriptor = descriptor;
             }
@@ -316,7 +322,7 @@ namespace Core_ViGEm
             public bool AddSubscription(OutputSubscriptionRequest subReq)
             {
                 subscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
-                Log("VIGEM: Adding subscription to {0} controller # {1}", subReq.DeviceDescriptor.DeviceHandle, subReq.DeviceDescriptor.DeviceInstance);
+                logger.Log("Adding subscription to controller # {0}", subReq.DeviceDescriptor.DeviceInstance);
                 IsRequested = true;
                 SetAcquireState();
                 return true;
@@ -328,7 +334,7 @@ namespace Core_ViGEm
                 {
                     subscriptions.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
                 }
-                Log("VIGEM: Removing subscription to {0} controller # {1}", subReq.DeviceDescriptor.DeviceHandle, subReq.DeviceDescriptor.DeviceInstance);
+                logger.Log("Removing subscription to controller # {0}", subReq.DeviceDescriptor.DeviceInstance);
                 IsRequested = HasSubscriptions();
                 SetAcquireState();
                 return true;
@@ -489,7 +495,7 @@ namespace Core_ViGEm
 
             protected override List<string> buttonNames { get; set; } = new List<string>()
             {
-                "A", "B", "X", "Y", "LS", "RS", "LS", "RS", "Back", "Start"
+                "A", "B", "X", "Y", "LB", "RB", "LS", "RS", "Back", "Start"
             };
 
             private static readonly List<Xbox360Buttons> povIndexes = new List<Xbox360Buttons>()
@@ -570,7 +576,7 @@ namespace Core_ViGEm
 
             protected override List<string> buttonNames { get; set; } = new List<string>()
             {
-                "Cross", "Circle", "Square", "Triangle", "LS", "RS", "LS", "RS", "Share", "Options", "LT", "RT"
+                "Cross", "Circle", "Square", "Triangle", "L1", "R1", "LS", "RS", "Share", "Options", "L2", "R2"
             };
 
             private static readonly List<DualShock4DPadValues> povIndexes = new List<DualShock4DPadValues>()
@@ -598,7 +604,7 @@ namespace Core_ViGEm
             protected override void SetAxisState(BindingDescriptor bindingDescriptor, int state)
             {
                 var inputId = bindingDescriptor.Index;
-                report.SetAxis(axisIndexes[inputId], (byte)state);
+                report.SetAxis(axisIndexes[inputId], (byte)((state + 32768) / 256));
                 SendReport();
             }
 

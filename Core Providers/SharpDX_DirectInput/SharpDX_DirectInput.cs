@@ -16,21 +16,13 @@ namespace SharpDX_DirectInput
         public bool IsLive { get { return isLive; } }
         private bool isLive = true;
 
+        private Logger logger;
+
         bool disposed = false;
         static private DirectInput directInput;
 
-        // The thread which handles input detection
-        private Thread pollThread;
-        // Is the thread currently running? This is set by the thread itself.
-        private volatile bool pollThreadRunning = false;
-        // Do we want the thread to be on or off?
-        // This is independent of whether or not the thread is running...
-        // ... for example, we may be updating bindings, so the thread may be temporarily stopped
-        private bool pollThreadDesired = false;
-        // Is the thread in an Active or Inactive state?
-        private bool pollThreadActive = false;
+        private DIPollHandler pollHandler = new DIPollHandler();
 
-        private Dictionary<string, StickMonitor> MonitoredSticks = new Dictionary<string, StickMonitor>();
         private static List<Guid> ActiveProfiles = new List<Guid>();
 
         private static Dictionary<string, List<DeviceInstance>> devicesList;
@@ -45,6 +37,7 @@ namespace SharpDX_DirectInput
 
         public SharpDX_DirectInput()
         {
+            logger = new Logger(ProviderName);
             for (int p = 0; p < 4; p++)
             {
                 povBindingInfos[p] = new List<BindingReport>();
@@ -57,7 +50,8 @@ namespace SharpDX_DirectInput
                         BindingDescriptor = new BindingDescriptor()
                         {
                             Type = BindingType.POV,
-                            Index = (p * 4) + d,
+                            Index = p,
+                            SubIndex = d
                         }
                     });
                 }
@@ -65,10 +59,6 @@ namespace SharpDX_DirectInput
 
             directInput = new DirectInput();
             QueryDevices();
-            pollThreadDesired = true;
-            pollThread = new Thread(PollThread);
-            pollThread.Start();
-            SetPollThreadState(true);
         }
 
         public void Dispose()
@@ -82,53 +72,9 @@ namespace SharpDX_DirectInput
                 return;
             if (disposing)
             {
-                pollThread.Abort();
-                pollThreadRunning = false;
-                Log("Stopped PollThread for {0}", ProviderName);
-                foreach (var stick in MonitoredSticks.Values)
-                {
-                    stick.Dispose();
-                }
-                MonitoredSticks = null;
+                pollHandler.Dispose();
             }
             disposed = true;
-            Log("Provider {0} was Disposed", ProviderName);
-        }
-
-        private void SetPollThreadState(bool state)
-        {
-            if (!pollThreadRunning)
-                return;
-
-            if (state && !pollThreadActive)
-            {
-                //Log("Starting PollThread for {0}", ProviderName);
-                pollThreadDesired = true;
-                while (!pollThreadActive)
-                {
-                    //Log("Waiting for poll thread to activate");
-                    Thread.Sleep(10);
-                }
-                Log("PollThread for {0} Activated", ProviderName);
-            }
-            else if (!state && pollThreadActive)
-            {
-                //Log("Stopping PollThread for {0}", ProviderName);
-                //pollThreadStopRequested = true;
-                pollThreadDesired = false;
-                while (pollThreadActive)
-                {
-                    //Log("Waiting for poll thread to de-activate");
-                    Thread.Sleep(10);
-                }
-                Log("PollThread for {0} De-Activated", ProviderName);
-                //pollThread = null;
-            }
-        }
-
-        private static void Log(string formatStr, params object[] arguments)
-        {
-            Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
         }
 
         #region IProvider Members
@@ -140,7 +86,7 @@ namespace SharpDX_DirectInput
         // https://github.com/dotnet/csharplang/blob/master/proposals/default-interface-methods.md
         public bool SetProfileState(Guid profileGuid, bool state)
         {
-            var prev_state = pollThreadActive;
+            //var prev_state = pollThreadActive;
             //if (pollThreadActive)
             //    SetPollThreadState(false);
 
@@ -206,50 +152,12 @@ namespace SharpDX_DirectInput
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            var prev_state = pollThreadActive;
-            if (pollThreadActive)
-                SetPollThreadState(false);
-
-            if (!MonitoredSticks.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
-            {
-                MonitoredSticks.Add(subReq.DeviceDescriptor.DeviceHandle, new StickMonitor(subReq));
-            }
-            var success =  MonitoredSticks[subReq.DeviceDescriptor.DeviceHandle].Add(subReq);
-            if (success)
-            {
-                if (prev_state)
-                {
-                    SetPollThreadState(true);
-                }
-                return true;
-            }
-            return false;
+            return pollHandler.SubscribeInput(subReq);
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            var ret = false;
-            var prev_state = pollThreadActive;
-            if (pollThreadActive)
-                SetPollThreadState(false);
-
-            if (MonitoredSticks.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
-            {
-                ret = MonitoredSticks[subReq.DeviceDescriptor.DeviceHandle].Remove(subReq);
-                if (ret)
-                {
-                    if (!MonitoredSticks[subReq.DeviceDescriptor.DeviceHandle].HasSubscriptions())
-                    {
-                        MonitoredSticks[subReq.DeviceDescriptor.DeviceHandle].Dispose();
-                        MonitoredSticks.Remove(subReq.DeviceDescriptor.DeviceHandle);
-                    }
-                }
-            }
-            if (prev_state)
-            {
-                SetPollThreadState(true);
-            }
-            return ret;
+            return pollHandler.UnsubscribeInput(subReq);
         }
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
@@ -269,7 +177,12 @@ namespace SharpDX_DirectInput
 
         public void RefreshLiveState()
         {
+            
+        }
 
+        public void RefreshDevices()
+        {
+            QueryDevices();
         }
         #endregion
 
@@ -407,323 +320,178 @@ namespace SharpDX_DirectInput
         }
         #endregion
 
-        #region Stick Monitoring
+        #region Handlers
 
-        #region Main Monitor Loop
-        private void PollThread()
+        #region Poll Handler
+        class DIPollHandler : PollHandler<string>
         {
-            pollThreadRunning = true;
-            Log("Started PollThread for {0}", ProviderName);
-            while (true)
+            public override StickHandler CreateStickHandler(InputSubscriptionRequest subReq)
             {
-                if (pollThreadDesired)
-                {
-                    pollThreadActive = true;
-                    //pollThreadActive = true;
-                    while (pollThreadDesired)
-                    {
-                        //Log("Active");
-                        foreach (var stick in MonitoredSticks.Values)
-                        {
-                            stick.Poll();
-                        }
-                        Thread.Sleep(1);
-                    }
-                }
-                else
-                {
-                    //Log("De-Activating Poll Thread");
-                    pollThreadActive = false;
-                    while (!pollThreadDesired)
-                    {
-                        //Log("In-Active");
-                        Thread.Sleep(1);
-                    }
-                }
+                return new DIStickHandler(subReq);
+            }
+
+            public override string GetStickHandlerKey(DeviceDescriptor descriptor)
+            {
+                return descriptor.DeviceHandle;
             }
         }
         #endregion
 
-        #region Stick Poller
-        public class StickMonitor : IDisposable
+        #region Stick Handler
+        public class DIStickHandler : StickHandler
         {
-            bool disposed = false;
-
-            private string deviceHandle;
-            private int deviceInstance;
-
             private Joystick joystick;
             private Guid stickGuid;
-            private Dictionary<JoystickOffset, InputMonitor> monitors = new Dictionary<JoystickOffset, InputMonitor>();
 
-            public StickMonitor(InputSubscriptionRequest subReq)
+            public DIStickHandler(InputSubscriptionRequest subReq) : base(subReq)
             {
-                deviceHandle = subReq.DeviceDescriptor.DeviceHandle;
-                deviceInstance = subReq.DeviceDescriptor.DeviceInstance;
-                if (devicesList.ContainsKey(deviceHandle))
-                {
-                    SetAcquireState(true);
-                }
             }
 
-            private void SetAcquireState(bool state)
+            protected override void _SetAcquireState(bool state)
             {
-                if (state && (joystick == null))
+                if (state)
                 {
-                    stickGuid = devicesList[deviceHandle][deviceInstance].InstanceGuid;
-                    joystick = new Joystick(directInput, stickGuid);
-                    joystick.Properties.BufferSize = 128;
-                    joystick.Acquire();
-                    Log("Aquired DirectInput stick {0}", stickGuid);
+                    try
+                    {
+                        stickGuid = devicesList[deviceHandle][deviceInstance].InstanceGuid;
+                        joystick = new Joystick(directInput, stickGuid);
+                        joystick.Properties.BufferSize = 128;
+                        joystick.Acquire();
+                        logger.Log("Aquired stick {0}", stickGuid);
+                    }
+                    catch
+                    {
+                        stickGuid = Guid.Empty;
+                        joystick = null;
+                        return;
+                    }
+
                 }
-                else if (!state && (joystick != null))
+                else
                 {
-                    Log("Relinquished DirectInput stick {0}", stickGuid);
                     joystick.Unacquire();
                     joystick = null;
+                    logger.Log("Relinquished stick {0}", stickGuid);
                 }
             }
 
-            ~StickMonitor()
+            protected override bool GetAcquireState()
             {
-                Dispose();
+                return joystick != null;
             }
 
-            #region IDisposable Members
-            public void Dispose()
+            public override BindingHandler CreateBindingHandler(BindingDescriptor bindingDescriptor)
             {
-                Dispose(true);
+                return new DIBindingHandler(bindingDescriptor);
             }
 
-            protected virtual void Dispose(bool disposing)
+            public override int GetBindingHandlerKey(BindingDescriptor bindingDescriptor)
             {
-                if (disposed)
-                    return;
-                if (disposing)
+                switch (bindingDescriptor.Type)
                 {
-                    SetAcquireState(false);
-                }
-                disposed = true;
-            }
-            #endregion
+                    case BindingType.Axis:
+                        return (int)JoystickOffset.X + bindingDescriptor.Index;
 
-            public bool Add(InputSubscriptionRequest subReq)
-            {
-                var inputId = GetInputIdentifier(subReq.BindingDescriptor.Type, (int)subReq.BindingDescriptor.Index);
-                if (!monitors.ContainsKey(inputId))
-                {
-                    monitors.Add(inputId, new InputMonitor( subReq.BindingDescriptor.Type ));
+                    case BindingType.Button:
+                        return (int)JoystickOffset.Buttons0 + bindingDescriptor.Index;
+
+                    case BindingType.POV:
+                        return (int)JoystickOffset.PointOfViewControllers0 + (bindingDescriptor.Index * 4);
                 }
-                Log("Adding subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.BindingDescriptor.Type.ToString(), subReq.BindingDescriptor.Index);
-                return monitors[inputId].Add(subReq);
+                return 0;   // ToDo: should not happen. Properly handle
             }
 
-            public bool Remove(InputSubscriptionRequest subReq)
+            public override void Poll()
             {
-                var inputId = GetInputIdentifier(subReq.BindingDescriptor.Type, (int)subReq.BindingDescriptor.Index);
-                if (monitors.ContainsKey(inputId))
-                {
-                    var ret = monitors[inputId].Remove(subReq);
-                    if (!monitors[inputId].HasSubscriptions())
-                    {
-                        monitors.Remove(inputId);
-                    }
-                    Log("Removing subscription to DI device Handle {0}, Type {1}, Input {2}", deviceHandle, subReq.BindingDescriptor.Type.ToString(), subReq.BindingDescriptor.Index);
-                    return ret;
-                }
-                return false;
-            }
-
-            public bool HasSubscriptions()
-            {
-                foreach (var monitor in monitors)
-                {
-                    if (monitor.Value.HasSubscriptions())
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
-
-            public void Poll()
-            {
-                if (joystick == null)
+                if (joystick == null || !directInput.IsDeviceAttached(stickGuid))
                     return;
                 JoystickUpdate[] data = joystick.GetBufferedData();
                 foreach (var state in data)
                 {
-                    if (monitors.ContainsKey(state.Offset))
+                    var bindingType = OffsetToType(state.Offset);
+                    int monitorIndex = (int)state.Offset;
+
+                    var monitorList = bindingHandlers[bindingType];
+                    if (!monitorList.ContainsKey(monitorIndex))
                     {
-                        monitors[state.Offset].ProcessPollResult(state);
+                        continue;
+                    }
+
+                    var subMonitors = monitorList[monitorIndex];
+                    foreach (var monitor in subMonitors.Values)
+                    {
+                        monitor.ProcessPollResult(state.Value);
                     }
                 }
                 Thread.Sleep(1);
             }
         }
+
+        private static BindingType OffsetToType(JoystickOffset offset)
+        {
+            int index = (int)offset;
+            if (index <= (int)JoystickOffset.Sliders1) return BindingType.Axis;
+            if (index <= (int)JoystickOffset.PointOfViewControllers3) return BindingType.POV;
+            return BindingType.Button;
+        }
+
         #endregion
 
-        #region Input Detection
-        public class InputMonitor
+        #region Binding Handler
+        
+        public class DIBindingHandler : PolledBindingHandler
         {
-            private Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
-            private PovDirectionMonitor[] povDirectionMonitors = new PovDirectionMonitor[4];
-            private BindingType bindingType;
-
-            public InputMonitor(BindingType type)
+            public DIBindingHandler(BindingDescriptor descriptor) : base(descriptor)
             {
-                bindingType = type;
             }
 
-            public bool Add(InputSubscriptionRequest subReq)
+            public override int ConvertValue(int state)
             {
-                if (subReq.BindingDescriptor.Type == BindingType.POV)
+                int reportedValue = state;
+                switch (bindingDescriptor.Type)
                 {
-                    var dir = DirFromIndex(subReq.BindingDescriptor.Index);
-                    if (povDirectionMonitors[dir] == null)
-                    {
-                        povDirectionMonitors[dir] = new PovDirectionMonitor(dir);
-                    }
-                    return povDirectionMonitors[dir].Add(subReq);
+                    case BindingType.Axis:
+                        // DirectInput reports as 0..65535 with center of 32767
+                        // All axes are normalized for now to int16 (-32768...32767) with center being 0
+                        // So for now, this means flipping the axis.
+                        reportedValue = (state - 32767) * -1;
+                        break;
+                    case BindingType.Button:
+                        // DirectInput reports as 0..128 for buttons
+                        // PS controllers can report in an analog fashion, so supporting this at some point may be cool
+                        // However, these could be handled like axes
+                        // For now, a button is a digital device, so convert to 1 or 0
+                        reportedValue = state / 128;
+                        break;
+                    case BindingType.POV:
+                        reportedValue = ValueMatchesAngle(state, povAngle) ? 1 : 0;
+                        break;
                 }
-                else
-                {
-                    subscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
-                    return true;
-                }
+                return reportedValue;
             }
 
-            public bool Remove(InputSubscriptionRequest subReq)
+            public override bool ProfileIsActive(Guid profileGuid)
             {
-                if (subscriptions.ContainsKey(subReq.SubscriptionDescriptor.SubscriberGuid))
-                {
-                    subscriptions.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
-                    return true;
-                }
-                return false;
-            }
-
-            public bool HasSubscriptions()
-            {
-                if (subscriptions.Count > 0)
-                {
-                    return true;
-                }
-                return false;
-            }
-
-            public void ProcessPollResult(JoystickUpdate state)
-            {
-                if (state.Offset >= JoystickOffset.PointOfViewControllers0 && state.Offset <= JoystickOffset.PointOfViewControllers3)
-                {
-                    int pov = (state.Offset - JoystickOffset.PointOfViewControllers0) / 4;
-                    if (povDirectionMonitors[pov] != null)
-                        povDirectionMonitors[pov].Poll(state.Value);
-                }
-                else
-                {
-                    int reportedValue;
-                    foreach (var subscription in subscriptions.Values)
-                    {
-                        if (ActiveProfiles.Contains(subscription.SubscriptionDescriptor.ProfileGuid))
-                        {
-                            switch (bindingType)
-                            {
-                                case BindingType.Axis:
-                                    // DirectInput reports as 0..65535 with center of 32767
-                                    // All axes are normalized for now to int16 (-32768...32767) with center being 0
-                                    // So for now, this means flipping the axis.
-                                    reportedValue = (state.Value - 32767) * -1;
-                                    subscription.Callback(reportedValue);
-                                    break;
-                                case BindingType.Button:
-                                    // DirectInput reports as 0..128 for buttons
-                                    // PS controllers can report in an analog fashion, so supporting this at some point may be cool
-                                    // However, these could be handled like axes
-                                    // For now, a button is a digital device, so convert to 1 or 0
-                                    reportedValue = state.Value / 128;
-                                    subscription.Callback(reportedValue);
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                    }
-                }
+                return ActiveProfiles.Contains(profileGuid);
             }
         }
 
         #endregion
 
-        #region POV Input Detection
-        class PovDirectionMonitor
-        {
-            private Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
-            private bool state = false;
-            private static int tolerance = 4500;
-            private int angle;
-
-            public PovDirectionMonitor(int dir)
-            {
-                angle = dir * 900;
-            }
-
-            public bool Add(InputSubscriptionRequest subReq)
-            {
-                subscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
-                return true;
-            }
-
-            public void Poll(int value)
-            {
-                bool newState = ValueMatchesAngle(value);
-                if (newState != state)
-                {
-                    state = newState;
-                    var ret = Convert.ToInt32(state);
-                    foreach (var subscription in subscriptions.Values)
-                    {
-                        subscription.Callback(ret);
-                    }
-                }
-            }
-
-            private bool ValueMatchesAngle(int value)
-            {
-                if (value == -1)
-                    return false;
-                var diff = AngleDiff(value, angle);
-                return value != -1 && AngleDiff(value, angle) <= tolerance;
-            }
-
-            private int AngleDiff(int a, int b)
-            {
-                var result1 = a - b;
-                if (result1 < 0)
-                    result1 += 36000;
-
-                var result2 = b - a;
-                if (result2 < 0)
-                    result2 += 36000;
-
-                return Math.Min(result1, result2);
-            }
-        }
-        #endregion
         #endregion
 
         #region Helper Methods
 
-        /// <summary>
-        /// Converts index (eg button 0, axis 1) into DirectX Offsets
-        /// </summary>
-        /// <param name="inputType">The type of input (Axis, Button etc)</param>
-        /// <param name="inputId">The index of the input. 0 based</param>
-        /// <returns></returns>
-        private static JoystickOffset GetInputIdentifier(BindingType inputType, int inputId)
-        {
-            return directInputMappings[inputType][inputId];
-        }
+        ///// <summary>
+        ///// Converts index (eg button 0, axis 1) into DirectX Offsets
+        ///// </summary>
+        ///// <param name="inputType">The type of input (Axis, Button etc)</param>
+        ///// <param name="inputId">The index of the input. 0 based</param>
+        ///// <returns></returns>
+        //private static JoystickOffset GetInputIdentifier(BindingType inputType, int inputId)
+        //{
+        //    return directInputMappings[inputType][inputId];
+        //}
 
         private bool IsStickType(DeviceInstance deviceInstance)
         {
@@ -784,6 +552,7 @@ namespace SharpDX_DirectInput
             return orderedGuids;
         }
 
+        /*
         // In SharpDX, when you call GetDevices(), the order that devices comes back is not always in a useful order
         // This code aims to match each stick with a "Joystick ID" from the registry via VID/PID.
         // Joystick IDs in the registry do not always start with 0
@@ -838,6 +607,7 @@ namespace SharpDX_DirectInput
             }
             return -1;
         }
+        */
         #endregion
 
         #region Lookup Tables

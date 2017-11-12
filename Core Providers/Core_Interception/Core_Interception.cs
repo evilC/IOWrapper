@@ -102,18 +102,34 @@ namespace Core_Interception
             Log("Provider {0} was Disposed", ProviderName);
         }
 
+        /// <summary>
+        /// Turns on / off filtering of devices
+        /// Any filtered device will be blocked if the provider crashes
+        /// Also controls which devices are filtered when filtering is on
+        /// </summary>
+        /// <param name="state">Set to true to turn filtering on</param>
         private void SetFilterState(bool state)
         {
             if (state && !filterState)
             {
-                SetFilter(deviceContext, IsKeyboard, Filter.All);
-                SetFilter(deviceContext, IsMouse, Filter.All);
+                SetFilter(deviceContext, IsMonitoredKeyboard, Filter.All);
+                SetFilter(deviceContext, IsMonitoredMouse, Filter.All);
             }
             else if (!state && filterState)
             {
-                SetFilter(deviceContext, IsKeyboard, Filter.None);
-                SetFilter(deviceContext, IsMouse, Filter.None);
+                SetFilter(deviceContext, IsMonitoredKeyboard, Filter.None);
+                SetFilter(deviceContext, IsMonitoredMouse, Filter.None);
             }
+        }
+
+        private int IsMonitoredKeyboard(int device)
+        {
+            return Convert.ToInt32(MonitoredKeyboards.ContainsKey(device));
+        }
+
+        private int IsMonitoredMouse(int device)
+        {
+            return Convert.ToInt32(MonitoredMice.ContainsKey(device));
         }
 
         private void SetPollThreadState(bool state)
@@ -329,6 +345,11 @@ namespace Core_Interception
         {
 
         }
+
+        public void RefreshDevices()
+        {
+
+        }
         #endregion
 
         #region Device Querying
@@ -369,8 +390,7 @@ namespace Core_Interception
                         }
                     });
                     deviceHandleToId.Add(handle, i - 1);
-                    //Log(String.Format("{0} (Keyboard) = VID/PID: {1}", i, handle));
-                    Log(String.Format("{0} (Keyboard) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
+                    //Log(String.Format("{0} (Keyboard) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
                 }
                 i++;
             }
@@ -405,7 +425,7 @@ namespace Core_Interception
                     });
                     deviceHandleToId.Add(handle, i - 1);
                     //Log(String.Format("{0} (Mouse) = VID/PID: {1}", i, handle));
-                    Log(String.Format("{0} (Mouse) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
+                    //Log(String.Format("{0} (Mouse) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
                 }
                 i++;
             }
