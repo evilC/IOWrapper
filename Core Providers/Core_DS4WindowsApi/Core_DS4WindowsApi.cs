@@ -501,7 +501,7 @@ namespace Core_DS4WindowsApi
                     BindingDescriptor = new BindingDescriptor()
                     {
                         Index = i,
-                        SubIndex = 0,
+                        SubIndex = 2,
                         Type = BindingType.Axis
                     },
                     Category = BindingCategory.Signed
