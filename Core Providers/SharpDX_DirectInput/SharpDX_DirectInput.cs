@@ -390,7 +390,7 @@ namespace SharpDX_DirectInput
                 switch (bindingDescriptor.Type)
                 {
                     case BindingType.Axis:
-                        return (int)JoystickOffset.X + bindingDescriptor.Index;
+                        return (int)((JoystickOffset.X + bindingDescriptor.Index * 4));
 
                     case BindingType.Button:
                         return (int)JoystickOffset.Buttons0 + bindingDescriptor.Index;
