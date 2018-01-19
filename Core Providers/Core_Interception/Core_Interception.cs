@@ -591,12 +591,18 @@ namespace Core_Interception
                 return monitoredKeys.Count > 0;
             }
 
-            public void Poll(Stroke stroke)
+            public bool Poll(Stroke stroke)
             {
+                bool block = false;
                 foreach (var monitoredKey in monitoredKeys.Values)
                 {
-                    monitoredKey.Poll(stroke);
+                    var b = monitoredKey.Poll(stroke);
+                    if (b)
+                    {
+                        block = true;
+                    }
                 }
+                return block;
             }
         }
 
@@ -623,18 +629,21 @@ namespace Core_Interception
                 return subReqs.Count > 0;
             }
 
-            public void Poll(Stroke stroke)
+            public bool Poll(Stroke stroke)
             {
                 var isDown = stateDown == stroke.key.state;
                 var isUp = stateUp == stroke.key.state;
+                bool block = false;
                 if (code == stroke.key.code && ( isDown || isUp))
                 {
+                    block = true;
                     foreach (var subscriptionRequest in subReqs.Values)
                     {
                         subscriptionRequest.Callback(isDown ? 1 : 0);
                         //Log("State: {0}", isDown);
                     }
                 }
+                return block;
             }
         }
         #endregion
@@ -718,11 +727,11 @@ namespace Core_Interception
                 return monitoredStates.Count > 0;
             }
 
-            public void Poll(Stroke stroke)
+            public bool Poll(Stroke stroke)
             {
                 if (monitoredStates.ContainsKey(stroke.mouse.state))
                 {
-                    monitoredStates[stroke.mouse.state].Poll(stroke);
+                    return monitoredStates[stroke.mouse.state].Poll(stroke);
                 }
                 else if (stroke.mouse.state == 0)
                 {
@@ -743,6 +752,7 @@ namespace Core_Interception
                     {
                     }
                 }
+                return false;
             }
         }
 
@@ -768,10 +778,12 @@ namespace Core_Interception
                 return subReqs.Count > 0;
             }
 
-            public void Poll(Stroke stroke)
+            public bool Poll(Stroke stroke)
             {
+                bool block = false;
                 if ((stroke.mouse.state & (ushort)Filter.MouseButtonAny) != 0)
                 {
+                    block = true;
                     foreach (var subscriptionRequest in subReqs.Values)
                     {
                         Log("State: {0}", MonitoredState);
@@ -780,6 +792,7 @@ namespace Core_Interception
                         //t.Start();
                     }
                 }
+                return block;
             }
 
             private static void CallbackThread(InputSubscriptionRequest subReq, int value)
@@ -840,7 +853,7 @@ namespace Core_Interception
                         bool block = false;
                         if (isMonitoredKeyboard)
                         {
-                            MonitoredKeyboards[i].Poll(stroke);
+                            block = MonitoredKeyboards[i].Poll(stroke);
                         }
                         if (!block)
                         {
@@ -857,7 +870,7 @@ namespace Core_Interception
                         bool block = false;
                         if (isMonitoredMouse)
                         {
-                            MonitoredMice[i].Poll(stroke);
+                            block = MonitoredMice[i].Poll(stroke);
                         }
                         if (!block)
                         {
