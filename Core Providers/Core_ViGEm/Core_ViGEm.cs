@@ -451,8 +451,8 @@ namespace Core_ViGEm
                         Category = BindingCategory.Momentary,
                         BindingDescriptor = new BindingDescriptor()
                         {
-                            Index = 0,
-                            SubIndex = i,
+                            Index = i,
+                            SubIndex = 0,
                             Type = BindingType.POV
                         }
                     });
@@ -536,7 +536,7 @@ namespace Core_ViGEm
 
             protected override void SetPovState(BindingDescriptor bindingDescriptor, int state)
             {
-                var inputId = bindingDescriptor.SubIndex;
+                var inputId = bindingDescriptor.Index;
                 report.SetButtonState(povIndexes[inputId], state != 0);
                 SendReport();
             }
@@ -617,7 +617,7 @@ namespace Core_ViGEm
 
             protected override void SetPovState(BindingDescriptor bindingDescriptor, int state)
             {
-                var inputId = bindingDescriptor.SubIndex;
+                var inputId = bindingDescriptor.Index;
                 if (state == 0)
                     report.SetDPad(DualShock4DPadValues.None);
                 else
