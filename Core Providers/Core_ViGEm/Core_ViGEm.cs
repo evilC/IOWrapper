@@ -574,9 +574,14 @@ namespace Core_ViGEm
                 DualShock4Buttons.TriggerLeft, DualShock4Buttons.TriggerRight
             };
 
+            private static readonly List<DualShock4SpecialButtons> specialButtonIndexes = new List<DualShock4SpecialButtons>()
+            {
+                DualShock4SpecialButtons.Ps, DualShock4SpecialButtons.Touchpad
+            };
+
             protected override List<string> buttonNames { get; set; } = new List<string>()
             {
-                "Cross", "Circle", "Square", "Triangle", "L1", "R1", "LS", "RS", "Share", "Options", "L2", "R2"
+                "Cross", "Circle", "Square", "Triangle", "L1", "R1", "LS", "RS", "Share", "Options", "L2", "R2", "PS", "TouchPad Click"
             };
 
             private static readonly List<DualShock4DPadValues> povIndexes = new List<DualShock4DPadValues>()
@@ -611,7 +616,14 @@ namespace Core_ViGEm
             protected override void SetButtonState(BindingDescriptor bindingDescriptor, int state)
             {
                 var inputId = bindingDescriptor.Index;
-                report.SetButtonState(buttonIndexes[inputId], state != 0);
+                if (inputId >= buttonIndexes.Count)
+                {
+                    report.SetSpecialButtonState(specialButtonIndexes[inputId - buttonIndexes.Count], state != 0);
+                }
+                else
+                {
+                    report.SetButtonState(buttonIndexes[inputId], state != 0);
+                }
                 SendReport();
             }
 
