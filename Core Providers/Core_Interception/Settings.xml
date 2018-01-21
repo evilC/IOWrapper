@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings>
+  <Setting>
+    <Name>BlockingEnabled</Name>
+    <Value>False</Value>
+  </Setting>
+</Settings>

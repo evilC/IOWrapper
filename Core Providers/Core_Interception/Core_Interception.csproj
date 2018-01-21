@@ -50,11 +50,15 @@
       <Name>Providers</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Settings.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if exist "$(SolutionDir)..\Built Providers\$(ProjectName)" rmdir "$(SolutionDir)..\Built Providers\$(ProjectName)" /s /q
 mkdir "$(SolutionDir)..\Built Providers\$(ProjectName)"
 xcopy /Y "$(TargetDir)*.dll" "$(SolutionDir)..\Built Providers\$(ProjectName)"
+xcopy /Y "$(ProjectDir)Settings.xml" "$(SolutionDir)..\Built Providers\$(ProjectName)"
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>

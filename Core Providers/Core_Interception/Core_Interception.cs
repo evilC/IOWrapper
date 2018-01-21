@@ -3,12 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Core_Interception
 {
@@ -35,6 +38,18 @@ namespace Core_Interception
         private volatile bool pollThreadStopRequested = false;
 
         private bool filterState = false;
+
+        private bool blockingEnabled;
+        public static string AssemblyDirectory
+        {
+            get
+            {
+                string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+                UriBuilder uri = new UriBuilder(codeBase);
+                string path = Uri.UnescapeDataString(uri.Path);
+                return Path.GetDirectoryName(path);
+            }
+        }
 
         private Dictionary<int, KeyboardMonitor> MonitoredKeyboards = new Dictionary<int, KeyboardMonitor>();
         private Dictionary<int, MouseMonitor> MonitoredMice = new Dictionary<int, MouseMonitor>();
@@ -73,6 +88,22 @@ namespace Core_Interception
 
         public Core_Interception()
         {
+            var settingsFile = Path.Combine(AssemblyDirectory, "Settings.xml");
+            blockingEnabled = false;
+            if (File.Exists(settingsFile))
+            {
+                var doc = new XmlDocument();
+                doc.Load(settingsFile);
+
+                try
+                {
+                    blockingEnabled = Convert.ToBoolean(doc.SelectSingleNode("/Settings/Setting[Name = \"BlockingEnabled\"]")
+                        .SelectSingleNode("Value").InnerText);
+                }
+                catch { }
+            }
+            Log("Blocking Enabled: {0}", blockingEnabled);
+
             deviceContext = CreateContext();
 
             QueryDevices();
@@ -138,7 +169,7 @@ namespace Core_Interception
             {
                 SetFilterState(true);
                 pollThreadStopRequested = false;
-                pollThread = new Thread(PollThread);
+                pollThread = new Thread(() => PollThread(blockingEnabled));
                 pollThread.Start();
                 while (!pollThreadRunning)
                 {
@@ -836,7 +867,7 @@ namespace Core_Interception
         #endregion
 
         #region PollThread
-        private void PollThread()
+        private void PollThread(bool blockingEnabled)
         {
             pollThreadRunning = true;
 
@@ -855,7 +886,7 @@ namespace Core_Interception
                         {
                             block = MonitoredKeyboards[i].Poll(stroke);
                         }
-                        if (!block)
+                        if (!(blockingEnabled && block))
                         {
                             Send(deviceContext, i, ref stroke, 1);
                         }
@@ -872,7 +903,7 @@ namespace Core_Interception
                         {
                             block = MonitoredMice[i].Poll(stroke);
                         }
-                        if (!block)
+                        if (!(blockingEnabled && block))
                         {
                             Send(deviceContext, i, ref stroke, 1);
                         }
