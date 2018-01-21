@@ -694,7 +694,7 @@ namespace Providers
             bindingDescriptor = descriptor;
             if (bindingDescriptor.Type == BindingType.POV)
             {
-                povAngle = bindingDescriptor.SubIndex * 9000;
+                povAngle = bindingDescriptor.Index * 9000;
             }
         }
 

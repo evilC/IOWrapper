@@ -38,20 +38,20 @@ namespace SharpDX_DirectInput
         public SharpDX_DirectInput()
         {
             logger = new Logger(ProviderName);
-            for (int p = 0; p < 4; p++)
+            for (int povNum = 0; povNum < 4; povNum++)
             {
-                povBindingInfos[p] = new List<BindingReport>();
-                for (int d = 0; d < 4; d++)
+                povBindingInfos[povNum] = new List<BindingReport>();
+                for (int povDir = 0; povDir < 4; povDir++)
                 {
-                    povBindingInfos[p].Add(new BindingReport()
+                    povBindingInfos[povNum].Add(new BindingReport()
                     {
-                        Title = povDirections[d],
+                        Title = povDirections[povDir],
                         Category = BindingCategory.Momentary,
                         BindingDescriptor = new BindingDescriptor()
                         {
                             Type = BindingType.POV,
-                            Index = p,
-                            SubIndex = d
+                            Index = povDir,
+                            SubIndex = povNum
                         }
                     });
                 }
@@ -396,7 +396,7 @@ namespace SharpDX_DirectInput
                         return (int)JoystickOffset.Buttons0 + bindingDescriptor.Index;
 
                     case BindingType.POV:
-                        return (int)JoystickOffset.PointOfViewControllers0 + (bindingDescriptor.Index * 4);
+                        return (int)JoystickOffset.PointOfViewControllers0 + (bindingDescriptor.SubIndex * 4);
                 }
                 return 0;   // ToDo: should not happen. Properly handle
             }
