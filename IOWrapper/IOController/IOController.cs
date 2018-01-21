@@ -111,7 +111,7 @@ namespace IOWrapper
         {
             // Clone subreq before passing to provider, so if it gets altered outside, it does not affect the copy
             var subReq = _subReq.Clone();
-            Log("SubscribeInput: Provider {0}, Device {1}, Index {2}, SubIndex {3}, Guid {4}", subReq.ProviderDescriptor.ProviderName, subReq.DeviceDescriptor.DeviceHandle, subReq.BindingDescriptor.Index, subReq.BindingDescriptor.SubIndex, subReq.SubscriptionDescriptor.SubscriberGuid);
+            LogInputSubReq("SubscribeInput", subReq);
             if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriptionDescriptor.SubscriberGuid))
             {
                 // If this Subscriber has an existing subscription...
@@ -132,7 +132,7 @@ namespace IOWrapper
         public bool UnsubscribeInput(InputSubscriptionRequest _subReq)
         {
             var subReq = _subReq.Clone();
-            Log("UnsubscribeInput: Provider {0}, Device {1}, Index {2}, SubIndex {3}", subReq.ProviderDescriptor.ProviderName, subReq.DeviceDescriptor.DeviceHandle, subReq.BindingDescriptor.Index, subReq.BindingDescriptor.SubIndex);
+            LogInputSubReq("UnsubscribeInput", subReq);
             var ret = false;
             if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriptionDescriptor.SubscriberGuid))
             {
@@ -146,10 +146,22 @@ namespace IOWrapper
             return ret;
         }
 
+        private void LogInputSubReq(string title, InputSubscriptionRequest subReq)
+        {
+            Log("{0}: Provider {1}, Device {2}, Type {3}, Index {4}, SubIndex {5}, Guid {6}",
+                title,
+                subReq.ProviderDescriptor.ProviderName,
+                subReq.DeviceDescriptor.DeviceHandle,
+                subReq.BindingDescriptor.Type.ToString(),
+                subReq.BindingDescriptor.Index,
+                subReq.BindingDescriptor.SubIndex,
+                subReq.SubscriptionDescriptor.SubscriberGuid);
+        }
+
         public bool SubscribeOutput(OutputSubscriptionRequest _subReq)
         {
             var subReq = _subReq.Clone();
-            Log("SubscribeOutput: Provider {0}, Device {1}, Guid {2}", subReq.ProviderDescriptor.ProviderName, subReq.DeviceDescriptor.DeviceHandle, subReq.SubscriptionDescriptor.SubscriberGuid);
+            LogOutputSubReq("SubscribeOutput", subReq);
             if (ActiveOutputSubscriptions.ContainsKey(subReq.SubscriptionDescriptor.SubscriberGuid))
             {
                 // If this Subscriber has an existing subscription...
@@ -170,7 +182,7 @@ namespace IOWrapper
         public bool UnsubscribeOutput(OutputSubscriptionRequest _subReq)
         {
             var subReq = _subReq.Clone();
-            Log("UnsubscribeOutput: Provider {0}, Device {1}, Guid {2}", subReq.ProviderDescriptor.ProviderName, subReq.DeviceDescriptor.DeviceHandle, subReq.SubscriptionDescriptor.SubscriberGuid);
+            LogOutputSubReq("UnsubscribeOutput", subReq);
             var ret = false;
             if (ActiveOutputSubscriptions.ContainsKey(subReq.SubscriptionDescriptor.SubscriberGuid))
             {
@@ -182,6 +194,15 @@ namespace IOWrapper
                 }
             }
             return ret;
+        }
+
+        private void LogOutputSubReq(string title, OutputSubscriptionRequest subReq)
+        {
+            Log("{0}: Provider {1}, Device {2}, Guid {3}", 
+                title,
+                subReq.ProviderDescriptor.ProviderName, 
+                subReq.DeviceDescriptor.DeviceHandle, 
+                subReq.SubscriptionDescriptor.SubscriberGuid);
         }
 
         public bool SetOutputstate(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
