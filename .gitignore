@@ -4,6 +4,8 @@
 *.dll
 !/Core Providers/**/Dependencies/*.dll
 
+Built Providers/
+
 # User-specific files
 *.suo
 *.user
