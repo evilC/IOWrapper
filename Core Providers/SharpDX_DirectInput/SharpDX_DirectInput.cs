@@ -402,7 +402,6 @@ namespace SharpDX_DirectInput
                         return (int)JoystickOffset.Buttons0 + bindingDescriptor.Index;
 
                     case BindingType.POV:
-                        // POV *Number* (DI supports 4 POVs) is defined by the SubIndex, not the Index!
                         return PovIndexToPollKey(bindingDescriptor.Index);
                 }
                 return 0;   // ToDo: should not happen. Properly handle
