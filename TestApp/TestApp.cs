@@ -198,8 +198,8 @@ class Tester
             BindingDescriptor = new BindingDescriptor()
             {
                 Type = BindingType.POV,
-                Index = 0, // POV Down
-                SubIndex = 0,
+                Index = 0,      // 1st POV
+                SubIndex = 0,   // POV Up
             },
             Callback = new Action<int>((value) =>
             {
@@ -224,8 +224,8 @@ class Tester
             BindingDescriptor = new BindingDescriptor()
             {
                 Type = BindingType.POV,
-                Index = 2, // POV Down
-                SubIndex = 0,
+                Index = 0,      // 1st POV
+                SubIndex = 2,   // POV Down
             },
             Callback = new Action<int>((value) =>
             {
