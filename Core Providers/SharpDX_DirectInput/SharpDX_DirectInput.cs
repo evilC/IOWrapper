@@ -50,8 +50,8 @@ namespace SharpDX_DirectInput
                         BindingDescriptor = new BindingDescriptor()
                         {
                             Type = BindingType.POV,
-                            Index = povDir,
-                            SubIndex = povNum
+                            Index = povNum,
+                            SubIndex = povDir
                         }
                     });
                 }
