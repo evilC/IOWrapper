@@ -403,9 +403,19 @@ namespace SharpDX_DirectInput
 
                     case BindingType.POV:
                         // POV *Number* (DI supports 4 POVs) is defined by the SubIndex, not the Index!
-                        return (int)JoystickOffset.PointOfViewControllers0 + (bindingDescriptor.SubIndex * 4);
+                        return PovIndexToPollKey(bindingDescriptor.Index);
                 }
                 return 0;   // ToDo: should not happen. Properly handle
+            }
+
+            private int PovIndexToPollKey(int povIndex)
+            {
+                return (int)JoystickOffset.PointOfViewControllers0 + (povIndex * 4);
+            }
+
+            private int OffsetToPovIndex(JoystickOffset offset)
+            {
+                return (offset - JoystickOffset.PointOfViewControllers0) / 4;
             }
 
             public override void Poll()
