@@ -289,7 +289,7 @@ class Tester
         };
         //ret = iow.SubscribeInput(xinputButton);
 
-        var xinputPov = new InputSubscriptionRequest()
+        var xinputPov1 = new InputSubscriptionRequest()
         {
             SubscriptionDescriptor = new SubscriptionDescriptor()
             {
@@ -304,17 +304,45 @@ class Tester
             BindingDescriptor = new BindingDescriptor()
             {
                 Type = BindingType.POV,
-                Index = 2,
-                SubIndex = 0
+                Index = 0,      // POV #1 (The only one)
+                SubIndex = 0    // Up
             },
             Callback = new Action<int>((value) =>
             {
-                Console.WriteLine("XI POV Value: " + value);
+                Console.WriteLine("XI POV Value 1: " + value);
                 //iow.SetOutputstate(vJoyOutputSubReq, buttonTwoDescriptor, value);
                 //iow.SetOutputstate(vJoyOutputSubReq1, povOneUpDescriptor, value);
             })
         };
-        //ret = iow.SubscribeInput(xinputPov);
+        //ret = iow.SubscribeInput(xinputPov1);
+
+        var xinputPov2 = new InputSubscriptionRequest()
+        {
+            SubscriptionDescriptor = new SubscriptionDescriptor()
+            {
+                ProfileGuid = defaultProfileGuid,
+                SubscriberGuid = Guid.NewGuid()
+            },
+            ProviderDescriptor = xiProvider,
+            DeviceDescriptor = new DeviceDescriptor()
+            {
+                DeviceHandle = "0",
+            },
+            BindingDescriptor = new BindingDescriptor()
+            {
+                Type = BindingType.POV,
+                Index = 0,      // POV #1 (The only one)
+                SubIndex = 2    // Down
+            },
+            Callback = new Action<int>((value) =>
+            {
+                Console.WriteLine("XI POV Value 2: " + value);
+                //iow.SetOutputstate(vJoyOutputSubReq, buttonTwoDescriptor, value);
+                //iow.SetOutputstate(vJoyOutputSubReq1, povOneUpDescriptor, value);
+            })
+        };
+        //ret = iow.SubscribeInput(xinputPov2);
+
         #endregion
 
         #region Interception
