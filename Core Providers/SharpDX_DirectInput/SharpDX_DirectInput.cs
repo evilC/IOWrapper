@@ -413,11 +413,6 @@ namespace SharpDX_DirectInput
                 return (int)JoystickOffset.PointOfViewControllers0 + (povIndex * 4);
             }
 
-            private int OffsetToPovIndex(JoystickOffset offset)
-            {
-                return (offset - JoystickOffset.PointOfViewControllers0) / 4;
-            }
-
             public override void Poll()
             {
                 if (joystick == null || !directInput.IsDeviceAttached(stickGuid))
