@@ -543,9 +543,6 @@ namespace Providers
         protected Dictionary<int, Dictionary<int, BindingHandler>> povDirectionMonitors
             = new Dictionary<int, Dictionary<int, BindingHandler>>();
 
-        protected Dictionary<BindingType, Dictionary<int, Dictionary<int, BindingHandler>>> bindingHandlers
-            = new Dictionary<BindingType, Dictionary<int, Dictionary<int, BindingHandler>>>();
-
         protected abstract bool GetAcquireState();
         protected abstract void _SetAcquireState(bool state);
         public abstract void Poll();
@@ -581,22 +578,48 @@ namespace Providers
             }
         }
 
+        /// <summary>
+        /// Dictionary of Dictionaries holding BindingHandlers for this Stick
+        /// When the PollThread receives input, it will scan these dictionaries to find out if anything matches
+        /// The keys for both Dictionaries are ints
+        /// The First Dictionary is reffered to as the "PollKey"
+        /// If a device report uses enums for example to refer to which input (A specific axis or button) changed...
+        /// ... then the PollKey used for that provider for that input will be that enum, for efficiency
+        /// 
+        /// If a device report uses specific properties for each input (Such as XInput's axes, but not buttons)...
+        /// ... then other methods must be used to allow us to use an int key, such as a lookup to property name, then reflection
+        /// </summary>
+        protected Dictionary<BindingType, Dictionary<int, Dictionary<int, BindingHandler>>> bindingHandlers
+            = new Dictionary<BindingType, Dictionary<int, Dictionary<int, BindingHandler>>>();
+
+        /// <summary>
+        /// Subscribe a ControlGUID to an input on this stick
+        /// </summary>
+        /// <param name="subReq"></param>
+        /// <returns></returns>
         public bool Subscribe(InputSubscriptionRequest subReq)
         {
+            // Type is Axis / Button / POV
             var bindingType = subReq.BindingDescriptor.Type;
+            // The key that is used by the PollThread to identify a specific input within it's BindingType
+            // For some bindings, this will be an enum used in a device report
             var pollKey = GetPollKey(subReq.BindingDescriptor);
-            var subBindingHandlerKey = subReq.BindingDescriptor.SubIndex;
+            // The key that is used to identify the instance number of the input - POV *Number* (0-3) in DirectInput, else default of 0
+            var inputInstanceKey = subReq.BindingDescriptor.SubIndex;
 
+            // Build the PollKey Dictionary if needed
             if (!bindingHandlers[bindingType].ContainsKey(pollKey))
             {
                 bindingHandlers[bindingType].Add(pollKey, new Dictionary<int, BindingHandler>());
             }
-            var subBindingHandlers = bindingHandlers[bindingType][pollKey];
-            if (!subBindingHandlers.ContainsKey(subBindingHandlerKey))
+
+            // Get the Dictionary
+            var handlers = bindingHandlers[bindingType][pollKey];
+            if (!handlers.ContainsKey(inputInstanceKey))
             {
-                subBindingHandlers.Add(subBindingHandlerKey, CreateBindingHandler(subReq.BindingDescriptor));
+                handlers.Add(inputInstanceKey, CreateBindingHandler(subReq.BindingDescriptor));
             }
-            var ret = subBindingHandlers[subBindingHandlerKey].Subscribe(subReq);
+            var ret = handlers[inputInstanceKey].Subscribe(subReq);
             if (HasSubscriptions())
             {
                 SetAcquireState(true);
@@ -604,6 +627,11 @@ namespace Providers
             return ret;
         }
 
+        /// <summary>
+        /// Unsubscribes ControlGUID from an input
+        /// </summary>
+        /// <param name="subReq"></param>
+        /// <returns></returns>
         public bool Unsubscribe(InputSubscriptionRequest subReq)
         {
             var bindingType = subReq.BindingDescriptor.Type;
@@ -628,13 +656,7 @@ namespace Providers
         }
 
         /// <summary>
-        /// When we poll a device, each "Input" (Button / Axis etc) generally has a key (Typically an Offset in a Struct)
-        /// For example, DirectInput has the JoystickOffset enum, where Axis X is 0, Y is 4, Button 0 is 48, Button 1 is 49, etc...
-        /// When we store bindings, we typically do so in a Dictionary with this value as the key
-        /// Given a BindingDescriptor, this method should return the key to be used for that BindingType and Index
-        /// </summary>
-        /// <param name="descriptor">The BindingDescriptor that describes the binding</param>
-        /// <returns>An integer that is used as a key for Dictionaries in the PollThread</returns>
+        /// Gets the "PollKey" (See comments for bindingHandlers Dictionary) for a given input and type
         public abstract int GetPollKey(BindingDescriptor descriptor);
 
         /// <summary>
