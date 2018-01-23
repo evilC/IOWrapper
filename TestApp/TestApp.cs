@@ -188,7 +188,33 @@ class Tester
             SubscriptionDescriptor = new SubscriptionDescriptor()
             {
                 ProfileGuid = defaultProfileGuid,
-                SubscriberGuid = defaultProfileGuid
+                SubscriberGuid = Guid.NewGuid()
+            },
+            ProviderDescriptor = diProvider,
+            DeviceDescriptor = new DeviceDescriptor()
+            {
+                DeviceHandle = directInputHandle,
+            },
+            BindingDescriptor = new BindingDescriptor()
+            {
+                Type = BindingType.POV,
+                Index = 0, // POV Down
+                SubIndex = 0,
+            },
+            Callback = new Action<int>((value) =>
+            {
+                Console.WriteLine("DI POV Value 1: " + value);
+                //iow.SetOutputstate(vJoyOutputSubReq1, axisOneDescriptor, value);
+            })
+        };
+        //iow.SubscribeInput(diPovSub1);
+
+        var diPovSub2 = new InputSubscriptionRequest()
+        {
+            SubscriptionDescriptor = new SubscriptionDescriptor()
+            {
+                ProfileGuid = defaultProfileGuid,
+                SubscriberGuid = Guid.NewGuid()
             },
             ProviderDescriptor = diProvider,
             DeviceDescriptor = new DeviceDescriptor()
@@ -203,11 +229,12 @@ class Tester
             },
             Callback = new Action<int>((value) =>
             {
-                Console.WriteLine("DI POV Value: " + value);
+                Console.WriteLine("DI POV Value 2: " + value);
                 //iow.SetOutputstate(vJoyOutputSubReq1, axisOneDescriptor, value);
             })
         };
-        //iow.SubscribeInput(diPovSub1);
+        //iow.SubscribeInput(diPovSub2);
+
         #endregion
 
         #region XInput
