@@ -385,7 +385,13 @@ namespace SharpDX_DirectInput
                 return new DIBindingHandler(bindingDescriptor);
             }
 
-            public override int GetBindingHandlerKey(BindingDescriptor bindingDescriptor)
+            /// <summary>
+            /// DirectInput uses a JoystickOffset enum for all buttons / axes / povs
+            /// Therefore, use the enum value for each input as the PollKey
+            /// </summary>
+            /// <param name="bindingDescriptor"></param>
+            /// <returns></returns>
+            public override int GetPollKey(BindingDescriptor bindingDescriptor)
             {
                 switch (bindingDescriptor.Type)
                 {
@@ -396,6 +402,7 @@ namespace SharpDX_DirectInput
                         return (int)JoystickOffset.Buttons0 + bindingDescriptor.Index;
 
                     case BindingType.POV:
+                        // POV *Number* (DI supports 4 POVs) is defined by the SubIndex, not the Index!
                         return (int)JoystickOffset.PointOfViewControllers0 + (bindingDescriptor.SubIndex * 4);
                 }
                 return 0;   // ToDo: should not happen. Properly handle

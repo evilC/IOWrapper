@@ -584,14 +584,14 @@ namespace Providers
         public bool Subscribe(InputSubscriptionRequest subReq)
         {
             var bindingType = subReq.BindingDescriptor.Type;
-            var bindingHandlerKey = GetBindingHandlerKey(subReq.BindingDescriptor);
+            var pollKey = GetPollKey(subReq.BindingDescriptor);
             var subBindingHandlerKey = subReq.BindingDescriptor.SubIndex;
 
-            if (!bindingHandlers[bindingType].ContainsKey(bindingHandlerKey))
+            if (!bindingHandlers[bindingType].ContainsKey(pollKey))
             {
-                bindingHandlers[bindingType].Add(bindingHandlerKey, new Dictionary<int, BindingHandler>());
+                bindingHandlers[bindingType].Add(pollKey, new Dictionary<int, BindingHandler>());
             }
-            var subBindingHandlers = bindingHandlers[bindingType][bindingHandlerKey];
+            var subBindingHandlers = bindingHandlers[bindingType][pollKey];
             if (!subBindingHandlers.ContainsKey(subBindingHandlerKey))
             {
                 subBindingHandlers.Add(subBindingHandlerKey, CreateBindingHandler(subReq.BindingDescriptor));
@@ -607,7 +607,7 @@ namespace Providers
         public bool Unsubscribe(InputSubscriptionRequest subReq)
         {
             var bindingType = subReq.BindingDescriptor.Type;
-            var bindingHandlerKey = GetBindingHandlerKey(subReq.BindingDescriptor);
+            var bindingHandlerKey = GetPollKey(subReq.BindingDescriptor);
             var subBindingHandlerKey = subReq.BindingDescriptor.SubIndex;
 
             if (bindingHandlers[bindingType].ContainsKey(bindingHandlerKey))
@@ -627,9 +627,20 @@ namespace Providers
             return false;
         }
 
-        //public abstract int GetBindingHandlerKey(BindingType bindingType, int bindingIndex);
-        public abstract int GetBindingHandlerKey(BindingDescriptor descriptor);
+        /// <summary>
+        /// When we poll a device, each "Input" (Button / Axis etc) generally has a key (Typically an Offset in a Struct)
+        /// For example, DirectInput has the JoystickOffset enum, where Axis X is 0, Y is 4, Button 0 is 48, Button 1 is 49, etc...
+        /// When we store bindings, we typically do so in a Dictionary with this value as the key
+        /// Given a BindingDescriptor, this method should return the key to be used for that BindingType and Index
+        /// </summary>
+        /// <param name="descriptor">The BindingDescriptor that describes the binding</param>
+        /// <returns>An integer that is used as a key for Dictionaries in the PollThread</returns>
+        public abstract int GetPollKey(BindingDescriptor descriptor);
 
+        /// <summary>
+        /// Does this stick have any subscriptions?
+        /// </summary>
+        /// <returns>True if yes, False if no</returns>
         public bool HasSubscriptions()
         {
             foreach (var monitorList in bindingHandlers.Values)

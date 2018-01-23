@@ -336,7 +336,7 @@ namespace SharpDX_XInput
                 return new XIBindingHandler(bindingDescriptor);
             }
 
-            public override int GetBindingHandlerKey(BindingDescriptor bindingDescriptor)
+            public override int GetPollKey(BindingDescriptor bindingDescriptor)
             {
                 return bindingDescriptor.Index;
             }
