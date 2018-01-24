@@ -541,14 +541,45 @@ namespace Providers
         protected string providerName;
         protected Logger logger;
 
+        #region Binding Dictionaries
+        /// <summary>
+        /// Holds the buttonMonitors / axisMonitors / povDirectionMonitors for quick lookup via BindingType
+        /// 
+        /// Each one is a Dictionary of Dictionaries holding BindingHandlers for a given BindingType
+        /// When the PollThread receives input, it will scan these dictionaries to find out if anything matches
+        /// The keys for both Dictionaries are ints
+        /// The First Dictionary is sometimes called the "PollKey"
+        /// In a Device Report, this will be the Index
+        /// If a device report uses enums for example to refer to which input (A specific axis or button) changed...
+        /// ... then the PollKey used for that provider for that input will be that enum, for efficiency
+        /// 
+        /// If a device report uses specific properties for each input (Such as XInput's axes, but not buttons)...
+        /// ... then other methods must be used to allow us to use an int key, such as a lookup to property name, then reflection
+        /// 
+        /// The Second Dictionary is for the SubIndex
+        /// This is unused for Button and Axis Types, it is used for POV Direction Bindings, where it specifies the angle of the binding.
+        /// </summary>
+        protected Dictionary<BindingType, Dictionary<int, Dictionary<int, BindingHandler>>> bindingHandlers
+            = new Dictionary<BindingType, Dictionary<int, Dictionary<int, BindingHandler>>>();
+
+        /// <summary>
+        /// Dictionaries for Button Bindings
+        /// </summary>
         protected Dictionary<int, Dictionary<int, BindingHandler>> buttonMonitors
             = new Dictionary<int, Dictionary<int, BindingHandler>>();
 
+        /// <summary>
+        /// Dictionaries for Axis Bindings
+        /// </summary>
         protected Dictionary<int, Dictionary<int, BindingHandler>> axisMonitors
             = new Dictionary<int, Dictionary<int, BindingHandler>>();
 
+        /// <summary>
+        /// Dictionaries for POV Bindings
+        /// </summary>
         protected Dictionary<int, Dictionary<int, BindingHandler>> povDirectionMonitors
             = new Dictionary<int, Dictionary<int, BindingHandler>>();
+        #endregion
 
         protected abstract bool GetAcquireState();
         protected abstract void _SetAcquireState(bool state);
@@ -584,20 +615,6 @@ namespace Providers
                 _SetAcquireState(false);
             }
         }
-
-        /// <summary>
-        /// Dictionary of Dictionaries holding BindingHandlers for this Stick
-        /// When the PollThread receives input, it will scan these dictionaries to find out if anything matches
-        /// The keys for both Dictionaries are ints
-        /// The First Dictionary is reffered to as the "PollKey"
-        /// If a device report uses enums for example to refer to which input (A specific axis or button) changed...
-        /// ... then the PollKey used for that provider for that input will be that enum, for efficiency
-        /// 
-        /// If a device report uses specific properties for each input (Such as XInput's axes, but not buttons)...
-        /// ... then other methods must be used to allow us to use an int key, such as a lookup to property name, then reflection
-        /// </summary>
-        protected Dictionary<BindingType, Dictionary<int, Dictionary<int, BindingHandler>>> bindingHandlers
-            = new Dictionary<BindingType, Dictionary<int, Dictionary<int, BindingHandler>>>();
 
         /// <summary>
         /// Subscribe a ControlGUID to an input on this stick
