@@ -817,7 +817,7 @@ namespace Core_Interception
                     block = true;
                     foreach (var subscriptionRequest in subReqs.Values)
                     {
-                        Log("State: {0}", MonitoredState);
+                        //Log("State: {0}", MonitoredState);
                         ThreadPool.QueueUserWorkItem(
                             new WaitCallback(
                                 new InterceptionCallback() { subReq = subscriptionRequest, value = MonitoredState }
