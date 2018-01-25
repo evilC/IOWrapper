@@ -818,18 +818,26 @@ namespace Core_Interception
                     foreach (var subscriptionRequest in subReqs.Values)
                     {
                         Log("State: {0}", MonitoredState);
-                        // ToDo: Need thread pool ?
-                        //var t = new Thread(() => CallbackThread(subscriptionRequest, MonitoredState));
-                        //t.Start();
+                        ThreadPool.QueueUserWorkItem(
+                            new WaitCallback(
+                                new InterceptionCallback() { subReq = subscriptionRequest, value = MonitoredState }
+                                    .FireCallback
+                            )
+                        );
                     }
                 }
                 return block;
             }
 
-            private static void CallbackThread(InputSubscriptionRequest subReq, int value)
+            class InterceptionCallback
             {
-                //Log("Callback");
-                subReq.Callback(value);
+                public InputSubscriptionRequest subReq;
+                public int value;
+
+                public void FireCallback(Object state)
+                {
+                    subReq.Callback(value);
+                }
             }
         }
 
