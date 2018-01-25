@@ -358,7 +358,8 @@ class Tester
         };
 
         string mouseHandle = null;
-        mouseHandle = @"Mouse\HID\VID_046D&PID_C531&REV_2100&MI_00";
+        //mouseHandle = @"Mouse\HID\VID_046D&PID_C531&REV_2100&MI_00";    // Logitech wireless mouse receiver
+        mouseHandle = "Mouse\\HID\\VID_046D&PID_C00C&REV_0620";        // Blue Logitech Wheel Mouse (Wired)
         DeviceDescriptor interceptionMouse = new DeviceDescriptor()
         {
             DeviceHandle = mouseHandle
@@ -420,6 +421,32 @@ class Tester
         };
         //iow.SubscribeInput(subInterceptionMouseDelta);
 
+        var subInterceptionMouseButton = new InputSubscriptionRequest()
+        {
+            SubscriptionDescriptor = new SubscriptionDescriptor()
+            {
+                ProfileGuid = Guid.NewGuid(),
+                SubscriberGuid = Guid.NewGuid()
+            },
+            ProviderDescriptor = interceptionProvider,
+            DeviceDescriptor = new DeviceDescriptor()
+            {
+                //DeviceHandle = keyboardHandle,
+                DeviceHandle = mouseHandle,
+            },
+            BindingDescriptor = new BindingDescriptor()
+            {
+                Type = BindingType.Button,
+                Index = 0,                  // LButton
+            },
+            Callback = new Action<int>((value) =>
+            {
+                //iow.SetOutputstate(interceptionKeyboardOutputSubReq, new BindingDescriptor() { Type = BindingType.Button, Index = 17 }, value);
+                //iow.SetOutputstate(vJoyOutputSubReq, buttonOneDescriptor, value);
+                Console.WriteLine("Mouse Button Value: " + value);
+            })
+        };
+        //iow.SubscribeInput(subInterceptionMouseButton);
 
         var subInterception = new InputSubscriptionRequest()
         {
