@@ -31,67 +31,6 @@ namespace Providers
     }
     #endregion
 
-    #region Subscription Requests
-    /// <summary>
-    /// Base class for Subscription Requests. Shared by Input and Output
-    /// </summary>
-    public class SubscriptionRequest
-    {
-        /// <summary>
-        /// Identifies the Subscriber
-        /// </summary>
-        public SubscriptionDescriptor SubscriptionDescriptor { get; set; }
-
-        /// <summary>
-        /// Identifies the Provider that this subscription is for
-        /// </summary>
-        public ProviderDescriptor ProviderDescriptor { get; set; }
-
-        /// <summary>
-        /// Identifies which (Provider-specific) Device that this subscription is for
-        /// </summary>
-        public DeviceDescriptor DeviceDescriptor { get; set; }
-    }
-
-    /// <summary>
-    /// Contains all the required information for :
-    ///     The IOController to route the request to the appropriate Provider
-    ///     The Provider to subscribe to the appropriate input
-    ///     The Provider to notify the subscriber of activity
-    /// </summary>
-    public class InputSubscriptionRequest : SubscriptionRequest
-    {
-        /// <summary>
-        /// Identifies the (Provider+Device-specific) Input that this subscription is for
-        /// </summary>
-        public BindingDescriptor BindingDescriptor { get; set; }
-
-        /// <summary>
-        /// Callback to be fired when this Input changes state
-        /// </summary>
-        public dynamic Callback { get; set; }
-
-        public InputSubscriptionRequest Clone()
-        {
-            return (InputSubscriptionRequest)this.MemberwiseClone();
-        }
-    }
-
-    /// <summary>
-    /// Contains all the information for:
-    ///     The IOController to route the request to the appropriate Provider
-    ///     
-    /// Output Subscriptions are typically used to eg create virtual devices...
-    /// ... so that output can be sent to them
-    /// </summary>
-    public class OutputSubscriptionRequest : SubscriptionRequest {
-        public OutputSubscriptionRequest Clone()
-        {
-            return (OutputSubscriptionRequest)this.MemberwiseClone();
-        }
-    }
-    #endregion
-
     #region Reporting
     // Reports allow the back-end to tell the front-end what capabilities are available
     // Reports comprise of two parts:
@@ -204,26 +143,6 @@ namespace Providers
 
     #endregion
 
-    #endregion
-
-    #region Enums
-    // Enums used to categorize how a binding reports
-    #region Category Enums
-
-    /// <summary>
-    /// Describes what kind of input or output you are trying to read or emulate
-    /// </summary>
-    public enum BindingType { Axis, Button, POV };
-
-    /// <summary>
-    /// Describes the reporting style of a Binding
-    /// Only used for the back-end to report to the front-end how to work with the binding
-    /// </summary>
-    public enum BindingCategory { Momentary, Event, Signed, Unsigned, Delta }
-    //public enum AxisCategory { Signed, Unsigned, Delta }
-    //public enum ButtonCategory { Momentary, Event }
-    //public enum POVCategory { POV1, POV2, POV3, POV4 }
-    #endregion
     #endregion
 
     #region Helper Classes
