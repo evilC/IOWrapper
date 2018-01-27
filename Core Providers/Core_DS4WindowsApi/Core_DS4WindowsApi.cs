@@ -5,6 +5,7 @@ https://github.com/evilC/DS4WindowsApi
 
 using DS4Windows;
 using Providers;
+using Providers.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;

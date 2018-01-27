@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Providers
+namespace Providers.Helpers
 {
     static public class DeviceHelper
     {

@@ -3,6 +3,7 @@ using Nefarius.ViGEm.Client.Targets;
 using Nefarius.ViGEm.Client.Targets.DualShock4;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
 using Providers;
+using Providers.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
