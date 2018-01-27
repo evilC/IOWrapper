@@ -44,8 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Descriptors.cs" />
-    <Compile Include="Enums.cs" />
+    <Compile Include="DTOs\Descriptors.cs" />
+    <Compile Include="DTOs\Enums.cs" />
     <Compile Include="Handlers\BindingHandler.cs" />
     <Compile Include="Handlers\PollHandler.cs" />
     <Compile Include="Handlers\StickHandler.cs" />
@@ -53,8 +53,8 @@
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="IProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Reports.cs" />
-    <Compile Include="SubscriptionRequests.cs" />
+    <Compile Include="DTOs\Reports.cs" />
+    <Compile Include="DTOs\SubscriptionRequests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

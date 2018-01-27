@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Providers
 {
     /// <summary>
-    /// Base class for Subscription Requests. Shared by Input and Output
+    /// SubscriptionRequests allow the front end to add or remove Bindings
     /// </summary>
     public class SubscriptionRequest
     {
