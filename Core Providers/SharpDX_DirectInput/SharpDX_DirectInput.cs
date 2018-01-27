@@ -7,6 +7,7 @@ using System.Threading;
 using Microsoft.Win32;
 using System.Linq;
 using System.Diagnostics;
+using Providers.Handlers;
 
 namespace SharpDX_DirectInput
 {

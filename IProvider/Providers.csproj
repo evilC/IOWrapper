@@ -44,6 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Handlers\BindingHandler.cs" />
+    <Compile Include="Handlers\PollHandler.cs" />
+    <Compile Include="Handlers\StickHandler.cs" />
     <Compile Include="IProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

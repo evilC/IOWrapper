@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using SharpDX.XInput;
 using System.Threading;
 using System.Diagnostics;
+using Providers.Handlers;
 
 namespace SharpDX_XInput
 {
