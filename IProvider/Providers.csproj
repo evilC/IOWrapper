@@ -51,6 +51,7 @@
     <Compile Include="Handlers\StickHandler.cs" />
     <Compile Include="IProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reports.cs" />
     <Compile Include="SubscriptionRequests.cs" />
   </ItemGroup>
   <ItemGroup>
