@@ -41,7 +41,11 @@ namespace Providers.Handlers
         {
             get
             {
-                return GetChild(k);
+                if (!nodes.ContainsKey(k))
+                {
+                    nodes.Add(k, new TValue());
+                }
+                return nodes[k];
             }
         }
 
@@ -49,7 +53,7 @@ namespace Providers.Handlers
         {
             get
             {
-                return GetChild(subReq);
+                return this[GetDictionaryKey(subReq)];
             }
         }
 
@@ -64,23 +68,8 @@ namespace Providers.Handlers
 
         public bool PassToChild(InputSubscriptionRequest subReq)
         {
-            return GetChild(subReq).Subscribe(subReq);
+            return this[subReq].Subscribe(subReq);
         }
-
-        public TValue GetChild(InputSubscriptionRequest subReq)
-        {
-            return GetChild(GetDictionaryKey(subReq));
-        }
-
-        public TValue GetChild(TKey key)
-        {
-            if (!nodes.ContainsKey(key))
-            {
-                nodes.Add(key, new TValue());
-            }
-            return nodes[key];
-        }
-
     }
 
 }
