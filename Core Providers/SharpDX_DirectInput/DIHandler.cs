@@ -35,7 +35,7 @@ namespace SharpDX_DirectInput
         }
     }
 
-    internal class DISubBindingHandler : NewBindingHandler
+    internal class DISubBindingHandler : SubscriptionHandler
     {
         public override bool Subscribe(InputSubscriptionRequest subReq)
         {

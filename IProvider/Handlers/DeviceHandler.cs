@@ -12,8 +12,7 @@ namespace Providers.Handlers
         bool Subscribe(InputSubscriptionRequest subReq);
     }
 
-    //ToDo: Rename to BindingHandler once done, so the comments match
-    public abstract class NewBindingHandler : INode
+    public abstract class SubscriptionHandler : INode
     {
         public abstract bool Subscribe(InputSubscriptionRequest subReq);
     }
@@ -24,7 +23,7 @@ namespace Providers.Handlers
         /// <summary>
         /// Dictionary of INodes
         /// For nodes with children, this will be a NodeHandler
-        /// For leaf nodes, this will be a BindingHandler
+        /// For leaf nodes, this will be a SubscriptionHandler
         /// </summary>
         protected Dictionary<TKey, TValue> nodes = new Dictionary<TKey, TValue>();
         public TValue this[TKey k]
