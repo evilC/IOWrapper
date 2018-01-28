@@ -47,6 +47,7 @@
     <Compile Include="DTOs\Descriptors.cs" />
     <Compile Include="DTOs\Enums.cs" />
     <Compile Include="Handlers\BindingHandler.cs" />
+    <Compile Include="Handlers\DeviceHandler.cs" />
     <Compile Include="Handlers\PollHandler.cs" />
     <Compile Include="Handlers\StickHandler.cs" />
     <Compile Include="Helpers\DeviceHelper.cs" />

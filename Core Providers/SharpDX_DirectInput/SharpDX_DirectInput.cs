@@ -23,6 +23,12 @@ namespace SharpDX_DirectInput
         bool disposed = false;
         static private DirectInput directInput;
 
+        private DIHandler subscriptionHandler = new DIHandler();
+
+
+
+
+
         private DIPollHandler pollHandler = new DIPollHandler();
 
         private static List<Guid> ActiveProfiles = new List<Guid>();
@@ -154,6 +160,7 @@ namespace SharpDX_DirectInput
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
+            subscriptionHandler.Subscribe(subReq);
             return pollHandler.SubscribeInput(subReq);
         }
 
