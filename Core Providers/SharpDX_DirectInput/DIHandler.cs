@@ -84,7 +84,8 @@ namespace SharpDX_DirectInput
 
     }
 
-    internal class DIHandler : NodeHandler<BindingType, DIBindingHandler>
+    // Handles a list of BindingTypes
+    internal class DIHandler : NodeHandler<BindingType, DIDeviceHandler>
     {
         public override BindingType GetDictionaryKey(InputSubscriptionRequest subReq)
         {
@@ -102,6 +103,26 @@ namespace SharpDX_DirectInput
         }
     }
 
+    // Handles Devices
+    internal class DIDeviceHandler : NodeHandler<int, SubscriptionHandler>
+    {
+        public override int GetDictionaryKey(InputSubscriptionRequest subReq)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Subscribe(InputSubscriptionRequest subReq)
+        {
+            return PassToChild(subReq);
+        }
+
+        public override bool Unsubscribe(InputSubscriptionRequest subReq)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    // Handles Bindings
     internal class DIBindingHandler : NodeHandler<int, SubscriptionHandler>
     {
         public override int GetDictionaryKey(InputSubscriptionRequest subReq)
@@ -120,28 +141,25 @@ namespace SharpDX_DirectInput
         }
     }
 
-    /*
-    internal class DISubBindingHandler : SubscriptionHandler
+    // Handles SubBindings
+    internal class DISubBindingHandler : NodeHandler<int, SubscriptionHandler>
     {
+        public override int GetDictionaryKey(InputSubscriptionRequest subReq)
+        {
+            throw new NotImplementedException();
+        }
+
         public override bool Subscribe(InputSubscriptionRequest subReq)
         {
-            var bindingType = subReq.BindingDescriptor.Type;
-            var bindingIndex = subReq.BindingDescriptor.Index;
-            var bindingSubIndex = subReq.BindingDescriptor.SubIndex;
-            switch (bindingType)
-            {
-                case BindingType.Axis:
-                case BindingType.Button:
-                    var index = LookupTables.directInputMappings[bindingType][bindingIndex];
-                    break;
-                case BindingType.POV:
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-            return true;
+            throw new NotImplementedException();
+        }
 
+        public override bool Unsubscribe(InputSubscriptionRequest subReq)
+        {
+            throw new NotImplementedException();
         }
     }
-    */
+
+
+
 }
