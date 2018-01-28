@@ -28,9 +28,33 @@ namespace Providers.Handlers
         bool Subscribe(InputSubscriptionRequest subReq);
     }
 
-    public abstract class SubscriptionHandler : INode
+    public class SubscriptionHandler : INode
     {
-        public abstract bool Subscribe(InputSubscriptionRequest subReq);
+        private Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
+
+        public Guid GetSubscriberGuid(InputSubscriptionRequest subReq)
+        {
+            return subReq.SubscriptionDescriptor.SubscriberGuid;
+        }
+
+        public bool Subscribe(InputSubscriptionRequest subReq)
+        {
+            var subscriberGuid = GetSubscriberGuid(subReq);
+            subscriptions[subscriberGuid] = subReq;
+            return true;
+        }
+
+        public bool UnSubscribe(InputSubscriptionRequest subReq)
+        {
+            var subscriberGuid = GetSubscriberGuid(subReq);
+            if (!subscriptions.ContainsKey(subscriberGuid))
+            {
+                throw new Exception(string.Format("Non-existant subscriber '{0}'", subscriberGuid));
+            }
+            subscriptions.Remove(subscriberGuid);
+            //ToDo: Perform check if nodes is empty, and if so, the parent node needs to be deleted
+            return true;
+        }
     }
 
     public abstract class NodeHandler<TKey, TValue> : INode
@@ -65,6 +89,8 @@ namespace Providers.Handlers
         public abstract TKey GetDictionaryKey(InputSubscriptionRequest subReq);
 
         public abstract bool Subscribe(InputSubscriptionRequest subReq);
+
+        public abstract bool Unsubscribe(InputSubscriptionRequest subReq);
 
         public bool PassToChild(InputSubscriptionRequest subReq)
         {
