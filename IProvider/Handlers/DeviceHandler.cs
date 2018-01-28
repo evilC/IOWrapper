@@ -5,6 +5,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/// <summary>
+/// The goal of the Handlers class is to build a hierarchical tree of objects which can serve a number of purposes:
+/// 1) Keep a record of what has been subscribed to, and by whom
+/// 2) At poll-time, process the updates from the device
+/// 3) Acquire / Relinquish devices as needed
+/// 
+/// This task is split into two classes:
+/// 
+/// 1) Nodes with children = "NodeHandler"
+/// Keeps a dictionary whose value could be another NodeHandler, or a SubscriptionHandler
+/// Eg there will be NodeHandlers for BindingType, Binding, and then a SubscriptionHandler for the SubBinding
+/// 
+/// 2) Leaf Nodes - "SubscriptionHandler"
+/// Keeps a record of who has subscribed to the *one* input that it monitors
+/// 
+/// </summary>
 namespace Providers.Handlers
 {
     public interface INode
@@ -20,11 +36,6 @@ namespace Providers.Handlers
     public abstract class NodeHandler<TKey, TValue> : INode
         where TValue : INode, new()
     {
-        /// <summary>
-        /// Dictionary of INodes
-        /// For nodes with children, this will be a NodeHandler
-        /// For leaf nodes, this will be a SubscriptionHandler
-        /// </summary>
         protected Dictionary<TKey, TValue> nodes = new Dictionary<TKey, TValue>();
         public TValue this[TKey k]
         {
