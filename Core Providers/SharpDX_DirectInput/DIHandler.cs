@@ -35,9 +35,9 @@ namespace SharpDX_DirectInput
         }
     }
 
-    internal class DISubBindingHandler : INode
+    internal class DISubBindingHandler : NewBindingHandler
     {
-        public bool Subscribe(InputSubscriptionRequest subReq)
+        public override bool Subscribe(InputSubscriptionRequest subReq)
         {
             throw new NotImplementedException();
         }
