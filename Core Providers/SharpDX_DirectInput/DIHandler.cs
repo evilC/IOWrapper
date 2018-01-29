@@ -93,7 +93,7 @@ namespace SharpDX_DirectInput
     {
         private DIDevicesHandler deviceHandler = new DIDevicesHandler();
 
-        public static DirectInput directInput = new DirectInput();
+        public static DirectInput DIInstance { get; } = new DirectInput();
 
         // The thread which handles input detection
         protected Thread pollThread;
@@ -127,6 +127,15 @@ namespace SharpDX_DirectInput
                     || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Driving
                     || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Supplemental;
         }
+
+        public static BindingType OffsetToType(JoystickOffset offset)
+        {
+            int index = (int)offset;
+            if (index <= (int)JoystickOffset.Sliders1) return BindingType.Axis;
+            if (index <= (int)JoystickOffset.PointOfViewControllers3) return BindingType.POV;
+            return BindingType.Button;
+        }
+
 
         public void SetPollThreadState(bool state)
         {
@@ -228,13 +237,13 @@ namespace SharpDX_DirectInput
 
         public Guid DeviceHandleToInstanceGuid(string handle)
         {
-            var diDeviceInstances = DIHandler.directInput.GetDevices();
+            var diDeviceInstances = DIHandler.DIInstance.GetDevices();
 
             foreach (var device in diDeviceInstances)
             {
                 if (!DIHandler.IsStickType(device))
                     continue;
-                var joystick = new Joystick(DIHandler.directInput, device.InstanceGuid);
+                var joystick = new Joystick(DIHandler.DIInstance, device.InstanceGuid);
                 joystick.Acquire();
 
                 var thisHandle = string.Format("VID_{0}&PID_{1}"
@@ -255,8 +264,12 @@ namespace SharpDX_DirectInput
 
     /// <summary>
     /// Represents a Device
+    /// 
+    /// Dictionary contains bindings for this device
+    /// TKey is the Offset property of the DI update object
+    /// TValue is the BindingHandler for that binding
     /// </summary>
-    internal class DIDeviceHandler : NodeHandler<int, NewBindingHandler>
+    internal class DIDeviceHandler : NodeHandler<int, DIBindingInstanceHandler>
     {
         private Guid deviceInstanceGuid;
         private Joystick joystick;
@@ -269,17 +282,28 @@ namespace SharpDX_DirectInput
         public bool Subscribe(InputSubscriptionRequest subReq, Guid guid)
         {
             deviceInstanceGuid = guid;
-            joystick = new Joystick(DIHandler.directInput, deviceInstanceGuid);
+            joystick = new Joystick(DIHandler.DIInstance, deviceInstanceGuid);
             joystick.Properties.BufferSize = 128;
             joystick.Acquire();
             this[subReq].Subscribe(subReq);
-            //return PassToChild(subReq);
             return true;
         }
 
+        public bool Unsubscribe(InputSubscriptionRequest subReq)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Polls the joystick that this class handles for input
+        /// Updates come in the form of JoystickUpdate arrays
+        /// One JoystickUpdate holds information about one input (Axis, Button, POV)
+        /// Each input is identified by the JoystickUpdate.Offset property
+        /// The nodes array should hold bindings for this Offset
+        /// </summary>
         public void Poll()
         {
-            if (joystick == null || !DIHandler.directInput.IsDeviceAttached(deviceInstanceGuid))
+            if (joystick == null || !DIHandler.DIInstance.IsDeviceAttached(deviceInstanceGuid))
                 return;
             JoystickUpdate[] data = joystick.GetBufferedData();
             foreach (var state in data)
@@ -289,40 +313,21 @@ namespace SharpDX_DirectInput
                 {
                     nodes[key].Poll(state);
                 }
-                //var bindingType = OffsetToType(state.Offset);
-                //int monitorIndex = (int)state.Offset;
-
-                //var monitorList = bindingHandlers[bindingType];
-                //if (!monitorList.ContainsKey(monitorIndex))
-                //{
-                //    continue;
-                //}
-
-                //var subMonitors = monitorList[monitorIndex];
-                //foreach (var monitor in subMonitors.Values)
-                //{
-                //    monitor.ProcessPollResult(state.Value);
-                //}
             }
             Thread.Sleep(1);
 
         }
 
-        public bool Unsubscribe(InputSubscriptionRequest subReq)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     /// <summary>
-    /// Represents a single Input (Button, Axis or POV)
+    /// Represents a group of Inputs (Button, Axis or POV)
+    /// For POVs, TKey is POV *Number* (Directinput supports 4 POVs)
+    /// For Buttons and Axes, TKey is InputID (0 for Button One, 1 for Button Two etc)
     /// </summary>
-    internal class NewBindingHandler : NodeHandler<int, SubscriptionHandler>
+    internal class DIBindingInstanceHandler : NodeHandler<int, NewDiBindingHandler>
     {
-        private int currentState;
-
-        //private InputSubscriptionRequest mockSubReq;
-
+        // When this class is put it in an array, index it by the JoystickUpdate.Offest value
         public override int GetDictionaryKey(InputSubscriptionRequest subReq)
         {
             return (int)LookupTables.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index];
@@ -340,49 +345,47 @@ namespace SharpDX_DirectInput
 
         public void Poll(JoystickUpdate state)
         {
-            var bindingType = OffsetToType(state.Offset);
-            //if (bindingType == BindingType.POV) { } // Pass to node if POV, else pass to SubscriptionHandler ?
-            if (currentState != state.Value)
+            foreach (var node in nodes.Values)
             {
-                currentState = state.Value;
-                foreach (var node in nodes.Values)
-                {
-                    node.FireCallbacks(state.Value);
-                }
-                //mockSubReq.Callback(state.Value);
+                node.Poll(state);
             }
         }
 
-        private static BindingType OffsetToType(JoystickOffset offset)
-        {
-            int index = (int)offset;
-            if (index <= (int)JoystickOffset.Sliders1) return BindingType.Axis;
-            if (index <= (int)JoystickOffset.PointOfViewControllers3) return BindingType.POV;
-            return BindingType.Button;
-        }
-
     }
 
-    /*
-    // Handles SubBindings
-    internal class DISubBindingHandler : NodeHandler<int, SubscriptionHandler>
+    /// <summary>
+    /// Handles the actual Binding
+    /// SubBindings are needed for DirectInput, as it has multiple POVs
+    /// For POVs, TKey is POV *Direction* (0=North, 1=East, 2=South, 3=West)
+    /// For Buttons and Axes, TKey will always be 0
+    /// 
+    /// ToDo: Rename once old BindingHandler removed
+    /// </summary>
+    internal class NewDiBindingHandler : NodeHandler<int, SubscriptionHandler>
     {
         public override int GetDictionaryKey(InputSubscriptionRequest subReq)
         {
-            throw new NotImplementedException();
+            return (int)LookupTables.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.SubIndex];
         }
 
-        public override bool Subscribe(InputSubscriptionRequest subReq)
+        public bool Subscribe(InputSubscriptionRequest subReq)
+        {
+            return this[subReq].Subscribe(subReq);
+        }
+
+        public bool Unsubscribe(InputSubscriptionRequest subReq)
         {
             throw new NotImplementedException();
         }
 
-        public override bool Unsubscribe(InputSubscriptionRequest subReq)
+        public void Poll(JoystickUpdate state)
         {
-            throw new NotImplementedException();
+            var bindingType = DIHandler.OffsetToType(state.Offset);
+            //if (bindingType == BindingType.POV) { } // Special handling needed for POVs
+            foreach (var node in nodes.Values)
+            {
+                node.FireCallbacks(state.Value);
+            }
         }
     }
-    */
-
-
 }

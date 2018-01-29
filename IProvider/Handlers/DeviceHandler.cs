@@ -13,12 +13,13 @@ using System.Threading.Tasks;
 /// 
 /// This task is split into two classes:
 /// 
-/// 1) Nodes with children = "NodeHandler"
+/// 1) NodeHandler
 /// Keeps a dictionary whose value could be another NodeHandler, or a SubscriptionHandler
 /// Eg there will be NodeHandlers for BindingType, Binding, and then a SubscriptionHandler for the SubBinding
 /// 
-/// 2) Leaf Nodes - "SubscriptionHandler"
-/// Keeps a record of who has subscribed to the *one* input that it monitors
+/// 2) SubscriptionHandler
+/// Keeps a list of subscriptions. Each leaf node NodeHandler will have one SubscriptionHandler
+/// Is totally unaware of inputs and such, it merely fires callbacks when told
 /// 
 /// </summary>
 namespace Providers.Handlers
