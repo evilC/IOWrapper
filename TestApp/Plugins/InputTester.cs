@@ -28,8 +28,6 @@ namespace TestApp.Plugins
                 })
 
             };
-
-            // Activate
         }
 
         public InputTester Subscribe()
