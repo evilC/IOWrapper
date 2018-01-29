@@ -226,7 +226,7 @@ namespace SharpDX_DirectInput
 
             foreach (var diDeviceInstance in unsortedInstances)
             {
-                devicesList.Add(diDeviceInstance.Key, OrderDevices(diDeviceInstance.Key, diDeviceInstance.Value));
+                devicesList.Add(diDeviceInstance.Key, Lookups.OrderDevices(diDeviceInstance.Key, diDeviceInstance.Value));
             }
 
             foreach (var deviceList in devicesList.Values)
@@ -524,65 +524,6 @@ namespace SharpDX_DirectInput
                     || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Supplemental;
         }
 
-        private List<DeviceInstance> OrderDevices(string vidpid, List<DeviceInstance> unorderedInstances)
-        {
-            var orderedGuids = new List<DeviceInstance>();
-
-            var keyname = String.Format(@"System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{0}\Calibration", vidpid);
-
-            // Build a list of all known devices matching this VID/PID
-            // This includes unplugged devices
-            var deviceOrders = new SortedDictionary<int, Guid>();
-            using (RegistryKey hkcu = Registry.CurrentUser)
-            {
-                using (RegistryKey calibkey = hkcu.OpenSubKey(keyname))
-                {
-                    foreach (string key in calibkey.GetSubKeyNames())
-                    {
-                        using (RegistryKey orderkey = calibkey.OpenSubKey(key))
-                        {
-                            byte[] reg_guid = (byte[])orderkey.GetValue("GUID");
-                            byte[] reg_id = (byte[])orderkey.GetValue("Joystick Id");
-                            if (reg_id == null)
-                                continue;
-                            int id = BitConverter.ToInt32(reg_id, 0);
-                            // Two duplicates can share the same JoystickID - use next ID in this case
-                            while (deviceOrders.ContainsKey(id))
-                            {
-                                id++;
-                            }
-                            deviceOrders.Add(id, new Guid(reg_guid));
-                        }
-                    }
-                }
-
-                // Now iterate the Ordered (sparse) array and assign IDs to the connected devices
-                foreach (var deviceGuid in deviceOrders.Values)
-                {
-                    for (int i = 0; i < unorderedInstances.Count; i++)
-                    {
-                        if (unorderedInstances[i].InstanceGuid == deviceGuid)
-                        {
-                            orderedGuids.Add(unorderedInstances[i]);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            return orderedGuids;
-        }
-
         #endregion
-
-        //private static int PovFromIndex(uint inputIndex)
-        //{
-        //    return (int)(Math.Floor((decimal)(inputIndex / 4)));
-        //}
-
-        private static int DirFromIndex(int inputIndex)
-        {
-            return (int)inputIndex % 3;
-        }
     }
 }

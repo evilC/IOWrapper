@@ -45,6 +45,30 @@ namespace SharpDX_DirectInput
             return deviceOrders.Values.ToList();
         }
 
+        public static List<DeviceInstance> OrderDevices(string vidpid, List<DeviceInstance> unorderedInstances)
+        {
+            var orderedGuids = new List<DeviceInstance>();
+
+            var keyname = String.Format(@"System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{0}\Calibration", vidpid);
+
+            var deviceOrders = GetDeviceOrders(vidpid);
+            // Now iterate the Ordered (sparse) array and assign IDs to the connected devices
+            foreach (var deviceGuid in deviceOrders)
+            {
+                for (int i = 0; i < unorderedInstances.Count; i++)
+                {
+                    if (unorderedInstances[i].InstanceGuid == deviceGuid)
+                    {
+                        orderedGuids.Add(unorderedInstances[i]);
+                        break;
+                    }
+                }
+            }
+
+            return orderedGuids;
+        }
+
+
         #region POV Helpers - probably belong in IProvider
         public static int ValueFromAngle(int value, int angle, int povTolerance = 90)
         {
