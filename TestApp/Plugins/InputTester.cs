@@ -15,9 +15,13 @@ namespace TestApp.Plugins
             // Input
             var input = new InputSubscription()
             {
-                ProviderDescriptor = Library.Providers.Interception,
-                DeviceDescriptor = Library.Devices.Interception.ChiconyKeyboard,
-                BindingDescriptor = Library.Bindings.Interception.Keyboard.One,
+                //ProviderDescriptor = Library.Providers.Interception,
+                //DeviceDescriptor = Library.Devices.Interception.ChiconyKeyboard,
+                //BindingDescriptor = Library.Bindings.Interception.Keyboard.One,
+
+                ProviderDescriptor = Library.Providers.DirectInput,
+                DeviceDescriptor = Library.Devices.DirectInput.T16000M,
+                BindingDescriptor = Library.Bindings.Generic.Button1,
                 Callback = new Action<int>((value) =>
                 {
                     Console.WriteLine("ButtonTester State: {0}", value);

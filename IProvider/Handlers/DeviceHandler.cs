@@ -23,12 +23,13 @@ using System.Threading.Tasks;
 /// </summary>
 namespace Providers.Handlers
 {
-    public interface INode
-    {
-        bool Subscribe(InputSubscriptionRequest subReq);
-    }
+    //public interface INode
+    //{
+    //    bool Subscribe(InputSubscriptionRequest subReq);
+    //}
 
-    public class SubscriptionHandler : INode
+    //public class SubscriptionHandler : INode
+    public class SubscriptionHandler
     {
         private Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
 
@@ -55,10 +56,20 @@ namespace Providers.Handlers
             //ToDo: Perform check if nodes is empty, and if so, the parent node needs to be deleted
             return true;
         }
+
+        public void FireCallbacks(int value)
+        {
+            foreach (var subscription in subscriptions.Values)
+            {
+                subscription.Callback(value);
+            }
+        }
     }
 
-    public abstract class NodeHandler<TKey, TValue> : INode
-        where TValue : INode, new()
+    //public abstract class NodeHandler<TKey, TValue> : INode
+    //    where TValue : INode, new()
+    public abstract class NodeHandler<TKey, TValue>
+        where TValue : new()
     {
         protected Dictionary<TKey, TValue> nodes = new Dictionary<TKey, TValue>();
         public TValue this[TKey k]
@@ -88,14 +99,14 @@ namespace Providers.Handlers
         /// <returns></returns>
         public abstract TKey GetDictionaryKey(InputSubscriptionRequest subReq);
 
-        public abstract bool Subscribe(InputSubscriptionRequest subReq);
+        //public abstract bool Subscribe(InputSubscriptionRequest subReq);
 
-        public abstract bool Unsubscribe(InputSubscriptionRequest subReq);
+        //public abstract bool Unsubscribe(InputSubscriptionRequest subReq);
 
-        public bool PassToChild(InputSubscriptionRequest subReq)
-        {
-            return this[subReq].Subscribe(subReq);
-        }
+        //public bool PassToChild(InputSubscriptionRequest subReq)
+        //{
+        //    return this[subReq].Subscribe(subReq);
+        //}
     }
 
 }

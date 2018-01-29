@@ -160,8 +160,8 @@ namespace SharpDX_DirectInput
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            subscriptionHandler.Subscribe(subReq);
-            return pollHandler.SubscribeInput(subReq);
+            return subscriptionHandler.Subscribe(subReq);
+            //return pollHandler.SubscribeInput(subReq);
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)

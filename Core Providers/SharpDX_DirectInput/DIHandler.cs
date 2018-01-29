@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SharpDX_DirectInput
@@ -84,63 +85,285 @@ namespace SharpDX_DirectInput
 
     }
 
-    // Handles a list of BindingTypes
-    internal class DIHandler : NodeHandler<BindingType, DIDeviceHandler>
+    /// <summary>
+    /// Handles subscriptions for DirectInput
+    /// Contains one DIDeviceHandler
+    /// </summary>
+    public class DIHandler
     {
-        public override BindingType GetDictionaryKey(InputSubscriptionRequest subReq)
+        private DIDevicesHandler deviceHandler = new DIDevicesHandler();
+
+        public static DirectInput directInput = new DirectInput();
+
+        // The thread which handles input detection
+        protected Thread pollThread;
+        // Is the thread currently running? This is set by the thread itself.
+        protected volatile bool pollThreadRunning = false;
+        // Do we want the thread to be on or off?
+        // This is independent of whether or not the thread is running...
+        // ... for example, we may be updating bindings, so the thread may be temporarily stopped
+        protected bool pollThreadDesired = false;
+        // Is the thread in an Active or Inactive state?
+        protected bool pollThreadActive = false;
+
+        public DIHandler()
         {
-            return subReq.BindingDescriptor.Type;
+            pollThread = new Thread(PollThread);
         }
 
-        public override bool Subscribe(InputSubscriptionRequest subReq)
+        public bool Subscribe(InputSubscriptionRequest subReq)
         {
-            return PassToChild(subReq);
+            var ret = deviceHandler.Subscribe(subReq);
+            SetPollThreadState(true);
+            return ret;
         }
 
-        public override bool Unsubscribe(InputSubscriptionRequest subReq)
+        public static bool IsStickType(DeviceInstance deviceInstance)
         {
-            throw new NotImplementedException();
+            return deviceInstance.Type == SharpDX.DirectInput.DeviceType.Joystick
+                    || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Gamepad
+                    || deviceInstance.Type == SharpDX.DirectInput.DeviceType.FirstPerson
+                    || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Flight
+                    || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Driving
+                    || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Supplemental;
+        }
+
+        public void SetPollThreadState(bool state)
+        {
+            if (state && !pollThreadRunning)
+            {
+                pollThread = new Thread(PollThread);
+                pollThread.Start();
+                while (!pollThreadRunning)
+                {
+                    Thread.Sleep(10);
+                }
+            }
+
+            if (!pollThreadRunning)
+                return;
+
+            if (state && !pollThreadActive)
+            {
+                pollThreadDesired = true;
+                while (!pollThreadActive)
+                {
+                    Thread.Sleep(10);
+                }
+                //Log("PollThread for {0} Activated", ProviderName);
+            }
+            else if (!state && pollThreadActive)
+            {
+                pollThreadDesired = false;
+                while (pollThreadActive)
+                {
+                    Thread.Sleep(10);
+                }
+                //Log("PollThread for {0} De-Activated", ProviderName);
+            }
+        }
+
+        private void PollThread()
+        {
+            pollThreadRunning = true;
+            //Log("Started PollThread for {0}", ProviderName);
+            while (true)
+            {
+                if (pollThreadDesired)
+                {
+                    pollThreadActive = true;
+                    while (pollThreadDesired)
+                    {
+                        deviceHandler.Poll();
+                        Thread.Sleep(1);
+                    }
+                }
+                else
+                {
+                    pollThreadActive = false;
+                    while (!pollThreadDesired)
+                    {
+                        Thread.Sleep(1);
+                    }
+                }
+            }
         }
     }
 
-    // Handles Devices
-    internal class DIDeviceHandler : NodeHandler<int, SubscriptionHandler>
+    /// <summary>
+    /// Represents all Devices
+    /// </summary>
+    internal class DIDevicesHandler : NodeHandler<string, DIDeviceHandler>
     {
-        public override int GetDictionaryKey(InputSubscriptionRequest subReq)
+        private Dictionary<Guid, Joystick> acquiredSticks = new Dictionary<Guid, Joystick>();
+
+        public override string GetDictionaryKey(InputSubscriptionRequest subReq)
+        {
+            return subReq.DeviceDescriptor.DeviceHandle;
+        }
+
+        public bool Subscribe(InputSubscriptionRequest subReq)
+        {
+            var guid = DeviceHandleToInstanceGuid(subReq.DeviceDescriptor.DeviceHandle);
+            if (guid == Guid.Empty)
+            {
+                throw new Exception("Device not connected");
+            }
+            // Add subscriptions to SubscriptionHandler
+            return this[subReq].Subscribe(subReq, guid);
+        }
+
+        public bool Unsubscribe(InputSubscriptionRequest subReq)
         {
             throw new NotImplementedException();
         }
 
-        public override bool Subscribe(InputSubscriptionRequest subReq)
+        public void Poll()
         {
-            return PassToChild(subReq);
+            foreach (var node in nodes.Values)
+            {
+                node.Poll();
+            }
         }
 
-        public override bool Unsubscribe(InputSubscriptionRequest subReq)
+        public Guid DeviceHandleToInstanceGuid(string handle)
         {
-            throw new NotImplementedException();
+            var diDeviceInstances = DIHandler.directInput.GetDevices();
+
+            foreach (var device in diDeviceInstances)
+            {
+                if (!DIHandler.IsStickType(device))
+                    continue;
+                var joystick = new Joystick(DIHandler.directInput, device.InstanceGuid);
+                joystick.Acquire();
+
+                var thisHandle = string.Format("VID_{0}&PID_{1}"
+                    , joystick.Properties.VendorId.ToString("X4")
+                    , joystick.Properties.ProductId.ToString("X4"));
+
+                joystick.Unacquire();
+                if (handle == thisHandle)
+                {
+                    return device.InstanceGuid;
+                }
+            }
+            return Guid.Empty;
         }
+
+
     }
 
-    // Handles Bindings
-    internal class DIBindingHandler : NodeHandler<int, SubscriptionHandler>
+    /// <summary>
+    /// Represents a Device
+    /// </summary>
+    internal class DIDeviceHandler : NodeHandler<int, NewBindingHandler>
     {
+        private Guid deviceInstanceGuid;
+        private Joystick joystick;
+
         public override int GetDictionaryKey(InputSubscriptionRequest subReq)
         {
             return (int)LookupTables.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index];
         }
 
-        public override bool Subscribe(InputSubscriptionRequest subReq)
+        public bool Subscribe(InputSubscriptionRequest subReq, Guid guid)
         {
-            return PassToChild(subReq);
+            deviceInstanceGuid = guid;
+            joystick = new Joystick(DIHandler.directInput, deviceInstanceGuid);
+            joystick.Properties.BufferSize = 128;
+            joystick.Acquire();
+            this[subReq].Subscribe(subReq);
+            //return PassToChild(subReq);
+            return true;
         }
 
-        public override bool Unsubscribe(InputSubscriptionRequest subReq)
+        public void Poll()
+        {
+            if (joystick == null || !DIHandler.directInput.IsDeviceAttached(deviceInstanceGuid))
+                return;
+            JoystickUpdate[] data = joystick.GetBufferedData();
+            foreach (var state in data)
+            {
+                var key = (int)state.Offset;
+                if (nodes.ContainsKey(key))
+                {
+                    nodes[key].Poll(state);
+                }
+                //var bindingType = OffsetToType(state.Offset);
+                //int monitorIndex = (int)state.Offset;
+
+                //var monitorList = bindingHandlers[bindingType];
+                //if (!monitorList.ContainsKey(monitorIndex))
+                //{
+                //    continue;
+                //}
+
+                //var subMonitors = monitorList[monitorIndex];
+                //foreach (var monitor in subMonitors.Values)
+                //{
+                //    monitor.ProcessPollResult(state.Value);
+                //}
+            }
+            Thread.Sleep(1);
+
+        }
+
+        public bool Unsubscribe(InputSubscriptionRequest subReq)
         {
             throw new NotImplementedException();
         }
     }
 
+    /// <summary>
+    /// Represents a single Input (Button, Axis or POV)
+    /// </summary>
+    internal class NewBindingHandler : NodeHandler<int, SubscriptionHandler>
+    {
+        private int currentState;
+
+        //private InputSubscriptionRequest mockSubReq;
+
+        public override int GetDictionaryKey(InputSubscriptionRequest subReq)
+        {
+            return (int)LookupTables.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index];
+        }
+
+        public bool Subscribe(InputSubscriptionRequest subReq)
+        {
+            return this[subReq].Subscribe(subReq);
+        }
+
+        public bool Unsubscribe(InputSubscriptionRequest subReq)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Poll(JoystickUpdate state)
+        {
+            var bindingType = OffsetToType(state.Offset);
+            //if (bindingType == BindingType.POV) { } // Pass to node if POV, else pass to SubscriptionHandler ?
+            if (currentState != state.Value)
+            {
+                currentState = state.Value;
+                foreach (var node in nodes.Values)
+                {
+                    node.FireCallbacks(state.Value);
+                }
+                //mockSubReq.Callback(state.Value);
+            }
+        }
+
+        private static BindingType OffsetToType(JoystickOffset offset)
+        {
+            int index = (int)offset;
+            if (index <= (int)JoystickOffset.Sliders1) return BindingType.Axis;
+            if (index <= (int)JoystickOffset.PointOfViewControllers3) return BindingType.POV;
+            return BindingType.Button;
+        }
+
+    }
+
+    /*
     // Handles SubBindings
     internal class DISubBindingHandler : NodeHandler<int, SubscriptionHandler>
     {
@@ -159,7 +382,7 @@ namespace SharpDX_DirectInput
             throw new NotImplementedException();
         }
     }
-
+    */
 
 
 }

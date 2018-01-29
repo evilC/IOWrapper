@@ -15,7 +15,7 @@ namespace TestApp
         static void Main(string[] args)
         {
             Debug.WriteLine("DBGVIEWCLEAR");
-            var bt = new Plugins.Remapper();
+            var bt = new Plugins.InputTester();
             Console.WriteLine("Load Complete");
             Console.ReadLine();
             IOW.Instance.Dispose();

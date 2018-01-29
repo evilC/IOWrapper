@@ -103,10 +103,10 @@ namespace Providers.Handlers
 
             foreach (var subscription in subscriptions.Values)
             {
-                if (ProfileIsActive(subscription.SubscriptionDescriptor.ProfileGuid))
-                {
+                //if (ProfileIsActive(subscription.SubscriptionDescriptor.ProfileGuid))
+                //{
                     subscription.Callback(reportedValue);
-                }
+                //}
             }
         }
 
