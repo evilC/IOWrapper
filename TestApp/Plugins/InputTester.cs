@@ -21,10 +21,10 @@ namespace TestApp.Plugins
 
                 ProviderDescriptor = Library.Providers.DirectInput,
                 DeviceDescriptor = Library.Devices.DirectInput.T16000M,
-                BindingDescriptor = Library.Bindings.Generic.Button1,
+                BindingDescriptor = Library.Bindings.Generic.POV1Down,
                 Callback = new Action<int>((value) =>
                 {
-                    Console.WriteLine("ButtonTester State: {0}", value);
+                    Console.WriteLine("InputTester State: {0}", value);
                 })
 
             };

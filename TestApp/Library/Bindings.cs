@@ -40,13 +40,13 @@ namespace TestApp.Library
             public static BindingDescriptor Axis5 = new BindingDescriptor() { Index = 4, Type = BindingType.Axis };
             public static BindingDescriptor Axis6 = new BindingDescriptor() { Index = 5, Type = BindingType.Axis };
             public static BindingDescriptor POV1Up = new BindingDescriptor() { Index = 0, SubIndex = 0, Type = BindingType.POV };
-            public static BindingDescriptor POV1Right = new BindingDescriptor() { Index = 1, SubIndex = 0, Type = BindingType.POV };
-            public static BindingDescriptor POV1Down = new BindingDescriptor() { Index = 2, SubIndex = 0, Type = BindingType.POV };
-            public static BindingDescriptor POV1Left = new BindingDescriptor() { Index = 3, SubIndex = 0, Type = BindingType.POV };
-            public static BindingDescriptor POV2Up = new BindingDescriptor() { Index = 0, SubIndex = 1, Type = BindingType.POV };
+            public static BindingDescriptor POV1Right = new BindingDescriptor() { Index = 0, SubIndex = 1, Type = BindingType.POV };
+            public static BindingDescriptor POV1Down = new BindingDescriptor() { Index = 0, SubIndex = 2, Type = BindingType.POV };
+            public static BindingDescriptor POV1Left = new BindingDescriptor() { Index = 0, SubIndex = 3, Type = BindingType.POV };
+            public static BindingDescriptor POV2Up = new BindingDescriptor() { Index = 1, SubIndex = 0, Type = BindingType.POV };
             public static BindingDescriptor POV2Right = new BindingDescriptor() { Index = 1, SubIndex = 1, Type = BindingType.POV };
-            public static BindingDescriptor POV2Down = new BindingDescriptor() { Index = 2, SubIndex = 1, Type = BindingType.POV };
-            public static BindingDescriptor POV2Left = new BindingDescriptor() { Index = 3, SubIndex = 1, Type = BindingType.POV };
+            public static BindingDescriptor POV2Down = new BindingDescriptor() { Index = 1, SubIndex = 2, Type = BindingType.POV };
+            public static BindingDescriptor POV2Left = new BindingDescriptor() { Index = 1, SubIndex = 3, Type = BindingType.POV };
         }
         #endregion
 

@@ -286,6 +286,13 @@ namespace SharpDX_DirectInput
     /// </summary>
     internal class NewDiBindingHandler : NodeHandler<int, SubscriptionHandler>
     {
+        private BindingDescriptor bindingDescriptor;
+        private int currentState = 0;
+        private bool isPovType = false;
+        private int povAngle;
+
+        //private InputSubscriptionRequest subscriptionRequest = null;
+
         public override int GetDictionaryKey(InputSubscriptionRequest subReq)
         {
             return (int)Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.SubIndex];
@@ -293,6 +300,13 @@ namespace SharpDX_DirectInput
 
         public bool Subscribe(InputSubscriptionRequest subReq)
         {
+            // ToDo: Should probably check here that if non-null, the new subReq is the same as the old one
+            bindingDescriptor = subReq.BindingDescriptor;
+            if (bindingDescriptor.Type == BindingType.POV)
+            {
+                isPovType = true;
+                povAngle = subReq.BindingDescriptor.SubIndex * 9000;
+            }
             return this[subReq].Subscribe(subReq);
         }
 
@@ -303,11 +317,20 @@ namespace SharpDX_DirectInput
 
         public void Poll(JoystickUpdate state)
         {
-            var bindingType = DIHandler.OffsetToType(state.Offset);
-            //if (bindingType == BindingType.POV) { } // Special handling needed for POVs
+            int newState = state.Value;
+            if (isPovType)
+            {
+                newState = Lookups.ValueFromAngle(newState, povAngle);
+            }
+            if (newState == currentState)
+            {
+                return;
+            }
+            currentState = newState;
+
             foreach (var node in nodes.Values)
             {
-                node.FireCallbacks(state.Value);
+                node.FireCallbacks(currentState);
             }
         }
     }
