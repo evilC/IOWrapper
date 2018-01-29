@@ -299,7 +299,8 @@ namespace SharpDX_XInput
                 DeviceName = "Xbox Controller " + (id + 1),
                 DeviceDescriptor = new DeviceDescriptor()
                 {
-                    DeviceHandle = id.ToString(),
+                    DeviceHandle = "xb360",
+                    DeviceInstance = id
                 },
                 Nodes = { buttonInfo, axisInfo, povInfo }
                 //ButtonCount = 11,
@@ -319,7 +320,7 @@ namespace SharpDX_XInput
 
             public override int GetStickHandlerKey(DeviceDescriptor descriptor)
             {
-                return Convert.ToInt32(descriptor.DeviceHandle);
+                return Convert.ToInt32(descriptor.DeviceInstance);
             }
         }
         #endregion
