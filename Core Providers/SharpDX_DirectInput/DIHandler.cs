@@ -136,13 +136,7 @@ namespace SharpDX_DirectInput
 
         public bool Subscribe(InputSubscriptionRequest subReq)
         {
-            var guid = DeviceHandleToInstanceGuid(subReq.DeviceDescriptor.DeviceHandle);
-            if (guid == Guid.Empty)
-            {
-                throw new Exception("Device not connected");
-            }
-            // Add subscriptions to SubscriptionHandler
-            return this[subReq].Subscribe(subReq, guid);
+            return this[subReq].Subscribe(subReq);
         }
 
         public bool Unsubscribe(InputSubscriptionRequest subReq)
@@ -202,9 +196,15 @@ namespace SharpDX_DirectInput
             return (int)Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index];
         }
 
-        public bool Subscribe(InputSubscriptionRequest subReq, Guid guid)
+        public bool Subscribe(InputSubscriptionRequest subReq)
         {
-            deviceInstanceGuid = guid;
+            var devs = Lookups.GetDeviceOrders(subReq.DeviceDescriptor.DeviceHandle);
+            var instance = subReq.DeviceDescriptor.DeviceInstance;
+            if (devs.Count <= instance)
+            {
+                throw new Exception(string.Format("DeviceInstance {0} for VID/PID {1} not found", subReq.DeviceDescriptor.DeviceInstance, subReq.DeviceDescriptor.DeviceHandle));
+            }
+            deviceInstanceGuid = devs[instance];
             joystick = new Joystick(DIHandler.DIInstance, deviceInstanceGuid);
             joystick.Properties.BufferSize = 128;
             joystick.Acquire();

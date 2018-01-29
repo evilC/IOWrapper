@@ -1,4 +1,5 @@
-﻿using Providers;
+﻿using Microsoft.Win32;
+using Providers;
 using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,41 @@ namespace SharpDX_DirectInput
 {
     static class Lookups
     {
+        public static List<Guid> GetDeviceOrders(string vidpid)
+        {
+            // Build a list of all known devices matching this VID/PID
+            // This includes unplugged devices
+
+            var keyname = String.Format(@"System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{0}\Calibration", vidpid);
+
+            var deviceOrders = new SortedDictionary<int, Guid>();
+            using (RegistryKey hkcu = Registry.CurrentUser)
+            {
+                using (RegistryKey calibkey = hkcu.OpenSubKey(keyname))
+                {
+                    foreach (string key in calibkey.GetSubKeyNames())
+                    {
+                        using (RegistryKey orderkey = calibkey.OpenSubKey(key))
+                        {
+                            byte[] reg_guid = (byte[])orderkey.GetValue("GUID");
+                            byte[] reg_id = (byte[])orderkey.GetValue("Joystick Id");
+                            if (reg_id == null)
+                                continue;
+                            int id = BitConverter.ToInt32(reg_id, 0);
+                            // Two duplicates can share the same JoystickID - use next ID in this case
+                            while (deviceOrders.ContainsKey(id))
+                            {
+                                id++;
+                            }
+                            deviceOrders.Add(id, new Guid(reg_guid));
+                        }
+                    }
+                }
+            }
+            return deviceOrders.Values.ToList();
+        }
+
+        #region POV Helpers - probably belong in IProvider
         public static int ValueFromAngle(int value, int angle, int povTolerance = 90)
         {
             if (value == -1)
@@ -30,6 +66,7 @@ namespace SharpDX_DirectInput
 
             return Math.Min(result1, result2);
         }
+        #endregion
 
         // Maps SharpDX "Offsets" (Input Identifiers) to both iinput type and input index (eg x axis to axis 1)
         public static Dictionary<BindingType, List<JoystickOffset>> directInputMappings = new Dictionary<BindingType, List<JoystickOffset>>(){
