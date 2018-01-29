@@ -43,6 +43,11 @@ namespace SharpDX_DirectInput
             return ret;
         }
 
+        public bool Unsubscribe(InputSubscriptionRequest subReq)
+        {
+            throw new NotImplementedException();
+        }
+
         public static bool IsStickType(DeviceInstance deviceInstance)
         {
             return deviceInstance.Type == SharpDX.DirectInput.DeviceType.Joystick

@@ -23,13 +23,10 @@ namespace SharpDX_DirectInput
         bool disposed = false;
         static private DirectInput directInput;
 
+        // Handles subscriptions and callbacks
         private DIHandler subscriptionHandler = new DIHandler();
 
-
-
-
-
-        private DIPollHandler pollHandler = new DIPollHandler();
+        //private DIPollHandler pollHandler = new DIPollHandler();
 
         private static List<Guid> ActiveProfiles = new List<Guid>();
 
@@ -80,7 +77,8 @@ namespace SharpDX_DirectInput
                 return;
             if (disposing)
             {
-                pollHandler.Dispose();
+                //pollHandler.Dispose();
+                subscriptionHandler = null; // ToDo: Implement IDisposable
             }
             disposed = true;
         }
@@ -166,7 +164,8 @@ namespace SharpDX_DirectInput
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            return pollHandler.UnsubscribeInput(subReq);
+            //return pollHandler.UnsubscribeInput(subReq);
+            return subscriptionHandler.Unsubscribe(subReq);
         }
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
@@ -329,6 +328,7 @@ namespace SharpDX_DirectInput
         }
         #endregion
 
+        /*
         #region Handlers
 
         #region Poll Handler
@@ -499,6 +499,7 @@ namespace SharpDX_DirectInput
         #endregion
 
         #endregion
+        */
 
         #region Helper Methods
 
@@ -572,62 +573,6 @@ namespace SharpDX_DirectInput
             return orderedGuids;
         }
 
-        /*
-        // In SharpDX, when you call GetDevices(), the order that devices comes back is not always in a useful order
-        // This code aims to match each stick with a "Joystick ID" from the registry via VID/PID.
-        // Joystick IDs in the registry do not always start with 0
-        // The joystick with the lowest "Joystick Id" key in the registry is considered the first stick...
-        // ... regardless of the order that SharpDX sees them or the number of the key that they are in
-        // TL/DR: As long as Stick A has a lower Joystick Id than Stick B...
-        // ... then this code should return a DI handle that is in the same order as the vJoy stick order.
-        private int GetDeviceOrder(string vidpid, Guid guid)
-        {
-            var bytearray = guid.ToByteArray();
-            var deviceOrders = new SortedDictionary<int, byte[]>();
-            using (RegistryKey hkcu = Registry.CurrentUser)
-            {
-                var keyname = String.Format(@"System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{0}\Calibration", vidpid);
-                using (RegistryKey calibkey = hkcu.OpenSubKey(keyname))
-                {
-                    foreach (string key in calibkey.GetSubKeyNames())
-                    {
-                        using (RegistryKey orderkey = calibkey.OpenSubKey(key))
-                        {
-                            byte[] reg_guid = (byte[])orderkey.GetValue("GUID");
-                            byte[] reg_id = (byte[])orderkey.GetValue("Joystick Id");
-                            if (reg_id == null)
-                                continue;
-                            int id = BitConverter.ToInt32(reg_id, 0);
-                            // Two duplicates can share the same JoystickID - use next ID in this case
-                            while (deviceOrders.ContainsKey(id))
-                            {
-                                id++;
-                            }
-                            deviceOrders.Add(id, reg_guid);
-                        }
-                    }
-                }
-            }
-
-            var i = 0;
-            foreach (var device in deviceOrders.Values)
-            {
-                try
-                {
-                    if (device.SequenceEqual(bytearray))
-                    {
-                        return i;
-                    }
-                }
-                catch
-                {
-
-                }
-                i++;
-            }
-            return -1;
-        }
-        */
         #endregion
 
         //private static int PovFromIndex(uint inputIndex)
