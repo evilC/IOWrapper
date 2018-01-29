@@ -10,27 +10,35 @@ namespace TestApp.Plugins
 {
     public class InputTester
     {
-        public InputTester()
-        {
-            // Input
-            var input = new InputSubscription()
-            {
-                //ProviderDescriptor = Library.Providers.Interception,
-                //DeviceDescriptor = Library.Devices.Interception.ChiconyKeyboard,
-                //BindingDescriptor = Library.Bindings.Interception.Keyboard.One,
+        private string name;
+        private InputSubscription input;
 
-                ProviderDescriptor = Library.Providers.DirectInput,
-                DeviceDescriptor = Library.Devices.DirectInput.T16000M,
-                BindingDescriptor = Library.Bindings.Generic.POV1Down,
+        public InputTester(string _name, ProviderDescriptor providerDescriptor, DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor)
+        {
+            name = _name;
+            // Input
+            input = new InputSubscription()
+            {
+                ProviderDescriptor = providerDescriptor,
+                DeviceDescriptor = deviceDescriptor,
+                BindingDescriptor = bindingDescriptor,
                 Callback = new Action<int>((value) =>
                 {
-                    Console.WriteLine("InputTester State: {0}", value);
+                    Console.WriteLine("{0} State: {1}", name, value);
                 })
 
             };
 
             // Activate
-            IOW.Instance.SubscribeInput(input);
+        }
+
+        public InputTester Subscribe()
+        {
+            if (!IOW.Instance.SubscribeInput(input))
+            {
+                throw new Exception("Could not subscribe to SubReq");
+            }
+            return this;    // allow chaining
         }
     }
 }
