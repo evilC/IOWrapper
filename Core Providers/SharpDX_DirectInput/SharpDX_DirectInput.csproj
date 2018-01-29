@@ -53,7 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DIHandler.cs" />
-    <Compile Include="Lookups.cs" />
+    <Compile Include="Helpers\Lookups.cs" />
     <Compile Include="SharpDX_DirectInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

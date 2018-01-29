@@ -69,28 +69,6 @@ namespace SharpDX_DirectInput
         }
 
 
-        #region POV Helpers - probably belong in IProvider
-        public static int ValueFromAngle(int value, int angle, int povTolerance = 90)
-        {
-            if (value == -1)
-                return 0;
-            var diff = AngleDiff(value, angle);
-            return diff <= povTolerance ? 1 : 0;
-        }
-
-        public static int AngleDiff(int a, int b)
-        {
-            var result1 = a - b;
-            if (result1 < 0)
-                result1 += 36000;
-
-            var result2 = b - a;
-            if (result2 < 0)
-                result2 += 36000;
-
-            return Math.Min(result1, result2);
-        }
-        #endregion
 
         // Maps SharpDX "Offsets" (Input Identifiers) to both iinput type and input index (eg x axis to axis 1)
         public static Dictionary<BindingType, List<JoystickOffset>> directInputMappings = new Dictionary<BindingType, List<JoystickOffset>>(){

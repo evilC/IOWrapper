@@ -1,5 +1,6 @@
 ﻿using Providers;
 using Providers.Handlers;
+using Providers.Helpers;
 using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
@@ -325,7 +326,7 @@ namespace SharpDX_DirectInput
             int newState = state.Value;
             if (isPovType)
             {
-                newState = Lookups.ValueFromAngle(newState, povAngle);
+                newState = POVHelper.ValueFromAngle(newState, povAngle);
             }
             if (newState == currentState)
             {
