@@ -204,8 +204,6 @@ namespace SharpDX_DirectInput
     /// </summary>
     internal class DIDevicesHandler : NodeHandler<string, DIDeviceHandler>
     {
-        private Dictionary<Guid, Joystick> acquiredSticks = new Dictionary<Guid, Joystick>();
-
         public override string GetDictionaryKey(InputSubscriptionRequest subReq)
         {
             return subReq.DeviceDescriptor.DeviceHandle;
