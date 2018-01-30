@@ -16,7 +16,7 @@ namespace TestApp
         {
             Debug.WriteLine("DBGVIEWCLEAR");
             var bt1 = new Plugins.InputTester("Tester1", Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, Library.Bindings.Generic.Button1).Subscribe();
-            var bt2 = new Plugins.InputTester("Tester2", Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, Library.Bindings.Generic.POV1Down).Subscribe();
+            var bt2 = new Plugins.InputTester("Tester2", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Button1).Subscribe();
             //var interception = new Plugins.InputTester("Interception", Library.Providers.Interception, Library.Devices.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.One).Subscribe();
 
             Console.WriteLine("Load Complete");

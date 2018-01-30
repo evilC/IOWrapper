@@ -21,6 +21,7 @@ namespace SharpDX_XInput
         bool disposed = false;
 
         private XIPollHandler pollHandler = new XIPollHandler();
+        //private XIHandler subscriptionHandler = new XIHandler();
 
         private static List<Guid> ActiveProfiles = new List<Guid>();
         //private static List<> PluggedInControllers
@@ -175,6 +176,7 @@ namespace SharpDX_XInput
             if (disposing)
             {
                 pollHandler.Dispose();
+                //subscriptionHandler = null; // ToDo: Implement IDisposable
             }
             disposed = true;
             logger.Log("Disposed");
@@ -259,11 +261,13 @@ namespace SharpDX_XInput
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
             return pollHandler.SubscribeInput(subReq);
+            //return subscriptionHandler.Subscribe(subReq);
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
             return pollHandler.UnsubscribeInput(subReq);
+            //return subscriptionHandler.Unsubscribe(subReq);
         }
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)

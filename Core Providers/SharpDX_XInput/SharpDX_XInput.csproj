@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="SharpDX_XInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XIHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
