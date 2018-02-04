@@ -12,8 +12,6 @@ namespace SharpDX_DirectInput
     class DiPovBindingHandler : BindingHandler
     {
         private int _currentValue = -1;
-        private  Guid tmpGuid = Guid.NewGuid();
-
 
         // Polls one POV
         public override void Poll(int pollValue)
