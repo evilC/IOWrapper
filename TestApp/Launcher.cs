@@ -32,7 +32,7 @@ namespace TestApp
             }
 
             var xia1 = new Plugins.InputTester("XIAxis1", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Axis1).Subscribe();
-            var xia2 = new Plugins.InputTester("XIAxis2", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Axis3).Subscribe();
+            var xia2 = new Plugins.InputTester("XIAxis2", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Axis5).Subscribe();
             var xib1 = new Plugins.InputTester("XIButton1", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Button1).Subscribe();
             //xib1.Unsubscribe();
             var xib2 = new Plugins.InputTester("XIButton2", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Button2).Subscribe();
