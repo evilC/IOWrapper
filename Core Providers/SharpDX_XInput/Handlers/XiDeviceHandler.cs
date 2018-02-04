@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using Providers;
 using Providers.Handlers;
 using SharpDX.XInput;
@@ -22,14 +23,29 @@ namespace SharpDX_XInput
 
         public bool Subscribe(InputSubscriptionRequest subReq)
         {
-            var dict = _bindingDictionary
-                .GetOrAdd(subReq.BindingDescriptor.Type,
+            var bindingType = subReq.BindingDescriptor.Type;
+
+            // For POV Directions, the _bindingDictionary key will be SubIndex, else it will be Index
+            var idx = GetIndex(subReq);
+
+            // Get the bindingType dictionary
+            var bindingTypeDictionary = _bindingDictionary
+                .GetOrAdd(bindingType,
                     new ConcurrentDictionary<int, BindingHandler>());
 
-            var index = GetIndex(subReq);
-            return dict
-                .GetOrAdd(index, new BindingHandler())
-                .Subscribe(subReq);
+            if (bindingType == BindingType.Axis && subReq.BindingDescriptor.Index > 3)
+            {
+                // XI Trigger Axes report as 0..255, so must be translated.
+                // Use a custom BindingHandler for Trigger axes
+                return bindingTypeDictionary.GetOrAdd(idx, new XiTriggerindingHandler())
+                    .Subscribe(subReq);
+            }
+            else
+            {
+                // All other XI inputs report "normally", so use the default BindingHandler
+                return bindingTypeDictionary.GetOrAdd(idx, new BindingHandler())
+                    .Subscribe(subReq);
+            }
         }
 
         public bool Unsubscribe(InputSubscriptionRequest subReq)
@@ -43,6 +59,11 @@ namespace SharpDX_XInput
             return false;
         }
 
+        /// <summary>
+        /// XInput only supports one POV, so for POVs we use Index for the POV direction
+        /// </summary>
+        /// <param name="subReq"></param>
+        /// <returns></returns>
         private int GetIndex(InputSubscriptionRequest subReq)
         {
             return subReq.BindingDescriptor.Type == BindingType.POV
