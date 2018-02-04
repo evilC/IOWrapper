@@ -10,7 +10,7 @@ using System.Collections.Concurrent;
 namespace Providers.Handlers
 {
     //Handles bindings for a given Index
-    public abstract class BindingHandler
+    public class BindingHandler
     {
         protected ConcurrentDictionary<int, // SubIndex
                 SubscriptionHandler> _bindingDictionary    // Handler
