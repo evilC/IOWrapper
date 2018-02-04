@@ -29,7 +29,7 @@ namespace SharpDX_XInput
 
             var index = GetIndex(subReq);
             return dict
-                .GetOrAdd(index, new XiBindingHandler())
+                .GetOrAdd(index, new BindingHandler())
                 .Subscribe(subReq);
         }
 
