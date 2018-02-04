@@ -18,7 +18,6 @@ namespace SharpDX_XInput
         public XiDeviceHandler(InputSubscriptionRequest subReq)
         {
             _controller = new Controller((UserIndex)subReq.DeviceDescriptor.DeviceInstance);
-
         }
 
         public bool Subscribe(InputSubscriptionRequest subReq)
