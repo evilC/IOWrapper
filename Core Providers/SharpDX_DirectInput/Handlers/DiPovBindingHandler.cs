@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Diagnostics;
-using Providers;
-using Providers.Handlers;
+﻿using Providers.Handlers;
+using SharpDX_DirectInput.Helpers;
 
-namespace SharpDX_DirectInput
+namespace SharpDX_DirectInput.Handlers
 {
     /// <summary>
     /// Handles bindings for one POV

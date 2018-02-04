@@ -3,7 +3,7 @@ using Providers;
 using SharpDX.XInput;
 using SharpDX_XInput.Helpers;
 
-namespace SharpDX_XInput
+namespace SharpDX_XInput.Handlers
 {
     /// <summary>
     /// Xinput is a bit of a pain when polling, buttons and POVs are easy flags ( <see cref="GamepadButtonFlags"/>) so could be handled by lookup tables...
@@ -11,7 +11,7 @@ namespace SharpDX_XInput
     /// I do not want to use reflection, so the simplest way for now seems to be to build an object which can easily be parsed
     /// For this, we use a custom object, <see cref="XiPollResult"/>
     /// </summary>
-    class XiDevicePoller
+    public class XiDevicePoller
     {
         private State _lastState;
 

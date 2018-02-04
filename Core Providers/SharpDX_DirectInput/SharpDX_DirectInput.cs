@@ -9,6 +9,8 @@ using System.Linq;
 using System.Diagnostics;
 using Providers.Handlers;
 using Providers.Helpers;
+using SharpDX_DirectInput.Handlers;
+using SharpDX_DirectInput.Helpers;
 
 namespace SharpDX_DirectInput
 {

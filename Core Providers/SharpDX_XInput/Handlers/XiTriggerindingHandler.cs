@@ -1,8 +1,8 @@
 ﻿using Providers.Handlers;
 
-namespace SharpDX_XInput
+namespace SharpDX_XInput.Handlers
 {
-    class XiTriggerindingHandler : BindingHandler
+    public class XiTriggerindingHandler : BindingHandler
     {
         public override void Poll(int pollValue)
         {

@@ -1,16 +1,9 @@
-﻿using Providers;
-using Providers.Helpers;
-using SharpDX.DirectInput;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
+using Providers;
 using Providers.Handlers;
+using SharpDX.DirectInput;
 
-namespace SharpDX_DirectInput
+namespace SharpDX_DirectInput.Handlers
 {
     /// <summary>
     /// Handles input detection for this provider

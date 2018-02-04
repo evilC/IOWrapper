@@ -1,14 +1,8 @@
-﻿using Providers;
-using System;
-using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
+using Providers;
 using Providers.Handlers;
 
-namespace SharpDX_XInput
+namespace SharpDX_XInput.Handlers
 {
     public class XiHandler : ApiHandler<XiDeviceHandler>
     {

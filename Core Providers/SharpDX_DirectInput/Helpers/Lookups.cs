@@ -1,13 +1,12 @@
-﻿using Microsoft.Win32;
-using Providers;
-using SharpDX.DirectInput;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Win32;
+using Providers;
+using SharpDX.DirectInput;
+using SharpDX_DirectInput.Handlers;
 
-namespace SharpDX_DirectInput
+namespace SharpDX_DirectInput.Helpers
 {
     static class Lookups
     {

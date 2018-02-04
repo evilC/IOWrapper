@@ -3,8 +3,9 @@ using System.Collections.Concurrent;
 using Providers;
 using Providers.Handlers;
 using SharpDX.DirectInput;
+using SharpDX_DirectInput.Helpers;
 
-namespace SharpDX_DirectInput
+namespace SharpDX_DirectInput.Handlers
 {
     class DiDeviceHandler : DeviceHandler
     {

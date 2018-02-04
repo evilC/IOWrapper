@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using Providers;
 using Providers.Handlers;
 using SharpDX.XInput;
 
-namespace SharpDX_XInput
+namespace SharpDX_XInput.Handlers
 {
     public class XiDeviceHandler : DeviceHandler
     {

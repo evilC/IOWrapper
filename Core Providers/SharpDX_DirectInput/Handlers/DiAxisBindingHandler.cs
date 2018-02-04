@@ -1,7 +1,6 @@
-﻿using Providers;
-using Providers.Handlers;
+﻿using Providers.Handlers;
 
-namespace SharpDX_DirectInput
+namespace SharpDX_DirectInput.Handlers
 {
     class DiAxisBindingHandler : BindingHandler
     {

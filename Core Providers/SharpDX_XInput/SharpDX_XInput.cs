@@ -7,6 +7,7 @@ using System.Threading;
 using System.Diagnostics;
 using Providers.Handlers;
 using Providers.Helpers;
+using SharpDX_XInput.Handlers;
 using SharpDX_XInput.Helpers;
 
 namespace SharpDX_XInput
