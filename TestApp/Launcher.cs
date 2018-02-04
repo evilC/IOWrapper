@@ -15,8 +15,8 @@ namespace TestApp
         static void Main(string[] args)
         {
             Debug.WriteLine("DBGVIEWCLEAR");
-            //var diStick1 = Library.Devices.DirectInput.vJoy_1;
-            var diStick1 = Library.Devices.DirectInput.T16000M;
+            var diStick1 = Library.Devices.DirectInput.vJoy_1;
+            //var diStick1 = Library.Devices.DirectInput.T16000M;
 
             var dia1 = new Plugins.InputTester("DIAxis1", Library.Providers.DirectInput, diStick1, Library.Bindings.Generic.Axis1).Subscribe();
             var dia2 = new Plugins.InputTester("DIAxis2", Library.Providers.DirectInput, diStick1, Library.Bindings.Generic.Axis2).Subscribe();
