@@ -15,8 +15,8 @@ namespace TestApp
         static void Main(string[] args)
         {
             Debug.WriteLine("DBGVIEWCLEAR");
-            var diStick1 = Library.Devices.DirectInput.vJoy_1;
-            //var diStick1 = Library.Devices.DirectInput.T16000M;
+            //var diStick1 = Library.Devices.DirectInput.vJoy_1;
+            var diStick1 = Library.Devices.DirectInput.T16000M;
 
             var dia1 = new Plugins.InputTester("DIAxis1", Library.Providers.DirectInput, diStick1, Library.Bindings.Generic.Axis1).Subscribe();
             var dia2 = new Plugins.InputTester("DIAxis2", Library.Providers.DirectInput, diStick1, Library.Bindings.Generic.Axis2).Subscribe();
@@ -38,7 +38,7 @@ namespace TestApp
             var xib2 = new Plugins.InputTester("XIButton2", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Button2).Subscribe();
             var xip1 = new Plugins.InputTester("XIPOV1Up", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.POV1Up).Subscribe();
             var xip2 = new Plugins.InputTester("XIPOV1Down", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.POV1Down).Subscribe();
-            var interception = new Plugins.InputTester("Interception", Library.Providers.Interception, Library.Devices.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.One).Subscribe();
+            //var interception = new Plugins.InputTester("Interception", Library.Providers.Interception, Library.Devices.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.One).Subscribe();
 
             Console.WriteLine("Load Complete");
             Console.ReadLine();
