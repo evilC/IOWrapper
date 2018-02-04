@@ -52,7 +52,6 @@ namespace SharpDX_XInput.Helpers
     {
         public BindingType BindingType { get; set; }
         public int Index { get; set; } = 0;
-        public int SubIndex { get; set; } = 0;
         public int Value { get; set; }
     }
 

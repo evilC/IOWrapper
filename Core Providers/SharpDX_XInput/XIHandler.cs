@@ -95,11 +95,10 @@ namespace SharpDX_XInput
             var pollResult = _devicePoller.ProcessPollResult(state);
             foreach (var pollItem in pollResult.PollItems)
             {
-                var index = pollItem.BindingType == BindingType.POV ? pollItem.SubIndex : pollItem.Index;
                 if (_bindingDictionary.ContainsKey(pollItem.BindingType)
-                    && _bindingDictionary[pollItem.BindingType].ContainsKey(index))
+                    && _bindingDictionary[pollItem.BindingType].ContainsKey(pollItem.Index))
                 {
-                    _bindingDictionary[pollItem.BindingType][index].Poll(pollItem.Value);
+                    _bindingDictionary[pollItem.BindingType][pollItem.Index].Poll(pollItem.Value);
                 }
             }
         }
@@ -113,21 +112,18 @@ namespace SharpDX_XInput
         {
             var result = new PollResult();
             // Iterate through all buttons and POVs
-            for (int i = 0; i < 14; i++)
+            for (int j = 0; j < 13; j++)
             {
-                var bindingType = Lookup.GetButtonPovBindingTypeFromIndex(i);
-                var isPovType = bindingType == BindingType.POV;
-                var bindingIndex = isPovType ? 0 : i;
-                var bindingSubIndex = isPovType ? i - 10 : 0;
-                var flag = isPovType
-                    ? Lookup.xinputButtonIdentifiers[bindingType][bindingSubIndex]
-                    : Lookup.xinputButtonIdentifiers[bindingType][bindingIndex];
+                bool isPovType = j > 9;
+                var bindingType = isPovType ? BindingType.POV : BindingType.Button;
+                var i = isPovType ? j - 10 : j;
+                var flag = Lookup.xinputButtonIdentifiers[bindingType][i];
 
                 var thisValue = (flag & thisState.Gamepad.Buttons) == flag ? 1 : 0;
                 var lastValue = (flag & _lastState.Gamepad.Buttons) == flag ? 1 : 0;
                 if (thisValue != lastValue)
                 {
-                    result.PollItems.Add(new PollItem() { BindingType = bindingType, Index = bindingIndex, SubIndex = bindingSubIndex, Value = thisValue });
+                    result.PollItems.Add(new PollItem() { BindingType = bindingType, Index = i, Value = thisValue });
                 }
             }
 
