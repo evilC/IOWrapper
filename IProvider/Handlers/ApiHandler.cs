@@ -9,6 +9,14 @@ using System.Threading.Tasks;
 
 namespace Providers.Handlers
 {
+    /// <summary>
+    /// A generic handler for various APIs to support input
+    /// ToDo: Properly implement Unsubscribe
+    /// Dictionaries should be pruned on removal, so the pollthread does not waste time
+    /// 
+    /// ToDo: Implement IDisposable
+    /// </summary>
+    /// <typeparam name="TDeviceType">The type of the DeviceHandler</typeparam>
     public abstract class ApiHandler<TDeviceType> where TDeviceType : DeviceHandler
     {
         protected Thread pollThread;
