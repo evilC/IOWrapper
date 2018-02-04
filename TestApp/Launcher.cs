@@ -15,35 +15,66 @@ namespace TestApp
         static void Main(string[] args)
         {
             Debug.WriteLine("DBGVIEWCLEAR");
-            var diStick1 = Library.Devices.DirectInput.vJoy_1;
-            //var diStick1 = Library.Devices.DirectInput.T16000M;
+            DeviceDescriptor vJoy_1 = Library.Devices.DirectInput.vJoy_1;
+            DeviceDescriptor vJoy_2 = Library.Devices.DirectInput.vJoy_2;
+            DeviceDescriptor physicalStick_1 = null;
+            DeviceDescriptor physicalStick_2 = null;
+            physicalStick_1 = Library.Devices.DirectInput.T16000M;
+            //physicalStick_1 = Library.Devices.DirectInput.SnesPad_1;
+            //physicalStick_2 = Library.Devices.DirectInput.SnesPad_2;
+            //physicalStick_1 = Library.Devices.DirectInput.DS4_1;
+            //physicalStick_2 = Library.Devices.DirectInput.DS4_2;
 
-            var dia1 = new Plugins.InputTester("DIAxis1", Library.Providers.DirectInput, diStick1, Library.Bindings.Generic.Axis1).Subscribe();
-            var dia2 = new Plugins.InputTester("DIAxis2", Library.Providers.DirectInput, diStick1, Library.Bindings.Generic.Axis2).Subscribe();
-            var dib1 = new Plugins.InputTester("DIButton1", Library.Providers.DirectInput, diStick1, Library.Bindings.Generic.Button1).Subscribe();
-            var dib2 = new Plugins.InputTester("DIButton2", Library.Providers.DirectInput, diStick1, Library.Bindings.Generic.Button2).Subscribe();
-            var dip1d1 = new Plugins.InputTester("DIPOV1Up", Library.Providers.DirectInput, diStick1, Library.Bindings.Generic.POV1Up).Subscribe();
-            var dip1d2 = new Plugins.InputTester("DIPOV1Down", Library.Providers.DirectInput, diStick1, Library.Bindings.Generic.POV1Down).Subscribe();
-            // T16k only has one hat, use vJoy to test two hats
-            if (diStick1 == Library.Devices.DirectInput.vJoy_1 || diStick1 == Library.Devices.DirectInput.vJoy_2)
-            {
-                var dip2d1 = new Plugins.InputTester("DIPOV2Up", Library.Providers.DirectInput, Library.Devices.DirectInput.vJoy_1, Library.Bindings.Generic.POV2Up).Subscribe();
-                var dip2d2 = new Plugins.InputTester("DIPOV2Down", Library.Providers.DirectInput, Library.Devices.DirectInput.vJoy_1, Library.Bindings.Generic.POV2Down).Subscribe();
-            }
+            // DirectInput testers - vJoy Stick 1 bindings. Use to test multi-pov
+            var vj1a1 = new Plugins.InputTester("vJoy_1 Axis 1", Library.Providers.DirectInput, vJoy_1, Library.Bindings.Generic.Axis1).Subscribe();
+            var vj1a2 = new Plugins.InputTester("vJoy_1 Axis 2", Library.Providers.DirectInput, vJoy_1, Library.Bindings.Generic.Axis2).Subscribe();
+            var vj1b1 = new Plugins.InputTester("vJoy_1 Button 1", Library.Providers.DirectInput, vJoy_1, Library.Bindings.Generic.Button1).Subscribe();
+            var vj1b2 = new Plugins.InputTester("vJoy_1 Button 2", Library.Providers.DirectInput, vJoy_1, Library.Bindings.Generic.Button2).Subscribe();
+            var vj1p1u = new Plugins.InputTester("vJoy_1 POV 1 Up", Library.Providers.DirectInput, vJoy_1, Library.Bindings.Generic.POV1Up).Subscribe();
+            var vj1p1d = new Plugins.InputTester("vJoy_1 POV 1 Down", Library.Providers.DirectInput, vJoy_1, Library.Bindings.Generic.POV1Down).Subscribe();
+            var vj1p2u = new Plugins.InputTester("vJoy_1 POV 2 Up", Library.Providers.DirectInput, vJoy_1, Library.Bindings.Generic.POV2Up).Subscribe();
+            var vj1p2d = new Plugins.InputTester("vJoy_1 POV 2 Down", Library.Providers.DirectInput, vJoy_1, Library.Bindings.Generic.POV2Down).Subscribe();
 
-            var xia1 = new Plugins.InputTester("XIAxis1", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Axis1).Subscribe();
-            var xia2 = new Plugins.InputTester("XIAxis2", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Axis5).Subscribe();
-            var xib1 = new Plugins.InputTester("XIButton1", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Button1).Subscribe();
-            //xib1.Unsubscribe();
-            var xib2 = new Plugins.InputTester("XIButton2", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Button2).Subscribe();
-            var xip1 = new Plugins.InputTester("XIPOV1Up", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.POV1Up).Subscribe();
-            var xip2 = new Plugins.InputTester("XIPOV1Down", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.POV1Down).Subscribe();
+            // DirectInput testers - vJoy Stick 2 bindings. Use to test DI DeviceInstance.
+            // Warning! vJoy device #1 may or may not be DeviceInstance #1
+            var vj2a1 = new Plugins.InputTester("vJoy_1 Axis 1", Library.Providers.DirectInput, vJoy_2, Library.Bindings.Generic.Axis1).Subscribe();
+            var vj2a2 = new Plugins.InputTester("vJoy_1 Axis 2", Library.Providers.DirectInput, vJoy_2, Library.Bindings.Generic.Axis2).Subscribe();
+
+            // DirectInput testers - Physical stick bindings, for when you want to test physical stick behavior
+            var ps1a1 = new Plugins.InputTester("physicalStick Axis 1", Library.Providers.DirectInput, physicalStick_1, Library.Bindings.Generic.Axis1).Subscribe();
+            var ps1a2 = new Plugins.InputTester("physicalStick Axis 2", Library.Providers.DirectInput, physicalStick_1, Library.Bindings.Generic.Axis2).Subscribe();
+            var ps1b1 = new Plugins.InputTester("physicalStick Button 1", Library.Providers.DirectInput, physicalStick_1, Library.Bindings.Generic.Button1).Subscribe();
+            var ps1b2 = new Plugins.InputTester("physicalStick Button 2", Library.Providers.DirectInput, physicalStick_1, Library.Bindings.Generic.Button2).Subscribe();
+            var ps1p1u = new Plugins.InputTester("physicalStick POV 1 Up", Library.Providers.DirectInput, physicalStick_1, Library.Bindings.Generic.POV1Up).Subscribe();
+            var ps2p1d = new Plugins.InputTester("physicalStick POV 1 Down", Library.Providers.DirectInput, physicalStick_1, Library.Bindings.Generic.POV1Down).Subscribe();
+
+            // XInput testers
+            var xia1 = new Plugins.InputTester("XI Axis 1", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Axis1).Subscribe();
+            var xia2 = new Plugins.InputTester("XI Axis 2", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Axis5).Subscribe();
+            var xib1 = new Plugins.InputTester("XI Button 1", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Button1).Subscribe();
+            var xib2 = new Plugins.InputTester("XI Button 2", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Button2).Subscribe();
+            var xip1 = new Plugins.InputTester("XI POV 1 Up", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.POV1Up).Subscribe();
+            var xip2 = new Plugins.InputTester("XI POV 1 Down", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.POV1Down).Subscribe();
+
+            // Interception testers
             //var interception = new Plugins.InputTester("Interception", Library.Providers.Interception, Library.Devices.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.One).Subscribe();
 
             Console.WriteLine("Load Complete");
             Console.ReadLine();
             IOW.Instance.Dispose();
         }
+
+        public Dictionary<string, Plugins.InputTester> BuildTester(string name, ProviderDescriptor providerDescriptor, DeviceDescriptor deviceDescriptor, int buttons,
+            int axes, int povs)
+        {
+            var dict = new Dictionary<string, Plugins.InputTester>(StringComparer.OrdinalIgnoreCase);
+            dict.Add(name, new Plugins.InputTester($"{name} Button 1", providerDescriptor, deviceDescriptor, Library.Bindings.Generic.Button1));
+            dict.Add(name, new Plugins.InputTester($"{name} Button 2", providerDescriptor, deviceDescriptor, Library.Bindings.Generic.Button2));
+            dict.Add(name, new Plugins.InputTester($"{name} Axis 1", providerDescriptor, deviceDescriptor, Library.Bindings.Generic.Axis1));
+
+            return dict;
+        }
+
     }
 }
 

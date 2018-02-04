@@ -44,8 +44,10 @@ namespace TestApp.Library
             public static DeviceDescriptor T16000M = new DeviceDescriptor() { DeviceHandle = "VID_044F&PID_B10A" };
             // Wireless DS4 controller
             public static DeviceDescriptor DS4_1 = new DeviceDescriptor() { DeviceHandle = "VID_054C&PID_09CC" };
+            public static DeviceDescriptor DS4_2 = new DeviceDescriptor() { DeviceHandle = "VID_054C&PID_09CC", DeviceInstance = 1};
             // Cheapo USB SNES pad with Dpad that reports as buttons
             public static DeviceDescriptor SnesPad_1 = new DeviceDescriptor() { DeviceHandle = "VID_0810&PID_E501" };
+            public static DeviceDescriptor SnesPad_2 = new DeviceDescriptor() { DeviceHandle = "VID_0810&PID_E501", DeviceInstance = 1};
         }
 
         // Tobii Eye Tracker
