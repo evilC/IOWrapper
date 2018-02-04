@@ -30,5 +30,30 @@ namespace SharpDX_XInput.Helpers
         public static List<string> buttonNames = new List<string>() { "A", "B", "X", "Y", "LB", "RB", "LS", "RS", "Back", "Start" };
         public static List<string> axisNames = new List<string>() { "LX", "LY", "RX", "RY", "LT", "RT" };
         public static List<string> povNames = new List<string>() { "Up", "Right", "Down", "Left" };
+
+        public static BindingType GetButtonPovBindingTypeFromFlag(GamepadButtonFlags flag)
+        {
+            return flag < GamepadButtonFlags.DPadUp || flag > GamepadButtonFlags.DPadRight ? BindingType.Button : BindingType.POV;
+        }
+
+        public static BindingType GetButtonPovBindingTypeFromIndex(int index)
+        {
+            return index < 10 ? BindingType.Button : BindingType.POV;
+        }
     }
+
+    public class PollResult
+    {
+        public List<PollItem> PollItems { get; set; } = new List<PollItem>();
+    }
+
+    // ToDo: Should probably use BindingDescriptor class
+    public class PollItem
+    {
+        public BindingType BindingType { get; set; }
+        public int Index { get; set; } = 0;
+        public int SubIndex { get; set; } = 0;
+        public int Value { get; set; }
+    }
+
 }

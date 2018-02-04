@@ -209,6 +209,5 @@ namespace SharpDX_DirectInput
 
             return Math.Min(result1, result2);
         }
-
     }
 }

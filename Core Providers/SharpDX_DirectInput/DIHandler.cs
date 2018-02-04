@@ -62,9 +62,10 @@ namespace SharpDX_DirectInput
     class DiDevice
     {
         private Joystick joystick;
-        private ConcurrentDictionary<BindingType, 
-            ConcurrentDictionary<JoystickOffset, BindingHandler<JoystickUpdate>>> _bindingDictionary
-                = new ConcurrentDictionary<BindingType, ConcurrentDictionary<JoystickOffset, BindingHandler<JoystickUpdate>>>();
+
+        private ConcurrentDictionary<BindingType,
+                ConcurrentDictionary<int, BindingHandler>> _bindingDictionary
+            = new ConcurrentDictionary<BindingType, ConcurrentDictionary<int, BindingHandler>>();
 
         public DiDevice(InputSubscriptionRequest subReq)
         {
@@ -79,18 +80,20 @@ namespace SharpDX_DirectInput
             var bindingType = subReq.BindingDescriptor.Type;
             var dict = _bindingDictionary
                 .GetOrAdd(subReq.BindingDescriptor.Type,
-                    new ConcurrentDictionary<JoystickOffset, BindingHandler<JoystickUpdate>>());
+                    new ConcurrentDictionary<int, BindingHandler>());
+
             switch (bindingType)
             {
                 case BindingType.Axis:
                 case BindingType.Button:
                     return dict
-                        .GetOrAdd(Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index], new DiAxisButtonBindingHandler())
+                        .GetOrAdd((int)Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index], new DiAxisButtonBindingHandler())
                         .Subscribe(subReq);
                 case BindingType.POV:
                     return dict
-                        .GetOrAdd(Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index], new DiPovBindingHandler())
+                        .GetOrAdd((int)Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index], new DiPovBindingHandler())
                         .Subscribe(subReq);
+                    return true;
                 default:
                     throw new NotImplementedException();
             }
@@ -106,34 +109,34 @@ namespace SharpDX_DirectInput
             JoystickUpdate[] data = joystick.GetBufferedData();
             foreach (var state in data)
             {
+                int offset = (int)state.Offset;
                 var bindingType = Lookups.OffsetToType(state.Offset);
-                if (_bindingDictionary.ContainsKey(bindingType) && _bindingDictionary[bindingType].ContainsKey(state.Offset))
+                if (_bindingDictionary.ContainsKey(bindingType) && _bindingDictionary[bindingType].ContainsKey(offset))
                 {
-                    _bindingDictionary[bindingType][state.Offset].Poll(state);
+                    _bindingDictionary[bindingType][offset].Poll(state.Value);
                 }
             }
         }
     }
 
-    class DiAxisButtonBindingHandler : BindingHandler<JoystickUpdate>
+
+    class DiAxisButtonBindingHandler : BindingHandler
     {
         private InputSubscriptionRequest tmpSubReq;
-        private JoystickOffset offset;
+
+        public override void Poll(int pollValue)
+        {
+            tmpSubReq.Callback(pollValue);
+        }
 
         public override bool Subscribe(InputSubscriptionRequest subReq)
         {
             tmpSubReq = subReq;
-            offset = Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index];
             return true;
-        }
-
-        public override void Poll(JoystickUpdate pollValue)
-        {
-            tmpSubReq.Callback(pollValue.Value);
         }
     }
 
-    class DiPovBindingHandler : BindingHandler<JoystickUpdate>
+    class DiPovBindingHandler : BindingHandler
     {
         private JoystickOffset offset;
         private int currentValue = -1;
@@ -151,17 +154,17 @@ namespace SharpDX_DirectInput
                 .Subscribe(subReq);
         }
 
-        public override void Poll(JoystickUpdate pollValue)
+        public override void Poll(int pollValue)
         {
-            if (currentValue != pollValue.Value)
+            if (currentValue != pollValue)
             {
-                currentValue = pollValue.Value;
+                currentValue = pollValue;
                 foreach (var directionBinding in _directionBindings)
                 {
                     int currentDirectionState = directionBinding.Value.State;
                     var newDirectionState = 
-                        pollValue.Value == -1 ? 0
-                            : Lookups.StateFromAngle(pollValue.Value, directionBinding.Key);
+                        pollValue == -1 ? 0
+                            : Lookups.StateFromAngle(pollValue, directionBinding.Key);
                     if (newDirectionState != currentDirectionState)
                     {
                         directionBinding.Value.State = newDirectionState;

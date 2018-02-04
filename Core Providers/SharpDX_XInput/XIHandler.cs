@@ -50,37 +50,34 @@ namespace SharpDX_XInput
 
     public class XiDevice
     {
-        private Controller controller = null;
-        private ConcurrentDictionary<GamepadButtonFlags, XiButtonHandler> buttonBindingHandlers
-            = new ConcurrentDictionary<GamepadButtonFlags, XiButtonHandler>();
+        private Controller _controller = null;
+
+        private ConcurrentDictionary<BindingType,
+                ConcurrentDictionary<int, BindingHandler>> _bindingDictionary
+            = new ConcurrentDictionary<BindingType, ConcurrentDictionary<int, BindingHandler>>();
+
+        private XiDevicePoller _devicePoller = new XiDevicePoller();
 
         public XiDevice(InputSubscriptionRequest subReq)
         {
-            //controller = new Controller((UserIndex)subReq.DeviceDescriptor.DeviceInstance);
-            controller = new Controller(UserIndex.One);
+            _controller = new Controller((UserIndex)subReq.DeviceDescriptor.DeviceInstance);
 
         }
 
         public bool Subscribe(InputSubscriptionRequest subReq)
         {
             bool ret;
-            switch (subReq.BindingDescriptor.Type)
-            {
-                case BindingType.Axis:
-                    ret = false;
-                    break;
-                case BindingType.Button:
-                case BindingType.POV:
-                    int index = subReq.BindingDescriptor.Type == BindingType.POV ? subReq.BindingDescriptor.SubIndex : subReq.BindingDescriptor.Index;
-                    var x = Lookup.xinputButtonIdentifiers[subReq.BindingDescriptor.Type][index];
-                    ret = buttonBindingHandlers
-                        .GetOrAdd(x, new XiButtonHandler())
-                        .Subscribe(subReq);
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-     
+            var dict = _bindingDictionary
+                .GetOrAdd(subReq.BindingDescriptor.Type,
+                    new ConcurrentDictionary<int, BindingHandler>());
+
+            var index = subReq.BindingDescriptor.Type == BindingType.POV
+                ? subReq.BindingDescriptor.SubIndex
+                : subReq.BindingDescriptor.Index;
+            ret = dict
+                .GetOrAdd(index, new XiBindingHandler())
+                .Subscribe(subReq);
+
             return ret;
         }
 
@@ -92,53 +89,84 @@ namespace SharpDX_XInput
 
         public void Poll()
         {
-            if (!controller.IsConnected)
+            if (!_controller.IsConnected)
                 return;
-            var state = controller.GetState();
-            foreach (var bindingHandler in buttonBindingHandlers.Values)
+            var state = _controller.GetState();
+            var pollResult = _devicePoller.ProcessPollResult(state);
+            foreach (var pollItem in pollResult.PollItems)
             {
-                bindingHandler.Poll(state);
+                var index = pollItem.BindingType == BindingType.POV ? pollItem.SubIndex : pollItem.Index;
+                if (_bindingDictionary.ContainsKey(pollItem.BindingType)
+                    && _bindingDictionary[pollItem.BindingType].ContainsKey(index))
+                {
+                    _bindingDictionary[pollItem.BindingType][index].Poll(pollItem.Value);
+                }
             }
         }
     }
 
-    class XiButtonHandler : BindingHandler<State>
+    class XiDevicePoller
     {
-        private int _currentValue = 0;
+        private State _lastState;
+
+        public PollResult ProcessPollResult(State thisState)
+        {
+            var result = new PollResult();
+            // Iterate through all buttons and POVs
+            for (int i = 0; i < 14; i++)
+            {
+                var bindingType = Lookup.GetButtonPovBindingTypeFromIndex(i);
+                var isPovType = bindingType == BindingType.POV;
+                var bindingIndex = isPovType ? 0 : i;
+                var bindingSubIndex = isPovType ? i - 10 : 0;
+                var flag = isPovType
+                    ? Lookup.xinputButtonIdentifiers[bindingType][bindingSubIndex]
+                    : Lookup.xinputButtonIdentifiers[bindingType][bindingIndex];
+
+                var thisValue = (flag & thisState.Gamepad.Buttons) == flag ? 1 : 0;
+                var lastValue = (flag & _lastState.Gamepad.Buttons) == flag ? 1 : 0;
+                if (thisValue != lastValue)
+                {
+                    result.PollItems.Add(new PollItem() { BindingType = bindingType, Index = bindingIndex, SubIndex = bindingSubIndex, Value = thisValue });
+                }
+            }
+
+            // There is one property per Axis in XInput. Avoid reflection nastiness and suffer not being able to have a loop
+            result.PollItems = ProcessAxis(result.PollItems, 0, thisState.Gamepad.LeftThumbX, _lastState.Gamepad.LeftThumbX);
+            result.PollItems = ProcessAxis(result.PollItems, 1, thisState.Gamepad.LeftThumbY, _lastState.Gamepad.LeftThumbY);
+            result.PollItems = ProcessAxis(result.PollItems, 2, thisState.Gamepad.RightThumbX, _lastState.Gamepad.RightThumbX);
+            result.PollItems = ProcessAxis(result.PollItems, 3, thisState.Gamepad.RightThumbY, _lastState.Gamepad.RightThumbY);
+            result.PollItems = ProcessAxis(result.PollItems, 4, thisState.Gamepad.LeftTrigger, _lastState.Gamepad.LeftTrigger);
+            result.PollItems = ProcessAxis(result.PollItems, 5, thisState.Gamepad.RightTrigger, _lastState.Gamepad.RightTrigger);
+
+            _lastState = thisState;
+            return result;
+        }
+
+        private List<PollItem> ProcessAxis(List<PollItem> items, int index, short thisState, short lastState)
+        {
+            if (thisState != lastState)
+            {
+                items.Add(new PollItem() { BindingType = BindingType.Axis, Index = index, Value = thisState });
+            }
+
+            return items;
+        }
+    }
+
+    class XiBindingHandler : BindingHandler
+    {
         private InputSubscriptionRequest tmpSubReq;
-        private GamepadButtonFlags flag;
+
+        public override void Poll(int pollValue)
+        {
+            tmpSubReq.Callback(pollValue);
+        }
 
         public override bool Subscribe(InputSubscriptionRequest subReq)
         {
-            var bindingType = subReq.BindingDescriptor.Type;
-            var key = bindingType == BindingType.POV ? subReq.BindingDescriptor.SubIndex : subReq.BindingDescriptor.Index;
-            flag = Lookup.xinputButtonIdentifiers[bindingType][key];
             tmpSubReq = subReq;
             return true;
-        }
-
-        public override void Poll(State pollValue)
-        {
-            var newValue = (flag & pollValue.Gamepad.Buttons) == flag ? 1 : 0;
-            if (newValue != _currentValue)
-            {
-                _currentValue = newValue;
-                //Debug.WriteLine($"IOWrapper| Flag: {flag}, Value: {newValue}");
-                tmpSubReq.Callback(newValue);
-            }
-        }
-    }
-
-    class XiAxisHandler : BindingHandler<State>
-    {
-        public override bool Subscribe(InputSubscriptionRequest subReq)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Poll(State pollValue)
-        {
-            throw new NotImplementedException();
         }
     }
 }
