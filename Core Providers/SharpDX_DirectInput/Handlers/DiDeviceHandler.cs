@@ -8,12 +8,8 @@ namespace SharpDX_DirectInput
 {
     class DiDeviceHandler : DeviceHandler
     {
-        private Joystick joystick;
-        private Guid instanceGuid = Guid.Empty;
-
-        private ConcurrentDictionary<BindingType,
-            ConcurrentDictionary<int, BindingHandler>> _bindingDictionary
-            = new ConcurrentDictionary<BindingType, ConcurrentDictionary<int, BindingHandler>>();
+        private Joystick _joystick;
+        private Guid _instanceGuid = Guid.Empty;
 
         public DiDeviceHandler(InputSubscriptionRequest subReq)
         {
@@ -21,21 +17,21 @@ namespace SharpDX_DirectInput
             var instances = Lookups.GetDeviceOrders(subReq.DeviceDescriptor.DeviceHandle);
             if (instances.Count >= subReq.DeviceDescriptor.DeviceInstance)
             {
-                instanceGuid = instances[subReq.DeviceDescriptor.DeviceInstance];
+                _instanceGuid = instances[subReq.DeviceDescriptor.DeviceInstance];
             }
 
-            if (instanceGuid == Guid.Empty)
+            if (_instanceGuid == Guid.Empty)
             {
                 throw new Exception($"DeviceHandle '{subReq.DeviceDescriptor.DeviceHandle}' was not found");
             }
             else
             {
                 //ToDo: When should we re-attempt to acquire?
-                if (DiHandler.DiInstance.IsDeviceAttached(instanceGuid))
+                if (DiHandler.DiInstance.IsDeviceAttached(_instanceGuid))
                 {
-                    joystick = new Joystick(DiHandler.DiInstance, instanceGuid);
-                    joystick.Properties.BufferSize = 128;
-                    joystick.Acquire();
+                    _joystick = new Joystick(DiHandler.DiInstance, _instanceGuid);
+                    _joystick.Properties.BufferSize = 128;
+                    _joystick.Acquire();
                 }
             }
         }
@@ -61,7 +57,6 @@ namespace SharpDX_DirectInput
                     return dict
                         .GetOrAdd((int)Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index], new DiPovBindingHandler())
                         .Subscribe(subReq);
-                    return true;
                 default:
                     throw new NotImplementedException();
             }
@@ -82,7 +77,7 @@ namespace SharpDX_DirectInput
             try
             {
                 // Try / catch seems the only way for now to ensure no crashes on replug
-                data = joystick.GetBufferedData();
+                data = _joystick.GetBufferedData();
             }
             catch
             {
