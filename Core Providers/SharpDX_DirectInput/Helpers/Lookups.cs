@@ -145,30 +145,11 @@ namespace SharpDX_DirectInput
                     }
                 },
                 {
-                    //BindingType.POV, new List<JoystickOffset>()
-                    //{
-                    //    JoystickOffset.PointOfViewControllers0,
-                    //    JoystickOffset.PointOfViewControllers1,
-                    //    JoystickOffset.PointOfViewControllers2,
-                    //    JoystickOffset.PointOfViewControllers3
-                    //}
                     BindingType.POV, new List<JoystickOffset>()
                     {
                         JoystickOffset.PointOfViewControllers0,
-                        JoystickOffset.PointOfViewControllers0,
-                        JoystickOffset.PointOfViewControllers0,
-                        JoystickOffset.PointOfViewControllers0,
-                        JoystickOffset.PointOfViewControllers1,
-                        JoystickOffset.PointOfViewControllers1,
-                        JoystickOffset.PointOfViewControllers1,
                         JoystickOffset.PointOfViewControllers1,
                         JoystickOffset.PointOfViewControllers2,
-                        JoystickOffset.PointOfViewControllers2,
-                        JoystickOffset.PointOfViewControllers2,
-                        JoystickOffset.PointOfViewControllers2,
-                        JoystickOffset.PointOfViewControllers3,
-                        JoystickOffset.PointOfViewControllers3,
-                        JoystickOffset.PointOfViewControllers3,
                         JoystickOffset.PointOfViewControllers3
                     }
                 }

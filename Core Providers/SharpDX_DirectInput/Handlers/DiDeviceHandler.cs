@@ -16,7 +16,8 @@ namespace SharpDX_DirectInput
 
         public DiDeviceHandler(InputSubscriptionRequest subReq)
         {
-            joystick = new Joystick(DiHandler.DiInstance, Lookups.DeviceHandleToInstanceGuid("VID_044F&PID_B10A"));
+            //ToDo: Need to handle device instances
+            joystick = new Joystick(DiHandler.DiInstance, Lookups.DeviceHandleToInstanceGuid(subReq.DeviceDescriptor.DeviceHandle));
             joystick.Properties.BufferSize = 128;
             joystick.Acquire();
 

@@ -39,9 +39,9 @@ namespace SharpDX_DirectInput
 
         private void PollThread()
         {
-            var joystick = new Joystick(DiHandler.DiInstance, Lookups.DeviceHandleToInstanceGuid("VID_044F&PID_B10A"));
-            joystick.Properties.BufferSize = 128;
-            joystick.Acquire();
+            //var joystick = new Joystick(DiHandler.DiInstance, Lookups.DeviceHandleToInstanceGuid("VID_044F&PID_B10A"));
+            //joystick.Properties.BufferSize = 128;
+            //joystick.Acquire();
 
             while (true)
             {

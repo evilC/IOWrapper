@@ -12,12 +12,8 @@ namespace SharpDX_DirectInput
     class DiPovBindingHandler : BindingHandler
     {
         private int _currentValue = -1;
+        private  Guid tmpGuid = Guid.NewGuid();
 
-        public override SubscriptionHandler CreateAndGetSubscriptionHandler(InputSubscriptionRequest subReq)
-        {
-            return _bindingDictionary
-                .GetOrAdd(IndexToAngle(subReq.BindingDescriptor.SubIndex), new SubscriptionHandler());
-        }
 
         // Polls one POV
         public override void Poll(int pollValue)
@@ -57,9 +53,11 @@ namespace SharpDX_DirectInput
             return angle / 9000;
         }
 
-        public override bool Unsubscribe(InputSubscriptionRequest subReq)
+        public override bool Subscribe(InputSubscriptionRequest subReq)
         {
-            throw new NotImplementedException();
+            return _bindingDictionary
+                .GetOrAdd(subReq.BindingDescriptor.SubIndex * 9000, new SubscriptionHandler())
+                .Subscribe(subReq);
         }
     }
 }
