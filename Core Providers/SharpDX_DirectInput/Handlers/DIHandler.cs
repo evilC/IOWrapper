@@ -17,16 +17,16 @@ namespace SharpDX_DirectInput
     {
         public static DirectInput DiInstance { get; } = new DirectInput();
         
-        private ConcurrentDictionary<string, ConcurrentDictionary<int, DiDevice>> _diDevices
-            = new ConcurrentDictionary<string, ConcurrentDictionary<int, DiDevice>>();
+        private ConcurrentDictionary<string, ConcurrentDictionary<int, DiDeviceHandler>> _diDevices
+            = new ConcurrentDictionary<string, ConcurrentDictionary<int, DiDeviceHandler>>();
 
         private Thread pollThread;
 
         public bool Subscribe(InputSubscriptionRequest subReq)
         {
             _diDevices
-                .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, new ConcurrentDictionary<int, DiDevice>())
-                .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, new DiDevice(subReq))
+                .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, new ConcurrentDictionary<int, DiDeviceHandler>())
+                .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, new DiDeviceHandler(subReq))
                 .Subscribe(subReq);
 
             pollThread = new Thread(PollThread);
@@ -59,80 +59,24 @@ namespace SharpDX_DirectInput
         }
     }
 
-    class DiDevice
+
+    class DiButtonBindingHandler : BindingHandler
     {
-        private Joystick joystick;
-
-        private ConcurrentDictionary<BindingType,
-                ConcurrentDictionary<int, BindingHandler>> _bindingDictionary
-            = new ConcurrentDictionary<BindingType, ConcurrentDictionary<int, BindingHandler>>();
-
-        public DiDevice(InputSubscriptionRequest subReq)
-        {
-            joystick = new Joystick(DiHandler.DiInstance, Lookups.DeviceHandleToInstanceGuid("VID_044F&PID_B10A"));
-            joystick.Properties.BufferSize = 128;
-            joystick.Acquire();
-
-        }
-
-        public bool Subscribe(InputSubscriptionRequest subReq)
-        {
-            var bindingType = subReq.BindingDescriptor.Type;
-            var dict = _bindingDictionary
-                .GetOrAdd(subReq.BindingDescriptor.Type,
-                    new ConcurrentDictionary<int, BindingHandler>());
-
-            switch (bindingType)
-            {
-                case BindingType.Axis:
-                case BindingType.Button:
-                    return dict
-                        .GetOrAdd((int)Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index], new DiAxisButtonBindingHandler())
-                        .Subscribe(subReq);
-                case BindingType.POV:
-                    return dict
-                        .GetOrAdd((int)Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index], new DiPovBindingHandler())
-                        .Subscribe(subReq);
-                    return true;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        public bool Unsubscribe(InputSubscriptionRequest subReq)
-        {
-            return true;
-        }
-
-        public void Poll()
-        {
-            JoystickUpdate[] data = joystick.GetBufferedData();
-            foreach (var state in data)
-            {
-                int offset = (int)state.Offset;
-                var bindingType = Lookups.OffsetToType(state.Offset);
-                if (_bindingDictionary.ContainsKey(bindingType) && _bindingDictionary[bindingType].ContainsKey(offset))
-                {
-                    _bindingDictionary[bindingType][offset].Poll(state.Value);
-                }
-            }
-        }
-    }
-
-
-    class DiAxisButtonBindingHandler : BindingHandler
-    {
-        private InputSubscriptionRequest tmpSubReq;
+        private SubscriptionHandler subscriptionHandler = new SubscriptionHandler();
 
         public override void Poll(int pollValue)
         {
-            tmpSubReq.Callback(pollValue);
+            subscriptionHandler.State = pollValue == 128 ? 1 : 0;
         }
 
         public override bool Subscribe(InputSubscriptionRequest subReq)
         {
-            tmpSubReq = subReq;
-            return true;
+            return subscriptionHandler.Subscribe(subReq);
+        }
+
+        public override bool Unsubscribe(InputSubscriptionRequest subReq)
+        {
+            return subscriptionHandler.Unsubscribe(subReq);
         }
     }
 
@@ -185,6 +129,11 @@ namespace SharpDX_DirectInput
                 angle -= 360;
             }
             return angle / 9000;
+        }
+
+        public override bool Unsubscribe(InputSubscriptionRequest subReq)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Providers;
-using Providers.Handlers;
 using SharpDX.XInput;
 using System;
 using System.Collections.Concurrent;
@@ -16,12 +15,12 @@ namespace SharpDX_XInput
     public class XiHandler
     {
         private Thread pollThread;
-        private ConcurrentDictionary<int,XiDevice> _devices = new ConcurrentDictionary<int, XiDevice>();
+        private ConcurrentDictionary<int,XiDeviceHandler> _devices = new ConcurrentDictionary<int, XiDeviceHandler>();
 
         public bool Subscribe(InputSubscriptionRequest subReq)
         {
             _devices
-                .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, new XiDevice(subReq))
+                .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, new XiDeviceHandler(subReq))
                 .Subscribe(subReq);
 
             pollThread = new Thread(PollThread);
@@ -31,7 +30,12 @@ namespace SharpDX_XInput
 
         public bool Unsubscribe(InputSubscriptionRequest subReq)
         {
-            throw new NotImplementedException();
+            XiDeviceHandler deviceHandler = new XiDeviceHandler(subReq);
+            if (_devices.TryGetValue(subReq.DeviceDescriptor.DeviceInstance, out deviceHandler))
+            {
+                deviceHandler.Unsubscribe(subReq);
+            }
+            return true;
         }
 
         private void PollThread()
@@ -46,62 +50,6 @@ namespace SharpDX_XInput
             }
         }
 
-    }
-
-    public class XiDevice
-    {
-        private Controller _controller = null;
-
-        private ConcurrentDictionary<BindingType,
-                ConcurrentDictionary<int, BindingHandler>> _bindingDictionary
-            = new ConcurrentDictionary<BindingType, ConcurrentDictionary<int, BindingHandler>>();
-
-        private readonly XiDevicePoller _devicePoller = new XiDevicePoller();
-
-        public XiDevice(InputSubscriptionRequest subReq)
-        {
-            _controller = new Controller((UserIndex)subReq.DeviceDescriptor.DeviceInstance);
-
-        }
-
-        public bool Subscribe(InputSubscriptionRequest subReq)
-        {
-            bool ret;
-            var dict = _bindingDictionary
-                .GetOrAdd(subReq.BindingDescriptor.Type,
-                    new ConcurrentDictionary<int, BindingHandler>());
-
-            var index = subReq.BindingDescriptor.Type == BindingType.POV
-                ? subReq.BindingDescriptor.SubIndex
-                : subReq.BindingDescriptor.Index;
-            ret = dict
-                .GetOrAdd(index, new XiBindingHandler())
-                .Subscribe(subReq);
-
-            return ret;
-        }
-
-        public bool Unsubscribe(InputSubscriptionRequest subReq)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        public void Poll()
-        {
-            if (!_controller.IsConnected)
-                return;
-            var state = _controller.GetState();
-            var pollResult = _devicePoller.ProcessPollResult(state);
-            foreach (var pollItem in pollResult.PollItems)
-            {
-                if (_bindingDictionary.ContainsKey(pollItem.BindingType)
-                    && _bindingDictionary[pollItem.BindingType].ContainsKey(pollItem.Index))
-                {
-                    _bindingDictionary[pollItem.BindingType][pollItem.Index].Poll(pollItem.Value);
-                }
-            }
-        }
     }
 
     class XiDevicePoller
@@ -147,22 +95,6 @@ namespace SharpDX_XInput
             }
 
             return items;
-        }
-    }
-
-    class XiBindingHandler : BindingHandler
-    {
-        private InputSubscriptionRequest tmpSubReq;
-
-        public override void Poll(int pollValue)
-        {
-            tmpSubReq.Callback(pollValue);
-        }
-
-        public override bool Subscribe(InputSubscriptionRequest subReq)
-        {
-            tmpSubReq = subReq;
-            return true;
         }
     }
 }

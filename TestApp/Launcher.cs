@@ -34,6 +34,7 @@ namespace TestApp
                 .Subscribe();
             var xib1 = new Plugins.InputTester("XIButton1", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Button1)
                 .Subscribe();
+            xib1.Unsubscribe();
             var xib2 = new Plugins.InputTester("XIButton2", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Button2)
                 .Subscribe();
             var xip1 = new Plugins.InputTester("XIPOV1", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.POV1Up)

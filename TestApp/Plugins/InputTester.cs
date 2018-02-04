@@ -38,5 +38,14 @@ namespace TestApp.Plugins
             }
             return this;    // allow chaining
         }
+
+        public bool Unsubscribe()
+        {
+            if (!IOW.Instance.UnsubscribeInput(input))
+            {
+                throw new Exception("Could not subscribe to SubReq");
+            }
+            return true;
+        }
     }
 }

@@ -28,6 +28,9 @@ namespace Providers.Handlers
             return true;
         }
 
-
+        public bool Unsubscribe(InputSubscriptionRequest subReq)
+        {
+            return _subscriptions.TryRemove(subReq.SubscriptionDescriptor.SubscriberGuid, out _);
+        }
     }
 }

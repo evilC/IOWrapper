@@ -52,11 +52,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Handlers\XiBindingHandler.cs" />
+    <Compile Include="Handlers\XiDeviceHandler.cs" />
     <Compile Include="Helpers\Lookup.cs" />
     <Compile Include="DeviceQueryer.cs" />
     <Compile Include="SharpDX_XInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="XIHandler.cs" />
+    <Compile Include="Handlers\XiHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

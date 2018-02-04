@@ -10,9 +10,9 @@ namespace Providers.Handlers
 {
     public abstract class BindingHandler
     {
-        private InputSubscriptionRequest tmpSubReq;
-
         public abstract bool Subscribe(InputSubscriptionRequest subReq);
+
+        public abstract bool Unsubscribe(InputSubscriptionRequest subReq);
 
         public abstract void Poll(int pollValue);
     }
