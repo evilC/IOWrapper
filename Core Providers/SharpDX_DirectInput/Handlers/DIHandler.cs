@@ -1,8 +1,6 @@
 ﻿using Providers;
-using Providers.Handlers;
 using Providers.Helpers;
 using SharpDX.DirectInput;
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -56,84 +54,6 @@ namespace SharpDX_DirectInput
                 }
                 Thread.Sleep(1);
             }
-        }
-    }
-
-
-    class DiButtonBindingHandler : BindingHandler
-    {
-        private SubscriptionHandler subscriptionHandler = new SubscriptionHandler();
-
-        public override void Poll(int pollValue)
-        {
-            subscriptionHandler.State = pollValue == 128 ? 1 : 0;
-        }
-
-        public override bool Subscribe(InputSubscriptionRequest subReq)
-        {
-            return subscriptionHandler.Subscribe(subReq);
-        }
-
-        public override bool Unsubscribe(InputSubscriptionRequest subReq)
-        {
-            return subscriptionHandler.Unsubscribe(subReq);
-        }
-    }
-
-    class DiPovBindingHandler : BindingHandler
-    {
-        private int _currentValue = -1;
-        private ConcurrentDictionary<int, SubscriptionHandler> _directionBindings
-            = new ConcurrentDictionary<int, SubscriptionHandler>();
-
-        public override bool Subscribe(InputSubscriptionRequest subReq)
-        {
-            var angle = IndexToAngle(subReq.BindingDescriptor.SubIndex);
-            return _directionBindings
-                .GetOrAdd(angle, new SubscriptionHandler())
-                .Subscribe(subReq);
-        }
-
-        public override void Poll(int pollValue)
-        {
-            if (_currentValue != pollValue)
-            {
-                _currentValue = pollValue;
-                foreach (var directionBinding in _directionBindings)
-                {
-                    int currentDirectionState = directionBinding.Value.State;
-                    var newDirectionState = 
-                        pollValue == -1 ? 0
-                            : Lookups.StateFromAngle(pollValue, directionBinding.Key);
-                    if (newDirectionState != currentDirectionState)
-                    {
-                        directionBinding.Value.State = newDirectionState;
-                    }
-                }
-            }
-        }
-
-        public static int IndexToAngle(int index)
-        {
-            if (index < 0 || index > 3)
-            {
-                throw  new ArgumentOutOfRangeException();
-            }
-            return index * 9000;
-        }
-
-        public static int AngleToIndex(int angle)
-        {
-            while (angle > 360)
-            {
-                angle -= 360;
-            }
-            return angle / 9000;
-        }
-
-        public override bool Unsubscribe(InputSubscriptionRequest subReq)
-        {
-            throw new NotImplementedException();
         }
     }
 }

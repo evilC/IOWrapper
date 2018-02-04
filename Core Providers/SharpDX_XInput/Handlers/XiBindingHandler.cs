@@ -5,21 +5,21 @@ namespace SharpDX_XInput
 {
     class XiBindingHandler : BindingHandler
     {
-        private SubscriptionHandler subscriptionHandler = new SubscriptionHandler();
+        //private SubscriptionHandler _bindingDictionary = new SubscriptionHandler();
 
-        public override void Poll(int pollValue)
-        {
-            subscriptionHandler.State = pollValue;
-        }
+        //public override void Poll(int pollValue)
+        //{
+        //    _bindingDictionary.State = pollValue;
+        //}
 
-        public override bool Subscribe(InputSubscriptionRequest subReq)
-        {
-            return subscriptionHandler.Subscribe(subReq);
-        }
+        //public override bool Subscribe(InputSubscriptionRequest subReq)
+        //{
+        //    return _bindingDictionary.Subscribe(subReq);
+        //}
 
-        public override bool Unsubscribe(InputSubscriptionRequest subReq)
-        {
-            return subscriptionHandler.Unsubscribe(subReq);
-        }
+        //public override bool Unsubscribe(InputSubscriptionRequest subReq)
+        //{
+        //    return GetSubscriptionHandler(subReq).Unsubscribe(subReq);
+        //}
     }
 }
