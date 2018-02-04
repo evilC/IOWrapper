@@ -10,6 +10,11 @@ namespace Providers.Handlers
 {
     public abstract class ApiHandler<TDeviceType>
     {
+        protected ConcurrentDictionary<string,    // DeviceHandle
+            ConcurrentDictionary<int,           // DeviceInstance
+                TDeviceType>> _devices
+            = new ConcurrentDictionary<string, ConcurrentDictionary<int, TDeviceType>>();
+
         public abstract bool Subscribe(InputSubscriptionRequest subReq);
         public abstract bool Unsubscribe(InputSubscriptionRequest subReq);
         public abstract ConcurrentDictionary<int, TDeviceType> GetDeviceHandlerDictionary();

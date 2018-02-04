@@ -6,7 +6,7 @@ using SharpDX.XInput;
 
 namespace SharpDX_XInput
 {
-    public class XiDeviceHandler
+    public class XiDeviceHandler : DeviceHandler
     {
         private Controller _controller = null;
 

@@ -19,14 +19,6 @@ namespace SharpDX_DirectInput
     {
         public static DirectInput DiInstance { get; } = new DirectInput();
         
-        /// <summary>
-        /// Defines the overall structure of the BindingHandlers
-        /// </summary>
-        private ConcurrentDictionary<string,    // DeviceHandle
-            ConcurrentDictionary<int,           // DeviceInstance
-                DiDeviceHandler>> _devices
-            = new ConcurrentDictionary<string, ConcurrentDictionary<int, DiDeviceHandler>>();
-
         private Thread pollThread;
 
         public override bool Subscribe(InputSubscriptionRequest subReq)

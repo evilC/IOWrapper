@@ -16,14 +16,6 @@ namespace SharpDX_XInput
     {
         private Thread pollThread;
 
-        /// <summary>
-        /// Defines the overall structure for thie BindingHandlers
-        /// </summary>
-        private ConcurrentDictionary<string,       // DeviceHandle (Always "xb360")
-            ConcurrentDictionary<int,           // DeviceInstance   (Controller number)
-                XiDeviceHandler>> _devices
-            = new ConcurrentDictionary<string, ConcurrentDictionary<int, XiDeviceHandler>>();
-
         public override bool Subscribe(InputSubscriptionRequest subReq)
         {
             _devices

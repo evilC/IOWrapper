@@ -6,7 +6,7 @@ using SharpDX.DirectInput;
 
 namespace SharpDX_DirectInput
 {
-    class DiDeviceHandler
+    class DiDeviceHandler : DeviceHandler
     {
         private Joystick joystick;
 
