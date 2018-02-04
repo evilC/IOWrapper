@@ -11,11 +11,19 @@ using System.Threading.Tasks;
 
 namespace SharpDX_DirectInput
 {
+    /// <summary>
+    /// Handles input detection for this provider
+    /// </summary>
     class DiHandler
     {
         public static DirectInput DiInstance { get; } = new DirectInput();
         
-        private ConcurrentDictionary<string, ConcurrentDictionary<int, DiDeviceHandler>> _diDevices
+        /// <summary>
+        /// Defines the overall structure of the BindingHandlers
+        /// </summary>
+        private ConcurrentDictionary<string,    // DeviceHandle
+            ConcurrentDictionary<int,           // DeviceInstance
+                DiDeviceHandler>> _diDevices
             = new ConcurrentDictionary<string, ConcurrentDictionary<int, DiDeviceHandler>>();
 
         private Thread pollThread;
@@ -39,10 +47,6 @@ namespace SharpDX_DirectInput
 
         private void PollThread()
         {
-            //var joystick = new Joystick(DiHandler.DiInstance, Lookups.DeviceHandleToInstanceGuid("VID_044F&PID_B10A"));
-            //joystick.Properties.BufferSize = 128;
-            //joystick.Acquire();
-
             while (true)
             {
                 foreach (var deviceHandle in _diDevices.Values)

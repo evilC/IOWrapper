@@ -14,11 +14,19 @@ namespace SharpDX_XInput
     public class XiHandler
     {
         private Thread pollThread;
-        private ConcurrentDictionary<int,XiDeviceHandler> _devices = new ConcurrentDictionary<int, XiDeviceHandler>();
+
+        /// <summary>
+        /// Defines the overall structure for thie BindingHandlers
+        /// </summary>
+        private ConcurrentDictionary<string,       // DeviceHandle (Always "xb360")
+            ConcurrentDictionary<int,           // DeviceInstance   (Controller number)
+                XiDeviceHandler>> _devices
+            = new ConcurrentDictionary<string, ConcurrentDictionary<int, XiDeviceHandler>>();
 
         public bool Subscribe(InputSubscriptionRequest subReq)
         {
             _devices
+                .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, new ConcurrentDictionary<int, XiDeviceHandler>())
                 .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, new XiDeviceHandler(subReq))
                 .Subscribe(subReq);
 
@@ -29,21 +37,24 @@ namespace SharpDX_XInput
 
         public bool Unsubscribe(InputSubscriptionRequest subReq)
         {
-            XiDeviceHandler deviceHandler = new XiDeviceHandler(subReq);
-            if (_devices.TryGetValue(subReq.DeviceDescriptor.DeviceInstance, out deviceHandler))
+            if (_devices.ContainsKey(subReq.DeviceDescriptor.DeviceHandle)
+                && _devices[subReq.DeviceDescriptor.DeviceHandle].TryGetValue(subReq.DeviceDescriptor.DeviceInstance, out var deviceHandler))
             {
-                deviceHandler.Unsubscribe(subReq);
+                return deviceHandler.Unsubscribe(subReq);
             }
-            return true;
+            return false;
         }
 
         private void PollThread()
         {
             while (true)
             {
-                foreach (var device in _devices.Values)
+                if (_devices.ContainsKey("xb360"))
                 {
-                    device.Poll();
+                    foreach (var device in _devices["xb360"].Values)
+                    {
+                        device.Poll();
+                    }
                 }
                 Thread.Sleep(1);
             }
