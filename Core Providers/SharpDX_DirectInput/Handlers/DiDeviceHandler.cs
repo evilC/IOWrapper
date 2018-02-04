@@ -16,11 +16,24 @@ namespace SharpDX_DirectInput
 
         public DiDeviceHandler(InputSubscriptionRequest subReq)
         {
-            //ToDo: Need to handle device instances
-            joystick = new Joystick(DiHandler.DiInstance, Lookups.DeviceHandleToInstanceGuid(subReq.DeviceDescriptor.DeviceHandle));
-            joystick.Properties.BufferSize = 128;
-            joystick.Acquire();
+            Guid instanceGuid = Guid.Empty;
+            var instances = Lookups.GetDeviceOrders(subReq.DeviceDescriptor.DeviceHandle);
+            if (instances.Count >= subReq.DeviceDescriptor.DeviceInstance)
+            {
+                instanceGuid = instances[subReq.DeviceDescriptor.DeviceInstance];
+            }
 
+            if (instanceGuid != Guid.Empty)
+            {
+                joystick = new Joystick(DiHandler.DiInstance, instanceGuid);
+                joystick.Properties.BufferSize = 128;
+                joystick.Acquire();
+            }
+            else
+            {
+                //ToDo: How to handle unconnected devices?
+                throw new Exception("Device Not Connected");
+            }
         }
 
         public override bool Subscribe(InputSubscriptionRequest subReq)
