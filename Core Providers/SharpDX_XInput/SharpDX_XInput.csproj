@@ -52,6 +52,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\Lookup.cs" />
+    <Compile Include="DeviceQueryer.cs" />
     <Compile Include="SharpDX_XInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XIHandler.cs" />

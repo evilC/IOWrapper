@@ -7,6 +7,7 @@ using System.Threading;
 using System.Diagnostics;
 using Providers.Handlers;
 using Providers.Helpers;
+using SharpDX_XInput.Helpers;
 
 namespace SharpDX_XInput
 {
@@ -20,148 +21,16 @@ namespace SharpDX_XInput
 
         bool disposed = false;
 
-        private XIPollHandler pollHandler = new XIPollHandler();
-        //private XIHandler subscriptionHandler = new XIHandler();
+        private XiHandler subscriptionHandler = new XiHandler();
 
-        private static List<Guid> ActiveProfiles = new List<Guid>();
+        //private static List<Guid> ActiveProfiles = new List<Guid>();
         //private static List<> PluggedInControllers
-
-        private List<DeviceReport> deviceReports;
-
-        private static List<string> buttonNames = new List<string>() { "A", "B", "X", "Y", "LB", "RB", "LS", "RS", "Back", "Start" };
-        private static List<string> axisNames = new List<string>() { "LX", "LY", "RX", "RY", "LT", "RT" };
-        private static List<string> povNames = new List<string>() { "Up", "Right", "Down", "Left" };
-
-        private static DeviceReportNode buttonInfo;
-        /*= new DeviceReportNode()
-        {
-            Title = "Buttons",
-            Bindings =
-            {
-                new BindingInfo() { Index = 0, Title = "A", Type = BindingType.Button, Category = BindingCategory.Momentary },
-                new BindingInfo() { Index = 1, Title = "B", Type = BindingType.Button, Category = BindingCategory.Momentary },
-                new BindingInfo() { Index = 2, Title = "X", Type = BindingType.Button, Category = BindingCategory.Momentary },
-                new BindingInfo() { Index = 3, Title = "Y", Type = BindingType.Button, Category = BindingCategory.Momentary },
-                new BindingInfo() { Index = 4, Title = "LB", Type = BindingType.Button, Category = BindingCategory.Momentary },
-                new BindingInfo() { Index = 5, Title = "RB", Type = BindingType.Button, Category = BindingCategory.Momentary },
-                new BindingInfo() { Index = 6, Title = "LS", Type = BindingType.Button, Category = BindingCategory.Momentary },
-                new BindingInfo() { Index = 7, Title = "RS", Type = BindingType.Button, Category = BindingCategory.Momentary },
-                new BindingInfo() { Index = 8, Title = "Back", Type = BindingType.Button, Category = BindingCategory.Momentary },
-                new BindingInfo() { Index = 9, Title = "Start", Type = BindingType.Button, Category = BindingCategory.Momentary },
-            }
-        };*/
-
-        private static DeviceReportNode axisInfo;
-        /*= new DeviceReportNode()
-        {
-            Title = "Axes",
-            Bindings = 
-            {
-                new BindingInfo() { Index = 0, Title = "LX", Type = BindingType.Axis, Category = BindingCategory.Signed },
-                new BindingInfo() { Index = 1, Title = "LY", Type = BindingType.Axis, Category = BindingCategory.Signed },
-                new BindingInfo() { Index = 2, Title = "RX", Type = BindingType.Axis, Category = BindingCategory.Signed },
-                new BindingInfo() { Index = 3, Title = "RY", Type = BindingType.Axis, Category = BindingCategory.Signed },
-                new BindingInfo() { Index = 4, Title = "LT", Type = BindingType.Axis, Category = BindingCategory.Unsigned },
-                new BindingInfo() { Index = 5, Title = "RT", Type = BindingType.Axis, Category = BindingCategory.Unsigned },
-            }
-        };*/
-
-        private static DeviceReportNode povInfo;
-        /*= new DeviceReportNode()
-        {
-            Title = "D-Pad",
-            Bindings =
-            {
-                new BindingInfo() { Index = 0, Title = "Up", Type = BindingType.POV, Category = BindingCategory.Momentary },
-                new BindingInfo() { Index = 2, Title = "Down", Type = BindingType.POV, Category = BindingCategory.Momentary },
-                new BindingInfo() { Index = 3, Title = "Left", Type = BindingType.POV, Category = BindingCategory.Momentary },
-                new BindingInfo() { Index = 1, Title = "Right", Type = BindingType.POV, Category = BindingCategory.Momentary },
-            }
-        };
-        */
-
-        private static List<string> xinputAxisIdentifiers = new List<string>()
-        {
-            "LeftThumbX", "LeftThumbY", "LeftTrigger", "RightThumbX", "RightThumbY", "RightTrigger"
-        };
-
-        private static List<GamepadButtonFlags> xinputButtonIdentifiers = new List<GamepadButtonFlags>()
-        {
-            GamepadButtonFlags.A, GamepadButtonFlags.B, GamepadButtonFlags.X, GamepadButtonFlags.Y
-            , GamepadButtonFlags.LeftShoulder, GamepadButtonFlags.RightShoulder
-            , GamepadButtonFlags.LeftThumb, GamepadButtonFlags.RightThumb
-            , GamepadButtonFlags.Back, GamepadButtonFlags.Start
-        };
-
-        private static List<GamepadButtonFlags> xinputPovDirectionIdentifiers = new List<GamepadButtonFlags>()
-        {
-            GamepadButtonFlags.DPadUp, GamepadButtonFlags.DPadRight, GamepadButtonFlags.DPadDown, GamepadButtonFlags.DPadLeft
-        };
-
 
         public SharpDX_XInput()
         {
             logger = new Logger(ProviderName);
-            BuildButtonList();
+            DeviceQueryer.BuildButtonList();
             QueryDevices();
-        }
-
-        private void BuildButtonList()
-        {
-            buttonInfo = new DeviceReportNode()
-            {
-                Title = "Buttons"
-            };
-            for (int b = 0; b < 10; b++)
-            {
-                buttonInfo.Bindings.Add(new BindingReport()
-                {
-                    Title = buttonNames[b],
-                    Category = BindingCategory.Momentary,
-                    BindingDescriptor = new BindingDescriptor()
-                    {
-                        Index = b,
-                        Type = BindingType.Button,
-                    }
-                });
-            }
-
-            axisInfo = new DeviceReportNode()
-            {
-                Title = "Axes"
-            };
-            for (int a = 0; a < 6; a++)
-            {
-                axisInfo.Bindings.Add(new BindingReport()
-                {
-                    Title = axisNames[a],
-                    Category = (a < 4 ? BindingCategory.Signed : BindingCategory.Unsigned),
-                    BindingDescriptor = new BindingDescriptor()
-                    {
-                        Index = a,
-                        Type = BindingType.Axis,
-                    }
-                });
-            }
-
-            povInfo = new DeviceReportNode()
-            {
-                Title = "DPad"
-            };
-            for (int d = 0; d < 4; d++)
-            {
-                povInfo.Bindings.Add(new BindingReport()
-                {
-                    Title = povNames[d],
-                    Category = BindingCategory.Momentary,
-                    BindingDescriptor = new BindingDescriptor()
-                    {
-                        Index = 0,
-                        SubIndex = d,
-                        Type = BindingType.POV,
-                    }
-                });
-            }
         }
 
         public void Dispose()
@@ -175,8 +44,8 @@ namespace SharpDX_XInput
                 return;
             if (disposing)
             {
-                pollHandler.Dispose();
-                //subscriptionHandler = null; // ToDo: Implement IDisposable
+                //pollHandler.Dispose();
+                subscriptionHandler = null; // ToDo: Implement IDisposable
             }
             disposed = true;
             logger.Log("Disposed");
@@ -189,45 +58,26 @@ namespace SharpDX_XInput
         // https://github.com/dotnet/csharplang/blob/master/proposals/default-interface-methods.md
         public bool SetProfileState(Guid profileGuid, bool state)
         {
-            //if (pollThreadRunning)
-            //    SetPollThreadState(false);
-
-            if (state)
-            {
-                if (!ActiveProfiles.Contains(profileGuid))
-                {
-                    ActiveProfiles.Add(profileGuid);
-                }
-            }
-            else
-            {
-                if (ActiveProfiles.Contains(profileGuid))
-                {
-                    ActiveProfiles.Remove(profileGuid);
-                }
-            }
-
-            //if (pollThreadDesired)
-            //    SetPollThreadState(true);
-
+            //if (state)
+            //{
+            //    if (!ActiveProfiles.Contains(profileGuid))
+            //    {
+            //        ActiveProfiles.Add(profileGuid);
+            //    }
+            //}
+            //else
+            //{
+            //    if (ActiveProfiles.Contains(profileGuid))
+            //    {
+            //        ActiveProfiles.Remove(profileGuid);
+            //    }
+            //}
             return true;
         }
 
         public ProviderReport GetInputList()
         {
-            var providerReport = new ProviderReport()
-            {
-                Title = "XInput (Core)",
-                Description = "Reads Xbox gamepads",
-                API = "XInput",
-                ProviderDescriptor = new ProviderDescriptor()
-                {
-                    ProviderName = ProviderName,
-                },
-                Devices = deviceReports
-            };
-
-            return providerReport;
+            return DeviceQueryer.GetInputList(ProviderName);
         }
 
         public ProviderReport GetOutputList()
@@ -237,7 +87,7 @@ namespace SharpDX_XInput
 
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
         {
-            return deviceReports[subReq.DeviceDescriptor.DeviceInstance];
+            return DeviceQueryer.GetInputDeviceReport(subReq);
         }
 
         public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
@@ -247,27 +97,19 @@ namespace SharpDX_XInput
 
         private void QueryDevices()
         {
-            deviceReports = new List<DeviceReport>();
-            for (int i = 0; i < 4; i++)
-            {
-                var ctrlr = new Controller((UserIndex)i);
-                //if (ctrlr.IsConnected)
-                //{
-                deviceReports.Add(BuildXInputDevice(i));
-                //}
-            }
+            DeviceQueryer.QueryDevices();
         }
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            return pollHandler.SubscribeInput(subReq);
-            //return subscriptionHandler.Subscribe(subReq);
+            //return pollHandler.SubscribeInput(subReq);
+            return subscriptionHandler.Subscribe(subReq);
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            return pollHandler.UnsubscribeInput(subReq);
-            //return subscriptionHandler.Unsubscribe(subReq);
+            //return pollHandler.UnsubscribeInput(subReq);
+            return subscriptionHandler.Unsubscribe(subReq);
         }
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
@@ -296,23 +138,7 @@ namespace SharpDX_XInput
         }
         #endregion
 
-        private DeviceReport BuildXInputDevice(int id)
-        {
-            return new DeviceReport()
-            {
-                DeviceName = "Xbox Controller " + (id + 1),
-                DeviceDescriptor = new DeviceDescriptor()
-                {
-                    DeviceHandle = "xb360",
-                    DeviceInstance = id
-                },
-                Nodes = { buttonInfo, axisInfo, povInfo }
-                //ButtonCount = 11,
-                //ButtonList = buttonInfo,
-                //AxisList = axisInfo,
-            };
-        }
-
+        /*
         #region Handlers
         #region Poll Handler
         class XIPollHandler : PollHandler<int>
@@ -440,5 +266,6 @@ namespace SharpDX_XInput
 
             #endregion
         }
+        */
     }
 }

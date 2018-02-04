@@ -3,7 +3,9 @@ using Providers.Handlers;
 using Providers.Helpers;
 using SharpDX.DirectInput;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -11,333 +13,179 @@ using System.Threading.Tasks;
 
 namespace SharpDX_DirectInput
 {
-    /// <summary>
-    /// Handles subscriptions for DirectInput
-    /// Contains one DIDeviceHandler
-    /// </summary>
-    public class DIHandler
+    class DIHandler
     {
-        private DIDevicesHandler deviceHandler = new DIDevicesHandler();
-
         public static DirectInput DIInstance { get; } = new DirectInput();
+        
+        private ConcurrentDictionary<string, ConcurrentDictionary<int, DiDevice>> _diDevices
+            = new ConcurrentDictionary<string, ConcurrentDictionary<int, DiDevice>>();
 
-        // The thread which handles input detection
-        protected Thread pollThread;
-        // Is the thread currently running? This is set by the thread itself.
-        protected volatile bool pollThreadRunning = false;
-        // Do we want the thread to be on or off?
-        // This is independent of whether or not the thread is running...
-        // ... for example, we may be updating bindings, so the thread may be temporarily stopped
-        protected bool pollThreadDesired = false;
-        // Is the thread in an Active or Inactive state?
-        protected bool pollThreadActive = false;
+        private Thread pollThread;
 
-        public DIHandler()
+        public bool Subscribe(InputSubscriptionRequest subReq)
         {
+            _diDevices
+                .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, new ConcurrentDictionary<int, DiDevice>())
+                .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, new DiDevice(subReq))
+                .Subscribe(subReq);
+
             pollThread = new Thread(PollThread);
-        }
-
-        public bool Subscribe(InputSubscriptionRequest subReq)
-        {
-            var ret = deviceHandler.Subscribe(subReq);
-            SetPollThreadState(true);
-            return ret;
-        }
-
-        public bool Unsubscribe(InputSubscriptionRequest subReq)
-        {
-            throw new NotImplementedException();
-        }
-
-        public static bool IsStickType(DeviceInstance deviceInstance)
-        {
-            return deviceInstance.Type == SharpDX.DirectInput.DeviceType.Joystick
-                    || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Gamepad
-                    || deviceInstance.Type == SharpDX.DirectInput.DeviceType.FirstPerson
-                    || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Flight
-                    || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Driving
-                    || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Supplemental;
-        }
-
-        public static BindingType OffsetToType(JoystickOffset offset)
-        {
-            int index = (int)offset;
-            if (index <= (int)JoystickOffset.Sliders1) return BindingType.Axis;
-            if (index <= (int)JoystickOffset.PointOfViewControllers3) return BindingType.POV;
-            return BindingType.Button;
-        }
-
-
-        public void SetPollThreadState(bool state)
-        {
-            if (state && !pollThreadRunning)
-            {
-                pollThread = new Thread(PollThread);
-                pollThread.Start();
-                while (!pollThreadRunning)
-                {
-                    Thread.Sleep(10);
-                }
-            }
-
-            if (!pollThreadRunning)
-                return;
-
-            if (state && !pollThreadActive)
-            {
-                pollThreadDesired = true;
-                while (!pollThreadActive)
-                {
-                    Thread.Sleep(10);
-                }
-                //Log("PollThread for {0} Activated", ProviderName);
-            }
-            else if (!state && pollThreadActive)
-            {
-                pollThreadDesired = false;
-                while (pollThreadActive)
-                {
-                    Thread.Sleep(10);
-                }
-                //Log("PollThread for {0} De-Activated", ProviderName);
-            }
-        }
-
-        private void PollThread()
-        {
-            pollThreadRunning = true;
-            //Log("Started PollThread for {0}", ProviderName);
-            while (true)
-            {
-                if (pollThreadDesired)
-                {
-                    pollThreadActive = true;
-                    while (pollThreadDesired)
-                    {
-                        deviceHandler.Poll();
-                        Thread.Sleep(1);
-                    }
-                }
-                else
-                {
-                    pollThreadActive = false;
-                    while (!pollThreadDesired)
-                    {
-                        Thread.Sleep(1);
-                    }
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Represents all Devices
-    /// </summary>
-    internal class DIDevicesHandler : NodeHandler<string, DIDeviceHandler>
-    {
-        public override string GetDictionaryKey(InputSubscriptionRequest subReq)
-        {
-            return subReq.DeviceDescriptor.DeviceHandle;
-        }
-
-        public bool Subscribe(InputSubscriptionRequest subReq)
-        {
-            return this[subReq].Subscribe(subReq);
-        }
-
-        public bool Unsubscribe(InputSubscriptionRequest subReq)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Poll()
-        {
-            foreach (var node in nodes.Values)
-            {
-                node.Poll();
-            }
-        }
-
-        public Guid DeviceHandleToInstanceGuid(string handle)
-        {
-            var diDeviceInstances = DIHandler.DIInstance.GetDevices();
-
-            foreach (var device in diDeviceInstances)
-            {
-                if (!DIHandler.IsStickType(device))
-                    continue;
-                var joystick = new Joystick(DIHandler.DIInstance, device.InstanceGuid);
-                joystick.Acquire();
-
-                var thisHandle = string.Format("VID_{0}&PID_{1}"
-                    , joystick.Properties.VendorId.ToString("X4")
-                    , joystick.Properties.ProductId.ToString("X4"));
-
-                joystick.Unacquire();
-                if (handle == thisHandle)
-                {
-                    return device.InstanceGuid;
-                }
-            }
-            return Guid.Empty;
-        }
-
-
-    }
-
-    /// <summary>
-    /// Represents a Device
-    /// 
-    /// Dictionary contains bindings for this device
-    /// TKey is the Offset property of the DI update object
-    /// TValue is the BindingHandler for that binding
-    /// </summary>
-    internal class DIDeviceHandler : NodeHandler<int, DIBindingInstanceHandler>
-    {
-        private Guid deviceInstanceGuid;
-        private Joystick joystick;
-
-        public override int GetDictionaryKey(InputSubscriptionRequest subReq)
-        {
-            return (int)Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index];
-        }
-
-        public bool Subscribe(InputSubscriptionRequest subReq)
-        {
-            var devs = Lookups.GetDeviceOrders(subReq.DeviceDescriptor.DeviceHandle);
-            var instance = subReq.DeviceDescriptor.DeviceInstance;
-            if (devs.Count <= instance)
-            {
-                throw new Exception(string.Format("DeviceInstance {0} for VID/PID {1} not found", subReq.DeviceDescriptor.DeviceInstance, subReq.DeviceDescriptor.DeviceHandle));
-            }
-            deviceInstanceGuid = devs[instance];
-            joystick = new Joystick(DIHandler.DIInstance, deviceInstanceGuid);
-            joystick.Properties.BufferSize = 128;
-            joystick.Acquire();
-            this[subReq].Subscribe(subReq);
+            pollThread.Start();
             return true;
         }
 
         public bool Unsubscribe(InputSubscriptionRequest subReq)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
-        /// <summary>
-        /// Polls the joystick that this class handles for input
-        /// Updates come in the form of JoystickUpdate arrays
-        /// One JoystickUpdate holds information about one input (Axis, Button, POV)
-        /// Each input is identified by the JoystickUpdate.Offset property
-        /// The nodes array should hold bindings for this Offset
-        /// </summary>
+        private void PollThread()
+        {
+            var joystick = new Joystick(DIHandler.DIInstance, Lookups.DeviceHandleToInstanceGuid("VID_044F&PID_B10A"));
+            joystick.Properties.BufferSize = 128;
+            joystick.Acquire();
+
+            while (true)
+            {
+                foreach (var deviceHandle in _diDevices.Values)
+                {
+                    foreach (var deviceInstance in deviceHandle.Values)
+                    {
+                        deviceInstance.Poll();
+                    }
+                }
+                Thread.Sleep(1);
+            }
+        }
+    }
+
+    class DiDevice
+    {
+        private Joystick joystick;
+        private ConcurrentDictionary<BindingType, 
+            ConcurrentDictionary<JoystickOffset, BindingHandler<JoystickUpdate>>> _bindingDictionary
+                = new ConcurrentDictionary<BindingType, ConcurrentDictionary<JoystickOffset, BindingHandler<JoystickUpdate>>>();
+
+        public DiDevice(InputSubscriptionRequest subReq)
+        {
+            joystick = new Joystick(DIHandler.DIInstance, Lookups.DeviceHandleToInstanceGuid("VID_044F&PID_B10A"));
+            joystick.Properties.BufferSize = 128;
+            joystick.Acquire();
+
+        }
+
+        public bool Subscribe(InputSubscriptionRequest subReq)
+        {
+            var bindingType = subReq.BindingDescriptor.Type;
+            var dict = _bindingDictionary
+                .GetOrAdd(subReq.BindingDescriptor.Type,
+                    new ConcurrentDictionary<JoystickOffset, BindingHandler<JoystickUpdate>>());
+            switch (bindingType)
+            {
+                case BindingType.Axis:
+                case BindingType.Button:
+                    return dict
+                        .GetOrAdd(Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index], new DiAxisButtonBindingHandler())
+                        .Subscribe(subReq);
+                case BindingType.POV:
+                    return dict
+                        .GetOrAdd(Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index], new DiPovBindingHandler())
+                        .Subscribe(subReq);
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public bool Unsubscribe(InputSubscriptionRequest subReq)
+        {
+            return true;
+        }
+
         public void Poll()
         {
-            if (joystick == null || !DIHandler.DIInstance.IsDeviceAttached(deviceInstanceGuid))
-                return;
             JoystickUpdate[] data = joystick.GetBufferedData();
             foreach (var state in data)
             {
-                var key = (int)state.Offset;
-                if (nodes.ContainsKey(key))
+                var bindingType = Lookups.OffsetToType(state.Offset);
+                if (_bindingDictionary.ContainsKey(bindingType) && _bindingDictionary[bindingType].ContainsKey(state.Offset))
                 {
-                    nodes[key].Poll(state);
+                    _bindingDictionary[bindingType][state.Offset].Poll(state);
                 }
             }
-            Thread.Sleep(1);
-
         }
-
     }
 
-    /// <summary>
-    /// Represents a group of Inputs (Button, Axis or POV)
-    /// For POVs, TKey is POV *Number* (Directinput supports 4 POVs)
-    /// For Buttons and Axes, TKey is InputID (0 for Button One, 1 for Button Two etc)
-    /// </summary>
-    internal class DIBindingInstanceHandler : NodeHandler<int, NewDiBindingHandler>
+    class DiAxisButtonBindingHandler : BindingHandler<JoystickUpdate>
     {
-        // When this class is put it in an array, index it by the JoystickUpdate.Offest value
-        public override int GetDictionaryKey(InputSubscriptionRequest subReq)
+        private InputSubscriptionRequest tmpSubReq;
+        private JoystickOffset offset;
+
+        public override bool Subscribe(InputSubscriptionRequest subReq)
         {
-            return (int)Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index];
+            tmpSubReq = subReq;
+            offset = Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index];
+            return true;
         }
 
-        public bool Subscribe(InputSubscriptionRequest subReq)
+        public override void Poll(JoystickUpdate pollValue)
         {
-            return this[subReq].Subscribe(subReq);
+            tmpSubReq.Callback(pollValue.Value);
         }
-
-        public bool Unsubscribe(InputSubscriptionRequest subReq)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Poll(JoystickUpdate state)
-        {
-            foreach (var node in nodes.Values)
-            {
-                node.Poll(state);
-            }
-        }
-
     }
 
-    /// <summary>
-    /// Handles the actual Binding
-    /// SubBindings are needed for DirectInput, as it has multiple POVs
-    /// For POVs, TKey is POV *Direction* (0=North, 1=East, 2=South, 3=West)
-    /// For Buttons and Axes, TKey will always be 0
-    /// 
-    /// ToDo: Rename once old BindingHandler removed
-    /// </summary>
-    internal class NewDiBindingHandler : NodeHandler<int, SubscriptionHandler>
+    class DiPovBindingHandler : BindingHandler<JoystickUpdate>
     {
-        private BindingDescriptor bindingDescriptor;
-        private int currentState = 0;
-        private bool isPovType = false;
-        private int povAngle;
+        private JoystickOffset offset;
+        private int currentValue = -1;
+        private ConcurrentDictionary<int, SubscriptionHandler> _directionBindings
+            = new ConcurrentDictionary<int, SubscriptionHandler>();
 
-        //private InputSubscriptionRequest subscriptionRequest = null;
+        //private InputSubscriptionRequest tmpSubReq;
 
-        public override int GetDictionaryKey(InputSubscriptionRequest subReq)
+        public override bool Subscribe(InputSubscriptionRequest subReq)
         {
-            return (int)Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.SubIndex];
+            offset = Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index];
+            var angle = IndexToAngle(subReq.BindingDescriptor.SubIndex);
+            return _directionBindings
+                .GetOrAdd(angle, new SubscriptionHandler())
+                .Subscribe(subReq);
         }
 
-        public bool Subscribe(InputSubscriptionRequest subReq)
+        public override void Poll(JoystickUpdate pollValue)
         {
-            // ToDo: Should probably check here that if non-null, the new subReq is the same as the old one
-            bindingDescriptor = subReq.BindingDescriptor;
-            if (bindingDescriptor.Type == BindingType.POV)
+            if (currentValue != pollValue.Value)
             {
-                isPovType = true;
-                povAngle = subReq.BindingDescriptor.SubIndex * 9000;
+                currentValue = pollValue.Value;
+                foreach (var directionBinding in _directionBindings)
+                {
+                    int currentDirectionState = directionBinding.Value.State;
+                    var newDirectionState = 
+                        pollValue.Value == -1 ? 0
+                            : Lookups.StateFromAngle(pollValue.Value, directionBinding.Key);
+                    if (newDirectionState != currentDirectionState)
+                    {
+                        directionBinding.Value.State = newDirectionState;
+                    }
+                }
             }
-            return this[subReq].Subscribe(subReq);
         }
 
-        public bool Unsubscribe(InputSubscriptionRequest subReq)
+        public static int IndexToAngle(int index)
         {
-            throw new NotImplementedException();
+            if (index < 0 || index > 3)
+            {
+                throw  new ArgumentOutOfRangeException();
+            }
+            return index * 9000;
         }
 
-        public void Poll(JoystickUpdate state)
+        public static int AngleToIndex(int angle)
         {
-            int newState = state.Value;
-            if (isPovType)
+            while (angle > 360)
             {
-                newState = POVHelper.ValueFromAngle(newState, povAngle);
+                angle -= 360;
             }
-            if (newState == currentState)
-            {
-                return;
-            }
-            currentState = newState;
-
-            foreach (var node in nodes.Values)
-            {
-                node.FireCallbacks(currentState);
-            }
+            return angle / 9000;
         }
     }
 }

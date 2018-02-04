@@ -68,7 +68,39 @@ namespace SharpDX_DirectInput
             return orderedGuids;
         }
 
+        public static Guid DeviceHandleToInstanceGuid(string handle)
+        {
+            var diDeviceInstances = DIHandler.DIInstance.GetDevices();
 
+            foreach (var device in diDeviceInstances)
+            {
+                if (!IsStickType(device))
+                    continue;
+                var joystick = new Joystick(DIHandler.DIInstance, device.InstanceGuid);
+                joystick.Acquire();
+
+                var thisHandle = string.Format("VID_{0}&PID_{1}"
+                    , joystick.Properties.VendorId.ToString("X4")
+                    , joystick.Properties.ProductId.ToString("X4"));
+
+                joystick.Unacquire();
+                if (handle == thisHandle)
+                {
+                    return device.InstanceGuid;
+                }
+            }
+            return Guid.Empty;
+        }
+
+        public static bool IsStickType(DeviceInstance deviceInstance)
+        {
+            return deviceInstance.Type == SharpDX.DirectInput.DeviceType.Joystick
+                   || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Gamepad
+                   || deviceInstance.Type == SharpDX.DirectInput.DeviceType.FirstPerson
+                   || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Flight
+                   || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Driving
+                   || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Supplemental;
+        }
 
         // Maps SharpDX "Offsets" (Input Identifiers) to both iinput type and input index (eg x axis to axis 1)
         public static Dictionary<BindingType, List<JoystickOffset>> directInputMappings = new Dictionary<BindingType, List<JoystickOffset>>(){
@@ -143,6 +175,40 @@ namespace SharpDX_DirectInput
             };
 
         public static List<string> povDirections = new List<string>() { "Up", "Right", "Down", "Left" };
+
+        public static BindingType OffsetToType(JoystickOffset offset)
+        {
+            int index = (int)offset;
+            if (index <= (int)JoystickOffset.Sliders1) return BindingType.Axis;
+            if (index <= (int)JoystickOffset.PointOfViewControllers3) return BindingType.POV;
+            return BindingType.Button;
+        }
+
+        public static bool ValueMatchesAngle(int value, int angle, int povTolerance = 90)
+        {
+            if (value == -1)
+                return false;
+            var diff = AngleDiff(value, angle);
+            return value != -1 && AngleDiff(value, angle) <= povTolerance;
+        }
+
+        public static int StateFromAngle(int value, int angle, int povTolerance = 90)
+        {
+            return Convert.ToInt32(ValueMatchesAngle(value, angle, povTolerance));
+        }
+
+        public static int AngleDiff(int a, int b)
+        {
+            var result1 = a - b;
+            if (result1 < 0)
+                result1 += 36000;
+
+            var result2 = b - a;
+            if (result2 < 0)
+                result2 += 36000;
+
+            return Math.Min(result1, result2);
+        }
 
     }
 }
