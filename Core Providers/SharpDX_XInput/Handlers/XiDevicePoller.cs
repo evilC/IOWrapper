@@ -5,13 +5,19 @@ using SharpDX_XInput.Helpers;
 
 namespace SharpDX_XInput
 {
+    /// <summary>
+    /// Xinput is a bit of a pain when polling, buttons and POVs are easy flags ( <see cref="GamepadButtonFlags"/>) so could be handled by lookup tables...
+    /// ...but there is one property per Axis in the <see cref="Gamepad.LeftThumbX"/>
+    /// I do not want to use reflection, so the simplest way for now seems to be to build an object which can easily be parsed
+    /// For this, we use a custom object, <see cref="XiPollResult"/>
+    /// </summary>
     class XiDevicePoller
     {
         private State _lastState;
 
-        public PollResult ProcessPollResult(State thisState)
+        public XiPollResult ProcessPollResult(State thisState)
         {
-            var result = new PollResult();
+            var result = new XiPollResult();
             // Iterate through all buttons and POVs
             for (int j = 0; j < 13; j++)
             {
@@ -24,7 +30,7 @@ namespace SharpDX_XInput
                 var lastValue = (flag & _lastState.Gamepad.Buttons) == flag ? 1 : 0;
                 if (thisValue != lastValue)
                 {
-                    result.PollItems.Add(new PollItem() { BindingType = bindingType, Index = i, Value = thisValue });
+                    result.PollItems.Add(new XiPollItem() { BindingType = bindingType, Index = i, Value = thisValue });
                 }
             }
 
@@ -40,14 +46,46 @@ namespace SharpDX_XInput
             return result;
         }
 
-        private List<PollItem> ProcessAxis(List<PollItem> items, int index, short thisState, short lastState)
+        /// <summary>
+        /// Axes are a special case, they use properties.
+        /// To accelerate building <see cref="XiPollItem"/> objects for axes, we use this function
+        /// </summary>
+        /// <param name="items">The list of <see cref="XiPollItem"/>s to add to</param>
+        /// <param name="index">The index of the axis</param>
+        /// <param name="thisState">The new state of the axis</param>
+        /// <param name="lastState">The old state of the axis</param>
+        /// <returns></returns>
+        /// ToDo: Convert to out
+        private List<XiPollItem> ProcessAxis( List<XiPollItem> items, int index, short thisState, short lastState)
         {
             if (thisState != lastState)
             {
-                items.Add(new PollItem() { BindingType = BindingType.Axis, Index = index, Value = thisState });
+                items.Add(new XiPollItem() { BindingType = BindingType.Axis, Index = index, Value = thisState });
             }
 
             return items;
         }
     }
+
+    /// <summary>
+    /// Provides all the information that this provider needs to process one poll
+    /// </summary>
+    public class XiPollResult
+    {
+        /// <summary>
+        /// Bindings that have changed since the last poll
+        /// </summary>
+        public List<XiPollItem> PollItems { get; set; } = new List<XiPollItem>();
+    }
+
+    /// <summary>
+    /// Provides all the information that this provider needs to process one binding
+    /// </summary>
+    public class XiPollItem
+    {
+        public BindingType BindingType { get; set; }
+        public int Index { get; set; } = 0; // This is a lookup to xinputButtonIdentifiers index, not BindingDescriptor Index!
+        public int Value { get; set; }
+    }
+
 }

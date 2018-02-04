@@ -41,18 +41,4 @@ namespace SharpDX_XInput.Helpers
             return index < 10 ? BindingType.Button : BindingType.POV;
         }
     }
-
-    public class PollResult
-    {
-        public List<PollItem> PollItems { get; set; } = new List<PollItem>();
-    }
-
-    // ToDo: Should probably use BindingDescriptor class
-    public class PollItem
-    {
-        public BindingType BindingType { get; set; }
-        public int Index { get; set; } = 0;
-        public int Value { get; set; }
-    }
-
 }

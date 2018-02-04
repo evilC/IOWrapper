@@ -33,7 +33,7 @@ namespace SharpDX_DirectInput
             }
         }
 
-        public override int TranslateSubIndex(int subIndex)
+        public override int GetKeyFromSubIndex(int subIndex)
         {
             return subIndex * 9000;
         }
