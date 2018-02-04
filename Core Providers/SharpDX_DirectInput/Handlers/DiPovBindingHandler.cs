@@ -33,29 +33,9 @@ namespace SharpDX_DirectInput
             }
         }
 
-        public static int IndexToAngle(int index)
+        public override int TranslateSubIndex(int subIndex)
         {
-            if (index < 0 || index > 3)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-            return index * 9000;
-        }
-
-        public static int AngleToIndex(int angle)
-        {
-            while (angle > 360)
-            {
-                angle -= 360;
-            }
-            return angle / 9000;
-        }
-
-        public override bool Subscribe(InputSubscriptionRequest subReq)
-        {
-            return _bindingDictionary
-                .GetOrAdd(subReq.BindingDescriptor.SubIndex * 9000, new SubscriptionHandler())
-                .Subscribe(subReq);
+            return subIndex * 9000;
         }
     }
 }

@@ -10,7 +10,7 @@ using System.Diagnostics;
 
 namespace Providers.Handlers
 {
-    //Handles bindings for a given Index
+    //Handles bindings for a given Index and SubIndex
     public class BindingHandler
     {
         protected ConcurrentDictionary<int, // SubIndex
@@ -20,7 +20,7 @@ namespace Providers.Handlers
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {
             return _bindingDictionary
-                .GetOrAdd(subReq.BindingDescriptor.SubIndex, new SubscriptionHandler())
+                .GetOrAdd(GetKeyFromSubIndex(subReq.BindingDescriptor.SubIndex), new SubscriptionHandler())
                 .Subscribe(subReq);
         }
 
@@ -43,5 +43,10 @@ namespace Providers.Handlers
             }
         }
 
+        // Allows overriding of the key value used for a given SubIndex
+        public virtual int GetKeyFromSubIndex(int subIndex)
+        {
+            return subIndex;
+        }
     }
 }
