@@ -52,8 +52,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Handlers\XiBindingHandler.cs" />
     <Compile Include="Handlers\XiDeviceHandler.cs" />
+    <Compile Include="Handlers\XiDevicePoller.cs" />
     <Compile Include="Helpers\Lookup.cs" />
     <Compile Include="DeviceQueryer.cs" />
     <Compile Include="SharpDX_XInput.cs" />
