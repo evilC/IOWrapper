@@ -9,45 +9,41 @@ using System.Collections.Concurrent;
 
 namespace Providers.Handlers
 {
+    //Handles bindings for a given Index
     public abstract class BindingHandler
     {
-        //private int _index;
-        //private int _subIndex = 0;
+        protected ConcurrentDictionary<int, // SubIndex
+                SubscriptionHandler> _bindingDictionary    // Handler
+            = new ConcurrentDictionary<int, SubscriptionHandler>();
 
-        protected ConcurrentDictionary<int, 
-            ConcurrentDictionary<int, SubscriptionHandler>> _bindingDictionary
-            = new ConcurrentDictionary<int, ConcurrentDictionary<int, SubscriptionHandler>>();
-
-        public virtual SubscriptionHandler GetSubscriptionHandler(InputSubscriptionRequest subReq)
+        public virtual SubscriptionHandler CreateAndGetSubscriptionHandler(InputSubscriptionRequest subReq)
         {
             return _bindingDictionary
-                .GetOrAdd(subReq.BindingDescriptor.Index, new ConcurrentDictionary<int, SubscriptionHandler>())
                 .GetOrAdd(subReq.BindingDescriptor.SubIndex, new SubscriptionHandler());
         }
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {
-            return GetSubscriptionHandler(subReq).Subscribe(subReq);
+            return CreateAndGetSubscriptionHandler(subReq).Subscribe(subReq);
         }
-        //public abstract bool Subscribe(InputSubscriptionRequest subReq);
 
-        //public abstract bool Unsubscribe(InputSubscriptionRequest subReq);
         public virtual bool Unsubscribe(InputSubscriptionRequest subReq)
         {
-            return GetSubscriptionHandler(subReq).Unsubscribe(subReq);
+            var k = subReq.BindingDescriptor.SubIndex;
+            if (_bindingDictionary.ContainsKey(k))
+            {
+                return _bindingDictionary[k].Unsubscribe(subReq);
+            }
+
+            return false;
         }
 
-        //public abstract void Poll(int pollValue);
         public virtual void Poll(int pollValue)
         {
-            foreach (var indexDictionary in _bindingDictionary)
+            foreach (var subscriptionHandler in _bindingDictionary.Values)
             {
-                foreach (var subscriptionHandler in indexDictionary.Value)
-                {
-                    subscriptionHandler.Value.State = pollValue;
-                }
+                subscriptionHandler.State = pollValue;
             }
-            //_bindingDictionary.State = pollValue;
         }
 
     }

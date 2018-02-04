@@ -19,7 +19,7 @@ namespace SharpDX_XInput
 
         //public override bool Unsubscribe(InputSubscriptionRequest subReq)
         //{
-        //    return GetSubscriptionHandler(subReq).Unsubscribe(subReq);
+        //    return CreateAndGetSubscriptionHandler(subReq).Unsubscribe(subReq);
         //}
     }
 }

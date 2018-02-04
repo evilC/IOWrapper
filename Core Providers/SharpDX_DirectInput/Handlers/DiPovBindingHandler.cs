@@ -1,30 +1,31 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using Providers;
 using Providers.Handlers;
 
 namespace SharpDX_DirectInput
 {
+    /// <summary>
+    /// Handles bindings for one POV
+    /// </summary>
     class DiPovBindingHandler : BindingHandler
     {
         private int _currentValue = -1;
-        private ConcurrentDictionary<int, SubscriptionHandler> _directionBindings
-            = new ConcurrentDictionary<int, SubscriptionHandler>();
 
-        public override bool Subscribe(InputSubscriptionRequest subReq)
+        public override SubscriptionHandler CreateAndGetSubscriptionHandler(InputSubscriptionRequest subReq)
         {
-            var angle = IndexToAngle(subReq.BindingDescriptor.SubIndex);
-            return _directionBindings
-                .GetOrAdd(angle, new SubscriptionHandler())
-                .Subscribe(subReq);
+            return _bindingDictionary
+                .GetOrAdd(IndexToAngle(subReq.BindingDescriptor.SubIndex), new SubscriptionHandler());
         }
 
+        // Polls one POV
         public override void Poll(int pollValue)
         {
             if (_currentValue != pollValue)
             {
                 _currentValue = pollValue;
-                foreach (var directionBinding in _directionBindings)
+                foreach (var directionBinding in _bindingDictionary)
                 {
                     int currentDirectionState = directionBinding.Value.State;
                     var newDirectionState = 
@@ -42,7 +43,7 @@ namespace SharpDX_DirectInput
         {
             if (index < 0 || index > 3)
             {
-                throw  new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException();
             }
             return index * 9000;
         }
