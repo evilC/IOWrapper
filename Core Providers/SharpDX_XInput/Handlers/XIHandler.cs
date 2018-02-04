@@ -6,12 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Providers.Handlers;
 
 //ToDo: Check Trigger axes, report as 0..256? Need custom translation?
 
 namespace SharpDX_XInput
 {
-    public class XiHandler
+    public class XiHandler : ApiHandler<XiDeviceHandler>
     {
         private Thread pollThread;
 
@@ -23,11 +24,11 @@ namespace SharpDX_XInput
                 XiDeviceHandler>> _devices
             = new ConcurrentDictionary<string, ConcurrentDictionary<int, XiDeviceHandler>>();
 
-        public bool Subscribe(InputSubscriptionRequest subReq)
+        public override bool Subscribe(InputSubscriptionRequest subReq)
         {
             _devices
-                .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, new ConcurrentDictionary<int, XiDeviceHandler>())
-                .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, new XiDeviceHandler(subReq))
+                .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, GetDeviceHandlerDictionary())
+                .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, GetDeviceHandler(subReq))
                 .Subscribe(subReq);
 
             pollThread = new Thread(PollThread);
@@ -35,7 +36,17 @@ namespace SharpDX_XInput
             return true;
         }
 
-        public bool Unsubscribe(InputSubscriptionRequest subReq)
+        public override ConcurrentDictionary<int, XiDeviceHandler> GetDeviceHandlerDictionary()
+        {
+            return new ConcurrentDictionary<int, XiDeviceHandler>();
+        }
+
+        public override XiDeviceHandler GetDeviceHandler(InputSubscriptionRequest subReq)
+        {
+            return new XiDeviceHandler(subReq);
+        }
+
+        public override bool Unsubscribe(InputSubscriptionRequest subReq)
         {
             if (_devices.ContainsKey(subReq.DeviceDescriptor.DeviceHandle)
                 && _devices[subReq.DeviceDescriptor.DeviceHandle].TryGetValue(subReq.DeviceDescriptor.DeviceInstance, out var deviceHandler))

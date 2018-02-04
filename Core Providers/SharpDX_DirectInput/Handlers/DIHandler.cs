@@ -8,13 +8,14 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Providers.Handlers;
 
 namespace SharpDX_DirectInput
 {
     /// <summary>
     /// Handles input detection for this provider
     /// </summary>
-    class DiHandler
+    class DiHandler : ApiHandler<DiDeviceHandler>
     {
         public static DirectInput DiInstance { get; } = new DirectInput();
         
@@ -23,16 +24,16 @@ namespace SharpDX_DirectInput
         /// </summary>
         private ConcurrentDictionary<string,    // DeviceHandle
             ConcurrentDictionary<int,           // DeviceInstance
-                DiDeviceHandler>> _diDevices
+                DiDeviceHandler>> _devices
             = new ConcurrentDictionary<string, ConcurrentDictionary<int, DiDeviceHandler>>();
 
         private Thread pollThread;
 
-        public bool Subscribe(InputSubscriptionRequest subReq)
+        public override bool Subscribe(InputSubscriptionRequest subReq)
         {
-            _diDevices
-                .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, new ConcurrentDictionary<int, DiDeviceHandler>())
-                .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, new DiDeviceHandler(subReq))
+            _devices
+                .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, GetDeviceHandlerDictionary())
+                .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, GetDeviceHandler(subReq))
                 .Subscribe(subReq);
 
             pollThread = new Thread(PollThread);
@@ -40,7 +41,7 @@ namespace SharpDX_DirectInput
             return true;
         }
 
-        public bool Unsubscribe(InputSubscriptionRequest subReq)
+        public override bool Unsubscribe(InputSubscriptionRequest subReq)
         {
             return true;
         }
@@ -49,7 +50,7 @@ namespace SharpDX_DirectInput
         {
             while (true)
             {
-                foreach (var deviceHandle in _diDevices.Values)
+                foreach (var deviceHandle in _devices.Values)
                 {
                     foreach (var deviceInstance in deviceHandle.Values)
                     {
@@ -58,6 +59,16 @@ namespace SharpDX_DirectInput
                 }
                 Thread.Sleep(1);
             }
+        }
+
+        public override ConcurrentDictionary<int, DiDeviceHandler> GetDeviceHandlerDictionary()
+        {
+            return new ConcurrentDictionary<int, DiDeviceHandler>();
+        }
+
+        public override DiDeviceHandler GetDeviceHandler(InputSubscriptionRequest subReq)
+        {
+            return new DiDeviceHandler(subReq);
         }
     }
 }
