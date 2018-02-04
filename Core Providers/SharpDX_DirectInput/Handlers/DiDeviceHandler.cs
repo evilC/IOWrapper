@@ -23,7 +23,7 @@ namespace SharpDX_DirectInput
 
         }
 
-        public bool Subscribe(InputSubscriptionRequest subReq)
+        public override bool Subscribe(InputSubscriptionRequest subReq)
         {
             var bindingType = subReq.BindingDescriptor.Type;
             var dict = _bindingDictionary
@@ -50,12 +50,12 @@ namespace SharpDX_DirectInput
             }
         }
 
-        public bool Unsubscribe(InputSubscriptionRequest subReq)
+        public override bool Unsubscribe(InputSubscriptionRequest subReq)
         {
             return true;
         }
 
-        public void Poll()
+        public override void Poll()
         {
             JoystickUpdate[] data = joystick.GetBufferedData();
             foreach (var state in data)

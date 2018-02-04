@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Providers.Handlers
 {
-    public class DeviceHandler
+    public abstract class DeviceHandler
     {
+        public abstract bool Subscribe(InputSubscriptionRequest subReq);
+        public abstract bool Unsubscribe(InputSubscriptionRequest subReq);
+        public abstract void Poll();
     }
 }

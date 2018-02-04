@@ -21,7 +21,7 @@ namespace SharpDX_XInput
             _controller = new Controller((UserIndex)subReq.DeviceDescriptor.DeviceInstance);
         }
 
-        public bool Subscribe(InputSubscriptionRequest subReq)
+        public override bool Subscribe(InputSubscriptionRequest subReq)
         {
             var bindingType = subReq.BindingDescriptor.Type;
 
@@ -48,7 +48,7 @@ namespace SharpDX_XInput
             }
         }
 
-        public bool Unsubscribe(InputSubscriptionRequest subReq)
+        public override bool Unsubscribe(InputSubscriptionRequest subReq)
         {
             var index = GetIndex(subReq);
             if (_bindingDictionary.ContainsKey(subReq.BindingDescriptor.Type) &&
@@ -72,7 +72,7 @@ namespace SharpDX_XInput
         }
 
 
-        public void Poll()
+        public override void Poll()
         {
             if (!_controller.IsConnected)
                 return;
