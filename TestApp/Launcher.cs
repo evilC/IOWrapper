@@ -35,10 +35,10 @@ namespace TestApp
             var vj1p2u = new Plugins.InputTester("vJoy_1 POV 2 Up", Library.Providers.DirectInput, vJoy_1, Library.Bindings.Generic.POV2Up).Subscribe();
             var vj1p2d = new Plugins.InputTester("vJoy_1 POV 2 Down", Library.Providers.DirectInput, vJoy_1, Library.Bindings.Generic.POV2Down).Subscribe();
 
-            //// DirectInput testers - vJoy Stick 2 bindings. Use to test DI DeviceInstance.
-            //// Warning! vJoy device #1 may or may not be DeviceInstance #1
-            //var vj2a1 = new Plugins.InputTester("vJoy_1 Axis 1", Library.Providers.DirectInput, vJoy_2, Library.Bindings.Generic.Axis1).Subscribe();
-            //var vj2a2 = new Plugins.InputTester("vJoy_1 Axis 2", Library.Providers.DirectInput, vJoy_2, Library.Bindings.Generic.Axis2).Subscribe();
+            // DirectInput testers - vJoy Stick 2 bindings. Use to test DI DeviceInstance.
+            // Warning! vJoy device #1 may or may not be DeviceInstance #1
+            var vj2a1 = new Plugins.InputTester("vJoy_2 Axis 1", Library.Providers.DirectInput, vJoy_2, Library.Bindings.Generic.Axis1).Subscribe();
+            var vj2a2 = new Plugins.InputTester("vJoy_2 Axis 2", Library.Providers.DirectInput, vJoy_2, Library.Bindings.Generic.Axis2).Subscribe();
 
             // DirectInput testers - Physical stick bindings, for when you want to test physical stick behavior
             var ps1a1 = new Plugins.InputTester("physicalStick Axis 1", Library.Providers.DirectInput, physicalStick_1, Library.Bindings.Generic.Axis1).Subscribe();
