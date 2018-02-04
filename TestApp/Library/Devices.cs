@@ -29,7 +29,9 @@ namespace TestApp.Library
         public static class Console
         {
             public static DeviceDescriptor Xb360_1 = new DeviceDescriptor() { DeviceHandle = "xb360", DeviceInstance = 0 };
+            public static DeviceDescriptor Xb360_2 = new DeviceDescriptor() { DeviceHandle = "xb360", DeviceInstance = 1 };
             public static DeviceDescriptor DS4_1 = new DeviceDescriptor() { DeviceHandle = "ds4", DeviceInstance = 0 };
+            public static DeviceDescriptor DS4_2 = new DeviceDescriptor() { DeviceHandle = "ds4", DeviceInstance = 1 };
         }
 
         /// <summary>
