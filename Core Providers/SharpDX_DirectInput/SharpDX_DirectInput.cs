@@ -24,7 +24,7 @@ namespace SharpDX_DirectInput
         static private DirectInput directInput;
 
         // Handles subscriptions and callbacks
-        private DIHandler subscriptionHandler = new DIHandler();
+        private DiHandler subscriptionHandler = new DiHandler();
 
         //private DIPollHandler pollHandler = new DIPollHandler();
 

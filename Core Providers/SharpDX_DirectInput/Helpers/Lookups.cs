@@ -70,13 +70,13 @@ namespace SharpDX_DirectInput
 
         public static Guid DeviceHandleToInstanceGuid(string handle)
         {
-            var diDeviceInstances = DIHandler.DIInstance.GetDevices();
+            var diDeviceInstances = DiHandler.DiInstance.GetDevices();
 
             foreach (var device in diDeviceInstances)
             {
                 if (!IsStickType(device))
                     continue;
-                var joystick = new Joystick(DIHandler.DIInstance, device.InstanceGuid);
+                var joystick = new Joystick(DiHandler.DiInstance, device.InstanceGuid);
                 joystick.Acquire();
 
                 var thisHandle = string.Format("VID_{0}&PID_{1}"

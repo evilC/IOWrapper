@@ -56,7 +56,7 @@ namespace SharpDX_XInput
                 ConcurrentDictionary<int, BindingHandler>> _bindingDictionary
             = new ConcurrentDictionary<BindingType, ConcurrentDictionary<int, BindingHandler>>();
 
-        private XiDevicePoller _devicePoller = new XiDevicePoller();
+        private readonly XiDevicePoller _devicePoller = new XiDevicePoller();
 
         public XiDevice(InputSubscriptionRequest subReq)
         {

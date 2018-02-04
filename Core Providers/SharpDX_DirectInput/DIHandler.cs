@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 
 namespace SharpDX_DirectInput
 {
-    class DIHandler
+    class DiHandler
     {
-        public static DirectInput DIInstance { get; } = new DirectInput();
+        public static DirectInput DiInstance { get; } = new DirectInput();
         
         private ConcurrentDictionary<string, ConcurrentDictionary<int, DiDevice>> _diDevices
             = new ConcurrentDictionary<string, ConcurrentDictionary<int, DiDevice>>();
@@ -41,7 +41,7 @@ namespace SharpDX_DirectInput
 
         private void PollThread()
         {
-            var joystick = new Joystick(DIHandler.DIInstance, Lookups.DeviceHandleToInstanceGuid("VID_044F&PID_B10A"));
+            var joystick = new Joystick(DiHandler.DiInstance, Lookups.DeviceHandleToInstanceGuid("VID_044F&PID_B10A"));
             joystick.Properties.BufferSize = 128;
             joystick.Acquire();
 
@@ -69,7 +69,7 @@ namespace SharpDX_DirectInput
 
         public DiDevice(InputSubscriptionRequest subReq)
         {
-            joystick = new Joystick(DIHandler.DIInstance, Lookups.DeviceHandleToInstanceGuid("VID_044F&PID_B10A"));
+            joystick = new Joystick(DiHandler.DiInstance, Lookups.DeviceHandleToInstanceGuid("VID_044F&PID_B10A"));
             joystick.Properties.BufferSize = 128;
             joystick.Acquire();
 
@@ -138,16 +138,12 @@ namespace SharpDX_DirectInput
 
     class DiPovBindingHandler : BindingHandler
     {
-        private JoystickOffset offset;
-        private int currentValue = -1;
+        private int _currentValue = -1;
         private ConcurrentDictionary<int, SubscriptionHandler> _directionBindings
             = new ConcurrentDictionary<int, SubscriptionHandler>();
 
-        //private InputSubscriptionRequest tmpSubReq;
-
         public override bool Subscribe(InputSubscriptionRequest subReq)
         {
-            offset = Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index];
             var angle = IndexToAngle(subReq.BindingDescriptor.SubIndex);
             return _directionBindings
                 .GetOrAdd(angle, new SubscriptionHandler())
@@ -156,9 +152,9 @@ namespace SharpDX_DirectInput
 
         public override void Poll(int pollValue)
         {
-            if (currentValue != pollValue)
+            if (_currentValue != pollValue)
             {
-                currentValue = pollValue;
+                _currentValue = pollValue;
                 foreach (var directionBinding in _directionBindings)
                 {
                     int currentDirectionState = directionBinding.Value.State;
