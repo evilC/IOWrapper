@@ -9,6 +9,7 @@ namespace SharpDX_DirectInput
     class DiDeviceHandler : DeviceHandler
     {
         private Joystick joystick;
+        private Guid instanceGuid = Guid.Empty;
 
         private ConcurrentDictionary<BindingType,
             ConcurrentDictionary<int, BindingHandler>> _bindingDictionary
@@ -16,23 +17,26 @@ namespace SharpDX_DirectInput
 
         public DiDeviceHandler(InputSubscriptionRequest subReq)
         {
-            Guid instanceGuid = Guid.Empty;
+            //Guid instanceGuid = Guid.Empty;
             var instances = Lookups.GetDeviceOrders(subReq.DeviceDescriptor.DeviceHandle);
             if (instances.Count >= subReq.DeviceDescriptor.DeviceInstance)
             {
                 instanceGuid = instances[subReq.DeviceDescriptor.DeviceInstance];
             }
 
-            if (instanceGuid != Guid.Empty)
+            if (instanceGuid == Guid.Empty)
             {
-                joystick = new Joystick(DiHandler.DiInstance, instanceGuid);
-                joystick.Properties.BufferSize = 128;
-                joystick.Acquire();
+                throw new Exception($"DeviceHandle '{subReq.DeviceDescriptor.DeviceHandle}' was not found");
             }
             else
             {
-                //ToDo: How to handle unconnected devices?
-                throw new Exception("Device Not Connected");
+                //ToDo: When should we re-attempt to acquire?
+                if (DiHandler.DiInstance.IsDeviceAttached(instanceGuid))
+                {
+                    joystick = new Joystick(DiHandler.DiInstance, instanceGuid);
+                    joystick.Properties.BufferSize = 128;
+                    joystick.Acquire();
+                }
             }
         }
 
@@ -70,7 +74,20 @@ namespace SharpDX_DirectInput
 
         public override void Poll()
         {
-            JoystickUpdate[] data = joystick.GetBufferedData();
+            // ToDo: Pollthread should not be spamming here if joystick is not attached
+
+
+            JoystickUpdate[] data;
+            // ToDo: Find better way of detecting unplug. DiHandler.DiInstance.IsDeviceAttached(instanceGuid) kills performance
+            try
+            {
+                // Try / catch seems the only way for now to ensure no crashes on replug
+                data = joystick.GetBufferedData();
+            }
+            catch
+            {
+                return;
+            }
             foreach (var state in data)
             {
                 int offset = (int)state.Offset;
