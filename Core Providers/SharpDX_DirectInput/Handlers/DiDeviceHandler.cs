@@ -45,25 +45,48 @@ namespace SharpDX_DirectInput.Handlers
             {
                 Initialize(subReq);
             }
+
+            var handler = GetOrAddBindingHandler(subReq);
+            return handler.Subscribe(subReq);
+        }
+
+        /// <summary>
+        /// The "Try" part of ConcurrentDictionaries is slightly misleading, if it does exist, it WILL be returned
+        /// </summary>
+        /// <param name="subReq"></param>
+        /// <returns></returns>
+        public BindingHandler TryGetBindingHandler(InputSubscriptionRequest subReq)
+        {
+            if (_bindingDictionary.TryGetValue(subReq.BindingDescriptor.Type, out ConcurrentDictionary<int, BindingHandler> cd))
+            {
+                if (cd.TryGetValue(subReq.BindingDescriptor.Index, out BindingHandler bh))
+                {
+                    return bh;
+                }
+            }
+
+            return null;
+        }
+
+        public BindingHandler GetOrAddBindingHandler(InputSubscriptionRequest subReq)
+        {
             var bindingType = subReq.BindingDescriptor.Type;
             var dict = _bindingDictionary
-                .GetOrAdd(subReq.BindingDescriptor.Type,
-                    new ConcurrentDictionary<int, BindingHandler>());
+                .GetOrAdd(bindingType, new ConcurrentDictionary<int, BindingHandler>());
 
-            switch (bindingType)
+            return dict.GetOrAdd((int)Lookups.directInputMappings[bindingType][subReq.BindingDescriptor.Index], GeBindingHandlerInstance(subReq));
+        }
+
+        public BindingHandler GeBindingHandlerInstance(InputSubscriptionRequest subReq)
+        {
+            switch (subReq.BindingDescriptor.Type)
             {
                 case BindingType.Axis:
-                    return dict
-                        .GetOrAdd((int)Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index], new DiAxisBindingHandler())
-                        .Subscribe(subReq);
+                    return new DiAxisBindingHandler();
                 case BindingType.Button:
-                    return dict
-                        .GetOrAdd((int)Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index], new DiButtonBindingHandler())
-                        .Subscribe(subReq);
+                    return new DiButtonBindingHandler();
                 case BindingType.POV:
-                    return dict
-                        .GetOrAdd((int)Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index], new DiPovBindingHandler())
-                        .Subscribe(subReq);
+                    return new DiPovBindingHandler();
                 default:
                     throw new NotImplementedException();
             }
@@ -71,7 +94,12 @@ namespace SharpDX_DirectInput.Handlers
 
         public override bool Unsubscribe(InputSubscriptionRequest subReq)
         {
-            return true;
+            var handler = TryGetBindingHandler(subReq);
+            if (handler != null)
+            {
+                return handler.Subscribe(subReq);
+            }
+            return false;
         }
 
         public override void Poll()
