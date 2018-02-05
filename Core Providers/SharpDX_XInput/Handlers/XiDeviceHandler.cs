@@ -31,7 +31,7 @@ namespace SharpDX_XInput.Handlers
             var bindingType = subReq.BindingDescriptor.Type;
 
             // For POV Directions, the _bindingDictionary key will be SubIndex, else it will be Index
-            var idx = GetIndex(subReq);
+            var idx = GetBindingKey(subReq);
 
             // Get the bindingType dictionary
             var bindingTypeDictionary = _bindingDictionary
@@ -55,7 +55,7 @@ namespace SharpDX_XInput.Handlers
 
         public override bool Unsubscribe(InputSubscriptionRequest subReq)
         {
-            var index = GetIndex(subReq);
+            var index = GetBindingKey(subReq);
             if (_bindingDictionary.ContainsKey(subReq.BindingDescriptor.Type) &&
                 _bindingDictionary[subReq.BindingDescriptor.Type].ContainsKey(index))
             {
@@ -65,15 +65,15 @@ namespace SharpDX_XInput.Handlers
         }
 
         /// <summary>
-        /// XInput only supports one POV, so for POVs we use Index for the POV direction
+        /// XInput only supports one POV (So Index would always be 0), plus it exposes POV directions as Inputs for us...
+        /// ... so for POV we use SubIndex as the Dictionary key, as the directions exist as flags
+        /// Override default method for POVs
         /// </summary>
         /// <param name="subReq"></param>
         /// <returns></returns>
-        private int GetIndex(InputSubscriptionRequest subReq)
+        public override int GetBindingKey(InputSubscriptionRequest subReq)
         {
-            return subReq.BindingDescriptor.Type == BindingType.POV
-                ? subReq.BindingDescriptor.SubIndex
-                : subReq.BindingDescriptor.Index;
+            return subReq.BindingDescriptor.Type == BindingType.POV ? subReq.BindingDescriptor.SubIndex : base.GetBindingKey(subReq);
         }
 
 
