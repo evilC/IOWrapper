@@ -23,20 +23,20 @@ namespace Providers.Handlers
     /// 
     /// </summary>
     /// <typeparam name="TDeviceType">The type of the DeviceHandler</typeparam>
-    public abstract class ApiHandler<TDeviceType> where TDeviceType : DeviceHandler, new ()
+    public abstract class ApiHandler
     {
         protected Thread pollThread;
 
         protected ConcurrentDictionary<string,    // DeviceHandle
             ConcurrentDictionary<int,           // DeviceInstance
-                TDeviceType>> _devices
-            = new ConcurrentDictionary<string, ConcurrentDictionary<int, TDeviceType>>();
+                DeviceHandler>> _devices
+            = new ConcurrentDictionary<string, ConcurrentDictionary<int, DeviceHandler>>();
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {
             _devices
-                .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, new ConcurrentDictionary<int, TDeviceType>())
-                .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, new TDeviceType())
+                .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, new ConcurrentDictionary<int, DeviceHandler>())
+                .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, CreateDeviceHandler(subReq))
                 .Subscribe(subReq);
 
             pollThread = new Thread(PollThread);
@@ -53,6 +53,8 @@ namespace Providers.Handlers
             }
             return false;
         }
+
+        public abstract DeviceHandler CreateDeviceHandler(InputSubscriptionRequest subReq);
 
         private void PollThread()
         {

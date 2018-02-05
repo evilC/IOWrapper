@@ -13,8 +13,13 @@ namespace SharpDX_DirectInput.Handlers
     /// Mechanism probably belongs in the core, but this provider would need to support it
     /// As an interim measure, we could probably have a "Refresh" button in the UI
     /// </summary>
-    class DiHandler : ApiHandler<DiDeviceHandler>
+    class DiHandler : ApiHandler
     {
         public static DirectInput DiInstance { get; } = new DirectInput();
+
+        public override DeviceHandler CreateDeviceHandler(InputSubscriptionRequest subReq)
+        {
+            return new DiDeviceHandler();
+        }
     }
 }
