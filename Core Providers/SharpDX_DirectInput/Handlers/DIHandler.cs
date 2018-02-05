@@ -7,6 +7,11 @@ namespace SharpDX_DirectInput.Handlers
 {
     /// <summary>
     /// Handles input detection for this provider
+    /// 
+    /// ToDo: Handle device unplug / replug better
+    /// Will probably need some exterior mechanism (USB HID?) to detect plug / unplug
+    /// Mechanism probably belongs in the core, but this provider would need to support it
+    /// As an interim measure, we could probably have a "Refresh" button in the UI
     /// </summary>
     class DiHandler : ApiHandler<DiDeviceHandler>
     {

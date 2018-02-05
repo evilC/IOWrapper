@@ -15,6 +15,12 @@ namespace Providers.Handlers
     /// Dictionaries should be pruned on removal, so the pollthread does not waste time
     /// 
     /// ToDo: Implement IDisposable
+    /// 
+    /// ToDo: Implement ConcurrentQueues or other form of thread pooling
+    /// Callbacks should be handled better than just making a function call :P
+    /// 
+    /// ToDo: Poll Thread should start / stop as appropriate
+    /// 
     /// </summary>
     /// <typeparam name="TDeviceType">The type of the DeviceHandler</typeparam>
     public abstract class ApiHandler<TDeviceType> where TDeviceType : DeviceHandler, new ()
