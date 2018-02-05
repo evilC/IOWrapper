@@ -22,6 +22,11 @@ namespace Providers.Handlers
             _inputSubscriptionRequest = subReq;
         }
 
+        public virtual int GetBindingKey(InputSubscriptionRequest subReq)
+        {
+            return subReq.BindingDescriptor.Index;
+        }
+
         public abstract bool Subscribe(InputSubscriptionRequest subReq);
         public abstract bool Unsubscribe(InputSubscriptionRequest subReq);
         public abstract void Poll();
