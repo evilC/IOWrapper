@@ -39,44 +39,12 @@ namespace SharpDX_DirectInput.Handlers
             }
         }
 
-        public override bool Subscribe(InputSubscriptionRequest subReq)
+        public override int GetBindingKey(InputSubscriptionRequest subReq)
         {
-            if (_inputSubscriptionRequest == null)
-            {
-                Initialize(subReq);
-            }
-
-            var handler = GetOrAddBindingHandler(subReq);
-            return handler.Subscribe(subReq);
+            return (int)Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index];
         }
 
-        /// <summary>
-        /// </summary>
-        /// <param name="subReq"></param>
-        /// <returns></returns>
-        public BindingHandler GetBindingHandler(InputSubscriptionRequest subReq)
-        {
-            if (_bindingDictionary.TryGetValue(subReq.BindingDescriptor.Type, out ConcurrentDictionary<int, BindingHandler> cd))
-            {
-                if (cd.TryGetValue(GetBindingKey(subReq), out BindingHandler bh))
-                {
-                    return bh;
-                }
-            }
-
-            return null;
-        }
-
-        public BindingHandler GetOrAddBindingHandler(InputSubscriptionRequest subReq)
-        {
-            var bindingType = subReq.BindingDescriptor.Type;
-            var dict = _bindingDictionary
-                .GetOrAdd(bindingType, new ConcurrentDictionary<int, BindingHandler>());
-
-            return dict.GetOrAdd((int)Lookups.directInputMappings[bindingType][subReq.BindingDescriptor.Index], CreateBindingHandler(subReq));
-        }
-
-        public BindingHandler CreateBindingHandler(InputSubscriptionRequest subReq)
+        public override BindingHandler CreateBindingHandler(InputSubscriptionRequest subReq)
         {
             switch (subReq.BindingDescriptor.Type)
             {
@@ -89,16 +57,6 @@ namespace SharpDX_DirectInput.Handlers
                 default:
                     throw new NotImplementedException();
             }
-        }
-
-        public override bool Unsubscribe(InputSubscriptionRequest subReq)
-        {
-            var handler = GetBindingHandler(subReq);
-            if (handler != null)
-            {
-                return handler.Subscribe(subReq);
-            }
-            return false;
         }
 
         public override void Poll()
