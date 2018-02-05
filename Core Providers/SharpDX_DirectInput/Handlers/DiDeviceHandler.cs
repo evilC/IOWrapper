@@ -51,15 +51,14 @@ namespace SharpDX_DirectInput.Handlers
         }
 
         /// <summary>
-        /// The "Try" part of ConcurrentDictionaries is slightly misleading, if it does exist, it WILL be returned
         /// </summary>
         /// <param name="subReq"></param>
         /// <returns></returns>
-        public BindingHandler TryGetBindingHandler(InputSubscriptionRequest subReq)
+        public BindingHandler GetBindingHandler(InputSubscriptionRequest subReq)
         {
             if (_bindingDictionary.TryGetValue(subReq.BindingDescriptor.Type, out ConcurrentDictionary<int, BindingHandler> cd))
             {
-                if (cd.TryGetValue(subReq.BindingDescriptor.Index, out BindingHandler bh))
+                if (cd.TryGetValue(GetBindingKey(subReq), out BindingHandler bh))
                 {
                     return bh;
                 }
@@ -74,10 +73,10 @@ namespace SharpDX_DirectInput.Handlers
             var dict = _bindingDictionary
                 .GetOrAdd(bindingType, new ConcurrentDictionary<int, BindingHandler>());
 
-            return dict.GetOrAdd((int)Lookups.directInputMappings[bindingType][subReq.BindingDescriptor.Index], GeBindingHandlerInstance(subReq));
+            return dict.GetOrAdd((int)Lookups.directInputMappings[bindingType][subReq.BindingDescriptor.Index], CreateBindingHandler(subReq));
         }
 
-        public BindingHandler GeBindingHandlerInstance(InputSubscriptionRequest subReq)
+        public BindingHandler CreateBindingHandler(InputSubscriptionRequest subReq)
         {
             switch (subReq.BindingDescriptor.Type)
             {
@@ -94,7 +93,7 @@ namespace SharpDX_DirectInput.Handlers
 
         public override bool Unsubscribe(InputSubscriptionRequest subReq)
         {
-            var handler = TryGetBindingHandler(subReq);
+            var handler = GetBindingHandler(subReq);
             if (handler != null)
             {
                 return handler.Subscribe(subReq);
