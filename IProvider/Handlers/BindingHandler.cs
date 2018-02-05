@@ -11,9 +11,16 @@ namespace Providers.Handlers
 {
     public class BindingHandler
     {
+        protected readonly BindingDescriptor BindingDescriptor;
+
         protected ConcurrentDictionary<int, // SubIndex
                 SubscriptionHandler> _bindingDictionary    // Handler
             = new ConcurrentDictionary<int, SubscriptionHandler>();
+
+        public BindingHandler(InputSubscriptionRequest subReq)
+        {
+            BindingDescriptor = subReq.BindingDescriptor;
+        }
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {

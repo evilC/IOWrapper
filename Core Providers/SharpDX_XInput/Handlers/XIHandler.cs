@@ -8,7 +8,7 @@ namespace SharpDX_XInput.Handlers
     {
         public override DeviceHandler CreateDeviceHandler(InputSubscriptionRequest subReq)
         {
-            return new XiDeviceHandler(subReq, this);
+            return new XiDeviceHandler(subReq);
         }
     }
 }

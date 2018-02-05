@@ -9,7 +9,6 @@ namespace Providers.Handlers
 {
     public abstract class DeviceHandler
     {
-        protected readonly ApiHandler Parent;
         protected readonly BindingDescriptor BindingDescriptor = null;
 
         //protected InputSubscriptionRequest _inputSubscriptionRequest = null;
@@ -18,9 +17,8 @@ namespace Providers.Handlers
             ConcurrentDictionary<int, BindingHandler>> _bindingDictionary
             = new ConcurrentDictionary<BindingType, ConcurrentDictionary<int, BindingHandler>>();
 
-        protected DeviceHandler(InputSubscriptionRequest subReq, ApiHandler parent)
+        protected DeviceHandler(InputSubscriptionRequest subReq)
         {
-            Parent = parent;
             BindingDescriptor = subReq.BindingDescriptor;
         }
 
@@ -31,7 +29,7 @@ namespace Providers.Handlers
 
         public virtual BindingHandler CreateBindingHandler(InputSubscriptionRequest subReq)
         {
-            return new BindingHandler();
+            return new BindingHandler(subReq);
         }
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)

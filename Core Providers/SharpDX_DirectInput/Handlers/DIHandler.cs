@@ -19,7 +19,7 @@ namespace SharpDX_DirectInput.Handlers
 
         public override DeviceHandler CreateDeviceHandler(InputSubscriptionRequest subReq)
         {
-            return new DiDeviceHandler(subReq, this);
+            return new DiDeviceHandler(subReq);
         }
     }
 }

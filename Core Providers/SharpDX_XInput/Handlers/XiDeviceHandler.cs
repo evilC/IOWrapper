@@ -8,12 +8,11 @@ namespace SharpDX_XInput.Handlers
 {
     public class XiDeviceHandler : DeviceHandler
     {
-        protected readonly ApiHandler parent;
         private Controller _controller = null;
 
         private readonly XiDevicePoller _devicePoller = new XiDevicePoller();
 
-        public XiDeviceHandler(InputSubscriptionRequest subReq, ApiHandler parent) : base(subReq, parent)
+        public XiDeviceHandler(InputSubscriptionRequest subReq) : base(subReq)
         {
             _controller = new Controller((UserIndex)subReq.DeviceDescriptor.DeviceInstance);
         }
@@ -26,7 +25,7 @@ namespace SharpDX_XInput.Handlers
         public override BindingHandler CreateBindingHandler(InputSubscriptionRequest subReq)
         {
             return subReq.BindingDescriptor.Type == BindingType.Axis && subReq.BindingDescriptor.Index > 3
-                ? new XiTriggerindingHandler()
+                ? new XiTriggerindingHandler(subReq)
                 : base.CreateBindingHandler(subReq);
         }
         

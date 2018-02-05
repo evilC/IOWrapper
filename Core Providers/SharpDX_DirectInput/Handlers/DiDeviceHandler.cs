@@ -13,7 +13,7 @@ namespace SharpDX_DirectInput.Handlers
         private Guid _instanceGuid = Guid.Empty;
         private InputSubscriptionRequest _inputSubscriptionRequest = null;
 
-        public DiDeviceHandler(InputSubscriptionRequest subReq, ApiHandler parent) : base(subReq, parent)
+        public DiDeviceHandler(InputSubscriptionRequest subReq) : base(subReq)
         {
             //Guid instanceGuid = Guid.Empty;
             var instances = Lookups.GetDeviceOrders(subReq.DeviceDescriptor.DeviceHandle);
@@ -48,11 +48,11 @@ namespace SharpDX_DirectInput.Handlers
             switch (subReq.BindingDescriptor.Type)
             {
                 case BindingType.Axis:
-                    return new DiAxisBindingHandler();
+                    return new DiAxisBindingHandler(subReq);
                 case BindingType.Button:
-                    return new DiButtonBindingHandler();
+                    return new DiButtonBindingHandler(subReq);
                 case BindingType.POV:
-                    return new DiPovBindingHandler();
+                    return new DiPovBindingHandler(subReq);
                 default:
                     throw new NotImplementedException();
             }

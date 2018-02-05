@@ -1,4 +1,5 @@
-﻿using Providers.Handlers;
+﻿using Providers;
+using Providers.Handlers;
 using SharpDX_DirectInput.Helpers;
 
 namespace SharpDX_DirectInput.Handlers
@@ -9,6 +10,11 @@ namespace SharpDX_DirectInput.Handlers
     class DiPovBindingHandler : BindingHandler
     {
         private int _currentValue = -1;
+
+        public DiPovBindingHandler(InputSubscriptionRequest subReq) : base(subReq)
+        {
+            
+        }
 
         // Polls one POV
         public override void Poll(int pollValue)

@@ -1,9 +1,15 @@
-﻿using Providers.Handlers;
+﻿using Providers;
+using Providers.Handlers;
 
 namespace SharpDX_DirectInput.Handlers
 {
-    class DiAxisBindingHandler : BindingHandler
+    public class DiAxisBindingHandler : BindingHandler
     {
+        public DiAxisBindingHandler(InputSubscriptionRequest subReq) : base(subReq)
+        {
+            
+        }
+
         public override void Poll(int pollValue)
         {
             // Normalization of Axes to standard scale occurs here
