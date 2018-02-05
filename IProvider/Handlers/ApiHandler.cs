@@ -11,6 +11,9 @@ namespace Providers.Handlers
 {
     /// <summary>
     /// A generic handler for various APIs to support input
+    /// 
+    /// The ApiHandler sorts devices on the DeviceDescriptor
+    /// 
     /// ToDo: Properly implement Unsubscribe
     /// Dictionaries should be pruned on removal, so the pollthread does not waste time
     /// 
@@ -21,6 +24,7 @@ namespace Providers.Handlers
     /// 
     /// ToDo: Poll Thread should start / stop as appropriate
     /// 
+    /// ToDo: At each stage of subscription, check that subsequent subsriptions match the one that initialized the object
     /// </summary>
     public abstract class ApiHandler
     {

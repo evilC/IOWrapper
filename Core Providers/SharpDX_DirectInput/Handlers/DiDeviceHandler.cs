@@ -13,9 +13,8 @@ namespace SharpDX_DirectInput.Handlers
         private Guid _instanceGuid = Guid.Empty;
         private InputSubscriptionRequest _inputSubscriptionRequest = null;
 
-        public  override void Initialize(InputSubscriptionRequest subReq)
+        public DiDeviceHandler(InputSubscriptionRequest subReq, ApiHandler parent) : base(subReq, parent)
         {
-            base.Initialize(subReq);
             //Guid instanceGuid = Guid.Empty;
             var instances = Lookups.GetDeviceOrders(subReq.DeviceDescriptor.DeviceHandle);
             if (instances.Count >= subReq.DeviceDescriptor.DeviceInstance)

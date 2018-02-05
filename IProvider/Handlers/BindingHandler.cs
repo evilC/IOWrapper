@@ -9,7 +9,6 @@ using System.Diagnostics;
 
 namespace Providers.Handlers
 {
-    //Handles bindings for a given Index and SubIndex
     public class BindingHandler
     {
         protected ConcurrentDictionary<int, // SubIndex

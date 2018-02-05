@@ -9,17 +9,19 @@ namespace Providers.Handlers
 {
     public abstract class DeviceHandler
     {
-        protected InputSubscriptionRequest _inputSubscriptionRequest = null;
+        protected readonly ApiHandler Parent;
+        protected readonly BindingDescriptor BindingDescriptor = null;
+
+        //protected InputSubscriptionRequest _inputSubscriptionRequest = null;
 
         protected ConcurrentDictionary<BindingType,
             ConcurrentDictionary<int, BindingHandler>> _bindingDictionary
             = new ConcurrentDictionary<BindingType, ConcurrentDictionary<int, BindingHandler>>();
 
-        public DeviceHandler() { }
-
-        public virtual void Initialize(InputSubscriptionRequest subReq)
+        protected DeviceHandler(InputSubscriptionRequest subReq, ApiHandler parent)
         {
-            _inputSubscriptionRequest = subReq;
+            Parent = parent;
+            BindingDescriptor = subReq.BindingDescriptor;
         }
 
         public virtual int GetBindingKey(InputSubscriptionRequest subReq)
@@ -34,11 +36,6 @@ namespace Providers.Handlers
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {
-            if (_inputSubscriptionRequest == null)
-            {
-                Initialize(subReq);
-            }
-
             var handler = GetOrAddBindingHandler(subReq);
             return handler.Subscribe(subReq);
         }

@@ -8,16 +8,12 @@ namespace SharpDX_XInput.Handlers
 {
     public class XiDeviceHandler : DeviceHandler
     {
+        protected readonly ApiHandler parent;
         private Controller _controller = null;
 
         private readonly XiDevicePoller _devicePoller = new XiDevicePoller();
 
-        public XiDeviceHandler()
-        {
-            
-        }
-
-        public override void Initialize(InputSubscriptionRequest subReq)
+        public XiDeviceHandler(InputSubscriptionRequest subReq, ApiHandler parent) : base(subReq, parent)
         {
             _controller = new Controller((UserIndex)subReq.DeviceDescriptor.DeviceInstance);
         }
