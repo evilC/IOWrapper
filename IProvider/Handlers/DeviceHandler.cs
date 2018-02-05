@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -91,5 +92,10 @@ namespace Providers.Handlers
         }
 
         public abstract void Poll();
+
+        protected void Log(string text)
+        {
+            Debug.WriteLine($"IOWrapper| DeviceHandler| {text}");
+        }
     }
 }

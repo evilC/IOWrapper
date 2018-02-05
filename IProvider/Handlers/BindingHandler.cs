@@ -65,5 +65,10 @@ namespace Providers.Handlers
         {
             return _bindingDictionary.IsEmpty;
         }
+
+        protected void Log(string text)
+        {
+            Debug.WriteLine($"IOWrapper| BindingHandler| {text}");
+        }
     }
 }

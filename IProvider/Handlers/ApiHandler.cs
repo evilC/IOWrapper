@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -93,5 +94,9 @@ namespace Providers.Handlers
             return _devices.IsEmpty;
         }
 
+        protected void Log(string text)
+        {
+            Debug.WriteLine($"IOWrapper| APIHandler| {text}");
+        }
     }
 }
