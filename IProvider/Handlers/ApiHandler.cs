@@ -43,12 +43,14 @@ namespace Providers.Handlers
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {
-            _devices
-                .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, new ConcurrentDictionary<int, DeviceHandler>())
-                .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, CreateDeviceHandler(subReq))
-                .Subscribe(subReq);
+            return GetOrAddDeviceHandler(subReq).Subscribe(subReq);
+        }
 
-            return true;
+        public virtual DeviceHandler GetOrAddDeviceHandler(InputSubscriptionRequest subReq)
+        {
+            return _devices
+                .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, new ConcurrentDictionary<int, DeviceHandler>())
+                .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, CreateDeviceHandler(subReq));
         }
 
         public virtual bool Unsubscribe(InputSubscriptionRequest subReq)
@@ -56,7 +58,15 @@ namespace Providers.Handlers
             if (_devices.ContainsKey(subReq.DeviceDescriptor.DeviceHandle)
                 && _devices[subReq.DeviceDescriptor.DeviceHandle].TryGetValue(subReq.DeviceDescriptor.DeviceInstance, out var deviceHandler))
             {
-                return deviceHandler.Unsubscribe(subReq);
+                if (deviceHandler.Unsubscribe(subReq))
+                {
+                    if (deviceHandler.IsEmpty())
+                    {
+
+                    }
+                    //ToDo: Clean up dictionary
+                    return true;
+                }
             }
             return false;
         }
@@ -77,5 +87,11 @@ namespace Providers.Handlers
                 Thread.Sleep(1);
             }
         }
+
+        public virtual bool IsEmpty()
+        {
+            return _devices.IsEmpty;
+        }
+
     }
 }

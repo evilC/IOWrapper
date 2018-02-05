@@ -32,5 +32,10 @@ namespace Providers.Handlers
         {
             return _subscriptions.TryRemove(subReq.SubscriptionDescriptor.SubscriberGuid, out _);
         }
+
+        public bool IsEmpty()
+        {
+            return _subscriptions.IsEmpty;
+        }
     }
 }

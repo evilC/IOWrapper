@@ -34,7 +34,14 @@ namespace Providers.Handlers
             var k = subReq.BindingDescriptor.SubIndex;
             if (_bindingDictionary.ContainsKey(k))
             {
-                return _bindingDictionary[k].Unsubscribe(subReq);
+                if (_bindingDictionary[k].Unsubscribe(subReq))
+                {
+                    if (_bindingDictionary[k].IsEmpty())
+                    {
+                        _bindingDictionary.TryRemove(k, out _);
+                    }
+                    return true;
+                }
             }
 
             return false;
@@ -52,6 +59,11 @@ namespace Providers.Handlers
         public virtual int GetKeyFromSubIndex(int subIndex)
         {
             return subIndex;
+        }
+
+        public virtual bool IsEmpty()
+        {
+            return _bindingDictionary.IsEmpty;
         }
     }
 }

@@ -44,7 +44,23 @@ namespace Providers.Handlers
             if (_bindingDictionary.ContainsKey(subReq.BindingDescriptor.Type) &&
                 _bindingDictionary[subReq.BindingDescriptor.Type].ContainsKey(index))
             {
-                return _bindingDictionary[subReq.BindingDescriptor.Type][index].Unsubscribe(subReq);
+                if (_bindingDictionary[subReq.BindingDescriptor.Type][index].Unsubscribe(subReq))
+                {
+                    if (_bindingDictionary[subReq.BindingDescriptor.Type][index].IsEmpty())
+                    {
+                        _bindingDictionary[subReq.BindingDescriptor.Type].TryRemove(index, out _);
+                        if (_bindingDictionary[subReq.BindingDescriptor.Type].IsEmpty)
+                        {
+                            _bindingDictionary.TryRemove(subReq.BindingDescriptor.Type, out _);
+                            if (_bindingDictionary.IsEmpty)
+                            {
+
+                                //ToDo: What to do here? Relinquish stick?
+                            }
+                        }
+                    }
+                    return true;
+                }
             }
             return false;
         }
@@ -67,6 +83,11 @@ namespace Providers.Handlers
             }
 
             return null;
+        }
+
+        internal bool IsEmpty()
+        {
+            return _bindingDictionary.IsEmpty;
         }
 
         public abstract void Poll();
