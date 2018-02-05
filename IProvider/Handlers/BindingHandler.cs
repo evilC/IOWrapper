@@ -31,7 +31,7 @@ namespace Providers.Handlers
 
         public virtual bool Unsubscribe(InputSubscriptionRequest subReq)
         {
-            var k = subReq.BindingDescriptor.SubIndex;
+            var k = GetKeyFromSubIndex(subReq.BindingDescriptor.SubIndex);
             if (_bindingDictionary.ContainsKey(k))
             {
                 if (_bindingDictionary[k].Unsubscribe(subReq))
@@ -39,6 +39,7 @@ namespace Providers.Handlers
                     if (_bindingDictionary[k].IsEmpty())
                     {
                         _bindingDictionary.TryRemove(k, out _);
+                        Log($"Removing dictionary {k}");
                     }
                     return true;
                 }

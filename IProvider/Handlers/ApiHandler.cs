@@ -54,19 +54,49 @@ namespace Providers.Handlers
                 .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, CreateDeviceHandler(subReq));
         }
 
+        public virtual DeviceHandler GetDeviceHandler(InputSubscriptionRequest subReq)
+        {
+            if (_devices.TryGetValue(subReq.DeviceDescriptor.DeviceHandle, out ConcurrentDictionary<int, DeviceHandler> dd))
+            {
+                if (dd.TryGetValue(subReq.DeviceDescriptor.DeviceInstance, out DeviceHandler dh))
+                {
+                    return dh;
+                }
+            }
+
+            return null;
+        }
+
         public virtual bool Unsubscribe(InputSubscriptionRequest subReq)
         {
-            if (_devices.ContainsKey(subReq.DeviceDescriptor.DeviceHandle)
-                && _devices[subReq.DeviceDescriptor.DeviceHandle].TryGetValue(subReq.DeviceDescriptor.DeviceInstance, out var deviceHandler))
+            var deviceHandle = subReq.DeviceDescriptor.DeviceHandle;
+            var deviceInstance = subReq.DeviceDescriptor.DeviceInstance;
+            if (_devices.TryGetValue(deviceHandle,
+                out ConcurrentDictionary<int, DeviceHandler> handleNode))
             {
-                if (deviceHandler.Unsubscribe(subReq))
+                if (handleNode.TryGetValue(deviceInstance, out DeviceHandler handler))
                 {
-                    if (deviceHandler.IsEmpty())
+                    if (handler.Unsubscribe(subReq))
                     {
+                        if (handler.IsEmpty())
+                        {
+                            //ToDo: Dispose handler?
+                            handleNode.TryRemove(deviceInstance, out _);
+                            Log($"Removed dictionary for DeviceInstance {deviceInstance} of DeviceHandle {deviceHandle}");
 
+                            if (handleNode.IsEmpty)
+                            {
+                                _devices.TryRemove(deviceHandle, out _);
+                                Log($"Removed dictiondary for DeviceHandle {deviceHandle}");
+
+                                if (_devices.IsEmpty)
+                                {
+                                    Log($"All devices removed");
+                                }
+                            }
+                        }
+                        return true;
                     }
-                    //ToDo: Clean up dictionary
-                    return true;
                 }
             }
             return false;
