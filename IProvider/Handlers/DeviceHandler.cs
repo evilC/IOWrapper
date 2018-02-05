@@ -15,10 +15,7 @@ namespace Providers.Handlers
             ConcurrentDictionary<int, BindingHandler>> _bindingDictionary
             = new ConcurrentDictionary<BindingType, ConcurrentDictionary<int, BindingHandler>>();
 
-        public DeviceHandler()
-        {
-
-        }
+        protected DeviceHandler() { }
 
         public virtual void Initialize(InputSubscriptionRequest subReq)
         {
