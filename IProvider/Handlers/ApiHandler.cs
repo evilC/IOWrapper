@@ -35,6 +35,12 @@ namespace Providers.Handlers
                 DeviceHandler>> _devices
             = new ConcurrentDictionary<string, ConcurrentDictionary<int, DeviceHandler>>();
 
+        public ApiHandler()
+        {
+            pollThread = new Thread(PollThread);
+            pollThread.Start();
+        }
+
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {
             _devices
@@ -42,8 +48,6 @@ namespace Providers.Handlers
                 .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, CreateDeviceHandler(subReq))
                 .Subscribe(subReq);
 
-            pollThread = new Thread(PollThread);
-            pollThread.Start();
             return true;
         }
 
