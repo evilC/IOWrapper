@@ -17,7 +17,7 @@ namespace Providers.Handlers
     /// ToDo: Implement IDisposable
     /// </summary>
     /// <typeparam name="TDeviceType">The type of the DeviceHandler</typeparam>
-    public abstract class ApiHandler<TDeviceType> where TDeviceType : DeviceHandler
+    public abstract class ApiHandler<TDeviceType> where TDeviceType : DeviceHandler, new ()
     {
         protected Thread pollThread;
 
@@ -29,8 +29,8 @@ namespace Providers.Handlers
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {
             _devices
-                .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, GetDeviceHandlerDictionary())
-                .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, GetDeviceHandler(subReq))
+                .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, new ConcurrentDictionary<int, TDeviceType>())
+                .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, new TDeviceType())
                 .Subscribe(subReq);
 
             pollThread = new Thread(PollThread);
@@ -47,9 +47,6 @@ namespace Providers.Handlers
             }
             return false;
         }
-
-        public abstract ConcurrentDictionary<int, TDeviceType> GetDeviceHandlerDictionary();
-        public abstract TDeviceType GetDeviceHandler(InputSubscriptionRequest subReq);
 
         private void PollThread()
         {

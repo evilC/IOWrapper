@@ -11,15 +11,5 @@ namespace SharpDX_DirectInput.Handlers
     class DiHandler : ApiHandler<DiDeviceHandler>
     {
         public static DirectInput DiInstance { get; } = new DirectInput();
-
-        public override ConcurrentDictionary<int, DiDeviceHandler> GetDeviceHandlerDictionary()
-        {
-            return new ConcurrentDictionary<int, DiDeviceHandler>();
-        }
-
-        public override DiDeviceHandler GetDeviceHandler(InputSubscriptionRequest subReq)
-        {
-            return new DiDeviceHandler(subReq);
-        }
     }
 }

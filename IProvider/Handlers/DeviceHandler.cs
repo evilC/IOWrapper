@@ -9,9 +9,21 @@ namespace Providers.Handlers
 {
     public abstract class DeviceHandler
     {
+        protected InputSubscriptionRequest _inputSubscriptionRequest = null;
+
         protected ConcurrentDictionary<BindingType,
             ConcurrentDictionary<int, BindingHandler>> _bindingDictionary
             = new ConcurrentDictionary<BindingType, ConcurrentDictionary<int, BindingHandler>>();
+
+        public DeviceHandler()
+        {
+
+        }
+
+        public virtual void Initialize(InputSubscriptionRequest subReq)
+        {
+            _inputSubscriptionRequest = subReq;
+        }
 
         public abstract bool Subscribe(InputSubscriptionRequest subReq);
         public abstract bool Unsubscribe(InputSubscriptionRequest subReq);

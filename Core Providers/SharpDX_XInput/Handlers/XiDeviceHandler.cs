@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using Providers;
 using Providers.Handlers;
 using SharpDX.XInput;
@@ -11,13 +12,22 @@ namespace SharpDX_XInput.Handlers
 
         private readonly XiDevicePoller _devicePoller = new XiDevicePoller();
 
-        public XiDeviceHandler(InputSubscriptionRequest subReq)
+        public XiDeviceHandler()
+        {
+            
+        }
+
+        public override void Initialize(InputSubscriptionRequest subReq)
         {
             _controller = new Controller((UserIndex)subReq.DeviceDescriptor.DeviceInstance);
         }
 
         public override bool Subscribe(InputSubscriptionRequest subReq)
         {
+            if (_inputSubscriptionRequest == null)
+            {
+                Initialize(subReq);
+            }
             var bindingType = subReq.BindingDescriptor.Type;
 
             // For POV Directions, the _bindingDictionary key will be SubIndex, else it will be Index

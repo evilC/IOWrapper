@@ -11,9 +11,11 @@ namespace SharpDX_DirectInput.Handlers
     {
         private Joystick _joystick;
         private Guid _instanceGuid = Guid.Empty;
+        private InputSubscriptionRequest _inputSubscriptionRequest = null;
 
-        public DiDeviceHandler(InputSubscriptionRequest subReq)
+        public  override void Initialize(InputSubscriptionRequest subReq)
         {
+            base.Initialize(subReq);
             //Guid instanceGuid = Guid.Empty;
             var instances = Lookups.GetDeviceOrders(subReq.DeviceDescriptor.DeviceHandle);
             if (instances.Count >= subReq.DeviceDescriptor.DeviceInstance)
@@ -39,6 +41,10 @@ namespace SharpDX_DirectInput.Handlers
 
         public override bool Subscribe(InputSubscriptionRequest subReq)
         {
+            if (_inputSubscriptionRequest == null)
+            {
+                Initialize(subReq);
+            }
             var bindingType = subReq.BindingDescriptor.Type;
             var dict = _bindingDictionary
                 .GetOrAdd(subReq.BindingDescriptor.Type,
