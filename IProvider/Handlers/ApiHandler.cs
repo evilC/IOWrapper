@@ -22,7 +22,6 @@ namespace Providers.Handlers
     /// ToDo: Poll Thread should start / stop as appropriate
     /// 
     /// </summary>
-    /// <typeparam name="TDeviceType">The type of the DeviceHandler</typeparam>
     public abstract class ApiHandler
     {
         protected Thread pollThread;
