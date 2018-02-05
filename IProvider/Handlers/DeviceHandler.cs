@@ -72,7 +72,7 @@ namespace Providers.Handlers
                 .GetOrAdd(GetBindingKey(subReq), CreateBindingHandler(subReq));
         }
 
-        public BindingHandler GetBindingHandler(InputSubscriptionRequest subReq)
+        public virtual BindingHandler GetBindingHandler(InputSubscriptionRequest subReq)
         {
             if (_bindingDictionary.TryGetValue(subReq.BindingDescriptor.Type, out ConcurrentDictionary<int, BindingHandler> cd))
             {
