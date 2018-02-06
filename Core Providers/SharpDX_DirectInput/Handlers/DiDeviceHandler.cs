@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Threading;
 using Providers;
 using Providers.Handlers;
 using SharpDX.DirectInput;
@@ -9,7 +10,7 @@ namespace SharpDX_DirectInput.Handlers
 {
     internal class DiDeviceHandler : DeviceHandler
     {
-        private Joystick _joystick;
+        //private Joystick _joystick;
         private readonly Guid _instanceGuid = Guid.Empty;
 
         public DiDeviceHandler(InputSubscriptionRequest subReq) : base(subReq)
@@ -28,7 +29,6 @@ namespace SharpDX_DirectInput.Handlers
             else
             {
                 //ToDo: When should we re-attempt to acquire?
-                SetAcquireState(true);
             }
         }
 
@@ -52,69 +52,103 @@ namespace SharpDX_DirectInput.Handlers
             }
         }
 
-        public override void Poll()
+        protected override void PollThread()
         {
-            // ToDo: Pollthread should not be spamming here if joystick is not attached
-
-
-            JoystickUpdate[] data;
-            // ToDo: Find better way of detecting unplug. DiHandler.DiInstance.IsDeviceAttached(instanceGuid) kills performance
-            try
+            Joystick joystick = null;
+            while (true)
             {
-                // Try / catch seems the only way for now to ensure no crashes on replug
-                data = _joystick.GetBufferedData();
-            }
-            catch
-            {
-                return;
-            }
-            foreach (var state in data)
-            {
-                int offset = (int)state.Offset;
-                var bindingType = Lookups.OffsetToType(state.Offset);
-                if (BindingDictionary.ContainsKey(bindingType) && BindingDictionary[bindingType].ContainsKey(offset))
+                //JoystickUpdate[] data = null;
+                try
                 {
-                    BindingDictionary[bindingType][offset].Poll(state.Value);
+                    while (true)    // Main poll loop
+                    {
+                        while (true) // Not Acquired loop
+                        {
+                            while (!DiHandler.DiInstance.IsDeviceAttached(_instanceGuid))
+                            {
+                                Thread.Sleep(100);
+                            }
+                            joystick = new Joystick(DiHandler.DiInstance, _instanceGuid);
+                            joystick.Properties.BufferSize = 128;
+                            joystick.Acquire();
+                            break;
+                        }
+
+                        while (true)  // Acquired loop
+                        {
+                            var data = joystick.GetBufferedData();
+                            foreach (var state in data)
+                            {
+                                int offset = (int)state.Offset;
+                                var bindingType = Lookups.OffsetToType(state.Offset);
+                                if (BindingDictionary.ContainsKey(bindingType) && BindingDictionary[bindingType].ContainsKey(offset))
+                                {
+                                    BindingDictionary[bindingType][offset].Poll(state.Value);
+                                }
+                            }
+                            Thread.Sleep(10);
+                        }
+                    }
+
                 }
+                catch
+                {
+                    try
+                    {
+                        joystick.Dispose();
+                    }
+                    catch
+                    {
+
+                    }
+
+                    joystick = null;
+                }
+
+                Thread.Sleep(10);
             }
         }
 
-        protected void SetAcquireState(bool state)
+        public override void Poll()
         {
-            if (state)
-            {
-                try
-                {
-                    if (!DiHandler.DiInstance.IsDeviceAttached(_instanceGuid)) return;
-                    _joystick = new Joystick(DiHandler.DiInstance, _instanceGuid);
-                    _joystick.Properties.BufferSize = 128;
-                    _joystick.Acquire();
+            //// ToDo: Pollthread should not be spamming here if joystick is not attached
 
-                }
-                catch
-                {
-                    _joystick = null;
-                }
-            }
-            else
-            {
-                try
-                {
-                    _joystick.Unacquire();
-                    _joystick.Dispose();
-                }
-                catch
-                {
 
-                }
-                _joystick = null;
-            }
+            //JoystickUpdate[] data;
+            //// ToDo: Find better way of detecting unplug. DiHandler.DiInstance.IsDeviceAttached(instanceGuid) kills performance
+            //try
+            //{
+            //    // Try / catch seems the only way for now to ensure no crashes on replug
+            //    data = _joystick.GetBufferedData();
+            //}
+            //catch
+            //{
+            //    return;
+            //}
+            //foreach (var state in data)
+            //{
+            //    int offset = (int)state.Offset;
+            //    var bindingType = Lookups.OffsetToType(state.Offset);
+            //    if (BindingDictionary.ContainsKey(bindingType) && BindingDictionary[bindingType].ContainsKey(offset))
+            //    {
+            //        BindingDictionary[bindingType][offset].Poll(state.Value);
+            //    }
+            //}
         }
 
         public override void Dispose()
         {
             SetPollThreadState(false);
-            SetAcquireState(false);
+            //try
+            //{
+            //    _joystick.Unacquire();
+            //    _joystick.Dispose();
+            //}
+            //catch
+            //{
+
+            //}
+            //_joystick = null;
             base.Dispose();
         }
     }

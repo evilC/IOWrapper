@@ -103,7 +103,7 @@ namespace Providers.Handlers
             _pollThreadState = state;
         }
 
-        private void PollThread()
+        protected virtual void PollThread()
         {
             while (true)
             {
@@ -138,7 +138,6 @@ namespace Providers.Handlers
         {
             return new BindingHandler(subReq);
         }
-
 
         #endregion
 
