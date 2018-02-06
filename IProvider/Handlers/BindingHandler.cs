@@ -39,7 +39,7 @@ namespace Providers.Handlers
                     if (_bindingDictionary[k].IsEmpty())
                     {
                         _bindingDictionary.TryRemove(k, out _);
-                        Log($"Removing dictionary {k}");
+                        //Log($"Removing dictionary {k}");
                     }
                     return true;
                 }

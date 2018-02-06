@@ -50,11 +50,11 @@ namespace Providers.Handlers
                     if (_bindingDictionary[subReq.BindingDescriptor.Type][index].IsEmpty())
                     {
                         _bindingDictionary[subReq.BindingDescriptor.Type].TryRemove(index, out _);
-                        Log($"Removing Index dictionary {index}");
+                        //Log($"Removing Index dictionary {index}");
                         if (_bindingDictionary[subReq.BindingDescriptor.Type].IsEmpty)
                         {
                             _bindingDictionary.TryRemove(subReq.BindingDescriptor.Type, out _);
-                            Log($"Removing BindingType dictionary {subReq.BindingDescriptor.Type}");
+                            //Log($"Removing BindingType dictionary {subReq.BindingDescriptor.Type}");
                             if (_bindingDictionary.IsEmpty)
                             {
 

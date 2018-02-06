@@ -30,6 +30,7 @@ namespace Providers.Handlers
     public abstract class ApiHandler
     {
         protected Thread pollThread;
+        private bool pollThreadState = false;
 
         protected ConcurrentDictionary<string,    // DeviceHandle
             ConcurrentDictionary<int,           // DeviceInstance
@@ -44,7 +45,13 @@ namespace Providers.Handlers
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {
-            return GetOrAddDeviceHandler(subReq).Subscribe(subReq);
+            if (GetOrAddDeviceHandler(subReq).Subscribe(subReq))
+            {
+                SetPollThreadState(true);
+                return true;
+            }
+
+            return false;
         }
 
         public virtual DeviceHandler GetOrAddDeviceHandler(InputSubscriptionRequest subReq)
@@ -82,27 +89,49 @@ namespace Providers.Handlers
                         {
                             //ToDo: Dispose handler?
                             handleNode.TryRemove(deviceInstance, out _);
-                            Log($"Removed dictionary for DeviceInstance {deviceInstance} of DeviceHandle {deviceHandle}");
+                            //Log($"Removed dictionary for DeviceInstance {deviceInstance} of DeviceHandle {deviceHandle}");
 
                             if (handleNode.IsEmpty)
                             {
                                 _devices.TryRemove(deviceHandle, out _);
-                                Log($"Removed dictiondary for DeviceHandle {deviceHandle}");
+                                //Log($"Removed dictiondary for DeviceHandle {deviceHandle}");
 
                                 if (_devices.IsEmpty)
                                 {
-                                    Log($"All devices removed");
+                                    //Log($"All devices removed");
+                                    SetPollThreadState(false);
                                 }
                             }
                         }
+
                         return true;
                     }
                 }
             }
+
             return false;
         }
 
         public abstract DeviceHandler CreateDeviceHandler(InputSubscriptionRequest subReq);
+
+        private void SetPollThreadState(bool state)
+        {
+            if (pollThreadState == state) return;
+            if (!pollThreadState && state)
+            {
+                pollThread = new Thread(PollThread);
+                pollThread.Start();
+                //Log("Started Poll Thread");
+            }
+            else if (pollThreadState && !state)
+            {
+                pollThread.Abort();
+                pollThread.Join();
+                //Log("Stopped Poll Thread");
+            }
+
+            pollThreadState = state;
+        }
 
         private void PollThread()
         {
