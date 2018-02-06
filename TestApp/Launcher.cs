@@ -29,18 +29,18 @@ namespace TestApp
             DeviceDescriptor xInputPad_2 = null;
 
             // Comment out these assignments to turn them on or off
-            genericStick_1 = Library.Devices.DirectInput.T16000M;
-            //genericStick_1 = Library.Devices.DirectInput.DS4_1;
-            //genericStick_2 = Library.Devices.DirectInput.DS4_2;
+            //genericStick_1 = Library.Devices.DirectInput.T16000M;
+            //genericStick_1 = Library.BindingDictionary.DirectInput.DS4_1;
+            //genericStick_2 = Library.BindingDictionary.DirectInput.DS4_2;
 
-            vJoy_1 = Library.Devices.DirectInput.vJoy_1;
-            vJoy_2 = Library.Devices.DirectInput.vJoy_2;
+            //vJoy_1 = Library.Devices.DirectInput.vJoy_1;
+            //vJoy_2 = Library.BindingDictionary.DirectInput.vJoy_2;
 
-            snesPad_1 = Library.Devices.DirectInput.SnesPad_1;
-            snesPad_2 = Library.Devices.DirectInput.SnesPad_2;
+            //snesPad_1 = Library.Devices.DirectInput.SnesPad_1;
+            //snesPad_2 = Library.Devices.DirectInput.SnesPad_2;
 
-            xInputPad_1 = Library.Devices.Console.Xb360_1;
-            //xInputPad_2 = Library.Devices.Console.Xb360_2;
+            //xInputPad_1 = Library.Devices.Console.Xb360_1;
+            //xInputPad_2 = Library.BindingDictionary.Console.Xb360_2;
 
             if (vJoy_1 != null)
             {
@@ -53,6 +53,17 @@ namespace TestApp
                 var vj1p1d = new Plugins.InputTester("vJoy_1 POV 1 Down", Library.Providers.DirectInput, vJoy_1, Library.Bindings.Generic.POV1Down).Subscribe();
                 var vj1p2u = new Plugins.InputTester("vJoy_1 POV 2 Up", Library.Providers.DirectInput, vJoy_1, Library.Bindings.Generic.POV2Up).Subscribe();
                 var vj1p2d = new Plugins.InputTester("vJoy_1 POV 2 Down", Library.Providers.DirectInput, vJoy_1, Library.Bindings.Generic.POV2Down).Subscribe();
+                if (false)
+                {
+                    vj1a1.Unsubscribe();
+                    vj1a2.Unsubscribe();
+                    vj1b1.Unsubscribe();
+                    vj1b2.Unsubscribe();
+                    vj1p1u.Unsubscribe();
+                    vj1p1d.Unsubscribe();
+                    vj1p2u.Unsubscribe();
+                    vj1p2d.Unsubscribe();
+                }
             }
 
             if (vJoy_2 != null)
@@ -132,7 +143,7 @@ namespace TestApp
 
 
             // Interception testers
-            //var interception = new Plugins.InputTester("Interception", Library.Providers.Interception, Library.Devices.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.One).Subscribe();
+            //var interception = new Plugins.InputTester("Interception", Library.Providers.Interception, Library.BindingDictionary.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.One).Subscribe();
 
             Console.WriteLine("Load Complete");
             Console.ReadLine();
