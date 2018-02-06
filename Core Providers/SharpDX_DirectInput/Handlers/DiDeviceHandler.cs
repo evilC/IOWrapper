@@ -113,6 +113,7 @@ namespace SharpDX_DirectInput.Handlers
 
         public override void Dispose()
         {
+            SetPollThreadState(false);
             SetAcquireState(false);
             base.Dispose();
         }

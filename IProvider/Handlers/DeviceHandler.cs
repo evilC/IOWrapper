@@ -84,7 +84,7 @@ namespace Providers.Handlers
 
         public abstract void Poll();
 
-        private void SetPollThreadState(bool state)
+        protected void SetPollThreadState(bool state)
         {
             if (_pollThreadState == state) return;
             if (!_pollThreadState && state)
