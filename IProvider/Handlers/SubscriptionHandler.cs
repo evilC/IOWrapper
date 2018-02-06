@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Threading;
 
 namespace Providers.Handlers
 {
@@ -15,10 +16,7 @@ namespace Providers.Handlers
             set
             {
                 _state = value;
-                foreach (var subscriptionRequest in _subscriptions)
-                {
-                    subscriptionRequest.Value.Callback(_state);
-                }
+                ThreadPool.QueueUserWorkItem(ThreadProc);
             }
         }
 
@@ -36,6 +34,14 @@ namespace Providers.Handlers
         public bool IsEmpty()
         {
             return _subscriptions.IsEmpty;
+        }
+
+        void ThreadProc(Object stateInfo)
+        {
+            foreach (var subscriptionRequest in _subscriptions)
+            {
+                subscriptionRequest.Value.Callback(_state);
+            }
         }
     }
 }

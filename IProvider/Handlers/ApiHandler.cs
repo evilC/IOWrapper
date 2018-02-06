@@ -15,9 +15,6 @@ namespace Providers.Handlers
     /// 
     /// The ApiHandler sorts devices on the DeviceDescriptor
     /// 
-    /// ToDo: Implement ConcurrentQueues and maybe thread pooling
-    /// Callbacks should be handled better than just making a function call :P
-    /// 
     /// ToDo: At each stage of subscription, check that subsequent subsriptions match the one that initialized the object
     /// </summary>
     public abstract class ApiHandler
