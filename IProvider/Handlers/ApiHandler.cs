@@ -19,9 +19,6 @@ namespace Providers.Handlers
     /// </summary>
     public abstract class ApiHandler
     {
-        private Thread _pollThread;
-        private bool _pollThreadState = false;
-
         protected ConcurrentDictionary<string,    // DeviceHandle
             ConcurrentDictionary<int,           // DeviceInstance
                 DeviceHandler>> BindingDictionary
@@ -29,14 +26,11 @@ namespace Providers.Handlers
 
         protected ApiHandler()
         {
-            _pollThread = new Thread(PollThread);
-            _pollThread.Start();
         }
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {
             if (!GetOrAddDeviceHandler(subReq).Subscribe(subReq)) return false;
-            SetPollThreadState(true);
             return true;
 
         }
@@ -61,7 +55,6 @@ namespace Providers.Handlers
             if (BindingDictionary.IsEmpty)
             {
                 //Log($"All devices removed");
-                SetPollThreadState(false);
             }
             return true;
         }
@@ -89,40 +82,6 @@ namespace Providers.Handlers
 
 
         #endregion
-
-        private void SetPollThreadState(bool state)
-        {
-            if (_pollThreadState == state) return;
-            if (!_pollThreadState && state)
-            {
-                _pollThread = new Thread(PollThread);
-                _pollThread.Start();
-                //Log("Started Poll Thread");
-            }
-            else if (_pollThreadState && !state)
-            {
-                _pollThread.Abort();
-                _pollThread.Join();
-                //Log("Stopped Poll Thread");
-            }
-
-            _pollThreadState = state;
-        }
-
-        private void PollThread()
-        {
-            while (true)
-            {
-                foreach (var deviceHandle in BindingDictionary.Values)
-                {
-                    foreach (var deviceInstance in deviceHandle.Values)
-                    {
-                        deviceInstance.Poll();
-                    }
-                }
-                Thread.Sleep(1);
-            }
-        }
 
         public virtual bool IsEmpty()
         {

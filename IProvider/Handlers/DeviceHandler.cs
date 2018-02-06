@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Providers.Handlers
@@ -16,6 +17,9 @@ namespace Providers.Handlers
     public abstract class DeviceHandler : IDisposable
     {
         #region fields and properties
+        private Thread _pollThread;
+        private bool _pollThreadState = false;
+
         private readonly BindingDescriptor _bindingDescriptor = null;
 
         // Main binding dictionary that holds handlers          // Uses values from BindingDescriptor
@@ -26,10 +30,28 @@ namespace Providers.Handlers
         #endregion
 
         #region Public
+
+        /// <summary>
+        /// The initial SubReq passed to the ctor does not subscribe to anything, it just configures the handler
+        /// </summary>
+        /// <param name="subReq"></param>
+        protected DeviceHandler(InputSubscriptionRequest subReq)
+        {
+            _bindingDescriptor = subReq.BindingDescriptor;
+            _pollThread = new Thread(PollThread);
+            _pollThread.Start();
+        }
+
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {
             var handler = GetOrAddBindingHandler(subReq);
-            return handler.Subscribe(subReq);
+            if (handler.Subscribe(subReq))
+            {
+                SetPollThreadState(true);
+                return true;
+            }
+
+            return false;
         }
 
         public virtual bool Unsubscribe(InputSubscriptionRequest subReq)
@@ -50,8 +72,7 @@ namespace Providers.Handlers
                             //Log($"Removing BindingType dictionary {subReq.BindingDescriptor.Type}");
                             if (BindingDictionary.IsEmpty)
                             {
-
-                                //ToDo: What to do here? Relinquish stick?
+                                SetPollThreadState(false);
                             }
                         }
                     }
@@ -63,20 +84,46 @@ namespace Providers.Handlers
 
         public abstract void Poll();
 
+        private void SetPollThreadState(bool state)
+        {
+            if (_pollThreadState == state) return;
+            if (!_pollThreadState && state)
+            {
+                _pollThread = new Thread(PollThread);
+                _pollThread.Start();
+                //Log("Started Poll Thread");
+            }
+            else if (_pollThreadState && !state)
+            {
+                _pollThread.Abort();
+                _pollThread.Join();
+                //Log("Stopped Poll Thread");
+            }
+
+            _pollThreadState = state;
+        }
+
+        private void PollThread()
+        {
+            while (true)
+            {
+                Poll();
+                //foreach (var deviceHandle in BindingDictionary.Values)
+                //{
+                //    foreach (var deviceInstance in deviceHandle.Values)
+                //    {
+                //        deviceInstance.Poll();
+                //    }
+                //}
+                Thread.Sleep(1);
+            }
+        }
+
         public bool IsEmpty()
         {
             return BindingDictionary.IsEmpty;
         }
         #endregion
-
-        /// <summary>
-        /// The initial SubReq passed to the ctor does not subscribe to anything, it just configures the handler
-        /// </summary>
-        /// <param name="subReq"></param>
-        protected DeviceHandler(InputSubscriptionRequest subReq)
-        {
-            _bindingDescriptor = subReq.BindingDescriptor;
-        }
 
         #region Lookups
         // Used to allow overriding of the int key used for the dictionary
