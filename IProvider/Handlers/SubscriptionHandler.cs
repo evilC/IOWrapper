@@ -4,6 +4,11 @@ using System.Threading;
 
 namespace Providers.Handlers
 {
+    /// <summary>
+    /// Handles storing of subscriptions for a given input, and handling of callbacks
+    /// 
+    /// Indexes by SubscriberGuid
+    /// </summary>
     public class SubscriptionHandler
     {
         private int _state;

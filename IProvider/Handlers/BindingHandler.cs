@@ -9,6 +9,11 @@ using System.Diagnostics;
 
 namespace Providers.Handlers
 {
+    /// <summary>
+    /// Handles one input (eg a button, axis or POV) and it's derived inputs.
+    /// eg a POV that reports as an angle can be bound to as if it were 4 direction buttons...
+    /// ... this is handled by a custom BindingHandler
+    /// </summary>
     public class BindingHandler
     {
         protected readonly BindingDescriptor BindingDescriptor;

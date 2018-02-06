@@ -8,12 +8,15 @@ using System.Threading.Tasks;
 
 namespace Providers.Handlers
 {
+    /// <summary>
+    /// Handles one type (as in make/model, vid/pid) of device, of which there could be multiple instances
+    /// Indexes devices in DeviceHandle (make/model) and DeviceInstance
+    /// </summary>
     public abstract class DeviceHandler : IDisposable
     {
         protected readonly BindingDescriptor BindingDescriptor = null;
 
-        //protected InputSubscriptionRequest _inputSubscriptionRequest = null;
-
+        // Main binding dictionary that holds handlers
         protected ConcurrentDictionary<BindingType,
             ConcurrentDictionary<int, BindingHandler>> _bindingDictionary
             = new ConcurrentDictionary<BindingType, ConcurrentDictionary<int, BindingHandler>>();

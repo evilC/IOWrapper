@@ -6,6 +6,7 @@ namespace SharpDX_DirectInput.Handlers
 {
     /// <summary>
     /// Handles bindings for one POV
+    /// ToDo: Make Generic, move into Core
     /// </summary>
     class DiPovBindingHandler : BindingHandler
     {
