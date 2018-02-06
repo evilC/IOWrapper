@@ -15,8 +15,13 @@ namespace Providers.Handlers
             get { return _state; }
             set
             {
+                //Set _state IMMEDIATELY, else another callback may get queued!
                 _state = value;
-                ThreadPool.QueueUserWorkItem(ThreadProc);
+                // This is where change in state of an input generates a callback
+                foreach (var subscriptionRequest in _subscriptions.Values)
+                {
+                    ThreadPool.QueueUserWorkItem(threadProc => subscriptionRequest.Callback(value));
+                }
             }
         }
 
@@ -34,14 +39,6 @@ namespace Providers.Handlers
         public bool IsEmpty()
         {
             return _subscriptions.IsEmpty;
-        }
-
-        void ThreadProc(Object stateInfo)
-        {
-            foreach (var subscriptionRequest in _subscriptions)
-            {
-                subscriptionRequest.Value.Callback(_state);
-            }
         }
     }
 }
