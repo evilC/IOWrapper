@@ -28,10 +28,7 @@ namespace SharpDX_DirectInput.Handlers
             else
             {
                 //ToDo: When should we re-attempt to acquire?
-                if (!DiHandler.DiInstance.IsDeviceAttached(_instanceGuid)) return;
-                _joystick = new Joystick(DiHandler.DiInstance, _instanceGuid);
-                _joystick.Properties.BufferSize = 128;
-                _joystick.Acquire();
+                SetAcquireState(true);
             }
         }
 
@@ -82,26 +79,42 @@ namespace SharpDX_DirectInput.Handlers
             }
         }
 
-        public override void Dispose()
+        protected void SetAcquireState(bool state)
         {
-            try
+            if (state)
             {
-                if (_joystick != null)
+                try
+                {
+                    if (!DiHandler.DiInstance.IsDeviceAttached(_instanceGuid)) return;
+                    _joystick = new Joystick(DiHandler.DiInstance, _instanceGuid);
+                    _joystick.Properties.BufferSize = 128;
+                    _joystick.Acquire();
+
+                }
+                catch
+                {
+                    _joystick = null;
+                }
+            }
+            else
+            {
+                try
                 {
                     _joystick.Unacquire();
                     _joystick.Dispose();
-                    _joystick = null;
                 }
+                catch
+                {
 
+                }
+                _joystick = null;
             }
-            catch
-            {
-                // ignored
-            }
-            finally
-            {
-                base.Dispose();
-            }
+        }
+
+        public override void Dispose()
+        {
+            SetAcquireState(false);
+            base.Dispose();
         }
     }
 }
