@@ -20,10 +20,8 @@ namespace Providers.Handlers
     /// 
     /// ToDo: Implement IDisposable
     /// 
-    /// ToDo: Implement ConcurrentQueues or other form of thread pooling
+    /// ToDo: Implement ConcurrentQueues and maybe thread pooling
     /// Callbacks should be handled better than just making a function call :P
-    /// 
-    /// ToDo: Poll Thread should start / stop as appropriate
     /// 
     /// ToDo: At each stage of subscription, check that subsequent subsriptions match the one that initialized the object
     /// </summary>
@@ -81,11 +79,11 @@ namespace Providers.Handlers
             if (_devices.TryGetValue(deviceHandle,
                 out ConcurrentDictionary<int, DeviceHandler> handleNode))
             {
-                if (handleNode.TryGetValue(deviceInstance, out DeviceHandler handler))
+                if (handleNode.TryGetValue(deviceInstance, out DeviceHandler deviceHandler))
                 {
-                    if (handler.Unsubscribe(subReq))
+                    if (deviceHandler.Unsubscribe(subReq))
                     {
-                        if (handler.IsEmpty())
+                        if (deviceHandler.IsEmpty())
                         {
                             //ToDo: Dispose handler?
                             handleNode.TryRemove(deviceInstance, out _);
