@@ -84,5 +84,26 @@ namespace SharpDX_DirectInput.Handlers
                 }
             }
         }
+
+        public override void Dispose()
+        {
+            try
+            {
+                if (_joystick != null)
+                {
+                    _joystick.Unacquire();
+                    _joystick.Dispose();
+                    _joystick = null;
+                }
+
+            }
+            catch
+            {
+            }
+            finally
+            {
+                base.Dispose();
+            }
+        }
     }
 }

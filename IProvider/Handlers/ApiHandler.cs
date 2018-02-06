@@ -15,11 +15,6 @@ namespace Providers.Handlers
     /// 
     /// The ApiHandler sorts devices on the DeviceDescriptor
     /// 
-    /// ToDo: Properly implement Unsubscribe
-    /// Dictionaries should be pruned on removal, so the pollthread does not waste time
-    /// 
-    /// ToDo: Implement IDisposable
-    /// 
     /// ToDo: Implement ConcurrentQueues and maybe thread pooling
     /// Callbacks should be handled better than just making a function call :P
     /// 
@@ -85,7 +80,10 @@ namespace Providers.Handlers
                     {
                         if (deviceHandler.IsEmpty())
                         {
-                            //ToDo: Dispose handler?
+                            // Dispose the device (Some APIs like unused devices to be relinquished)
+                            deviceHandler.Dispose();
+
+                            // Clean up dictionaries - walk up the tree, pruning as we go
                             handleNode.TryRemove(deviceInstance, out _);
                             //Log($"Removed dictionary for DeviceInstance {deviceInstance} of DeviceHandle {deviceHandle}");
 

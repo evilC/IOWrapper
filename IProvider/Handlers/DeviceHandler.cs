@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Providers.Handlers
 {
-    public abstract class DeviceHandler
+    public abstract class DeviceHandler : IDisposable
     {
         protected readonly BindingDescriptor BindingDescriptor = null;
 
@@ -98,6 +98,10 @@ namespace Providers.Handlers
         protected void Log(string text)
         {
             Debug.WriteLine($"IOWrapper| DeviceHandler| {text}");
+        }
+
+        public virtual void Dispose()
+        {
         }
     }
 }
