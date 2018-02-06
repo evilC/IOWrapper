@@ -13,7 +13,7 @@ namespace SharpDX_DirectInput.Handlers
         public override void Poll(int pollValue)
         {
             // Normalization of buttons to standard scale occurs here
-            _bindingDictionary[0].State = pollValue == 128 ? 1 : 0;
+            BindingDictionary[0].State = pollValue == 128 ? 1 : 0;
         }
     }
 }

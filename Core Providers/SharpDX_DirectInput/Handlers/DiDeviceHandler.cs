@@ -7,11 +7,10 @@ using SharpDX_DirectInput.Helpers;
 
 namespace SharpDX_DirectInput.Handlers
 {
-    class DiDeviceHandler : DeviceHandler
+    internal class DiDeviceHandler : DeviceHandler
     {
         private Joystick _joystick;
-        private Guid _instanceGuid = Guid.Empty;
-        private InputSubscriptionRequest _inputSubscriptionRequest = null;
+        private readonly Guid _instanceGuid = Guid.Empty;
 
         public DiDeviceHandler(InputSubscriptionRequest subReq) : base(subReq)
         {
@@ -29,21 +28,19 @@ namespace SharpDX_DirectInput.Handlers
             else
             {
                 //ToDo: When should we re-attempt to acquire?
-                if (DiHandler.DiInstance.IsDeviceAttached(_instanceGuid))
-                {
-                    _joystick = new Joystick(DiHandler.DiInstance, _instanceGuid);
-                    _joystick.Properties.BufferSize = 128;
-                    _joystick.Acquire();
-                }
+                if (!DiHandler.DiInstance.IsDeviceAttached(_instanceGuid)) return;
+                _joystick = new Joystick(DiHandler.DiInstance, _instanceGuid);
+                _joystick.Properties.BufferSize = 128;
+                _joystick.Acquire();
             }
         }
 
-        public override int GetBindingKey(InputSubscriptionRequest subReq)
+        protected override int GetBindingKey(InputSubscriptionRequest subReq)
         {
             return (int)Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index];
         }
 
-        public override BindingHandler CreateBindingHandler(InputSubscriptionRequest subReq)
+        protected override BindingHandler CreateBindingHandler(InputSubscriptionRequest subReq)
         {
             switch (subReq.BindingDescriptor.Type)
             {
@@ -78,9 +75,9 @@ namespace SharpDX_DirectInput.Handlers
             {
                 int offset = (int)state.Offset;
                 var bindingType = Lookups.OffsetToType(state.Offset);
-                if (_bindingDictionary.ContainsKey(bindingType) && _bindingDictionary[bindingType].ContainsKey(offset))
+                if (BindingDictionary.ContainsKey(bindingType) && BindingDictionary[bindingType].ContainsKey(offset))
                 {
-                    _bindingDictionary[bindingType][offset].Poll(state.Value);
+                    BindingDictionary[bindingType][offset].Poll(state.Value);
                 }
             }
         }
@@ -99,6 +96,7 @@ namespace SharpDX_DirectInput.Handlers
             }
             catch
             {
+                // ignored
             }
             finally
             {

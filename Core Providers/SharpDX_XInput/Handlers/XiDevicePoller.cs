@@ -19,9 +19,9 @@ namespace SharpDX_XInput.Handlers
         {
             var result = new XiPollResult();
             // Iterate through all buttons and POVs
-            for (int j = 0; j < 13; j++)
+            for (var j = 0; j < 13; j++)
             {
-                bool isPovType = j > 9;
+                var isPovType = j > 9;
                 var bindingType = isPovType ? BindingType.POV : BindingType.Button;
                 var i = isPovType ? j - 10 : j;
                 var flag = Lookup.xinputButtonIdentifiers[bindingType][i];

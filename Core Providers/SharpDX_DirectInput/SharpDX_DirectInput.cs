@@ -28,8 +28,6 @@ namespace SharpDX_DirectInput
         // Handles subscriptions and callbacks
         private DiHandler subscriptionHandler = new DiHandler();
 
-        //private DIPollHandler pollHandler = new DIPollHandler();
-
         private static List<Guid> ActiveProfiles = new List<Guid>();
 
         private static Dictionary<string, List<DeviceInstance>> devicesList;
@@ -38,9 +36,6 @@ namespace SharpDX_DirectInput
         private List<DeviceReport> deviceReports;
 
         static private List<BindingReport>[] povBindingInfos = new List<BindingReport>[4];
-
-        //static private Dictionary<int, string> axisNames = new Dictionary<int, string>()
-        //    { { 0, "X" }, { 1, "Y" }, { 2, "Z" }, { 3, "Rx" }, { 4, "Ry" }, { 5, "Rz" }, { 6, "Sl0" }, { 7, "Sl1" } };
 
         public SharpDX_DirectInput()
         {
@@ -161,12 +156,10 @@ namespace SharpDX_DirectInput
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
             return subscriptionHandler.Subscribe(subReq);
-            //return pollHandler.SubscribeInput(subReq);
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            //return pollHandler.UnsubscribeInput(subReq);
             return subscriptionHandler.Unsubscribe(subReq);
         }
 

@@ -6,9 +6,9 @@ using SharpDX.XInput;
 
 namespace SharpDX_XInput.Handlers
 {
-    public class XiDeviceHandler : DeviceHandler
+    internal class XiDeviceHandler : DeviceHandler
     {
-        private Controller _controller = null;
+        private readonly Controller _controller = null;
 
         private readonly XiDevicePoller _devicePoller = new XiDevicePoller();
 
@@ -22,7 +22,7 @@ namespace SharpDX_XInput.Handlers
         /// </summary>
         /// <param name="subReq"></param>
         /// <returns></returns>
-        public override BindingHandler CreateBindingHandler(InputSubscriptionRequest subReq)
+        protected override BindingHandler CreateBindingHandler(InputSubscriptionRequest subReq)
         {
             return subReq.BindingDescriptor.Type == BindingType.Axis && subReq.BindingDescriptor.Index > 3
                 ? new XiTriggerindingHandler(subReq)
@@ -36,7 +36,7 @@ namespace SharpDX_XInput.Handlers
         /// </summary>
         /// <param name="subReq"></param>
         /// <returns></returns>
-        public override int GetBindingKey(InputSubscriptionRequest subReq)
+        protected override int GetBindingKey(InputSubscriptionRequest subReq)
         {
             return subReq.BindingDescriptor.Type == BindingType.POV ? subReq.BindingDescriptor.SubIndex : base.GetBindingKey(subReq);
         }
@@ -50,10 +50,10 @@ namespace SharpDX_XInput.Handlers
             var pollResult = _devicePoller.ProcessPollResult(state);
             foreach (var pollItem in pollResult.PollItems)
             {
-                if (_bindingDictionary.ContainsKey(pollItem.BindingType)
-                    && _bindingDictionary[pollItem.BindingType].ContainsKey(pollItem.Index))
+                if (BindingDictionary.ContainsKey(pollItem.BindingType)
+                    && BindingDictionary[pollItem.BindingType].ContainsKey(pollItem.Index))
                 {
-                    _bindingDictionary[pollItem.BindingType][pollItem.Index].Poll(pollItem.Value);
+                    BindingDictionary[pollItem.BindingType][pollItem.Index].Poll(pollItem.Value);
                 }
             }
         }

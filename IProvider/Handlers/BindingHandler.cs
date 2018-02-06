@@ -13,23 +13,25 @@ namespace Providers.Handlers
     /// Handles one input (eg a button, axis or POV) and it's derived inputs.
     /// eg a POV that reports as an angle can be bound to as if it were 4 direction buttons...
     /// ... this is handled by a custom BindingHandler
+    /// 
+    /// <see cref="BindingDictionary"/>(Sometimes) use SubIndex from <see cref="BindingDescriptor"/>
     /// </summary>
     public class BindingHandler
     {
-        protected readonly BindingDescriptor BindingDescriptor;
-
-        protected ConcurrentDictionary<int, // SubIndex
-                SubscriptionHandler> _bindingDictionary    // Handler
-            = new ConcurrentDictionary<int, SubscriptionHandler>();
+        private readonly BindingDescriptor _bindingDescriptor;
+                                                                
+        protected ConcurrentDictionary<int,                 // SubIndex (Normally 0)
+                SubscriptionHandler> BindingDictionary     // Handler
+            = new ConcurrentDictionary<int, SubscriptionHandler>(); 
 
         public BindingHandler(InputSubscriptionRequest subReq)
         {
-            BindingDescriptor = subReq.BindingDescriptor;
+            _bindingDescriptor = subReq.BindingDescriptor;
         }
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {
-            return _bindingDictionary
+            return BindingDictionary
                 .GetOrAdd(GetKeyFromSubIndex(subReq.BindingDescriptor.SubIndex), new SubscriptionHandler())
                 .Subscribe(subReq);
         }
@@ -37,25 +39,20 @@ namespace Providers.Handlers
         public virtual bool Unsubscribe(InputSubscriptionRequest subReq)
         {
             var k = GetKeyFromSubIndex(subReq.BindingDescriptor.SubIndex);
-            if (_bindingDictionary.ContainsKey(k))
+            if (!BindingDictionary.ContainsKey(k)) return false;
+            if (!BindingDictionary[k].Unsubscribe(subReq)) return false;
+            if (BindingDictionary[k].IsEmpty())
             {
-                if (_bindingDictionary[k].Unsubscribe(subReq))
-                {
-                    if (_bindingDictionary[k].IsEmpty())
-                    {
-                        _bindingDictionary.TryRemove(k, out _);
-                        //Log($"Removing dictionary {k}");
-                    }
-                    return true;
-                }
+                BindingDictionary.TryRemove(k, out _);
+                //Log($"Removing dictionary {k}");
             }
+            return true;
 
-            return false;
         }
 
         public virtual void Poll(int pollValue)
         {
-            foreach (var subscriptionHandler in _bindingDictionary.Values)
+            foreach (var subscriptionHandler in BindingDictionary.Values)
             {
                 subscriptionHandler.State = pollValue;
             }
@@ -69,7 +66,7 @@ namespace Providers.Handlers
 
         public virtual bool IsEmpty()
         {
-            return _bindingDictionary.IsEmpty;
+            return BindingDictionary.IsEmpty;
         }
 
         protected void Log(string text)

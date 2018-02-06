@@ -23,7 +23,7 @@ namespace SharpDX_DirectInput.Handlers
             if (_currentValue != pollValue)
             {
                 _currentValue = pollValue;
-                foreach (var directionBinding in _bindingDictionary)
+                foreach (var directionBinding in BindingDictionary)
                 {
                     int currentDirectionState = directionBinding.Value.State;
                     var newDirectionState = 
