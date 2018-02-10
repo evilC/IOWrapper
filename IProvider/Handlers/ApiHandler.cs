@@ -17,7 +17,7 @@ namespace Providers.Handlers
     /// 
     /// ToDo: At each stage of subscription, check that subsequent subsriptions match the one that initialized the object
     /// </summary>
-    public abstract class ApiHandler
+    public abstract class ApiHandler : IDisposable
     {
         protected ConcurrentDictionary<string,    // DeviceHandle
             ConcurrentDictionary<int,           // DeviceInstance
@@ -91,6 +91,30 @@ namespace Providers.Handlers
         protected void Log(string text)
         {
             Debug.WriteLine($"IOWrapper| APIHandler| {text}");
+        }
+
+        private bool _disposed = false;
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed) return;
+            if (disposing)
+            {
+                foreach (var deviceHandle in BindingDictionary.Values)
+                {
+                    foreach (var deviceInstance in deviceHandle.Values)
+                    {
+                        deviceInstance.Dispose();
+                    }
+                }
+            }
+
+            _disposed = true;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

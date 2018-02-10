@@ -21,10 +21,10 @@ namespace SharpDX_DirectInput
 
         private Logger _logger;
 
-        bool _disposed = false;
+        private bool _disposed = false;
 
         // Handles subscriptions and callbacks
-        private DiHandler _subscriptionHandler = new DiHandler();
+        private readonly DiHandler _subscriptionHandler = new DiHandler();
 
         private readonly DiReportHandler _diReportHandler = new DiReportHandler();
 
@@ -47,8 +47,7 @@ namespace SharpDX_DirectInput
                 return;
             if (disposing)
             {
-                //pollHandler.Dispose();
-                _subscriptionHandler = null; // ToDo: Implement IDisposable
+                _subscriptionHandler.Dispose();
             }
             _disposed = true;
         }

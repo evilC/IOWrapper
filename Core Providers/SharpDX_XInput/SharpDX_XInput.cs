@@ -45,7 +45,7 @@ namespace SharpDX_XInput
             if (disposing)
             {
                 //pollHandler.Dispose();
-                subscriptionHandler = null; // ToDo: Implement IDisposable
+                subscriptionHandler.Dispose();
             }
             disposed = true;
             logger.Log("Disposed");
