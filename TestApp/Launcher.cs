@@ -15,6 +15,8 @@ namespace TestApp
         static void Main(string[] args)
         {
             Debug.WriteLine("DBGVIEWCLEAR");
+            var inputList = IOW.Instance.GetInputList();
+            var outputList = IOW.Instance.GetOutputList();
 
             DeviceDescriptor genericStick_1 = null;
             DeviceDescriptor genericStick_2 = null;

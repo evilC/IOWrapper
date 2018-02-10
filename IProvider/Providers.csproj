@@ -49,6 +49,7 @@
     <Compile Include="Handlers\ApiHandler.cs" />
     <Compile Include="Handlers\BindingHandler.cs" />
     <Compile Include="Handlers\DeviceHandler.cs" />
+    <Compile Include="Handlers\ReportHandler.cs" />
     <Compile Include="Handlers\SubscriptionHandler.cs" />
     <Compile Include="Helpers\DeviceHelper.cs" />
     <Compile Include="Helpers\Logger.cs" />

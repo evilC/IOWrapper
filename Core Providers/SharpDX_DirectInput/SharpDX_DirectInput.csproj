@@ -57,6 +57,7 @@
     <Compile Include="Handlers\DiDeviceHandler.cs" />
     <Compile Include="Handlers\DiHandler.cs" />
     <Compile Include="Handlers\DiPovBindingHandler.cs" />
+    <Compile Include="Handlers\DiReportHandler.cs" />
     <Compile Include="Helpers\Lookups.cs" />
     <Compile Include="SharpDX_DirectInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
