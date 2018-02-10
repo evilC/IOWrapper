@@ -23,6 +23,7 @@ namespace SharpDX_XInput
         bool disposed = false;
 
         private XiHandler subscriptionHandler = new XiHandler();
+        private XiReportHandler xiReportHandler = new XiReportHandler();
 
         //private static List<Guid> ActiveProfiles = new List<Guid>();
         //private static List<> PluggedInControllers
@@ -30,8 +31,6 @@ namespace SharpDX_XInput
         public SharpDX_XInput()
         {
             logger = new Logger(ProviderName);
-            DeviceQueryer.BuildButtonList();
-            QueryDevices();
         }
 
         public void Dispose()
@@ -78,7 +77,7 @@ namespace SharpDX_XInput
 
         public ProviderReport GetInputList()
         {
-            return DeviceQueryer.GetInputList(ProviderName);
+            return xiReportHandler.GetInputList();
         }
 
         public ProviderReport GetOutputList()
@@ -88,17 +87,12 @@ namespace SharpDX_XInput
 
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
         {
-            return DeviceQueryer.GetInputDeviceReport(subReq);
+            return xiReportHandler.GetInputDeviceReport(subReq);
         }
 
         public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
         {
             return null;
-        }
-
-        private void QueryDevices()
-        {
-            DeviceQueryer.QueryDevices();
         }
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
@@ -138,135 +132,5 @@ namespace SharpDX_XInput
 
         }
         #endregion
-
-        /*
-        #region Handlers
-        #region Poll Handler
-        class XIPollHandler : PollHandler<int>
-        {
-            public override StickHandler CreateStickHandler(InputSubscriptionRequest subReq)
-            {
-                return new XIStickHandler(subReq);
-            }
-
-            public override int GetStickHandlerKey(DeviceDescriptor descriptor)
-            {
-                return Convert.ToInt32(descriptor.DeviceInstance);
-            }
-        }
-        #endregion
-
-        #region Stick Handler
-        public class XIStickHandler : StickHandler
-        {
-            private Controller controller;
-
-            public XIStickHandler(InputSubscriptionRequest subReq) : base(subReq)
-            {
-            }
-
-            public override BindingHandler CreateBindingHandler(BindingDescriptor bindingDescriptor)
-            {
-                return new XIBindingHandler(bindingDescriptor);
-            }
-
-            public override int GetPollKey(BindingDescriptor bindingDescriptor)
-            {
-                return bindingDescriptor.Index;
-            }
-
-            public override void Poll()
-            {
-                if (!controller.IsConnected)
-                    return;
-                var state = controller.GetState();
-
-                if (axisMonitors.ContainsKey(0))
-                {
-                    foreach (var monitor in axisMonitors[0])
-                    {
-                        var value = Convert.ToInt32(state.Gamepad.GetType().GetField(xinputAxisIdentifiers[monitor.Key]).GetValue(state.Gamepad));
-                        monitor.Value.ProcessPollResult(value);
-                    }
-                }
-
-                if (buttonMonitors.ContainsKey(0))
-                {
-                    foreach (var monitor in buttonMonitors[0])
-                    {
-                        var flag = state.Gamepad.Buttons & xinputButtonIdentifiers[(int)monitor.Key];
-                        var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
-                        monitor.Value.ProcessPollResult(value);
-                    }
-                }
-
-                foreach (var povMonitor in povDirectionMonitors)
-                {
-                    foreach (var monitor in povMonitor.Value)
-                    {
-                        var flag = state.Gamepad.Buttons & xinputPovDirectionIdentifiers[monitor.Key];
-                        var value = Convert.ToInt32(flag != GamepadButtonFlags.None);
-                        monitor.Value.ProcessPollResult(value);
-                    }
-                }
-            }
-
-            protected override void _SetAcquireState(bool state)
-            {
-                if (state)
-                {
-                    controller = new Controller((UserIndex)deviceInstance);
-                    logger.Log("Aquired controller {0}", deviceInstance + 1);
-                }
-                else
-                {
-                    controller = null;
-                    logger.Log("Relinquished controller {0}", deviceInstance + 1);
-                }
-            }
-
-            protected override bool GetAcquireState()
-            {
-                return controller != null;
-            }
-        }
-
-        #endregion
-
-        #region Binding Handler
-        public class XIBindingHandler : PolledBindingHandler
-        {
-            public XIBindingHandler(BindingDescriptor descriptor) : base(descriptor)
-            {
-            }
-
-            public override int ConvertValue(int state)
-            {
-                int reportedValue = 0;
-                switch (bindingDescriptor.Type)
-                {
-                    case BindingType.Axis:
-                        // XI reports as a signed int
-                        reportedValue = state;
-                        break;
-                    case BindingType.Button:
-                        // XInput reports as 0..1 for buttons
-                        reportedValue = state;
-                        break;
-                    case BindingType.POV:
-                        reportedValue = state;
-                        break;
-                    default:
-                        break;
-                }
-                return reportedValue;
-            }
-
-
-            #endregion
-
-            #endregion
-        }
-        */
     }
 }
