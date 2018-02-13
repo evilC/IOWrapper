@@ -68,9 +68,9 @@
     <PreBuildEvent>IF EXIST "$(ProjectDir)Dependencies\*" xcopy /Y "$(ProjectDir)Dependencies\*" "$(TargetDir)"</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>if exist "$(SolutionDir)..\Built Providers\$(ProjectName)" rmdir "$(SolutionDir)..\Built Providers\$(ProjectName)" /s /q
-mkdir "$(SolutionDir)..\Built Providers\$(ProjectName)"
-xcopy /Y "$(TargetDir)*.dll" "$(SolutionDir)..\Built Providers\$(ProjectName)"
+    <PostBuildEvent>if exist "$(SolutionDir)Artifacts\Providers\$(ProjectName)" rmdir "$(SolutionDir)Artifacts\Providers\$(ProjectName)" /s /q
+mkdir "$(SolutionDir)Artifacts\Providers\$(ProjectName)"
+xcopy /Y "$(TargetDir)*.dll" "$(SolutionDir)Artifacts\Providers\$(ProjectName)"
 </PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\IOWrapper\packages\Tobii.Interaction.0.7.3\build\Tobii.Interaction.targets" Condition="Exists('..\..\IOWrapper\packages\Tobii.Interaction.0.7.3\build\Tobii.Interaction.targets')" />

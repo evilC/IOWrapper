@@ -89,7 +89,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)*.dll" "$(ProjectDir)"
+    <PostBuildEvent>if not exist "$(SolutionDir)Artifacts" mkdir "$(SolutionDir)Artifacts\IOController"
+copy "$(TargetDir)*.dll" "$(SolutionDir)Artifacts\IOController"
 
 
 </PostBuildEvent>
