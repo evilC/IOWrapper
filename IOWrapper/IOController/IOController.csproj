@@ -50,38 +50,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\..\Core Providers\Core_DS4WindowsApi\Core_DS4WindowsApi.csproj">
-      <Project>{45fb25bc-4826-4cd1-8fd0-b669176496e1}</Project>
-      <Name>Core_DS4WindowsApi</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core Providers\Core_Interception\Core_Interception.csproj">
-      <Project>{3473e273-6859-49b3-a782-e4c7a5bf51f4}</Project>
-      <Name>Core_Interception</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core Providers\Core_TitanOne\Core_TitanOne.csproj">
-      <Project>{081e0db4-2b91-418e-a609-c1b70dddfecb}</Project>
-      <Name>Core_TitanOne</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core Providers\Core_Tobii_Interaction\Core_Tobii_Interaction.csproj">
-      <Project>{4cba4863-015b-43e4-804b-199a198dd046}</Project>
-      <Name>Core_Tobii_Interaction</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core Providers\Core_ViGEm\Core_ViGEm.csproj">
-      <Project>{2a15af30-2919-42b1-95b4-ce0bfdb924fb}</Project>
-      <Name>Core_ViGEm</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core Providers\Core_vJoyInterfaceWrap\Core_vJoyInterfaceWrap.csproj">
-      <Project>{10a9a35a-9cec-4271-ad68-65a9661638f6}</Project>
-      <Name>Core_vJoyInterfaceWrap</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core Providers\SharpDX_DirectInput\SharpDX_DirectInput.csproj">
-      <Project>{aa825875-9cb0-4973-bb5c-cfc53962d1c2}</Project>
-      <Name>SharpDX_DirectInput</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core Providers\SharpDX_XInput\SharpDX_XInput.csproj">
-      <Project>{2072b5a7-8069-433c-b4db-e150c26e9a49}</Project>
-      <Name>SharpDX_XInput</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\IProvider\Providers.csproj">
       <Project>{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}</Project>
       <Name>Providers</Name>
@@ -96,8 +64,7 @@ copy "$(TargetDir)*.dll" "$(SolutionDir)Artifacts\IOController"
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>rmdir "$(SolutionDir)Artifacts" /s /q</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

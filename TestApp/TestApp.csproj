@@ -72,10 +72,14 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>if exist "$(TargetDir)*.dll" del /Q "$(TargetDir)*.dll"
-if exist "$(TargetDir)Providers" rmdir "$(TargetDir)Providers" /s /q
-mkdir "$(TargetDir)Providers"
-if exist "$(SolutionDir)Artifacts\Providers" xcopy /S /Y "$(SolutionDir)Artifacts\Providers\*" "$(TargetDir)Providers"
+
+
 </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>REM if exist "$(TargetDir)Providers" rmdir "$(TargetDir)Providers" /s /q
+mkdir "$(TargetDir)Providers"
+xcopy /S /Y "$(SolutionDir)Artifacts\Providers\*" "$(TargetDir)Providers"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
