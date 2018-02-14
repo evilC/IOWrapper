@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System;
 using System.Diagnostics;
-using HidWizards.IOWrapper.DataObjects;
+using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface;
 
-namespace HidWizards.IOWrapper.Controller
+namespace HidWizards.IOWrapper.Core
 {
     public enum InputTypes { Button, Axis }
 

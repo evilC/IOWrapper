@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using HidWizards.IOWrapper.ProviderInterface;
 using HidWizards.IOWrapper.ProviderInterface.Handlers;
 using SharpDX.XInput;
-using HidWizards.IOWrapper.DataObjects;
+using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace SharpDX_XInput.Handlers
 {

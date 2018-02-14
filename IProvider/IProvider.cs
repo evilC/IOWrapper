@@ -1,6 +1,6 @@
 ﻿using System;
 using HidWizards.IOWrapper.ProviderInterface;
-using HidWizards.IOWrapper.DataObjects;
+using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace HidWizards.IOWrapper.ProviderInterface
 {

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Core_TitanOne;
 using HidWizards.IOWrapper.ProviderInterface;
-using HidWizards.IOWrapper.DataObjects;
+using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Core_TitanOne.Output
 {

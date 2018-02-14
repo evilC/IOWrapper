@@ -7,8 +7,8 @@
     <ProjectGuid>{D9447B59-4B62-4BD8-BE91-5F5AB1D8F1BD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HidWizards.IOWrapper.Controller</RootNamespace>
-    <AssemblyName>IOWrapper</AssemblyName>
+    <RootNamespace>HidWizards.IOWrapper.Core</RootNamespace>
+    <AssemblyName>IOWrapper.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

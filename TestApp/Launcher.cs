@@ -1,4 +1,4 @@
-﻿using HidWizards.IOWrapper.Controller;
+﻿using HidWizards.IOWrapper.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TestApp.Wrappers;
-using HidWizards.IOWrapper.DataObjects;
+using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace TestApp
 {

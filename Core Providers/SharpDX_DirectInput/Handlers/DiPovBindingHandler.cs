@@ -1,7 +1,7 @@
 ﻿using HidWizards.IOWrapper.ProviderInterface;
 using HidWizards.IOWrapper.ProviderInterface.Handlers;
 using SharpDX_DirectInput.Helpers;
-using HidWizards.IOWrapper.DataObjects;
+using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace SharpDX_DirectInput.Handlers
 {

@@ -7,8 +7,8 @@
     <ProjectGuid>{81851977-0421-4EBD-B066-0FE03F02589E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HidWizards.IOWrapper.DataObjects</RootNamespace>
-    <AssemblyName>DataObjects</AssemblyName>
+    <RootNamespace>HidWizards.IOWrapper.DataTransferObjects</RootNamespace>
+    <AssemblyName>IOWrapper.DTOs</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

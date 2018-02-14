@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HidWizards.IOWrapper.ProviderInterface</RootNamespace>
-    <AssemblyName>IProvider</AssemblyName>
+    <AssemblyName>IOWrapper.IProvider</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

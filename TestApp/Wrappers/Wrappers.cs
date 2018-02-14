@@ -1,10 +1,10 @@
-﻿using HidWizards.IOWrapper.Controller;
+﻿using HidWizards.IOWrapper.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HidWizards.IOWrapper.DataObjects;
+using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace TestApp.Wrappers
 {

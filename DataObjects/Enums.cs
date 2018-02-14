@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HidWizards.IOWrapper.DataObjects
+namespace HidWizards.IOWrapper.DataTransferObjects
 {
     /// <summary>
     /// Describes what kind of input or output you are trying to read or emulate

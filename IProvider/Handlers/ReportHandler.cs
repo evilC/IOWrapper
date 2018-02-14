@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using HidWizards.IOWrapper.DataObjects;
+using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 {
