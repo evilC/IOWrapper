@@ -56,14 +56,15 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not exist "$(SolutionDir)Artifacts" mkdir "$(SolutionDir)Artifacts\IOController"
-copy "$(TargetDir)*.dll" "$(SolutionDir)Artifacts\IOController"
+    <PostBuildEvent>if not exist "$(SolutionDir)Artifacts" mkdir "$(SolutionDir)Artifacts
+xcopy /Y /i "$(TargetDir)*.dll" "$(SolutionDir)Artifacts\IOController"
 
 
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>rmdir "$(SolutionDir)Artifacts" /s /q</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -75,7 +75,7 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>if not exist "$(TargetDir)Providers" mkdir "$(TargetDir)Providers"
+    <PostBuildEvent>if exist "$(TargetDir)Providers" rmdir "$(TargetDir)Providers" /s /q
 xcopy /S /Y /i "$(SolutionDir)Artifacts\Providers" "$(TargetDir)Providers"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

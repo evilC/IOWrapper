@@ -31,6 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -73,9 +76,7 @@
     <PreBuildEvent>IF EXIST "$(ProjectDir)Dependencies\*" xcopy /Y "$(ProjectDir)Dependencies\*" "$(TargetDir)"</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>if exist "$(SolutionDir)Artifacts\Providers\$(ProjectName)" rmdir "$(SolutionDir)Artifacts\Providers\$(ProjectName)" /s /q
-mkdir "$(SolutionDir)Artifacts\Providers\$(ProjectName)"
-xcopy /Y "$(TargetDir)*.dll" "$(SolutionDir)Artifacts\Providers\$(ProjectName)"
+    <PostBuildEvent>
 </PostBuildEvent>
   </PropertyGroup>
 </Project>

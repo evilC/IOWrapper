@@ -29,6 +29,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Nefarius.ViGEmClient">
       <HintPath>Dependencies\Nefarius.ViGEmClient.dll</HintPath>
@@ -60,8 +63,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>if exist "$(SolutionDir)Artifacts\Providers\$(ProjectName)" rmdir "$(SolutionDir)Artifacts\Providers\$(ProjectName)" /s /q
-mkdir "$(SolutionDir)Artifacts\Providers\$(ProjectName)"
-xcopy /Y "$(TargetDir)*.dll" "$(SolutionDir)Artifacts\Providers\$(ProjectName)"
+xcopy /Y /i "$(TargetDir)*.dll" "$(SolutionDir)Artifacts\Providers\$(ProjectName)"
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
