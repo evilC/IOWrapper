@@ -57,9 +57,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DTOs\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\DataObjects\DataObjects.csproj">
       <Project>{81851977-0421-4ebd-b066-0fe03f02589e}</Project>
