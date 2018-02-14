@@ -64,9 +64,9 @@
       <Project>{d9447b59-4b62-4bd8-be91-5f5ab1d8f1bd}</Project>
       <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DataObjects\DataObjects.csproj">
+    <ProjectReference Include="..\DataObjects\DTOs.csproj">
       <Project>{81851977-0421-4ebd-b066-0fe03f02589e}</Project>
-      <Name>DataObjects</Name>
+      <Name>DTOs</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

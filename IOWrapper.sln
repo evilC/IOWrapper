@@ -46,7 +46,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpDX_XInput", "Core Prov
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core_Tobii_Interaction", "Core Providers\Core_Tobii_Interaction\Core_Tobii_Interaction.csproj", "{2EB32BCC-918E-4197-831C-3B0867826213}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataObjects", "DataObjects\DataObjects.csproj", "{81851977-0421-4EBD-B066-0FE03F02589E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOs", "DataObjects\DTOs.csproj", "{81851977-0421-4EBD-B066-0FE03F02589E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{D9447B59-4B62-4BD8-BE91-5F5AB1D8F1BD}"
 EndProject

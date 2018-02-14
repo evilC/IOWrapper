@@ -59,9 +59,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\DataObjects\DataObjects.csproj">
+    <ProjectReference Include="..\..\DataObjects\DTOs.csproj">
       <Project>{81851977-0421-4ebd-b066-0fe03f02589e}</Project>
-      <Name>DataObjects</Name>
+      <Name>DTOs</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\ProviderInterface\ProviderInterface.csproj">
