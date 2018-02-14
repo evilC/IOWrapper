@@ -60,6 +60,7 @@
     <ProjectReference Include="..\..\ProviderInterface\ProviderInterface.csproj">
       <Project>{f6eaf2bc-f362-4ecd-94e5-617ca37a4210}</Project>
       <Name>ProviderInterface</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
