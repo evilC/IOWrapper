@@ -1,4 +1,4 @@
-﻿using IProvider;
+﻿using HidWizards.IOWrapper.ProviderInterface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,17 +15,17 @@ namespace TestApp.Wrappers
     /// </summary>
     public class IOW
     {
-        private static IOWrapper.IOController instance;
+        private static HidWizards.IOWrapper.ProviderInterface.IOController instance;
 
         private IOW() { }
 
-        public static IOWrapper.IOController Instance
+        public static HidWizards.IOWrapper.ProviderInterface.IOController Instance
         {
             get
             {
                 if (instance == null)
                 {
-                    instance = new IOWrapper.IOController();
+                    instance = new HidWizards.IOWrapper.ProviderInterface.IOController();
                 }
                 return instance;
             }

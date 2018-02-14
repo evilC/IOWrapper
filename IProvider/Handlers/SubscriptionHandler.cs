@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading;
 
-namespace IProvider.Handlers
+namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 {
     /// <summary>
     /// Handles storing of subscriptions for a given input, and handling of callbacks

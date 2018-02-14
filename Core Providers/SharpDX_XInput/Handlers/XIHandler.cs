@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using IProvider;
-using IProvider.Handlers;
+using HidWizards.IOWrapper.ProviderInterface;
+using HidWizards.IOWrapper.ProviderInterface.Handlers;
 
 namespace SharpDX_XInput.Handlers
 {

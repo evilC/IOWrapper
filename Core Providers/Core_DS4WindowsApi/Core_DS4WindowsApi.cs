@@ -4,8 +4,8 @@ https://github.com/evilC/DS4WindowsApi
 */
 
 using DS4Windows;
-using IProvider;
-using IProvider.Helpers;
+using HidWizards.IOWrapper.ProviderInterface;
+using HidWizards.IOWrapper.ProviderInterface.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -15,8 +15,8 @@ using System.Threading.Tasks;
 
 namespace Core_DS4WindowsApi
 {
-    [Export(typeof(IProvider.IProvider))]
-    public class Core_DS4WindowsApi : IProvider.IProvider
+    [Export(typeof(IProvider))]
+    public class Core_DS4WindowsApi : IProvider
     {
         private Logger logger;
         DS4ControllerHandler[] connectedControllers = new DS4ControllerHandler[4];

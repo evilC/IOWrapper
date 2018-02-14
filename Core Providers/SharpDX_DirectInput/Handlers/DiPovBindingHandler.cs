@@ -1,5 +1,5 @@
-﻿using IProvider;
-using IProvider.Handlers;
+﻿using HidWizards.IOWrapper.ProviderInterface;
+using HidWizards.IOWrapper.ProviderInterface.Handlers;
 using SharpDX_DirectInput.Helpers;
 
 namespace SharpDX_DirectInput.Handlers

@@ -1,4 +1,4 @@
-﻿using IProvider;
+﻿using HidWizards.IOWrapper.ProviderInterface;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace IProvider.Handlers
+namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 {
     /// <summary>
     /// A generic handler for various APIs to support input

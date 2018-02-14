@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using IProvider;
+using HidWizards.IOWrapper.ProviderInterface;
 
 namespace SharpDX_XInput.Helpers
 {

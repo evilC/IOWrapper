@@ -1,5 +1,5 @@
-﻿using IProvider;
-using IProvider.Helpers;
+﻿using HidWizards.IOWrapper.ProviderInterface;
+using HidWizards.IOWrapper.ProviderInterface.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -16,8 +16,8 @@ using System.Xml;
 
 namespace Core_Interception
 {
-    [Export(typeof(IProvider.IProvider))]
-    public class Core_Interception : IProvider.IProvider
+    [Export(typeof(IProvider))]
+    public class Core_Interception : IProvider
     {
         public bool IsLive { get { return isLive; } }
         private bool isLive = false;

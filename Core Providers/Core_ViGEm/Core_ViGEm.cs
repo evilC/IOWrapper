@@ -2,8 +2,8 @@
 using Nefarius.ViGEm.Client.Targets;
 using Nefarius.ViGEm.Client.Targets.DualShock4;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
-using IProvider;
-using IProvider.Helpers;
+using HidWizards.IOWrapper.ProviderInterface;
+using HidWizards.IOWrapper.ProviderInterface.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -14,8 +14,8 @@ using System.Threading.Tasks;
 
 namespace Core_ViGEm
 {
-    [Export(typeof(IProvider.IProvider))]
-    public class Core_ViGEm : IProvider.IProvider
+    [Export(typeof(IProvider))]
+    public class Core_ViGEm : IProvider
     //public class Core_ViGEm
     {
         public bool IsLive { get { return isLive; } }

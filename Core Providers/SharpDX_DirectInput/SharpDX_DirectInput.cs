@@ -1,21 +1,21 @@
 ﻿using SharpDX.DirectInput;
 using System.ComponentModel.Composition;
-using IProvider;
+using HidWizards.IOWrapper.ProviderInterface;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using Microsoft.Win32;
 using System.Linq;
 using System.Diagnostics;
-using IProvider.Handlers;
-using IProvider.Helpers;
+using HidWizards.IOWrapper.ProviderInterface.Handlers;
+using HidWizards.IOWrapper.ProviderInterface.Helpers;
 using SharpDX_DirectInput.Handlers;
 using SharpDX_DirectInput.Helpers;
 
 namespace SharpDX_DirectInput
 {
-    [Export(typeof(IProvider.IProvider))]
-    public class SharpDX_DirectInput : IProvider.IProvider
+    [Export(typeof(IProvider))]
+    public class SharpDX_DirectInput : IProvider
     {
         public bool IsLive { get; } = true;
 

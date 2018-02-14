@@ -1,19 +1,19 @@
 ﻿using System;
 using System.ComponentModel.Composition;
-using IProvider;
+using HidWizards.IOWrapper.ProviderInterface;
 using System.Collections.Generic;
 using SharpDX.XInput;
 using System.Threading;
 using System.Diagnostics;
-using IProvider.Handlers;
-using IProvider.Helpers;
+using HidWizards.IOWrapper.ProviderInterface.Handlers;
+using HidWizards.IOWrapper.ProviderInterface.Helpers;
 using SharpDX_XInput.Handlers;
 using SharpDX_XInput.Helpers;
 
 namespace SharpDX_XInput
 {
-    [Export(typeof(IProvider.IProvider))]
-    public class SharpDX_XInput : IProvider.IProvider
+    [Export(typeof(IProvider))]
+    public class SharpDX_XInput : IProvider
     {
         public bool IsLive { get { return isLive; } }
         private bool isLive = true;

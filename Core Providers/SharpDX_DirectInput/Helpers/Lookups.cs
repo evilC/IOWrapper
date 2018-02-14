@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Win32;
-using IProvider;
+using HidWizards.IOWrapper.ProviderInterface;
 using SharpDX.DirectInput;
 using SharpDX_DirectInput.Handlers;
 

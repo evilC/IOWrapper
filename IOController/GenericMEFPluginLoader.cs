@@ -19,7 +19,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 
-namespace IOWrapper
+namespace HidWizards.IOWrapper.ProviderInterface
 {
     public class GenericMEFPluginLoader<T>
     {

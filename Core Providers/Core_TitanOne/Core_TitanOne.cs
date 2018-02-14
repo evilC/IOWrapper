@@ -1,5 +1,5 @@
 ﻿using Core_TitanOne.Output;
-using IProvider;
+using HidWizards.IOWrapper.ProviderInterface;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -12,8 +12,8 @@ using System.Threading.Tasks;
 
 namespace Core_TitanOne
 {
-    [Export(typeof(IProvider.IProvider))]
-    public class Core_TitanOne : IProvider.IProvider
+    [Export(typeof(IProvider))]
+    public class Core_TitanOne : IProvider
     {
         sbyte[] outputState = new sbyte[GCMAPIConstants.Output];
         private Dictionary<string, OutputHandler> outputHandlers = new Dictionary<string, OutputHandler>(StringComparer.OrdinalIgnoreCase)

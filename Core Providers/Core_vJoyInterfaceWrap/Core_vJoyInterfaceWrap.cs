@@ -1,4 +1,4 @@
-﻿using IProvider;
+﻿using HidWizards.IOWrapper.ProviderInterface;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace Core_vJoyInterfaceWrap
 {
-    [Export(typeof(IProvider.IProvider))]
-    public class Core_vJoyInterfaceWrap : IProvider.IProvider
+    [Export(typeof(IProvider))]
+    public class Core_vJoyInterfaceWrap : IProvider
     {
         public bool IsLive { get { return isLive; } }
         private bool isLive = false;

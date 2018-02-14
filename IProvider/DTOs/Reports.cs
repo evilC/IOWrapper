@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IProvider
+namespace HidWizards.IOWrapper.ProviderInterface
 {
     // Reports allow the back-end to tell the front-end what capabilities are available
     // Reports comprise of two parts:

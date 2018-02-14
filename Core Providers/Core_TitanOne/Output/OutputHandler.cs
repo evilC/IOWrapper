@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Core_TitanOne;
-using IProvider;
+using HidWizards.IOWrapper.ProviderInterface;
 
 namespace Core_TitanOne.Output
 {

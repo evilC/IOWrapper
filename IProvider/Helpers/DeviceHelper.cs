@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IProvider.Helpers
+namespace HidWizards.IOWrapper.ProviderInterface.Helpers
 {
     static public class DeviceHelper
     {

@@ -1,4 +1,4 @@
-﻿using IProvider;
+﻿using HidWizards.IOWrapper.ProviderInterface;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

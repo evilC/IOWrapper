@@ -1,4 +1,4 @@
-﻿using IProvider;
+﻿using HidWizards.IOWrapper.ProviderInterface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 
-namespace IProvider.Handlers
+namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 {
     /// <summary>
     /// Handles one input (eg a button, axis or POV) and it's derived inputs.

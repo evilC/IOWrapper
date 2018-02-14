@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading;
-using IProvider;
-using IProvider.Handlers;
+using HidWizards.IOWrapper.ProviderInterface;
+using HidWizards.IOWrapper.ProviderInterface.Handlers;
 using SharpDX.DirectInput;
 using SharpDX_DirectInput.Helpers;
 

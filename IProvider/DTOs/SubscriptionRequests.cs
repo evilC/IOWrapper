@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IProvider
+namespace HidWizards.IOWrapper.ProviderInterface
 {
     /// <summary>
     /// SubscriptionRequests allow the front end to add or remove Bindings
