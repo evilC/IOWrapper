@@ -55,10 +55,12 @@
     <ProjectReference Include="..\..\DataObjects\DataObjects.csproj">
       <Project>{81851977-0421-4ebd-b066-0fe03f02589e}</Project>
       <Name>DataObjects</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\IProvider\IProvider.csproj">
       <Project>{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}</Project>
       <Name>IProvider</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
