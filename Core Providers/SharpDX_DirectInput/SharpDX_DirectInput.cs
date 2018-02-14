@@ -1,14 +1,14 @@
 ﻿using SharpDX.DirectInput;
 using System.ComponentModel.Composition;
-using HidWizards.IOWrapper.ProviderInterface;
+using HidWizards.IOWrapper.API;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using Microsoft.Win32;
 using System.Linq;
 using System.Diagnostics;
-using HidWizards.IOWrapper.ProviderInterface.Handlers;
-using HidWizards.IOWrapper.ProviderInterface.Helpers;
+using HidWizards.IOWrapper.API.Handlers;
+using HidWizards.IOWrapper.API.Helpers;
 using SharpDX_DirectInput.Handlers;
 using SharpDX_DirectInput.Helpers;
 
@@ -21,7 +21,7 @@ namespace SharpDX_DirectInput
 
         private Logger _logger;
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         // Handles subscriptions and callbacks
         private readonly DiHandler _subscriptionHandler = new DiHandler();

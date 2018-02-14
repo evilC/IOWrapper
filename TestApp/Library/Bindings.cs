@@ -1,4 +1,4 @@
-﻿using HidWizards.IOWrapper.ProviderInterface;
+﻿using HidWizards.IOWrapper.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,32 +21,32 @@ namespace TestApp.Library
         public static class Generic
         #region Generic
         {
-            public static BindingDescriptor Button1 = new BindingDescriptor() { Index = 0, Type = BindingType.Button };
-            public static BindingDescriptor Button2 = new BindingDescriptor() { Index = 1, Type = BindingType.Button };
-            public static BindingDescriptor Button3 = new BindingDescriptor() { Index = 2, Type = BindingType.Button };
-            public static BindingDescriptor Button4 = new BindingDescriptor() { Index = 3, Type = BindingType.Button };
-            public static BindingDescriptor Button5 = new BindingDescriptor() { Index = 4, Type = BindingType.Button };
-            public static BindingDescriptor Button6 = new BindingDescriptor() { Index = 5, Type = BindingType.Button };
-            public static BindingDescriptor Button7 = new BindingDescriptor() { Index = 6, Type = BindingType.Button };
-            public static BindingDescriptor Button8 = new BindingDescriptor() { Index = 7, Type = BindingType.Button };
-            public static BindingDescriptor Button9 = new BindingDescriptor() { Index = 8, Type = BindingType.Button };
-            public static BindingDescriptor Button10 = new BindingDescriptor() { Index = 9, Type = BindingType.Button };
+            public static BindingDescriptor Button1 = new BindingDescriptor { Index = 0, Type = BindingType.Button };
+            public static BindingDescriptor Button2 = new BindingDescriptor { Index = 1, Type = BindingType.Button };
+            public static BindingDescriptor Button3 = new BindingDescriptor { Index = 2, Type = BindingType.Button };
+            public static BindingDescriptor Button4 = new BindingDescriptor { Index = 3, Type = BindingType.Button };
+            public static BindingDescriptor Button5 = new BindingDescriptor { Index = 4, Type = BindingType.Button };
+            public static BindingDescriptor Button6 = new BindingDescriptor { Index = 5, Type = BindingType.Button };
+            public static BindingDescriptor Button7 = new BindingDescriptor { Index = 6, Type = BindingType.Button };
+            public static BindingDescriptor Button8 = new BindingDescriptor { Index = 7, Type = BindingType.Button };
+            public static BindingDescriptor Button9 = new BindingDescriptor { Index = 8, Type = BindingType.Button };
+            public static BindingDescriptor Button10 = new BindingDescriptor { Index = 9, Type = BindingType.Button };
             public static BindingDescriptor AxisX = Axis1;
             public static BindingDescriptor AxisY = Axis2;
-            public static BindingDescriptor Axis1 = new BindingDescriptor() { Index = 0, Type = BindingType.Axis };
-            public static BindingDescriptor Axis2 = new BindingDescriptor() { Index = 1, Type = BindingType.Axis };
-            public static BindingDescriptor Axis3 = new BindingDescriptor() { Index = 2, Type = BindingType.Axis };
-            public static BindingDescriptor Axis4 = new BindingDescriptor() { Index = 3, Type = BindingType.Axis };
-            public static BindingDescriptor Axis5 = new BindingDescriptor() { Index = 4, Type = BindingType.Axis };
-            public static BindingDescriptor Axis6 = new BindingDescriptor() { Index = 5, Type = BindingType.Axis };
-            public static BindingDescriptor POV1Up = new BindingDescriptor() { Index = 0, SubIndex = 0, Type = BindingType.POV };
-            public static BindingDescriptor POV1Right = new BindingDescriptor() { Index = 0, SubIndex = 1, Type = BindingType.POV };
-            public static BindingDescriptor POV1Down = new BindingDescriptor() { Index = 0, SubIndex = 2, Type = BindingType.POV };
-            public static BindingDescriptor POV1Left = new BindingDescriptor() { Index = 0, SubIndex = 3, Type = BindingType.POV };
-            public static BindingDescriptor POV2Up = new BindingDescriptor() { Index = 1, SubIndex = 0, Type = BindingType.POV };
-            public static BindingDescriptor POV2Right = new BindingDescriptor() { Index = 1, SubIndex = 1, Type = BindingType.POV };
-            public static BindingDescriptor POV2Down = new BindingDescriptor() { Index = 1, SubIndex = 2, Type = BindingType.POV };
-            public static BindingDescriptor POV2Left = new BindingDescriptor() { Index = 1, SubIndex = 3, Type = BindingType.POV };
+            public static BindingDescriptor Axis1 = new BindingDescriptor { Index = 0, Type = BindingType.Axis };
+            public static BindingDescriptor Axis2 = new BindingDescriptor { Index = 1, Type = BindingType.Axis };
+            public static BindingDescriptor Axis3 = new BindingDescriptor { Index = 2, Type = BindingType.Axis };
+            public static BindingDescriptor Axis4 = new BindingDescriptor { Index = 3, Type = BindingType.Axis };
+            public static BindingDescriptor Axis5 = new BindingDescriptor { Index = 4, Type = BindingType.Axis };
+            public static BindingDescriptor Axis6 = new BindingDescriptor { Index = 5, Type = BindingType.Axis };
+            public static BindingDescriptor POV1Up = new BindingDescriptor { Index = 0, SubIndex = 0, Type = BindingType.POV };
+            public static BindingDescriptor POV1Right = new BindingDescriptor { Index = 0, SubIndex = 1, Type = BindingType.POV };
+            public static BindingDescriptor POV1Down = new BindingDescriptor { Index = 0, SubIndex = 2, Type = BindingType.POV };
+            public static BindingDescriptor POV1Left = new BindingDescriptor { Index = 0, SubIndex = 3, Type = BindingType.POV };
+            public static BindingDescriptor POV2Up = new BindingDescriptor { Index = 1, SubIndex = 0, Type = BindingType.POV };
+            public static BindingDescriptor POV2Right = new BindingDescriptor { Index = 1, SubIndex = 1, Type = BindingType.POV };
+            public static BindingDescriptor POV2Down = new BindingDescriptor { Index = 1, SubIndex = 2, Type = BindingType.POV };
+            public static BindingDescriptor POV2Left = new BindingDescriptor { Index = 1, SubIndex = 3, Type = BindingType.POV };
         }
         #endregion
 

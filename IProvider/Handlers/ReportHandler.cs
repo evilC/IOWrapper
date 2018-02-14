@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HidWizards.IOWrapper.ProviderInterface.Handlers
+namespace HidWizards.IOWrapper.API.Handlers
 {
     public abstract class ReportHandler
     {
@@ -26,14 +26,14 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         public virtual ProviderReport BuildProviderReport()
         {
-            var providerReport = new ProviderReport()
+            var providerReport = new ProviderReport
             {
                 Title = Title,
                 Description = Description,
                 API = Api,
-                ProviderDescriptor = new ProviderDescriptor()
+                ProviderDescriptor = new ProviderDescriptor
                 {
-                    ProviderName = ProviderName,
+                    ProviderName = ProviderName
                 }
             };
 

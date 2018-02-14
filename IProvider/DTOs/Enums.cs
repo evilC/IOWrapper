@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HidWizards.IOWrapper.ProviderInterface
+namespace HidWizards.IOWrapper.API
 {
     /// <summary>
     /// Describes what kind of input or output you are trying to read or emulate
     /// </summary>
-    public enum BindingType { Axis, Button, POV };
+    public enum BindingType { Axis, Button, POV }
 
     /// <summary>
     /// Describes the reporting style of a Binding

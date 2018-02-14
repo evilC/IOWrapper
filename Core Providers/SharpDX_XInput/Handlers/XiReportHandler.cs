@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HidWizards.IOWrapper.ProviderInterface;
-using HidWizards.IOWrapper.ProviderInterface.Handlers;
+using HidWizards.IOWrapper.API;
+using HidWizards.IOWrapper.API.Handlers;
 using SharpDX.XInput;
 using SharpDX_XInput.Helpers;
 
@@ -56,10 +56,10 @@ namespace SharpDX_XInput.Handlers
 
         public static DeviceReport BuildXInputDevice(int id)
         {
-            return new DeviceReport()
+            return new DeviceReport
             {
                 DeviceName = "Xbox Controller " + (id + 1),
-                DeviceDescriptor = new DeviceDescriptor()
+                DeviceDescriptor = new DeviceDescriptor
                 {
                     DeviceHandle = "xb360",
                     DeviceInstance = id
@@ -86,57 +86,57 @@ namespace SharpDX_XInput.Handlers
 
         public static void BuildInputList()
         {
-            _buttonInfo = new DeviceReportNode()
+            _buttonInfo = new DeviceReportNode
             {
                 Title = "Buttons"
             };
             for (var b = 0; b < 10; b++)
             {
-                _buttonInfo.Bindings.Add(new BindingReport()
+                _buttonInfo.Bindings.Add(new BindingReport
                 {
                     Title = Lookup.buttonNames[b],
                     Category = BindingCategory.Momentary,
-                    BindingDescriptor = new BindingDescriptor()
+                    BindingDescriptor = new BindingDescriptor
                     {
                         Index = b,
-                        Type = BindingType.Button,
+                        Type = BindingType.Button
                     }
                 });
             }
 
-            _axisInfo = new DeviceReportNode()
+            _axisInfo = new DeviceReportNode
             {
                 Title = "Axes"
             };
             for (var a = 0; a < 6; a++)
             {
-                _axisInfo.Bindings.Add(new BindingReport()
+                _axisInfo.Bindings.Add(new BindingReport
                 {
                     Title = Lookup.axisNames[a],
                     Category = (a < 4 ? BindingCategory.Signed : BindingCategory.Unsigned),
-                    BindingDescriptor = new BindingDescriptor()
+                    BindingDescriptor = new BindingDescriptor
                     {
                         Index = a,
-                        Type = BindingType.Axis,
+                        Type = BindingType.Axis
                     }
                 });
             }
 
-            _povInfo = new DeviceReportNode()
+            _povInfo = new DeviceReportNode
             {
                 Title = "DPad"
             };
             for (var d = 0; d < 4; d++)
             {
-                _povInfo.Bindings.Add(new BindingReport()
+                _povInfo.Bindings.Add(new BindingReport
                 {
                     Title = Lookup.povNames[d],
                     Category = BindingCategory.Momentary,
-                    BindingDescriptor = new BindingDescriptor()
+                    BindingDescriptor = new BindingDescriptor
                     {
                         Index = 0,
                         SubIndex = d,
-                        Type = BindingType.POV,
+                        Type = BindingType.POV
                     }
                 });
             }

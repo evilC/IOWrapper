@@ -1,7 +1,7 @@
 ﻿using System;
-using HidWizards.IOWrapper.ProviderInterface;
+using HidWizards.IOWrapper.API;
 
-namespace HidWizards.IOWrapper.ProviderInterface
+namespace HidWizards.IOWrapper.API
 {
     public interface IProvider : IDisposable
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using HidWizards.IOWrapper.ProviderInterface;
-using HidWizards.IOWrapper.ProviderInterface.Handlers;
+using HidWizards.IOWrapper.API;
+using HidWizards.IOWrapper.API.Handlers;
 using SharpDX.DirectInput;
 
 namespace SharpDX_DirectInput.Handlers

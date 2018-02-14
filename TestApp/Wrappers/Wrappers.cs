@@ -1,4 +1,4 @@
-﻿using HidWizards.IOWrapper.ProviderInterface;
+﻿using HidWizards.IOWrapper.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,17 +15,17 @@ namespace TestApp.Wrappers
     /// </summary>
     public class IOW
     {
-        private static HidWizards.IOWrapper.ProviderInterface.IOController instance;
+        private static IOController instance;
 
         private IOW() { }
 
-        public static HidWizards.IOWrapper.ProviderInterface.IOController Instance
+        public static IOController Instance
         {
             get
             {
                 if (instance == null)
                 {
-                    instance = new HidWizards.IOWrapper.ProviderInterface.IOController();
+                    instance = new IOController();
                 }
                 return instance;
             }
@@ -42,9 +42,9 @@ namespace TestApp.Wrappers
     #region Subscription Helpers
     public class OutputSubscription : OutputSubscriptionRequest
     {
-        public OutputSubscription() : base()
+        public OutputSubscription()
         {
-            SubscriptionDescriptor = new SubscriptionDescriptor()
+            SubscriptionDescriptor = new SubscriptionDescriptor
             {
                 ProfileGuid = Library.Profiles.Default,
                 SubscriberGuid = Guid.NewGuid()
@@ -54,9 +54,9 @@ namespace TestApp.Wrappers
 
     public class InputSubscription : InputSubscriptionRequest
     {
-        public InputSubscription() : base()
+        public InputSubscription()
         {
-            SubscriptionDescriptor = new SubscriptionDescriptor()
+            SubscriptionDescriptor = new SubscriptionDescriptor
             {
                 ProfileGuid = Library.Profiles.Default,
                 SubscriberGuid = Guid.NewGuid()

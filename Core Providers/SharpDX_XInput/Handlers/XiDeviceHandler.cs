@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using HidWizards.IOWrapper.ProviderInterface;
-using HidWizards.IOWrapper.ProviderInterface.Handlers;
+using HidWizards.IOWrapper.API;
+using HidWizards.IOWrapper.API.Handlers;
 using SharpDX.XInput;
 
 namespace SharpDX_XInput.Handlers
 {
     internal class XiDeviceHandler : DeviceHandler
     {
-        private readonly Controller _controller = null;
+        private readonly Controller _controller;
 
         private readonly XiDevicePoller _devicePoller = new XiDevicePoller();
 

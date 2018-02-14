@@ -1,12 +1,12 @@
 ﻿using System;
 using System.ComponentModel.Composition;
-using HidWizards.IOWrapper.ProviderInterface;
+using HidWizards.IOWrapper.API;
 using System.Collections.Generic;
 using SharpDX.XInput;
 using System.Threading;
 using System.Diagnostics;
-using HidWizards.IOWrapper.ProviderInterface.Handlers;
-using HidWizards.IOWrapper.ProviderInterface.Helpers;
+using HidWizards.IOWrapper.API.Handlers;
+using HidWizards.IOWrapper.API.Helpers;
 using SharpDX_XInput.Handlers;
 using SharpDX_XInput.Helpers;
 
@@ -20,7 +20,7 @@ namespace SharpDX_XInput
 
         private Logger logger;
 
-        bool disposed = false;
+        bool disposed;
 
         private XiHandler subscriptionHandler = new XiHandler();
         private XiReportHandler xiReportHandler = new XiReportHandler();

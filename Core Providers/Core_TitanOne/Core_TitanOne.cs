@@ -1,5 +1,5 @@
 ﻿using Core_TitanOne.Output;
-using HidWizards.IOWrapper.ProviderInterface;
+using HidWizards.IOWrapper.API;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -19,7 +19,7 @@ namespace Core_TitanOne
         private Dictionary<string, OutputHandler> outputHandlers = new Dictionary<string, OutputHandler>(StringComparer.OrdinalIgnoreCase)
         {
             {"ds4", new DS4OutputHandler() },
-            {"xb360", new Xb360OutputHandler() },
+            {"xb360", new Xb360OutputHandler() }
         };
 
         public Core_TitanOne()
@@ -42,9 +42,9 @@ namespace Core_TitanOne
 
         #region IProvider memebers
         public bool IsLive { get { return isLive; } }
-        private bool isLive = false;
+        private bool isLive;
 
-        bool disposed = false;
+        bool disposed;
 
         public string ProviderName { get { return typeof(Core_TitanOne).Namespace; } }
 
@@ -60,15 +60,15 @@ namespace Core_TitanOne
 
         public ProviderReport GetOutputList()
         {
-            var providerReport = new ProviderReport()
+            var providerReport = new ProviderReport
             {
                 Title = "Titan One",
                 Description = "Allows interaction with the ConsoleTuner Titan One device",
                 API = "TitanOne",
-                ProviderDescriptor = new ProviderDescriptor()
+                ProviderDescriptor = new ProviderDescriptor
                 {
                     ProviderName = "Core_TitanOne"
-                },
+                }
             };
 
             foreach (var deviceClass in outputHandlers)
@@ -157,7 +157,7 @@ namespace Core_TitanOne
 
         private static void Log(string formatStr, params object[] arguments)
         {
-            Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
+            Debug.WriteLine("IOWrapper| " + formatStr, arguments);
         }
 
         #region Unmanaged code handling

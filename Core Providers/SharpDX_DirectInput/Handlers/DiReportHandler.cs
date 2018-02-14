@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HidWizards.IOWrapper.ProviderInterface;
-using HidWizards.IOWrapper.ProviderInterface.Handlers;
+using HidWizards.IOWrapper.API;
+using HidWizards.IOWrapper.API.Handlers;
 using SharpDX.DirectInput;
 using SharpDX_DirectInput.Helpers;
 
@@ -27,11 +27,11 @@ namespace SharpDX_DirectInput.Handlers
                 PovBindingInfos[povNum] = new List<BindingReport>();
                 for (var povDir = 0; povDir < 4; povDir++)
                 {
-                    PovBindingInfos[povNum].Add(new BindingReport()
+                    PovBindingInfos[povNum].Add(new BindingReport
                     {
                         Title = Lookups.povDirections[povDir],
                         Category = BindingCategory.Momentary,
-                        BindingDescriptor = new BindingDescriptor()
+                        BindingDescriptor = new BindingDescriptor
                         {
                             Type = BindingType.POV,
                             Index = povNum,
@@ -126,20 +126,20 @@ namespace SharpDX_DirectInput.Handlers
                     var handle =
                         $"VID_{joystick.Properties.VendorId:X4}&PID_{joystick.Properties.ProductId:X4}";
 
-                    var device = new DeviceReport()
+                    var device = new DeviceReport
                     {
                         DeviceName = deviceList[index].ProductName,
-                        DeviceDescriptor = new DeviceDescriptor()
+                        DeviceDescriptor = new DeviceDescriptor
                         {
                             DeviceHandle = handle,
                             DeviceInstance = index
-                        },
+                        }
                     };
 
                     // ----- Axes -----
-                    var axisInfo = new DeviceReportNode()
+                    var axisInfo = new DeviceReportNode
                     {
-                        Title = "Axes",
+                        Title = "Axes"
                     };
 
                     //var axisInfo = new List<AxisInfo>();
@@ -148,15 +148,15 @@ namespace SharpDX_DirectInput.Handlers
                         try
                         {
                             var deviceInfo = joystick.GetObjectInfoByName(Lookups.directInputMappings[BindingType.Axis][i].ToString());
-                            axisInfo.Bindings.Add(new BindingReport()
+                            axisInfo.Bindings.Add(new BindingReport
                             {
                                 Title = deviceInfo.Name,
                                 Category = BindingCategory.Signed,
-                                BindingDescriptor = new BindingDescriptor()
+                                BindingDescriptor = new BindingDescriptor
                                 {
                                     Index = i,
                                     //Name = axisNames[i],
-                                    Type = BindingType.Axis,
+                                    Type = BindingType.Axis
                                 }
                             });
                         }
@@ -167,20 +167,20 @@ namespace SharpDX_DirectInput.Handlers
 
                     // ----- Buttons -----
                     var length = joystick.Capabilities.ButtonCount;
-                    var buttonInfo = new DeviceReportNode()
+                    var buttonInfo = new DeviceReportNode
                     {
                         Title = "Buttons"
                     };
                     for (var btn = 0; btn < length; btn++)
                     {
-                        buttonInfo.Bindings.Add(new BindingReport()
+                        buttonInfo.Bindings.Add(new BindingReport
                         {
                             Title = (btn + 1).ToString(),
                             Category = BindingCategory.Momentary,
-                            BindingDescriptor = new BindingDescriptor()
+                            BindingDescriptor = new BindingDescriptor
                             {
                                 Index = btn,
-                                Type = BindingType.Button,
+                                Type = BindingType.Button
                             }
                         });
                     }
@@ -189,13 +189,13 @@ namespace SharpDX_DirectInput.Handlers
 
                     // ----- POVs -----
                     var povCount = joystick.Capabilities.PovCount;
-                    var povsInfo = new DeviceReportNode()
+                    var povsInfo = new DeviceReportNode
                     {
                         Title = "POVs"
                     };
                     for (var p = 0; p < povCount; p++)
                     {
-                        var povInfo = new DeviceReportNode()
+                        var povInfo = new DeviceReportNode
                         {
                             Title = "POV #" + (p + 1),
                             Bindings = PovBindingInfos[p]

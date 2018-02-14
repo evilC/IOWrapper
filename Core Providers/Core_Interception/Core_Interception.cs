@@ -1,5 +1,5 @@
-﻿using HidWizards.IOWrapper.ProviderInterface;
-using HidWizards.IOWrapper.ProviderInterface.Helpers;
+﻿using HidWizards.IOWrapper.API;
+using HidWizards.IOWrapper.API.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -22,7 +22,7 @@ namespace Core_Interception
         public bool IsLive { get { return isLive; } }
         private bool isLive = false;
 
-        bool disposed = false;
+        bool disposed;
         private IntPtr deviceContext;
         //private ProviderReport providerReport;
         private List<DeviceReport> deviceReports;
@@ -30,13 +30,13 @@ namespace Core_Interception
         // The thread which handles input detection
         private Thread pollThread;
         // Is the thread currently running? This is set by the thread itself.
-        private volatile bool pollThreadRunning = false;
+        private volatile bool pollThreadRunning;
         // Do we want the thread to be on or off?
         // This is independent of whether or not the thread is running...
         // ... for example, we may be updating bindings, so the thread may be temporarily stopped
-        private bool pollThreadDesired = false;
+        private bool pollThreadDesired;
         // Set to true to cause the thread to stop running. When it stops, it will set pollThreadRunning to false
-        private volatile bool pollThreadStopRequested = false;
+        private volatile bool pollThreadStopRequested;
 
         private bool filterState = false;
 
@@ -58,34 +58,34 @@ namespace Core_Interception
 
         private static DeviceReportNode keyboardList;
         private static DeviceReportNode mouseButtonList;
-        private static DeviceReportNode mouseAxisList = new DeviceReportNode()
+        private static DeviceReportNode mouseAxisList = new DeviceReportNode
         {
             Title = "Axes",
-            Bindings = new List<BindingReport>()
+            Bindings = new List<BindingReport>
             {
-                new BindingReport()
+                new BindingReport
                 {
                     Title = "X",
                     Category = BindingCategory.Delta,
-                    BindingDescriptor =   new BindingDescriptor()
+                    BindingDescriptor =   new BindingDescriptor
                     {
                         Index = 0,
-                        Type = BindingType.Axis,
+                        Type = BindingType.Axis
                     }
                 },
-                new BindingReport()
+                new BindingReport
                 {
                     Title = "Y",
                     Category = BindingCategory.Delta,
-                    BindingDescriptor = new BindingDescriptor()
+                    BindingDescriptor = new BindingDescriptor
                     {
                         Index = 1,
-                        Type = BindingType.Axis,
+                        Type = BindingType.Axis
                     }
                 }
             }
         };
-        private static List<string> mouseButtonNames = new List<string>() { "Left Mouse", "Right Mouse", "Middle Mouse", "Side Button 1", "Side Button 2", "Wheel Up", "Wheel Down" };
+        private static List<string> mouseButtonNames = new List<string> { "Left Mouse", "Right Mouse", "Middle Mouse", "Side Button 1", "Side Button 2", "Wheel Up", "Wheel Down" };
 
         public Core_Interception()
         {
@@ -193,7 +193,7 @@ namespace Core_Interception
 
         private static void Log(string formatStr, params object[] arguments)
         {
-            Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
+            Debug.WriteLine("IOWrapper| " + formatStr, arguments);
         }
 
         #region IProvider Members
@@ -217,14 +217,14 @@ namespace Core_Interception
 
         private ProviderReport GetIOList()
         {
-            var providerReport = new ProviderReport()
+            var providerReport = new ProviderReport
             {
                 Title = "Interception (Core)",
                 Description = "Supports per-device Keyboard and Mouse Input/Output, with blocking\nRequires custom driver from http://oblita.com/interception",
                 API = "Interception",
-                ProviderDescriptor = new ProviderDescriptor()
+                ProviderDescriptor = new ProviderDescriptor
                 {
-                    ProviderName = ProviderName,
+                    ProviderName = ProviderName
                 },
                 Devices = deviceReports
             };
@@ -270,7 +270,7 @@ namespace Core_Interception
                     {
                         if (!MonitoredKeyboards.ContainsKey(devId))
                         {
-                            MonitoredKeyboards.Add(devId, new KeyboardMonitor() { });
+                            MonitoredKeyboards.Add(devId, new KeyboardMonitor());
                         }
                         ret = MonitoredKeyboards[devId].Add(subReq);
                     }
@@ -278,7 +278,7 @@ namespace Core_Interception
                     {
                         if (!MonitoredMice.ContainsKey(devId))
                         {
-                            MonitoredMice.Add(devId, new MouseMonitor() { });
+                            MonitoredMice.Add(devId, new MouseMonitor());
                         }
                         ret = MonitoredMice[devId].Add(subReq);
                     }
@@ -408,15 +408,15 @@ namespace Core_Interception
                 if (name != "" && IsKeyboard(i) == 1)
                 {
                     handle = @"Keyboard\" + handle;
-                    deviceReports.Add(new DeviceReport()
+                    deviceReports.Add(new DeviceReport
                     {
                         DeviceName = name,
-                        DeviceDescriptor = new DeviceDescriptor()
+                        DeviceDescriptor = new DeviceDescriptor
                         {
-                            DeviceHandle = handle,
+                            DeviceHandle = handle
                         },
                         //Bindings = { keyboardList }
-                        Nodes = new List<DeviceReportNode>()
+                        Nodes = new List<DeviceReportNode>
                         {
                             keyboardList
                         }
@@ -441,15 +441,15 @@ namespace Core_Interception
                 if (name != "" && IsMouse(i) == 1)
                 {
                     handle = @"Mouse\" + handle;
-                    deviceReports.Add(new DeviceReport()
+                    deviceReports.Add(new DeviceReport
                     {
                         DeviceName = name,
-                        DeviceDescriptor = new DeviceDescriptor()
+                        DeviceDescriptor = new DeviceDescriptor
                         {
-                            DeviceHandle = handle,
+                            DeviceHandle = handle
                         },
                         //Bindings = { mouseButtonList }
-                        Nodes = new List<DeviceReportNode>()
+                        Nodes = new List<DeviceReportNode>
                         {
                             mouseButtonList,
                             mouseAxisList
@@ -465,34 +465,34 @@ namespace Core_Interception
 
         private void UpdateMouseButtonList()
         {
-            mouseButtonList = new DeviceReportNode()
+            mouseButtonList = new DeviceReportNode
             {
                 Title = "Buttons"
             };
             for (int i = 0; i < 5; i++)
             {
-                mouseButtonList.Bindings.Add(new BindingReport()
+                mouseButtonList.Bindings.Add(new BindingReport
                 {
                     Title = mouseButtonNames[i],
                     Category = BindingCategory.Momentary,
-                    BindingDescriptor = new BindingDescriptor()
+                    BindingDescriptor = new BindingDescriptor
                     {
                         Index = i,
-                        Type = BindingType.Button,
+                        Type = BindingType.Button
                     }
                 });
             }
             
             for (int i = 5; i < 7; i++)
             {
-                mouseButtonList.Bindings.Add(new BindingReport()
+                mouseButtonList.Bindings.Add(new BindingReport
                 {
                     Title = mouseButtonNames[i],
                     Category = BindingCategory.Event,
-                    BindingDescriptor = new BindingDescriptor()
+                    BindingDescriptor = new BindingDescriptor
                     {
                         Index = i,
-                        Type = BindingType.Button,
+                        Type = BindingType.Button
                     }
                 });
             }
@@ -501,7 +501,8 @@ namespace Core_Interception
 
         private void UpdateKeyList()
         {
-            keyboardList = new DeviceReportNode() {
+            keyboardList = new DeviceReportNode
+            {
                 Title = "Keys"
             };
             //buttonNames = new Dictionary<int, string>();
@@ -521,14 +522,14 @@ namespace Core_Interception
                 if (keyName == "")
                     continue;
                 //Log("Button Index: {0}, name: '{1}'", i, keyName);
-                keyboardList.Bindings.Add(new BindingReport()
+                keyboardList.Bindings.Add(new BindingReport
                 {
                     Title = keyName,
                     Category = BindingCategory.Momentary,
-                    BindingDescriptor = new BindingDescriptor()
+                    BindingDescriptor = new BindingDescriptor
                     {
                         Index = i,
-                        Type = BindingType.Button,
+                        Type = BindingType.Button
                     }
                 });
                 //buttonNames.Add(i, keyName);
@@ -543,14 +544,14 @@ namespace Core_Interception
                 if (altKeyName == "" || altKeyName == keyName)
                     continue;
                 //Log("ALT Button Index: {0}, name: '{1}'", i + 256, altKeyName);
-                keyboardList.Bindings.Add(new BindingReport()
+                keyboardList.Bindings.Add(new BindingReport
                 {
                     Title = altKeyName,
                     Category = BindingCategory.Momentary,
-                    BindingDescriptor = new BindingDescriptor()
+                    BindingDescriptor = new BindingDescriptor
                     {
                         Index = i + 256,
-                        Type = BindingType.Button,
+                        Type = BindingType.Button
                     }
                 });
                 //Log("Button Index: {0}, name: '{1}'", i + 256, altKeyName);
@@ -581,7 +582,7 @@ namespace Core_Interception
                     }
                     if (!monitoredKeys.ContainsKey(code))
                     {
-                        monitoredKeys.Add(code, new KeyboardKeyMonitor() { code = code, stateDown = stateDown, stateUp = stateUp });
+                        monitoredKeys.Add(code, new KeyboardKeyMonitor { code = code, stateDown = stateDown, stateUp = stateUp });
                     }
                     monitoredKeys[code].Add(subReq);
                     Log("Added key monitor for key {0}", code);
@@ -699,22 +700,23 @@ namespace Core_Interception
                         Log("Added subscription to mouse button {0}", subReq.BindingDescriptor.Index);
                         if (!monitoredStates.ContainsKey(downbit))
                         {
-                            monitoredStates.Add(downbit, new MouseButtonMonitor() { MonitoredState = 1 });
+                            monitoredStates.Add(downbit, new MouseButtonMonitor { MonitoredState = 1 });
                         }
                         monitoredStates[downbit].Add(subReq);
 
                         if (!monitoredStates.ContainsKey(upbit))
                         {
-                            monitoredStates.Add(upbit, new MouseButtonMonitor() { MonitoredState = 0 });
+                            monitoredStates.Add(upbit, new MouseButtonMonitor { MonitoredState = 0 });
                         }
                         monitoredStates[upbit].Add(subReq);
                         return true;
                     }
-                    else if (subReq.BindingDescriptor.Type == BindingType.Axis)
+
+                    if (subReq.BindingDescriptor.Type == BindingType.Axis)
                     {
                         if (!monitoredAxes.ContainsKey(subReq.BindingDescriptor.Index))
                         {
-                            monitoredAxes.Add(subReq.BindingDescriptor.Index, new MouseAxisMonitor() { MonitoredAxis = subReq.BindingDescriptor.Index });
+                            monitoredAxes.Add(subReq.BindingDescriptor.Index, new MouseAxisMonitor { MonitoredAxis = subReq.BindingDescriptor.Index });
                         }
                         monitoredAxes[subReq.BindingDescriptor.Index].Add(subReq);
                         return true;
@@ -765,7 +767,8 @@ namespace Core_Interception
                 {
                     return monitoredStates[stroke.mouse.state].Poll(stroke);
                 }
-                else if (stroke.mouse.state == 0)
+
+                if (stroke.mouse.state == 0)
                 {
                     try
                     {
@@ -820,10 +823,8 @@ namespace Core_Interception
                     {
                         //Log("State: {0}", MonitoredState);
                         ThreadPool.QueueUserWorkItem(
-                            new WaitCallback(
-                                new InterceptionCallback() { subReq = subscriptionRequest, value = MonitoredState }
-                                    .FireCallback
-                            )
+                            new InterceptionCallback { subReq = subscriptionRequest, value = MonitoredState }
+                                .FireCallback
                         );
                     }
                 }

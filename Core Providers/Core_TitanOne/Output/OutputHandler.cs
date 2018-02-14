@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Core_TitanOne;
-using HidWizards.IOWrapper.ProviderInterface;
+using HidWizards.IOWrapper.API;
 
 namespace Core_TitanOne.Output
 {
@@ -16,20 +16,16 @@ namespace Core_TitanOne.Output
         public abstract List<SlotDescriptor> buttons { get; }
         public abstract List<SlotDescriptor> axes { get; }
 
-        public OutputHandler()
-        {
-        }
-
         public DeviceReport GetOutputReport()
         {
-            var deviceReport = new DeviceReport()
+            var deviceReport = new DeviceReport
             {
                 DeviceName = String.Format("T1 {0}", Title),
-                DeviceDescriptor = new DeviceDescriptor()
+                DeviceDescriptor = new DeviceDescriptor
                 {
                     DeviceHandle = Handle,
                     DeviceInstance = 0
-                },
+                }
             };
             deviceReport.Nodes = GetReportNodes();
             return deviceReport;
@@ -38,17 +34,17 @@ namespace Core_TitanOne.Output
         private List<DeviceReportNode> GetReportNodes()
         {
             var deviceReportNodes = new List<DeviceReportNode>();
-            var axesNode = new DeviceReportNode()
+            var axesNode = new DeviceReportNode
             {
-                Title = "Axes",
+                Title = "Axes"
             };
             for (int a = 0; a < axes.Count; a++)
             {
-                axesNode.Bindings.Add(new BindingReport()
+                axesNode.Bindings.Add(new BindingReport
                 {
                     Title = axes[a].Name,
                     Category = axes[a].Category,
-                    BindingDescriptor = new BindingDescriptor()
+                    BindingDescriptor = new BindingDescriptor
                     {
                         Index = a,
                         Type = BindingType.Axis
@@ -57,17 +53,17 @@ namespace Core_TitanOne.Output
             }
             deviceReportNodes.Add(axesNode);
 
-            var buttonsNode = new DeviceReportNode()
+            var buttonsNode = new DeviceReportNode
             {
-                Title = "Buttons",
+                Title = "Buttons"
             };
             for (int b = 0; b < buttons.Count; b++)
             {
-                buttonsNode.Bindings.Add(new BindingReport()
+                buttonsNode.Bindings.Add(new BindingReport
                 {
                     Title = buttons[b].Name,
                     Category = buttons[b].Category,
-                    BindingDescriptor = new BindingDescriptor()
+                    BindingDescriptor = new BindingDescriptor
                     {
                         Index = b,
                         Type = BindingType.Button
@@ -105,10 +101,8 @@ namespace Core_TitanOne.Output
             {
                 return (sbyte)(state / 327.67);
             }
-            else
-            {
-                return (sbyte)(state * 100);
-            }
+
+            return (sbyte)(state * 100);
         }
     }
 

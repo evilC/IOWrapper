@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HidWizards.IOWrapper.ProviderInterface
+namespace HidWizards.IOWrapper.API
 {
     /// <summary>
     /// SubscriptionRequests allow the front end to add or remove Bindings
@@ -47,7 +47,7 @@ namespace HidWizards.IOWrapper.ProviderInterface
 
         public InputSubscriptionRequest Clone()
         {
-            return (InputSubscriptionRequest)this.MemberwiseClone();
+            return (InputSubscriptionRequest)MemberwiseClone();
         }
     }
 
@@ -62,7 +62,7 @@ namespace HidWizards.IOWrapper.ProviderInterface
     {
         public OutputSubscriptionRequest Clone()
         {
-            return (OutputSubscriptionRequest)this.MemberwiseClone();
+            return (OutputSubscriptionRequest)MemberwiseClone();
         }
     }
 

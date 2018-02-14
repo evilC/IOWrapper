@@ -1,4 +1,4 @@
-﻿using HidWizards.IOWrapper.ProviderInterface;
+﻿using HidWizards.IOWrapper.API;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -18,7 +18,7 @@ namespace Core_Tobii_Interaction
 
         //private GazePointHander gazePointHandler = new GazePointHander();
         private Dictionary<string, StreamHandler> streamHandlers = new Dictionary<string, StreamHandler>(StringComparer.OrdinalIgnoreCase);
-        private List<string> sixDofAxisNames = new List<string>() { "X", "Y", "Z", "Rx", "Ry", "Rz" };
+        private List<string> sixDofAxisNames = new List<string> { "X", "Y", "Z", "Rx", "Ry", "Rz" };
         //private ProviderReport providerReport;
         private List<DeviceReport> deviceReports;
 
@@ -36,14 +36,14 @@ namespace Core_Tobii_Interaction
 
         public ProviderReport GetInputList()
         {
-            var providerReport = new ProviderReport()
+            var providerReport = new ProviderReport
             {
                 Title = "Tobii Interaction (Core)",
                 Description = "Tracks head and eye movement. Requires a Tobii device, see https://tobiigaming.com/",
                 API = "Tobii.Interaction",
-                ProviderDescriptor = new ProviderDescriptor()
+                ProviderDescriptor = new ProviderDescriptor
                 {
-                    ProviderName = ProviderName,
+                    ProviderName = ProviderName
                 },
                 Devices = deviceReports
             };
@@ -119,7 +119,7 @@ namespace Core_Tobii_Interaction
         #endregion
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool disposedValue; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
@@ -159,33 +159,33 @@ namespace Core_Tobii_Interaction
 
         private static void Log(string formatStr, params object[] arguments)
         {
-            Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
+            Debug.WriteLine("IOWrapper| " + formatStr, arguments);
         }
 
         private void QueryDevices()
         {
             deviceReports = new List<DeviceReport>();
 
-            var gazeDevice = new DeviceReport()
+            var gazeDevice = new DeviceReport
             {
                 DeviceName = "Tobii Gaze Point",
-                DeviceDescriptor = new DeviceDescriptor()
+                DeviceDescriptor = new DeviceDescriptor
                 {
-                    DeviceHandle = "GazePoint",
-                },
+                    DeviceHandle = "GazePoint"
+                }
             };
 
-            var gazeNode = new DeviceReportNode() { Title = "Axes" };
+            var gazeNode = new DeviceReportNode { Title = "Axes" };
             for (int i = 0; i < 3; i++)
             {
-                gazeNode.Bindings.Add(new BindingReport()
+                gazeNode.Bindings.Add(new BindingReport
                 {
                     Title = sixDofAxisNames[i],
                     Category = BindingCategory.Signed,
-                    BindingDescriptor = new BindingDescriptor()
+                    BindingDescriptor = new BindingDescriptor
                     {
                         Index = i,
-                        Type = BindingType.Axis,
+                        Type = BindingType.Axis
                     }
                 });
             }
@@ -193,26 +193,26 @@ namespace Core_Tobii_Interaction
             deviceReports.Add(gazeDevice);
 
 
-            var poseDevice = new DeviceReport()
+            var poseDevice = new DeviceReport
             {
                 DeviceName = "Tobii Head Pose",
-                DeviceDescriptor = new DeviceDescriptor()
+                DeviceDescriptor = new DeviceDescriptor
                 {
-                    DeviceHandle = "HeadPose",
-                },
+                    DeviceHandle = "HeadPose"
+                }
             };
 
-            var poseNode = new DeviceReportNode() { Title = "Axes" };
+            var poseNode = new DeviceReportNode { Title = "Axes" };
             for (int i = 0; i < 2; i++)
             {
-                poseNode.Bindings.Add(new BindingReport()
+                poseNode.Bindings.Add(new BindingReport
                 {
                     Title = sixDofAxisNames[i],
                     Category = BindingCategory.Signed,
-                    BindingDescriptor = new BindingDescriptor()
+                    BindingDescriptor = new BindingDescriptor
                     {
                         Index = i,
-                        Type = BindingType.Axis,
+                        Type = BindingType.Axis
                     }
                 });
             }
@@ -256,7 +256,7 @@ namespace Core_Tobii_Interaction
             }
 
             #region IDisposable Support
-            private bool disposedValue = false; // To detect redundant calls
+            private bool disposedValue; // To detect redundant calls
 
             protected virtual void Dispose(bool disposing)
             {
@@ -317,7 +317,7 @@ namespace Core_Tobii_Interaction
             private void GPCallback(object sender, StreamData<GazePointData> streamData)
             {
                 //Console.WriteLine("Unfiltered: Timestamp: {0}\t X: {1} Y:{2}", streamData.Data.Timestamp, streamData.Data.X, streamData.Data.Y);
-                var axisData = new double[] { streamData.Data.X, streamData.Data.Y };
+                var axisData = new[] { streamData.Data.X, streamData.Data.Y };
 
                 for (int i = 0; i < 2; i++)
                 {
@@ -349,7 +349,7 @@ namespace Core_Tobii_Interaction
             {
                 if (headPose.Data.HasHeadPosition)
                 {
-                    var axisData = new double[] { headPose.Data.HeadPosition.X, headPose.Data.HeadPosition.Y, headPose.Data.HeadPosition.Z, headPose.Data.HeadRotation.X, headPose.Data.HeadRotation.Y, headPose.Data.HeadRotation.Z };
+                    var axisData = new[] { headPose.Data.HeadPosition.X, headPose.Data.HeadPosition.Y, headPose.Data.HeadPosition.Z, headPose.Data.HeadRotation.X, headPose.Data.HeadRotation.Y, headPose.Data.HeadRotation.Z };
 
                     for (int i = 0; i < 2; i++)
                     {

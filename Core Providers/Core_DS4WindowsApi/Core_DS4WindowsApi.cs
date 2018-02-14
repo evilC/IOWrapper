@@ -4,8 +4,8 @@ https://github.com/evilC/DS4WindowsApi
 */
 
 using DS4Windows;
-using HidWizards.IOWrapper.ProviderInterface;
-using HidWizards.IOWrapper.ProviderInterface.Helpers;
+using HidWizards.IOWrapper.API;
+using HidWizards.IOWrapper.API.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -21,24 +21,28 @@ namespace Core_DS4WindowsApi
         private Logger logger;
         DS4ControllerHandler[] connectedControllers = new DS4ControllerHandler[4];
 
-        private static List<string> axisNames = new List<string>() {
+        private static List<string> axisNames = new List<string>
+        {
             "LS X", "LS Y", "RS X", "RS Y", "L2", "R2"
         };
 
-        private static List<string> touchAxisNames = new List<string>() {
+        private static List<string> touchAxisNames = new List<string>
+        {
             "Touch X (Relative)", "Touch Y (Relative)", "Touch X (Absolute)", "Touch Y (Absolute)"
         };
 
-        private static List<string> gyroAxisNames = new List<string>() {
+        private static List<string> gyroAxisNames = new List<string>
+        {
             "Gyro Absolute X", "Gyro Absolute Y", "Gyro Absolute Z", "Gyro Relative X", "Gyro Relative Y", "Gyro Relative Z"
         };
 
-        private static List<string> buttonNames = new List<string>() {
+        private static List<string> buttonNames = new List<string>
+        {
             "Cross", "Circle", "Square", "Triangle", "L1", "L3", "R1", "R3", "Share", "Options", 
             "PS", "TouchButton", "Touch1", "Touch2", "TouchL", "TouchR"
         };
 
-        private static List<string> povDirectionNames = new List<string>()
+        private static List<string> povDirectionNames = new List<string>
         {
             "Up", "Right", "Down", "Left"
         };
@@ -140,9 +144,9 @@ namespace Core_DS4WindowsApi
             private DS4StateWrapper currentGyroState = new DS4StateWrapper();
             //private DS4StateWrapper previousGyroState = new DS4StateWrapper();
 
-            private bool reportCallbackEnabled = false;
-            private bool gyroCallbackEnabled = false;
-            private bool touchCallbackEnabled = false;
+            private bool reportCallbackEnabled;
+            private bool gyroCallbackEnabled;
+            private bool touchCallbackEnabled;
 
             private Dictionary<Guid, InputSubscriptionRequest>[] buttonSubscriptions
                 = new Dictionary<Guid, InputSubscriptionRequest>[buttonNames.Count];
@@ -347,7 +351,7 @@ namespace Core_DS4WindowsApi
                         var newState = currentGyroState.GetGyroValue(i);
                         foreach (var subscription in gyroAxisSubscriptions[i].Values)
                         {
-                            subscription.Callback((int)newState);
+                            subscription.Callback(newState);
                         }
                     }
                 }
@@ -363,7 +367,7 @@ namespace Core_DS4WindowsApi
                         var newState = currentState.GetAxisValue(i);
                         foreach (var subscription in axisSubscriptions[i].Values)
                         {
-                            subscription.Callback((int)newState);
+                            subscription.Callback(newState);
                         }
                     }
                 }
@@ -375,7 +379,7 @@ namespace Core_DS4WindowsApi
                         var newState = currentState.GetButtonValue(i);
                         foreach (var subscription in buttonSubscriptions[i].Values)
                         {
-                            subscription.Callback((int)newState);
+                            subscription.Callback(newState);
                         }
                     }
                 }
@@ -387,7 +391,7 @@ namespace Core_DS4WindowsApi
                         var newState = currentState.GetPovDirectionValue(i);
                         foreach (var subscription in povDirectionSubscriptions[i].Values)
                         {
-                            subscription.Callback((int)newState);
+                            subscription.Callback(newState);
                         }
                     }
                 }
@@ -479,12 +483,12 @@ namespace Core_DS4WindowsApi
 
         public ProviderReport GetInputList()
         {
-            var providerReport = new ProviderReport()
+            var providerReport = new ProviderReport
             {
                 API = "DS4WindowsApi",
                 Description = "Provides access to DS4 controllers",
                 Title = "DS4Windows",
-                ProviderDescriptor = new ProviderDescriptor()
+                ProviderDescriptor = new ProviderDescriptor
                 {
                     ProviderName = ProviderName
                 }
@@ -508,10 +512,10 @@ namespace Core_DS4WindowsApi
             var buttons = new List<BindingReport>();
             for (int i = 0; i < buttonNames.Count; i++)
             {
-                buttons.Add(new BindingReport()
+                buttons.Add(new BindingReport
                 {
                     Title = buttonNames[i],
-                    BindingDescriptor = new BindingDescriptor()
+                    BindingDescriptor = new BindingDescriptor
                     {
                         Index = i,
                         SubIndex = 0,
@@ -524,10 +528,10 @@ namespace Core_DS4WindowsApi
             var povDirections = new List<BindingReport>();
             for (int i = 0; i < povDirectionNames.Count; i++)
             {
-                povDirections.Add(new BindingReport()
+                povDirections.Add(new BindingReport
                 {
                     Title = povDirectionNames[i],
-                    BindingDescriptor = new BindingDescriptor()
+                    BindingDescriptor = new BindingDescriptor
                     {
                         Index = i,
                         SubIndex = 0,
@@ -540,10 +544,10 @@ namespace Core_DS4WindowsApi
             var axes = new List<BindingReport>();
             for (int i = 0; i < axisNames.Count; i++)
             {
-                axes.Add(new BindingReport()
+                axes.Add(new BindingReport
                 {
                     Title = axisNames[i],
-                    BindingDescriptor = new BindingDescriptor()
+                    BindingDescriptor = new BindingDescriptor
                     {
                         Index = i,
                         SubIndex = 0,
@@ -556,10 +560,10 @@ namespace Core_DS4WindowsApi
             var gyros = new List<BindingReport>();
             for (int i = 0; i < gyroAxisNames.Count; i++)
             {
-                gyros.Add(new BindingReport()
+                gyros.Add(new BindingReport
                 {
                     Title = gyroAxisNames[i],
-                    BindingDescriptor = new BindingDescriptor()
+                    BindingDescriptor = new BindingDescriptor
                     {
                         Index = i,
                         SubIndex = 2,
@@ -572,10 +576,10 @@ namespace Core_DS4WindowsApi
             var touchAxes = new List<BindingReport>();
             for (int i = 0; i < touchAxisNames.Count; i++)
             {
-                touchAxes.Add(new BindingReport()
+                touchAxes.Add(new BindingReport
                 {
                     Title = touchAxisNames[i],
-                    BindingDescriptor = new BindingDescriptor()
+                    BindingDescriptor = new BindingDescriptor
                     {
                         Index = i,
                         SubIndex = 1,
@@ -585,37 +589,37 @@ namespace Core_DS4WindowsApi
                 });
             }
 
-            return new DeviceReport()
+            return new DeviceReport
             {
-                DeviceDescriptor = new DeviceDescriptor()
+                DeviceDescriptor = new DeviceDescriptor
                 {
                     DeviceHandle = "0",
                     DeviceInstance = id
                 },
                 DeviceName = "DS4 Controller #" + (id + 1),
-                Nodes = new List<DeviceReportNode>()
+                Nodes = new List<DeviceReportNode>
                 {
-                    new DeviceReportNode()
+                    new DeviceReportNode
                     {
                         Title = "Buttons",
                         Bindings = buttons
                     },
-                    new DeviceReportNode()
+                    new DeviceReportNode
                     {
                         Title = "Axes",
                         Bindings = axes
                     },
-                    new DeviceReportNode()
+                    new DeviceReportNode
                     {
                         Title = "DPad",
                         Bindings = povDirections
                     },
-                    new DeviceReportNode()
+                    new DeviceReportNode
                     {
                         Title = "Gyro",
                         Bindings = gyros
                     },
-                    new DeviceReportNode()
+                    new DeviceReportNode
                     {
                         Title = "TouchPad",
                         Bindings = touchAxes
@@ -686,7 +690,7 @@ namespace Core_DS4WindowsApi
         #endregion
 
         #region IDisposable
-        bool disposed = false;
+        bool disposed;
 
         public void Dispose()
         {

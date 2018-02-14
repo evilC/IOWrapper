@@ -2,8 +2,8 @@
 using Nefarius.ViGEm.Client.Targets;
 using Nefarius.ViGEm.Client.Targets.DualShock4;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
-using HidWizards.IOWrapper.ProviderInterface;
-using HidWizards.IOWrapper.ProviderInterface.Helpers;
+using HidWizards.IOWrapper.API;
+using HidWizards.IOWrapper.API.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -19,7 +19,7 @@ namespace Core_ViGEm
     //public class Core_ViGEm
     {
         public bool IsLive { get { return isLive; } }
-        private bool isLive = false;
+        private bool isLive;
 
         private Logger logger;
 
@@ -60,15 +60,15 @@ namespace Core_ViGEm
 
         public ProviderReport GetOutputList()
         {
-            providerReport = new ProviderReport()
+            providerReport = new ProviderReport
             {
                 Title = "ViGEm",
                 API = "ViGEm",
                 Description = "Allows emulation of Gamepads (Xbox, PS etc)",
-                ProviderDescriptor = new ProviderDescriptor()
+                ProviderDescriptor = new ProviderDescriptor
                 {
                     ProviderName = ProviderName
-                },
+                }
             };
             providerReport.Devices = devicesHandler.GetDeviceList();
             return providerReport;
@@ -132,7 +132,7 @@ namespace Core_ViGEm
         #endregion
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool disposedValue; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
@@ -181,12 +181,12 @@ namespace Core_ViGEm
                 deviceHandlers["xb360"] = new Xb360Handler[4];
                 for (int xb360Index = 0; xb360Index < 4; xb360Index++)
                 {
-                    deviceHandlers["xb360"][xb360Index] = new Xb360Handler(new DeviceClassDescriptor() { classIdentifier = "xb360", classHumanName = "Xbox 360" }, xb360Index);
+                    deviceHandlers["xb360"][xb360Index] = new Xb360Handler(new DeviceClassDescriptor { classIdentifier = "xb360", classHumanName = "Xbox 360" }, xb360Index);
                 }
                 deviceHandlers["ds4"] = new DS4Handler[4];
                 for (int ds4Index = 0; ds4Index < 4; ds4Index++)
                 {
-                    deviceHandlers["ds4"][ds4Index] = new DS4Handler(new DeviceClassDescriptor() { classIdentifier = "ds4", classHumanName = "DS4" }, ds4Index);
+                    deviceHandlers["ds4"][ds4Index] = new DS4Handler(new DeviceClassDescriptor { classIdentifier = "ds4", classHumanName = "DS4" }, ds4Index);
                 }
             }
 
@@ -294,17 +294,18 @@ namespace Core_ViGEm
             private Logger logger;
 
             protected DeviceClassDescriptor deviceClassDescriptor;
-            protected int deviceId = 0;
-            protected bool isAcquired = false;
+            protected int deviceId;
+            protected bool isAcquired;
             protected ViGEmTarget target;
 
             protected abstract List<string> axisNames { get; set; }
-            protected static readonly List<BindingCategory> axisCategories = new List<BindingCategory>()
+            protected static readonly List<BindingCategory> axisCategories = new List<BindingCategory>
             {
                 BindingCategory.Signed, BindingCategory.Signed, BindingCategory.Signed, BindingCategory.Signed, BindingCategory.Unsigned, BindingCategory.Unsigned
             };
             protected abstract List<string> buttonNames { get; set; }
-            protected static readonly List<string> povDirectionNames = new List<string>() {
+            protected static readonly List<string> povDirectionNames = new List<string>
+            {
                 "Up", "Right", "Down", "Left"
             };
 
@@ -379,10 +380,10 @@ namespace Core_ViGEm
 
             public DeviceReport GetDeviceReport()
             {
-                var report = new DeviceReport()
+                var report = new DeviceReport
                 {
                     DeviceName = String.Format("ViGEm {0} Controller {1}", deviceClassDescriptor.classHumanName, (deviceId + 1)),
-                    DeviceDescriptor = new DeviceDescriptor()
+                    DeviceDescriptor = new DeviceDescriptor
                     {
                         DeviceHandle = deviceClassDescriptor.classIdentifier,
                         DeviceInstance = deviceId
@@ -396,17 +397,17 @@ namespace Core_ViGEm
 
             protected DeviceReportNode GetAxisReport()
             {
-                var report = new DeviceReportNode()
+                var report = new DeviceReportNode
                 {
-                    Title = "Axes",
+                    Title = "Axes"
                 };
                 for (int i = 0; i < axisNames.Count; i++)
                 {
-                    report.Bindings.Add(new BindingReport()
+                    report.Bindings.Add(new BindingReport
                     {
                         Title = axisNames[i],
                         Category = axisCategories[i],
-                        BindingDescriptor = new BindingDescriptor()
+                        BindingDescriptor = new BindingDescriptor
                         {
                             Index = i,
                             Type = BindingType.Axis
@@ -418,17 +419,17 @@ namespace Core_ViGEm
 
             protected DeviceReportNode GetButtonReport()
             {
-                var report = new DeviceReportNode()
+                var report = new DeviceReportNode
                 {
-                    Title = "Buttons",
+                    Title = "Buttons"
                 };
                 for (int i = 0; i < buttonNames.Count; i++)
                 {
-                    report.Bindings.Add(new BindingReport()
+                    report.Bindings.Add(new BindingReport
                     {
                         Title = buttonNames[i],
                         Category = BindingCategory.Momentary,
-                        BindingDescriptor = new BindingDescriptor()
+                        BindingDescriptor = new BindingDescriptor
                         {
                             Index = i,
                             Type = BindingType.Button
@@ -440,17 +441,17 @@ namespace Core_ViGEm
 
             protected DeviceReportNode GetPovReport()
             {
-                var report = new DeviceReportNode()
+                var report = new DeviceReportNode
                 {
-                    Title = "DPad",
+                    Title = "DPad"
                 };
                 for (int i = 0; i < povDirectionNames.Count; i++)
                 {
-                    report.Bindings.Add(new BindingReport()
+                    report.Bindings.Add(new BindingReport
                     {
                         Title = povDirectionNames[i],
                         Category = BindingCategory.Momentary,
-                        BindingDescriptor = new BindingDescriptor()
+                        BindingDescriptor = new BindingDescriptor
                         {
                             Index = i,
                             SubIndex = 0,
@@ -478,28 +479,30 @@ namespace Core_ViGEm
         {
             private Xbox360Report report = new Xbox360Report();
 
-            private static readonly List<Xbox360Axes> axisIndexes = new List<Xbox360Axes>() {
+            private static readonly List<Xbox360Axes> axisIndexes = new List<Xbox360Axes>
+            {
                 Xbox360Axes.LeftThumbX, Xbox360Axes.LeftThumbY, Xbox360Axes.RightThumbX, Xbox360Axes.RightThumbY,
                 Xbox360Axes.LeftTrigger, Xbox360Axes.RightTrigger
             };
 
-            protected override List<string> axisNames { get; set; } = new List<string>()
+            protected override List<string> axisNames { get; set; } = new List<string>
             {
                 "LX", "LY", "RX", "RY", "LT", "RT"
             };
 
-            private static readonly List<Xbox360Buttons> buttonIndexes = new List<Xbox360Buttons>() {
+            private static readonly List<Xbox360Buttons> buttonIndexes = new List<Xbox360Buttons>
+            {
                 Xbox360Buttons.A, Xbox360Buttons.B, Xbox360Buttons.X, Xbox360Buttons.Y,
                 Xbox360Buttons.LeftShoulder, Xbox360Buttons.RightShoulder, Xbox360Buttons.LeftThumb, Xbox360Buttons.RightThumb,
                 Xbox360Buttons. Back, Xbox360Buttons.Start
             };
 
-            protected override List<string> buttonNames { get; set; } = new List<string>()
+            protected override List<string> buttonNames { get; set; } = new List<string>
             {
                 "A", "B", "X", "Y", "LB", "RB", "LS", "RS", "Back", "Start"
             };
 
-            private static readonly List<Xbox360Buttons> povIndexes = new List<Xbox360Buttons>()
+            private static readonly List<Xbox360Buttons> povIndexes = new List<Xbox360Buttons>
             {
                 Xbox360Buttons.Up, Xbox360Buttons.Right, Xbox360Buttons.Down, Xbox360Buttons.Left
             };
@@ -558,34 +561,36 @@ namespace Core_ViGEm
         {
             private DualShock4Report report = new DualShock4Report();
 
-            private static readonly List<DualShock4Axes> axisIndexes = new List<DualShock4Axes>() {
+            private static readonly List<DualShock4Axes> axisIndexes = new List<DualShock4Axes>
+            {
                 DualShock4Axes.LeftThumbX, DualShock4Axes.LeftThumbY, DualShock4Axes.RightThumbX, DualShock4Axes.RightThumbY,
                 DualShock4Axes.LeftTrigger, DualShock4Axes.RightTrigger
             };
 
-            protected override List<string> axisNames { get; set; } = new List<string>()
+            protected override List<string> axisNames { get; set; } = new List<string>
             {
                 "LX", "LY", "RX", "RY", "LT", "RT"
             };
 
-            private static readonly List<DualShock4Buttons> buttonIndexes = new List<DualShock4Buttons>() {
+            private static readonly List<DualShock4Buttons> buttonIndexes = new List<DualShock4Buttons>
+            {
                 DualShock4Buttons.Cross, DualShock4Buttons.Circle, DualShock4Buttons.Square, DualShock4Buttons.Triangle,
                 DualShock4Buttons.ShoulderLeft, DualShock4Buttons.ShoulderRight, DualShock4Buttons.ThumbLeft, DualShock4Buttons.ThumbRight,
                 DualShock4Buttons.Share, DualShock4Buttons.Options,
                 DualShock4Buttons.TriggerLeft, DualShock4Buttons.TriggerRight
             };
 
-            private static readonly List<DualShock4SpecialButtons> specialButtonIndexes = new List<DualShock4SpecialButtons>()
+            private static readonly List<DualShock4SpecialButtons> specialButtonIndexes = new List<DualShock4SpecialButtons>
             {
                 DualShock4SpecialButtons.Ps, DualShock4SpecialButtons.Touchpad
             };
 
-            protected override List<string> buttonNames { get; set; } = new List<string>()
+            protected override List<string> buttonNames { get; set; } = new List<string>
             {
                 "Cross", "Circle", "Square", "Triangle", "L1", "R1", "LS", "RS", "Share", "Options", "L2", "R2", "PS", "TouchPad Click"
             };
 
-            private static readonly List<DualShock4DPadValues> povIndexes = new List<DualShock4DPadValues>()
+            private static readonly List<DualShock4DPadValues> povIndexes = new List<DualShock4DPadValues>
             {
 
                 DualShock4DPadValues.North, DualShock4DPadValues.East, DualShock4DPadValues.South, DualShock4DPadValues.West

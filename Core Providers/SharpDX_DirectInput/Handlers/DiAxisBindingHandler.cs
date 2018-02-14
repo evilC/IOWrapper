@@ -1,5 +1,5 @@
-﻿using HidWizards.IOWrapper.ProviderInterface;
-using HidWizards.IOWrapper.ProviderInterface.Handlers;
+﻿using HidWizards.IOWrapper.API;
+using HidWizards.IOWrapper.API.Handlers;
 
 namespace SharpDX_DirectInput.Handlers
 {

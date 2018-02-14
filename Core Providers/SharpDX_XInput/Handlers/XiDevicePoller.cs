@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using HidWizards.IOWrapper.ProviderInterface;
+using HidWizards.IOWrapper.API;
 using SharpDX.XInput;
 using SharpDX_XInput.Helpers;
 
@@ -30,7 +30,7 @@ namespace SharpDX_XInput.Handlers
                 var lastValue = (flag & _lastState.Gamepad.Buttons) == flag ? 1 : 0;
                 if (thisValue != lastValue)
                 {
-                    result.PollItems.Add(new XiPollItem() { BindingType = bindingType, Index = i, Value = thisValue });
+                    result.PollItems.Add(new XiPollItem { BindingType = bindingType, Index = i, Value = thisValue });
                 }
             }
 
@@ -60,7 +60,7 @@ namespace SharpDX_XInput.Handlers
         {
             if (thisState != lastState)
             {
-                items.Add(new XiPollItem() { BindingType = BindingType.Axis, Index = index, Value = thisState });
+                items.Add(new XiPollItem { BindingType = BindingType.Axis, Index = index, Value = thisState });
             }
 
             return items;
@@ -84,7 +84,7 @@ namespace SharpDX_XInput.Handlers
     public class XiPollItem
     {
         public BindingType BindingType { get; set; }
-        public int Index { get; set; } = 0; // This is a lookup to xinputButtonIdentifiers index, not BindingDescriptor Index!
+        public int Index { get; set; } // This is a lookup to xinputButtonIdentifiers index, not BindingDescriptor Index!
         public int Value { get; set; }
     }
 

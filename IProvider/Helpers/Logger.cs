@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace HidWizards.IOWrapper.ProviderInterface.Helpers
+namespace HidWizards.IOWrapper.API.Helpers
 {
     public class Logger
     {

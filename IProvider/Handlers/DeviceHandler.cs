@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HidWizards.IOWrapper.ProviderInterface.Handlers
+namespace HidWizards.IOWrapper.API.Handlers
 {
     /// <summary>
     /// Handles one type (as in make/model, vid/pid) of device, of which there could be multiple instances
@@ -18,9 +18,9 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
     {
         #region fields and properties
         private Thread _pollThread;
-        private bool _pollThreadState = false;
+        private bool _pollThreadState;
 
-        private readonly BindingDescriptor _bindingDescriptor = null;
+        private readonly BindingDescriptor _bindingDescriptor;
 
         // Main binding dictionary that holds handlers          // Uses values from BindingDescriptor
         protected readonly ConcurrentDictionary<BindingType,    // BindingType (Axis / Button / POV)

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Win32;
-using HidWizards.IOWrapper.ProviderInterface;
+using HidWizards.IOWrapper.API;
 using SharpDX.DirectInput;
 using SharpDX_DirectInput.Handlers;
 
@@ -93,18 +93,19 @@ namespace SharpDX_DirectInput.Helpers
 
         public static bool IsStickType(DeviceInstance deviceInstance)
         {
-            return deviceInstance.Type == SharpDX.DirectInput.DeviceType.Joystick
-                   || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Gamepad
-                   || deviceInstance.Type == SharpDX.DirectInput.DeviceType.FirstPerson
-                   || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Flight
-                   || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Driving
-                   || deviceInstance.Type == SharpDX.DirectInput.DeviceType.Supplemental;
+            return deviceInstance.Type == DeviceType.Joystick
+                   || deviceInstance.Type == DeviceType.Gamepad
+                   || deviceInstance.Type == DeviceType.FirstPerson
+                   || deviceInstance.Type == DeviceType.Flight
+                   || deviceInstance.Type == DeviceType.Driving
+                   || deviceInstance.Type == DeviceType.Supplemental;
         }
 
         // Maps SharpDX "Offsets" (Input Identifiers) to both iinput type and input index (eg x axis to axis 1)
-        public static Dictionary<BindingType, List<JoystickOffset>> directInputMappings = new Dictionary<BindingType, List<JoystickOffset>>(){
+        public static Dictionary<BindingType, List<JoystickOffset>> directInputMappings = new Dictionary<BindingType, List<JoystickOffset>>
+        {
                 {
-                    BindingType.Axis, new List<JoystickOffset>()
+                    BindingType.Axis, new List<JoystickOffset>
                     {
                         JoystickOffset.X,
                         JoystickOffset.Y,
@@ -117,7 +118,7 @@ namespace SharpDX_DirectInput.Helpers
                     }
                 },
                 {
-                    BindingType.Button, new List<JoystickOffset>()
+                    BindingType.Button, new List<JoystickOffset>
                     {
                         JoystickOffset.Buttons0, JoystickOffset.Buttons1, JoystickOffset.Buttons2, JoystickOffset.Buttons3, JoystickOffset.Buttons4,
                         JoystickOffset.Buttons5, JoystickOffset.Buttons6, JoystickOffset.Buttons7, JoystickOffset.Buttons8, JoystickOffset.Buttons9, JoystickOffset.Buttons10,
@@ -144,7 +145,7 @@ namespace SharpDX_DirectInput.Helpers
                     }
                 },
                 {
-                    BindingType.POV, new List<JoystickOffset>()
+                    BindingType.POV, new List<JoystickOffset>
                     {
                         JoystickOffset.PointOfViewControllers0,
                         JoystickOffset.PointOfViewControllers1,
@@ -154,7 +155,7 @@ namespace SharpDX_DirectInput.Helpers
                 }
             };
 
-        public static List<string> povDirections = new List<string>() { "Up", "Right", "Down", "Left" };
+        public static List<string> povDirections = new List<string> { "Up", "Right", "Down", "Left" };
 
         public static BindingType OffsetToType(JoystickOffset offset)
         {

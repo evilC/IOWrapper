@@ -1,4 +1,4 @@
-﻿using HidWizards.IOWrapper.ProviderInterface;
+﻿using HidWizards.IOWrapper.API;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HidWizards.IOWrapper.ProviderInterface.Handlers
+namespace HidWizards.IOWrapper.API.Handlers
 {
     /// <summary>
     /// A generic handler for various APIs to support input
@@ -23,10 +23,6 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             ConcurrentDictionary<int,           // DeviceInstance
                 DeviceHandler>> BindingDictionary
             = new ConcurrentDictionary<string, ConcurrentDictionary<int, DeviceHandler>>();
-
-        protected ApiHandler()
-        {
-        }
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {
@@ -93,7 +89,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             Debug.WriteLine($"IOWrapper| APIHandler| {text}");
         }
 
-        private bool _disposed = false;
+        private bool _disposed;
         protected virtual void Dispose(bool disposing)
         {
             if (_disposed) return;

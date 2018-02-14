@@ -1,4 +1,4 @@
-﻿using HidWizards.IOWrapper.ProviderInterface;
+﻿using HidWizards.IOWrapper.API;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -15,12 +15,11 @@ namespace Core_vJoyInterfaceWrap
         public bool IsLive { get { return isLive; } }
         private bool isLive = false;
 
-        bool disposed = false;
+        bool disposed;
         public static vJoyInterfaceWrap.vJoy vJ = new vJoyInterfaceWrap.vJoy();
         private VjoyDevice[] vJoyDevices = new VjoyDevice[16];
         private Dictionary<Guid, uint> subscriptionToDevice = new Dictionary<Guid, uint>();
-        static private Dictionary<int, string> axisNames = new Dictionary<int, string>()
-            { { 0, "X" }, { 1,"Y" }, { 2, "Z" }, { 3, "Rx" }, { 4, "Ry" }, { 5, "Rz" }, { 6, "Sl0" }, { 7, "Sl1" } };
+        static private Dictionary<int, string> axisNames = new Dictionary<int, string> { { 0, "X" }, { 1,"Y" }, { 2, "Z" }, { 3, "Rx" }, { 4, "Ry" }, { 5, "Rz" }, { 6, "Sl0" }, { 7, "Sl1" } };
         static private List<BindingReport>[] povBindingInfos = new List<BindingReport>[4];
 
         private List<DeviceReport> deviceReports;
@@ -36,14 +35,14 @@ namespace Core_vJoyInterfaceWrap
                 povBindingInfos[p] = new List<BindingReport>();
                 for (int d = 0; d < 4; d++)
                 {
-                    povBindingInfos[p].Add(new BindingReport()
+                    povBindingInfos[p].Add(new BindingReport
                     {
                         Title = povDirections[d],
                         Category = BindingCategory.Momentary,
-                        BindingDescriptor = new BindingDescriptor()
+                        BindingDescriptor = new BindingDescriptor
                         {
                             Type = BindingType.POV,
-                            Index = (p * 4) + d,
+                            Index = (p * 4) + d
                         }
                     });
                 }
@@ -80,7 +79,7 @@ namespace Core_vJoyInterfaceWrap
 
         private static void Log(string formatStr, params object[] arguments)
         {
-            Debug.WriteLine(String.Format("IOWrapper| " + formatStr, arguments));
+            Debug.WriteLine("IOWrapper| " + formatStr, arguments);
         }
 
         #region IProvider Members
@@ -100,14 +99,14 @@ namespace Core_vJoyInterfaceWrap
 
         public ProviderReport GetOutputList()
         {
-            var pr = new ProviderReport()
+            var pr = new ProviderReport
             {
                 Title = "vJoy (Core)",
                 Description = "Allows emulation of DirectInput sticks. Requires driver from http://vjoystick.sourceforge.net/",
                 API = "vJoy",
-                ProviderDescriptor = new ProviderDescriptor()
+                ProviderDescriptor = new ProviderDescriptor
                 {
-                    ProviderName = ProviderName,
+                    ProviderName = ProviderName
                 },
                 Devices = deviceReports
             };
@@ -205,16 +204,16 @@ namespace Core_vJoyInterfaceWrap
                 if (vJ.isVJDExists(id))
                 {
                     var handle = i.ToString();
-                    var device = new DeviceReport()
+                    var device = new DeviceReport
                     {
                         DeviceName = String.Format("vJoy Stick {0}", id),
-                        DeviceDescriptor = new DeviceDescriptor()
+                        DeviceDescriptor = new DeviceDescriptor
                         {
-                            DeviceHandle = handle,
-                        },
+                            DeviceHandle = handle
+                        }
                     };
 
-                    var axisNode = new DeviceReportNode()
+                    var axisNode = new DeviceReportNode
                     {
                         Title = "Axes"
                     };
@@ -224,14 +223,14 @@ namespace Core_vJoyInterfaceWrap
                     {
                         if (vJ.GetVJDAxisExist(id, AxisIdToUsage[ax]))
                         {
-                            axisNode.Bindings.Add(new BindingReport()
+                            axisNode.Bindings.Add(new BindingReport
                             {
                                 Title = axisNames[ax],
                                 Category = BindingCategory.Signed,
-                                BindingDescriptor = new BindingDescriptor()
+                                BindingDescriptor = new BindingDescriptor
                                 {
                                     Index = ax,
-                                    Type = BindingType.Axis,
+                                    Type = BindingType.Axis
                                 }
                             });
                             axisCount++;
@@ -246,20 +245,20 @@ namespace Core_vJoyInterfaceWrap
                     var buttonCount = vJ.GetVJDButtonNumber(id);
                     if (buttonCount > 0)
                     {
-                        var buttonNode = new DeviceReportNode()
+                        var buttonNode = new DeviceReportNode
                         {
                             Title = "Buttons"
                         };
                         for (int btn = 0; btn < buttonCount; btn++)
                         {
-                            buttonNode.Bindings.Add(new BindingReport()
+                            buttonNode.Bindings.Add(new BindingReport
                             {
                                 Title = (btn + 1).ToString(),
                                 Category = BindingCategory.Momentary,
-                                BindingDescriptor = new BindingDescriptor()
+                                BindingDescriptor = new BindingDescriptor
                                 {
                                     Index = btn,
-                                    Type = BindingType.Button,
+                                    Type = BindingType.Button
                                 }
                             });
                         }
@@ -270,14 +269,14 @@ namespace Core_vJoyInterfaceWrap
                     var povCount = vJ.GetVJDContPovNumber(id);
                     if (povCount > 0)
                     {
-                        var povsNode = new DeviceReportNode()
+                        var povsNode = new DeviceReportNode
                         {
                             Title = "POVs"
                         };
 
                         for (int p = 0; p < povCount; p++)
                         {
-                            var povNode = new DeviceReportNode()
+                            var povNode = new DeviceReportNode
                             {
                                 Title = "POV #" + (p + 1)
                             };
@@ -298,7 +297,8 @@ namespace Core_vJoyInterfaceWrap
             return Convert.ToUInt32(handle);
         }
 
-        private static List<HID_USAGES> AxisIdToUsage = new List<HID_USAGES>() {
+        private static List<HID_USAGES> AxisIdToUsage = new List<HID_USAGES>
+        {
             HID_USAGES.HID_USAGE_X, HID_USAGES.HID_USAGE_Y, HID_USAGES.HID_USAGE_Z,
             HID_USAGES.HID_USAGE_RX, HID_USAGES.HID_USAGE_RY, HID_USAGES.HID_USAGE_RZ,
             HID_USAGES.HID_USAGE_SL0, HID_USAGES.HID_USAGE_SL1 };
@@ -307,8 +307,8 @@ namespace Core_vJoyInterfaceWrap
         {
             public bool IsAcquired { get { return acquired; } }
 
-            private uint deviceId = 0;
-            private bool acquired = false;
+            private uint deviceId;
+            private bool acquired;
             private Dictionary<Guid, OutputSubscriptionRequest> subReqs = new Dictionary<Guid, OutputSubscriptionRequest>();
             private POVHandler[] povHandlers = new POVHandler[4];
 
@@ -371,9 +371,9 @@ namespace Core_vJoyInterfaceWrap
 
             private class POVHandler
             {
-                private int[] axes = new int[] { 0, 0 };
-                private uint deviceId = 0;
-                private uint povId = 0;
+                private int[] axes = { 0, 0 };
+                private uint deviceId;
+                private uint povId;
 
                 public POVHandler(uint device, uint pov)
                 {
@@ -420,6 +420,6 @@ namespace Core_vJoyInterfaceWrap
 
         }
 
-        private static List<string> povDirections = new List<string>() { "Up", "Right", "Down", "Left" };
+        private static List<string> povDirections = new List<string> { "Up", "Right", "Down", "Left" };
     }
 }

@@ -2,13 +2,13 @@
 using System;
 using System.Diagnostics;
 
-namespace HidWizards.IOWrapper.ProviderInterface
+namespace HidWizards.IOWrapper.API
 {
-    public enum InputTypes { Button, Axis };
+    public enum InputTypes { Button, Axis }
 
     public class IOController : IDisposable
     {
-        bool disposed = false;
+        bool disposed;
         private Dictionary<string, IProvider> _Providers;
         private Dictionary<Guid, InputSubscriptionRequest> ActiveInputSubscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
         private Dictionary<Guid, OutputSubscriptionRequest> ActiveOutputSubscriptions = new Dictionary<Guid, OutputSubscriptionRequest>();
@@ -55,7 +55,7 @@ namespace HidWizards.IOWrapper.ProviderInterface
 
         private static void Log(string formatStr, params object[] arguments)
         {
-            Debug.WriteLine(String.Format("IOWrapper| IOController| " + formatStr, arguments));
+            Debug.WriteLine("IOWrapper| IOController| " + formatStr, arguments);
         }
 
         public bool SetProfileState(Guid profileGuid, bool state)
@@ -242,10 +242,8 @@ namespace HidWizards.IOWrapper.ProviderInterface
             {
                 return _Providers[providerName];
             }
-            else
-            {
-                throw new Exception(String.Format("Provider {0} not found", providerName));
-            }
+
+            throw new Exception(String.Format("Provider {0} not found", providerName));
         }
     }
 }

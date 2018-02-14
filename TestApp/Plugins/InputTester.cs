@@ -1,4 +1,4 @@
-﻿using HidWizards.IOWrapper.ProviderInterface;
+﻿using HidWizards.IOWrapper.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,12 +17,12 @@ namespace TestApp.Plugins
         {
             name = _name;
             // Input
-            input = new InputSubscription()
+            input = new InputSubscription
             {
                 ProviderDescriptor = providerDescriptor,
                 DeviceDescriptor = deviceDescriptor,
                 BindingDescriptor = bindingDescriptor,
-                Callback = new Action<int>((value) =>
+                Callback = new Action<int>(value =>
                 {
                     Console.WriteLine("{0} State: {1}", name, value);
                 })
