@@ -53,15 +53,15 @@
       <Project>{81851977-0421-4ebd-b066-0fe03f02589e}</Project>
       <Name>DataObjects</Name>
     </ProjectReference>
-    <ProjectReference Include="..\IProvider\IProvider.csproj">
+    <ProjectReference Include="..\ProviderInterface\ProviderInterface.csproj">
       <Project>{f6eaf2bc-f362-4ecd-94e5-617ca37a4210}</Project>
-      <Name>IProvider</Name>
+      <Name>ProviderInterface</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(SolutionDir)Artifacts" mkdir "$(SolutionDir)Artifacts
-xcopy /Y /i "$(TargetDir)*.dll" "$(SolutionDir)Artifacts\IOController"
+xcopy /Y /i "$(TargetDir)*.dll" "$(SolutionDir)Artifacts\IOWrapper"
 
 
 </PostBuildEvent>

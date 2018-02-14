@@ -64,10 +64,9 @@
       <Name>DataObjects</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\IProvider\IProvider.csproj">
+    <ProjectReference Include="..\..\ProviderInterface\ProviderInterface.csproj">
       <Project>{f6eaf2bc-f362-4ecd-94e5-617ca37a4210}</Project>
-      <Name>IProvider</Name>
-      <Private>False</Private>
+      <Name>ProviderInterface</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

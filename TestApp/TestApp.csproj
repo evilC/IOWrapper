@@ -60,17 +60,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{d9447b59-4b62-4bd8-be91-5f5ab1d8f1bd}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DataObjects\DataObjects.csproj">
       <Project>{81851977-0421-4ebd-b066-0fe03f02589e}</Project>
       <Name>DataObjects</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\IOController\IOController.csproj">
-      <Project>{d9447b59-4b62-4bd8-be91-5f5ab1d8f1bd}</Project>
-      <Name>IOController</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\IProvider\IProvider.csproj">
-      <Project>{f6eaf2bc-f362-4ecd-94e5-617ca37a4210}</Project>
-      <Name>IProvider</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
