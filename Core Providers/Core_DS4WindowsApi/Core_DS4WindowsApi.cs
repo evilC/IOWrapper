@@ -4,8 +4,8 @@ https://github.com/evilC/DS4WindowsApi
 */
 
 using DS4Windows;
-using HidWizards.IOWrapper.API;
-using HidWizards.IOWrapper.API.Helpers;
+using HidWizards.IOWrapper.ProviderInterface;
+using HidWizards.IOWrapper.ProviderInterface.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;

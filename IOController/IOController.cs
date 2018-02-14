@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using HidWizards.IOWrapper.DataObjects;
+using HidWizards.IOWrapper.ProviderInterface;
 
 namespace HidWizards.IOWrapper.API
 {

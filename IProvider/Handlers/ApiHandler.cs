@@ -1,4 +1,4 @@
-﻿using HidWizards.IOWrapper.API;
+﻿using HidWizards.IOWrapper.ProviderInterface;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using HidWizards.IOWrapper.DataObjects;
 
-namespace HidWizards.IOWrapper.API.Handlers
+namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 {
     /// <summary>
     /// A generic handler for various APIs to support input

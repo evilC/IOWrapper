@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using HidWizards.IOWrapper.API;
-using HidWizards.IOWrapper.API.Handlers;
+using HidWizards.IOWrapper.ProviderInterface;
+using HidWizards.IOWrapper.ProviderInterface.Handlers;
 using SharpDX.XInput;
 using HidWizards.IOWrapper.DataObjects;
 

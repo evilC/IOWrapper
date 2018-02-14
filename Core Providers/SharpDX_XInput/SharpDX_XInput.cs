@@ -1,12 +1,12 @@
 ﻿using System;
 using System.ComponentModel.Composition;
-using HidWizards.IOWrapper.API;
+using HidWizards.IOWrapper.ProviderInterface;
 using System.Collections.Generic;
 using SharpDX.XInput;
 using System.Threading;
 using System.Diagnostics;
-using HidWizards.IOWrapper.API.Handlers;
-using HidWizards.IOWrapper.API.Helpers;
+using HidWizards.IOWrapper.ProviderInterface.Handlers;
+using HidWizards.IOWrapper.ProviderInterface.Helpers;
 using SharpDX_XInput.Handlers;
 using SharpDX_XInput.Helpers;
 using HidWizards.IOWrapper.DataObjects;

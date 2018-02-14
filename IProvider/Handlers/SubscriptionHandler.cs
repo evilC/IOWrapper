@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using HidWizards.IOWrapper.DataObjects;
 
-namespace HidWizards.IOWrapper.API.Handlers
+namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 {
     /// <summary>
     /// Handles storing of subscriptions for a given input, and handling of callbacks

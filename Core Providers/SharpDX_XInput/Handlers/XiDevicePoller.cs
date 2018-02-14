@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using HidWizards.IOWrapper.API;
+using HidWizards.IOWrapper.ProviderInterface;
 using SharpDX.XInput;
 using SharpDX_XInput.Helpers;
 using HidWizards.IOWrapper.DataObjects;

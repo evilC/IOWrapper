@@ -1,14 +1,14 @@
 ﻿using SharpDX.DirectInput;
 using System.ComponentModel.Composition;
-using HidWizards.IOWrapper.API;
+using HidWizards.IOWrapper.ProviderInterface;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using Microsoft.Win32;
 using System.Linq;
 using System.Diagnostics;
-using HidWizards.IOWrapper.API.Handlers;
-using HidWizards.IOWrapper.API.Helpers;
+using HidWizards.IOWrapper.ProviderInterface.Handlers;
+using HidWizards.IOWrapper.ProviderInterface.Helpers;
 using SharpDX_DirectInput.Handlers;
 using SharpDX_DirectInput.Helpers;
 using HidWizards.IOWrapper.DataObjects;

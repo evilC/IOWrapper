@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HidWizards.IOWrapper.API.Helpers
+namespace HidWizards.IOWrapper.ProviderInterface.Helpers
 {
     public static class POVHelper
     {

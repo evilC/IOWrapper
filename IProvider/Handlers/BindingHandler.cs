@@ -1,5 +1,4 @@
-﻿using HidWizards.IOWrapper.API;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +7,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using HidWizards.IOWrapper.DataObjects;
 
-namespace HidWizards.IOWrapper.API.Handlers
+namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 {
     /// <summary>
     /// Handles one input (eg a button, axis or POV) and it's derived inputs.

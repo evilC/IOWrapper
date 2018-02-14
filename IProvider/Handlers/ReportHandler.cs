@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using HidWizards.IOWrapper.DataObjects;
 
-namespace HidWizards.IOWrapper.API.Handlers
+namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 {
     public abstract class ReportHandler
     {

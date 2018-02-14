@@ -1,5 +1,5 @@
 ﻿using Core_TitanOne.Output;
-using HidWizards.IOWrapper.API;
+using HidWizards.IOWrapper.ProviderInterface;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
