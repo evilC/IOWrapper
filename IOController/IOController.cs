@@ -4,7 +4,7 @@ using System.Diagnostics;
 using HidWizards.IOWrapper.DataObjects;
 using HidWizards.IOWrapper.ProviderInterface;
 
-namespace HidWizards.IOWrapper.API
+namespace HidWizards.IOWrapper.Controller
 {
     public enum InputTypes { Button, Axis }
 

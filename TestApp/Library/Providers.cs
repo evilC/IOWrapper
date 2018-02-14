@@ -1,4 +1,4 @@
-﻿using HidWizards.IOWrapper.API;
+﻿using HidWizards.IOWrapper.Controller;
 using System;
 using System.Collections.Generic;
 using System.Linq;
