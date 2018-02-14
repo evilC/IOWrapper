@@ -12,8 +12,8 @@ using SharpDX_XInput.Helpers;
 
 namespace SharpDX_XInput
 {
-    [Export(typeof(IProvider))]
-    public class SharpDX_XInput : IProvider
+    [Export(typeof(IProvider.IProvider))]
+    public class SharpDX_XInput : IProvider.IProvider
     {
         public bool IsLive { get { return isLive; } }
         private bool isLive = true;

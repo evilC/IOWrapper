@@ -14,8 +14,8 @@ using System.Threading.Tasks;
 
 namespace Core_ViGEm
 {
-    [Export(typeof(IProvider))]
-    public class Core_ViGEm : IProvider
+    [Export(typeof(IProvider.IProvider))]
+    public class Core_ViGEm : IProvider.IProvider
     //public class Core_ViGEm
     {
         public bool IsLive { get { return isLive; } }

@@ -16,8 +16,8 @@ using System.Xml;
 
 namespace Core_Interception
 {
-    [Export(typeof(IProvider))]
-    public class Core_Interception : IProvider
+    [Export(typeof(IProvider.IProvider))]
+    public class Core_Interception : IProvider.IProvider
     {
         public bool IsLive { get { return isLive; } }
         private bool isLive = false;

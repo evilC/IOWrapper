@@ -10,8 +10,8 @@ using Tobii.Interaction;
 
 namespace Core_Tobii_Interaction
 {
-    [Export(typeof(IProvider))]
-    public class Core_Tobii_Interaction : IProvider
+    [Export(typeof(IProvider.IProvider))]
+    public class Core_Tobii_Interaction : IProvider.IProvider
     {
         public bool IsLive { get { return isLive; } }
         private bool isLive = false;

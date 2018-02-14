@@ -15,8 +15,8 @@ using System.Threading.Tasks;
 
 namespace Core_DS4WindowsApi
 {
-    [Export(typeof(IProvider))]
-    public class Core_DS4WindowsApi : IProvider
+    [Export(typeof(IProvider.IProvider))]
+    public class Core_DS4WindowsApi : IProvider.IProvider
     {
         private Logger logger;
         DS4ControllerHandler[] connectedControllers = new DS4ControllerHandler[4];

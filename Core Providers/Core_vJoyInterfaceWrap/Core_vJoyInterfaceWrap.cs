@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace Core_vJoyInterfaceWrap
 {
-    [Export(typeof(IProvider))]
-    public class Core_vJoyInterfaceWrap : IProvider
+    [Export(typeof(IProvider.IProvider))]
+    public class Core_vJoyInterfaceWrap : IProvider.IProvider
     {
         public bool IsLive { get { return isLive; } }
         private bool isLive = false;

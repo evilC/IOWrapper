@@ -31,7 +31,7 @@ namespace TestApp
             DeviceDescriptor xInputPad_2 = null;
 
             // Comment out these assignments to turn them on or off
-            //genericStick_1 = Library.Devices.DirectInput.T16000M;
+            genericStick_1 = Library.Devices.DirectInput.T16000M;
             //genericStick_1 = Library.BindingDictionary.DirectInput.DS4_1;
             //genericStick_2 = Library.BindingDictionary.DirectInput.DS4_2;
 
@@ -41,7 +41,7 @@ namespace TestApp
             //snesPad_1 = Library.Devices.DirectInput.SnesPad_1;
             //snesPad_2 = Library.Devices.DirectInput.SnesPad_2;
 
-            //xInputPad_1 = Library.Devices.Console.Xb360_1;
+            xInputPad_1 = Library.Devices.Console.Xb360_1;
             //xInputPad_2 = Library.BindingDictionary.Console.Xb360_2;
 
             if (vJoy_1 != null)

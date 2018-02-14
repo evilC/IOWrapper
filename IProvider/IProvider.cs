@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+using Providers;
 
-namespace Providers
+namespace IProvider
 {
     public interface IProvider : IDisposable
     {

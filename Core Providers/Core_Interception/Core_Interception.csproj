@@ -45,9 +45,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\IProvider\Providers.csproj">
+    <ProjectReference Include="..\..\IProvider\IProvider.csproj">
       <Project>{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}</Project>
-      <Name>Providers</Name>
+      <Name>IProvider</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

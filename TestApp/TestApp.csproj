@@ -64,22 +64,20 @@
       <Project>{d9447b59-4b62-4bd8-be91-5f5ab1d8f1bd}</Project>
       <Name>IOController</Name>
     </ProjectReference>
-    <ProjectReference Include="..\IProvider\Providers.csproj">
+    <ProjectReference Include="..\IProvider\IProvider.csproj">
       <Project>{f6eaf2bc-f362-4ecd-94e5-617ca37a4210}</Project>
-      <Name>Providers</Name>
+      <Name>IProvider</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>if exist "$(TargetDir)*.dll" del /Q "$(TargetDir)*.dll"
+    <PreBuildEvent>
 
 
 </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>REM if exist "$(TargetDir)Providers" rmdir "$(TargetDir)Providers" /s /q
-mkdir "$(TargetDir)Providers"
-xcopy /S /Y "$(SolutionDir)Artifacts\Providers\*" "$(TargetDir)Providers"</PostBuildEvent>
+    <PostBuildEvent>xcopy /S /Y /i "$(SolutionDir)Artifacts\Providers" "$(TargetDir)Providers"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -10,15 +10,15 @@ namespace IOWrapper
     public class IOController : IDisposable
     {
         bool disposed = false;
-        private Dictionary<string, IProvider> _Providers;
+        private Dictionary<string, IProvider.IProvider> _Providers;
         private Dictionary<Guid, InputSubscriptionRequest> ActiveInputSubscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
         private Dictionary<Guid, OutputSubscriptionRequest> ActiveOutputSubscriptions = new Dictionary<Guid, OutputSubscriptionRequest>();
 
         public IOController()
         {
-            GenericMEFPluginLoader<IProvider> loader = new GenericMEFPluginLoader<IProvider>("Providers");
-            _Providers = new Dictionary<string, IProvider>();
-            IEnumerable<IProvider> providers = loader.Plugins;
+            GenericMEFPluginLoader<IProvider.IProvider> loader = new GenericMEFPluginLoader<IProvider.IProvider>("Providers");
+            _Providers = new Dictionary<string, IProvider.IProvider>();
+            IEnumerable<IProvider.IProvider> providers = loader.Plugins;
             Log("Initializing...");
             foreach (var provider in providers)
             {
@@ -237,7 +237,7 @@ namespace IOWrapper
             provider.RefreshDevices();
         }
 
-        private IProvider GetProvider(string providerName)
+        private IProvider.IProvider GetProvider(string providerName)
         {
             if (_Providers.ContainsKey(providerName))
             {

@@ -12,8 +12,8 @@ using System.Threading.Tasks;
 
 namespace Core_TitanOne
 {
-    [Export(typeof(IProvider))]
-    public class Core_TitanOne : IProvider
+    [Export(typeof(IProvider.IProvider))]
+    public class Core_TitanOne : IProvider.IProvider
     {
         sbyte[] outputState = new sbyte[GCMAPIConstants.Output];
         private Dictionary<string, OutputHandler> outputHandlers = new Dictionary<string, OutputHandler>(StringComparer.OrdinalIgnoreCase)
