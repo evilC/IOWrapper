@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HidWizards.IOWrapper.API
+namespace HidWizards.IOWrapper.DataObjects
 {
     // Reports allow the back-end to tell the front-end what capabilities are available
     // Reports comprise of two parts:

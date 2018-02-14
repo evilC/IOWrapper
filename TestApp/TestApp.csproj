@@ -60,6 +60,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DataObjects\DataObjects.csproj">
+      <Project>{81851977-0421-4ebd-b066-0fe03f02589e}</Project>
+      <Name>DataObjects</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IOController\IOController.csproj">
       <Project>{d9447b59-4b62-4bd8-be91-5f5ab1d8f1bd}</Project>
       <Name>IOController</Name>

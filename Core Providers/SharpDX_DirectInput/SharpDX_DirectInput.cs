@@ -11,6 +11,7 @@ using HidWizards.IOWrapper.API.Handlers;
 using HidWizards.IOWrapper.API.Helpers;
 using SharpDX_DirectInput.Handlers;
 using SharpDX_DirectInput.Helpers;
+using HidWizards.IOWrapper.DataObjects;
 
 namespace SharpDX_DirectInput
 {

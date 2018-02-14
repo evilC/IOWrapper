@@ -2,6 +2,7 @@
 using HidWizards.IOWrapper.API;
 using SharpDX.XInput;
 using SharpDX_XInput.Helpers;
+using HidWizards.IOWrapper.DataObjects;
 
 namespace SharpDX_XInput.Handlers
 {

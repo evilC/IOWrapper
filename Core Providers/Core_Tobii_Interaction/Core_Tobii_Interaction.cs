@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tobii.Interaction;
+using HidWizards.IOWrapper.DataObjects;
 
 namespace Core_Tobii_Interaction
 {

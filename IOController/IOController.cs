@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System;
 using System.Diagnostics;
+using HidWizards.IOWrapper.DataObjects;
 
 namespace HidWizards.IOWrapper.API
 {

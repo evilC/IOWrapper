@@ -43,10 +43,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DTOs\Descriptors.cs" />
-    <Compile Include="DTOs\Enums.cs" />
-    <Compile Include="DTOs\Reports.cs" />
-    <Compile Include="DTOs\SubscriptionRequests.cs" />
     <Compile Include="Handlers\ApiHandler.cs" />
     <Compile Include="Handlers\BindingHandler.cs" />
     <Compile Include="Handlers\DeviceHandler.cs" />
@@ -60,6 +56,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DTOs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataObjects\DataObjects.csproj">
+      <Project>{81851977-0421-4ebd-b066-0fe03f02589e}</Project>
+      <Name>DataObjects</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

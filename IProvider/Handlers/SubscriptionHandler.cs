@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading;
+using HidWizards.IOWrapper.DataObjects;
 
 namespace HidWizards.IOWrapper.API.Handlers
 {

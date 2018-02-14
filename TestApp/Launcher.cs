@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TestApp.Wrappers;
+using HidWizards.IOWrapper.DataObjects;
 
 namespace TestApp
 {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HidWizards.IOWrapper.API
+namespace HidWizards.IOWrapper.DataObjects
 {
     /// <summary>
     /// SubscriptionRequests allow the front end to add or remove Bindings

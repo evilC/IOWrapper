@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HidWizards.IOWrapper.API;
+using HidWizards.IOWrapper.DataObjects;
 
 namespace SharpDX_XInput.Helpers
 {

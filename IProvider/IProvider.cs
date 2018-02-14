@@ -1,5 +1,6 @@
 ﻿using System;
 using HidWizards.IOWrapper.API;
+using HidWizards.IOWrapper.DataObjects;
 
 namespace HidWizards.IOWrapper.API
 {

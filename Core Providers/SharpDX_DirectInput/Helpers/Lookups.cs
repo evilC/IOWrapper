@@ -5,6 +5,7 @@ using Microsoft.Win32;
 using HidWizards.IOWrapper.API;
 using SharpDX.DirectInput;
 using SharpDX_DirectInput.Handlers;
+using HidWizards.IOWrapper.DataObjects;
 
 namespace SharpDX_DirectInput.Helpers
 {
