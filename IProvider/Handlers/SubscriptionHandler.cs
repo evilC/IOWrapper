@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading;
 
-namespace Providers.Handlers
+namespace IProvider.Handlers
 {
     /// <summary>
     /// Handles storing of subscriptions for a given input, and handling of callbacks

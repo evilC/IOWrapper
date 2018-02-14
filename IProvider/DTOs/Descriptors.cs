@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Providers
+namespace IProvider
 {
     // Descriptors are used to identify various aspects of a Binding
     // These classes control routing of the subscription request

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using Providers;
-using Providers.Handlers;
+using IProvider;
+using IProvider.Handlers;
 
 namespace SharpDX_XInput.Handlers
 {

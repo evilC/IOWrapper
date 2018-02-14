@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using Providers;
-using Providers.Handlers;
+using IProvider;
+using IProvider.Handlers;
 using SharpDX.DirectInput;
 
 namespace SharpDX_DirectInput.Handlers

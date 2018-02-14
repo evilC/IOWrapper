@@ -1,4 +1,4 @@
-﻿using Providers;
+﻿using IProvider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 
-namespace Providers.Handlers
+namespace IProvider.Handlers
 {
     /// <summary>
     /// Handles one input (eg a button, axis or POV) and it's derived inputs.

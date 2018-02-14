@@ -1,5 +1,5 @@
-﻿using Providers;
-using Providers.Handlers;
+﻿using IProvider;
+using IProvider.Handlers;
 using SharpDX_DirectInput.Helpers;
 
 namespace SharpDX_DirectInput.Handlers

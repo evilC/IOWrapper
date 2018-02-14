@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Providers;
+using IProvider;
 using SharpDX.XInput;
 using SharpDX_XInput.Helpers;
 

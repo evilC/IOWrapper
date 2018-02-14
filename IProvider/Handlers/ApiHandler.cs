@@ -1,4 +1,4 @@
-﻿using Providers;
+﻿using IProvider;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Providers.Handlers
+namespace IProvider.Handlers
 {
     /// <summary>
     /// A generic handler for various APIs to support input

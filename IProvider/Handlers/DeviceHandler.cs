@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Providers.Handlers
+namespace IProvider.Handlers
 {
     /// <summary>
     /// Handles one type (as in make/model, vid/pid) of device, of which there could be multiple instances

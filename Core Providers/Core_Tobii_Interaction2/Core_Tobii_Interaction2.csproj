@@ -4,17 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5127F99D-BEFF-45AC-A52C-9C0BE6DE1F70}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{4CBA4863-015B-43E4-804B-199A198DD046}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestApp</RootNamespace>
-    <AssemblyName>TestApp</AssemblyName>
+    <RootNamespace>Core_Tobii_Interaction</RootNamespace>
+    <AssemblyName>Core_Tobii_Interaction</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +24,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,11 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <RunPostBuildEvent>Always</RunPostBuildEvent>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -46,38 +43,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Library\Bindings.cs" />
-    <Compile Include="Library\Devices.cs" />
-    <Compile Include="Library\Profiles.cs" />
-    <Compile Include="Plugins\Remapper.cs" />
-    <Compile Include="Plugins\InputTester.cs" />
-    <Compile Include="Wrappers\Wrappers.cs" />
-    <Compile Include="Library\Providers.cs" />
-    <Compile Include="Launcher.cs" />
+    <Compile Include="Core_Tobii_Interaction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\IOController\IOController.csproj">
-      <Project>{d9447b59-4b62-4bd8-be91-5f5ab1d8f1bd}</Project>
-      <Name>IOController</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\IProvider\IProvider.csproj">
+    <ProjectReference Include="..\..\IProvider\IProvider.csproj">
       <Project>{f6eaf2bc-f362-4ecd-94e5-617ca37a4210}</Project>
       <Name>IProvider</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>IF EXIST "$(ProjectDir)Dependencies\*" xcopy /Y "$(ProjectDir)Dependencies\*" "$(TargetDir)"</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>if not exist "$(TargetDir)Providers" mkdir "$(TargetDir)Providers"
-xcopy /S /Y /i "$(SolutionDir)Artifacts\Providers" "$(TargetDir)Providers"</PostBuildEvent>
+    <PostBuildEvent>if exist "$(SolutionDir)Artifacts\Providers\$(ProjectName)" rmdir "$(SolutionDir)Artifacts\Providers\$(ProjectName)" /s /q
+mkdir "$(SolutionDir)Artifacts\Providers\$(ProjectName)"
+xcopy /Y "$(TargetDir)*.dll" "$(SolutionDir)Artifacts\Providers\$(ProjectName)"
+</PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\..\IOWrapper\packages\Tobii.Interaction.0.7.3\build\Tobii.Interaction.targets" Condition="Exists('..\..\IOWrapper\packages\Tobii.Interaction.0.7.3\build\Tobii.Interaction.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\IOWrapper\packages\Tobii.Interaction.0.7.3\build\Tobii.Interaction.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\IOWrapper\packages\Tobii.Interaction.0.7.3\build\Tobii.Interaction.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

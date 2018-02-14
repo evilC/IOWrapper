@@ -48,10 +48,9 @@
     <Compile Include="IOController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\..\IProvider\IProvider.csproj">
-      <Project>{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}</Project>
+    <ProjectReference Include="..\IProvider\IProvider.csproj">
+      <Project>{f6eaf2bc-f362-4ecd-94e5-617ca37a4210}</Project>
       <Name>IProvider</Name>
     </ProjectReference>
   </ItemGroup>

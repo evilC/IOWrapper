@@ -1,12 +1,12 @@
 ﻿using System;
 using System.ComponentModel.Composition;
-using Providers;
+using IProvider;
 using System.Collections.Generic;
 using SharpDX.XInput;
 using System.Threading;
 using System.Diagnostics;
-using Providers.Handlers;
-using Providers.Helpers;
+using IProvider.Handlers;
+using IProvider.Helpers;
 using SharpDX_XInput.Handlers;
 using SharpDX_XInput.Helpers;
 

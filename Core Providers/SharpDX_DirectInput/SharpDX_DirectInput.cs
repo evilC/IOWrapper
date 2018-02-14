@@ -1,14 +1,14 @@
 ﻿using SharpDX.DirectInput;
 using System.ComponentModel.Composition;
-using Providers;
+using IProvider;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using Microsoft.Win32;
 using System.Linq;
 using System.Diagnostics;
-using Providers.Handlers;
-using Providers.Helpers;
+using IProvider.Handlers;
+using IProvider.Helpers;
 using SharpDX_DirectInput.Handlers;
 using SharpDX_DirectInput.Helpers;
 

@@ -36,8 +36,7 @@ namespace Core_Tobii_Interaction
 
         public ProviderReport GetInputList()
         {
-            var providerReport = new ProviderReport()
-            {
+            var providerReport = new ProviderReport() {
                 Title = "Tobii Interaction (Core)",
                 Description = "Tracks head and eye movement. Requires a Tobii device, see https://tobiigaming.com/",
                 API = "Tobii.Interaction",

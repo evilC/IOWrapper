@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace Providers.Helpers
+namespace IProvider.Helpers
 {
     public class Logger
     {

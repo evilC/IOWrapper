@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading;
-using Providers;
-using Providers.Handlers;
+using IProvider;
+using IProvider.Handlers;
 using SharpDX.DirectInput;
 using SharpDX_DirectInput.Helpers;
 

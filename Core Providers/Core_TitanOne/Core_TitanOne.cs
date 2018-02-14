@@ -1,5 +1,5 @@
 ﻿using Core_TitanOne.Output;
-using Providers;
+using IProvider;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;

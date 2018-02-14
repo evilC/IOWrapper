@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Providers.Handlers
+namespace IProvider.Handlers
 {
     public abstract class ReportHandler
     {
