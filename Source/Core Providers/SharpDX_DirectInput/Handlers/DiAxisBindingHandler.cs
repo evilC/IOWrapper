@@ -8,10 +8,9 @@ namespace SharpDX_DirectInput.Handlers
     {
         public DiAxisBindingHandler(InputSubscriptionRequest subReq) : base(subReq) { }
 
-        public override void Poll(int pollValue)
+        public override int ConvertValue(int value)
         {
-            // Normalization of Axes to standard scale occurs here
-            BindingDictionary[0].State = (65535 - pollValue) - 32768;
+            return (65535 - value) - 32768;
         }
     }
 }

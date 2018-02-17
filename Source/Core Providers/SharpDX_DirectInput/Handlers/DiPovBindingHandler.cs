@@ -11,11 +11,9 @@ namespace SharpDX_DirectInput.Handlers
     /// </summary>
     class DiPovBindingHandler : BindingHandler
     {
-        private int _currentValue = -1;
-
         public DiPovBindingHandler(InputSubscriptionRequest subReq) : base(subReq)
         {
-            
+            _currentValue = -1;
         }
 
         // Polls one POV

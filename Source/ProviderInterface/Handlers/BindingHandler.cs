@@ -18,6 +18,8 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
     /// </summary>
     public class BindingHandler
     {
+        protected int _currentValue = 0;
+
         private readonly BindingDescriptor _bindingDescriptor;
                                                                 
         protected ConcurrentDictionary<int,                 // SubIndex (Normally 0)
@@ -52,10 +54,18 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         public virtual void Poll(int pollValue)
         {
+            if (pollValue == _currentValue) return;
+            _currentValue = pollValue;
             foreach (var subscriptionHandler in BindingDictionary.Values)
             {
-                subscriptionHandler.State = pollValue;
+                subscriptionHandler.State = ConvertValue(pollValue);
             }
+        }
+
+        // Override this to convert the input's native reporting scale to the unified scale
+        public virtual int ConvertValue(int value)
+        {
+            return value;
         }
 
         // Allows overriding of the key value used for a given SubIndex

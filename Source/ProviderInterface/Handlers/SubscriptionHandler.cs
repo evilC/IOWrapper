@@ -18,9 +18,11 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         public int State
         {
-            get { return _state; }
+            get => _state;
             set
             {
+                if (value == _state)
+                    return;
                 //Set _state IMMEDIATELY, else another callback may get queued!
                 _state = value;
                 // This is where change in state of an input generates a callback
