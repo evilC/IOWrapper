@@ -49,8 +49,7 @@
     <Compile Include="Library\Bindings.cs" />
     <Compile Include="Library\Devices.cs" />
     <Compile Include="Library\Profiles.cs" />
-    <Compile Include="Plugins\Remapper.cs" />
-    <Compile Include="Plugins\InputTester.cs" />
+    <Compile Include="Plugins\IOTester.cs" />
     <Compile Include="Wrappers\Wrappers.cs" />
     <Compile Include="Library\Providers.cs" />
     <Compile Include="Launcher.cs" />
