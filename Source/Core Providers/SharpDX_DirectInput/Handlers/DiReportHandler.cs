@@ -138,72 +138,85 @@ namespace SharpDX_DirectInput.Handlers
                     };
 
                     // ----- Axes -----
-                    var axisInfo = new DeviceReportNode
+                    if (joystick.Capabilities.AxeCount > 0)
                     {
-                        Title = "Axes"
-                    };
-
-                    //var axisInfo = new List<AxisInfo>();
-                    for (var i = 0; i < Lookups.directInputMappings[BindingType.Axis].Count; i++)
-                    {
-                        try
+                        var axisInfo = new DeviceReportNode
                         {
-                            var deviceInfo = joystick.GetObjectInfoByName(Lookups.directInputMappings[BindingType.Axis][i].ToString());
-                            axisInfo.Bindings.Add(new BindingReport
-                            {
-                                Title = deviceInfo.Name,
-                                Category = BindingCategory.Signed,
-                                BindingDescriptor = new BindingDescriptor
-                                {
-                                    Index = i,
-                                    //Name = axisNames[i],
-                                    Type = BindingType.Axis
-                                }
-                            });
-                        }
-                        catch { }
-                    }
+                            Title = "Axes"
+                        };
 
-                    device.Nodes.Add(axisInfo);
+                        //var axisInfo = new List<AxisInfo>();
+                        for (var i = 0; i < Lookups.directInputMappings[BindingType.Axis].Count; i++)
+                        {
+                            try
+                            {
+                                var deviceInfo =
+                                    joystick.GetObjectInfoByName(Lookups.directInputMappings[BindingType.Axis][i]
+                                        .ToString());
+                                axisInfo.Bindings.Add(new BindingReport
+                                {
+                                    Title = deviceInfo.Name,
+                                    Category = BindingCategory.Signed,
+                                    BindingDescriptor = new BindingDescriptor
+                                    {
+                                        Index = i,
+                                        //Name = axisNames[i],
+                                        Type = BindingType.Axis
+                                    }
+                                });
+                            }
+                            catch
+                            {
+                            }
+                        }
+
+                        device.Nodes.Add(axisInfo);
+                    }
 
                     // ----- Buttons -----
                     var length = joystick.Capabilities.ButtonCount;
-                    var buttonInfo = new DeviceReportNode
+                    if (length > 0)
                     {
-                        Title = "Buttons"
-                    };
-                    for (var btn = 0; btn < length; btn++)
-                    {
-                        buttonInfo.Bindings.Add(new BindingReport
+                        var buttonInfo = new DeviceReportNode
                         {
-                            Title = (btn + 1).ToString(),
-                            Category = BindingCategory.Momentary,
-                            BindingDescriptor = new BindingDescriptor
+                            Title = "Buttons"
+                        };
+                        for (var btn = 0; btn < length; btn++)
+                        {
+                            buttonInfo.Bindings.Add(new BindingReport
                             {
-                                Index = btn,
-                                Type = BindingType.Button
-                            }
-                        });
-                    }
+                                Title = (btn + 1).ToString(),
+                                Category = BindingCategory.Momentary,
+                                BindingDescriptor = new BindingDescriptor
+                                {
+                                    Index = btn,
+                                    Type = BindingType.Button
+                                }
+                            });
+                        }
 
-                    device.Nodes.Add(buttonInfo);
+                        device.Nodes.Add(buttonInfo);
+                    }
 
                     // ----- POVs -----
                     var povCount = joystick.Capabilities.PovCount;
-                    var povsInfo = new DeviceReportNode
+                    if (povCount > 0)
                     {
-                        Title = "POVs"
-                    };
-                    for (var p = 0; p < povCount; p++)
-                    {
-                        var povInfo = new DeviceReportNode
+                        var povsInfo = new DeviceReportNode
                         {
-                            Title = "POV #" + (p + 1),
-                            Bindings = PovBindingInfos[p]
+                            Title = "POVs"
                         };
-                        povsInfo.Nodes.Add(povInfo);
+                        for (var p = 0; p < povCount; p++)
+                        {
+                            var povInfo = new DeviceReportNode
+                            {
+                                Title = "POV #" + (p + 1),
+                                Bindings = PovBindingInfos[p]
+                            };
+                            povsInfo.Nodes.Add(povInfo);
+                        }
+                        device.Nodes.Add(povsInfo);
                     }
-                    device.Nodes.Add(povsInfo);
 
                     _deviceReports.Add(device);
 
