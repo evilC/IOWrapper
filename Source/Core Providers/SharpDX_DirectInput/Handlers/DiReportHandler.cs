@@ -145,13 +145,14 @@ namespace SharpDX_DirectInput.Handlers
                             Title = "Axes"
                         };
 
-                        //var axisInfo = new List<AxisInfo>();
+                        // SharpDX tells us how many axes there are, but not *which* axes.
+                        // Enumerate all possible DI axes and check to see if this stick has each axis
                         for (var i = 0; i < Lookups.directInputMappings[BindingType.Axis].Count; i++)
                         {
                             try
                             {
                                 var deviceInfo =
-                                    joystick.GetObjectInfoByName(Lookups.directInputMappings[BindingType.Axis][i]
+                                    joystick.GetObjectInfoByName(Lookups.directInputMappings[BindingType.Axis][i]   // this bit will go boom if the axis does not exist
                                         .ToString());
                                 axisInfo.Bindings.Add(new BindingReport
                                 {
@@ -167,6 +168,7 @@ namespace SharpDX_DirectInput.Handlers
                             }
                             catch
                             {
+                                // axis does not exist
                             }
                         }
 
