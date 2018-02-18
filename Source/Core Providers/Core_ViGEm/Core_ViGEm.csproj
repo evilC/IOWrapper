@@ -48,7 +48,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core_ViGEm.cs" />
+    <Compile Include="DeviceHandler.cs" />
+    <Compile Include="DS4Handler.cs" />
+    <Compile Include="OutputDevicesHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Xb360Handler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\DataObjects\DTOs.csproj">
