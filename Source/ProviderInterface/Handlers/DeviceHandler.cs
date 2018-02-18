@@ -39,8 +39,6 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         protected DeviceHandler(InputSubscriptionRequest subReq)
         {
             _bindingDescriptor = subReq.BindingDescriptor;
-            _pollThread = new Thread(PollThread);
-            _pollThread.Start();
         }
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
@@ -98,6 +96,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             {
                 _pollThread.Abort();
                 _pollThread.Join();
+                _pollThread = null;
                 //Log("Stopped Poll Thread");
             }
 
@@ -180,6 +179,9 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             Debug.WriteLine($"IOWrapper| DeviceHandler| {text}");
         }
 
-        public virtual void Dispose() { }
+        public virtual void Dispose()
+        {
+            SetPollThreadState(false);
+        }
     }
 }
