@@ -138,7 +138,7 @@ namespace Core_ViGEm
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
+                    devicesHandler.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.

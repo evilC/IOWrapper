@@ -13,7 +13,7 @@ namespace Core_ViGEm
         /// Handles a specific (Xbox, PS etc) kind of device
         /// Base class with methods common to all device types
         /// </summary>
-        private abstract class DeviceHandler
+        private abstract class DeviceHandler : IDisposable
         {
             public bool IsRequested { get; set; }
             private Dictionary<Guid, OutputSubscriptionRequest> subscriptions = new Dictionary<Guid, OutputSubscriptionRequest>();
@@ -194,6 +194,20 @@ namespace Core_ViGEm
             protected abstract void SetAxisState(BindingDescriptor bindingDescriptor, int state);
             protected abstract void SetButtonState(BindingDescriptor bindingDescriptor, int state);
             protected abstract void SetPovState(BindingDescriptor bindingDescriptor, int state);
+
+            protected virtual void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    target?.Dispose();
+                }
+            }
+
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Core_ViGEm
         /// <summary>
         /// Handles devices from all device types (Xbox, PS etc)
         /// </summary>
-        private class OutputDevicesHandler
+        private class OutputDevicesHandler : IDisposable
         {
             private Dictionary<string, DeviceHandler[]> deviceHandlers = new Dictionary<string, DeviceHandler[]>(StringComparer.OrdinalIgnoreCase);
             public OutputDevicesHandler()
@@ -105,6 +105,17 @@ namespace Core_ViGEm
                     return deviceHandlers[deviceHandler];
                 }
                 return null;
+            }
+
+            public void Dispose()
+            {
+                foreach (var deviceType in deviceHandlers.Values)
+                {
+                    foreach (var deviceHandler in deviceType)
+                    {
+                        deviceHandler.Dispose();
+                    }
+                }
             }
         }
     }
