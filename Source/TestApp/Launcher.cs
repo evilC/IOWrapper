@@ -32,7 +32,7 @@ namespace TestApp
             DeviceDescriptor xInputPad_2 = null;
 
             // Comment out these assignments to turn them on or off
-            genericStick_1 = Library.Devices.DirectInput.T16000M;
+            //genericStick_1 = Library.Devices.DirectInput.T16000M;
             //genericStick_1 = Library.BindingDictionary.DirectInput.DS4_1;
             //genericStick_2 = Library.BindingDictionary.DirectInput.DS4_2;
 
@@ -42,7 +42,7 @@ namespace TestApp
             //snesPad_1 = Library.Devices.DirectInput.SnesPad_1;
             //snesPad_2 = Library.Devices.DirectInput.SnesPad_2;
 
-            xInputPad_1 = Library.Devices.Console.Xb360_1;
+            //xInputPad_1 = Library.Devices.Console.Xb360_1;
             //xInputPad_2 = Library.BindingDictionary.Console.Xb360_2;
 
             if (vJoy_1 != null)
@@ -86,7 +86,9 @@ namespace TestApp
             if (genericStick_1 != null)
             {
                 // DirectInput testers - Physical stick bindings, for when you want to test physical stick behavior
-                var ps1a1 = new Plugins.IOTester("genericStick_1 Axis 1", Library.Providers.DirectInput, genericStick_1, Library.Bindings.Generic.Axis1).Subscribe();
+                var ps1a1 = new Plugins.IOTester("genericStick_1 Axis 1", Library.Providers.DirectInput, genericStick_1, Library.Bindings.Generic.Axis1)
+                    //.SubscribeOutput(Library.Providers.vJoy, Library.Devices.vJoy.vJoy_1, Library.Bindings.Generic.Axis1)
+                    .Subscribe();
                 var ps1a2 = new Plugins.IOTester("genericStick_1 Axis 2", Library.Providers.DirectInput, genericStick_1, Library.Bindings.Generic.Axis2).Subscribe();
                 var ps1b1 = new Plugins.IOTester("genericStick_1 Button 1", Library.Providers.DirectInput, genericStick_1, Library.Bindings.Generic.Button1)
                     //.SubscribeOutput(Library.Providers.ViGEm, Library.Devices.Console.DS4_1, Library.Bindings.Generic.Button1)

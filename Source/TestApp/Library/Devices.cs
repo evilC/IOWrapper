@@ -59,5 +59,11 @@ namespace TestApp.Library
             public static DeviceDescriptor GazePoint = new DeviceDescriptor { DeviceHandle = "GazePoint" };
             public static DeviceDescriptor HeadPose = new DeviceDescriptor { DeviceHandle = "HeadPose" };
         }
+
+        public static class vJoy
+        {
+            public static DeviceDescriptor vJoy_1 = new DeviceDescriptor { DeviceHandle = "0", DeviceInstance = 0 };
+            public static DeviceDescriptor vJoy_2 = new DeviceDescriptor { DeviceHandle = "0", DeviceInstance = 1 };
+        }
     }
 }
