@@ -56,9 +56,10 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         {
             if (pollValue == _currentValue) return;
             _currentValue = pollValue;
+            var value = ConvertValue(pollValue);
             foreach (var subscriptionHandler in BindingDictionary.Values)
             {
-                subscriptionHandler.State = ConvertValue(pollValue);
+                subscriptionHandler.State = value;
             }
         }
 
