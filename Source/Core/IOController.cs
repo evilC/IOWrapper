@@ -147,6 +147,12 @@ namespace HidWizards.IOWrapper.Core
             return ret;
         }
 
+        public void SetBindModeState(bool state)
+        {
+            var prov = GetProvider("SharpDX_DirectInput");
+            prov.SetBindModeState(true);
+        }
+
         private void LogInputSubReq(string title, InputSubscriptionRequest subReq)
         {
             Log("{0}: Provider {1}, Device {2}, Type {3}, Index {4}, SubIndex {5}, Guid {6}",

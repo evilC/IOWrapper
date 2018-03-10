@@ -22,6 +22,7 @@ namespace HidWizards.IOWrapper.ProviderInterface
         //bool SetOutputButton(string dev, uint button, bool state);
         bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state);
         //bool SubscribeAxis(string deviceHandle, uint axisId, dynamic callback);
+        void SetBindModeState(bool state);
         void RefreshLiveState();
         void RefreshDevices();
     }

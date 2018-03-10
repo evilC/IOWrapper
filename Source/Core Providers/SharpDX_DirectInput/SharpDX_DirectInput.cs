@@ -132,6 +132,11 @@ namespace SharpDX_DirectInput
             return false;
         }
 
+        public void SetBindModeState(bool state)
+        {
+            _subscriptionHandler.SetBindModeState(state);
+        }
+
         public void RefreshLiveState()
         {
             

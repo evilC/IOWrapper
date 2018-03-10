@@ -674,6 +674,11 @@ namespace Core_DS4WindowsApi
             return false;
         }
 
+        public void SetBindModeState(bool state)
+        {
+            throw new NotImplementedException();
+        }
+
         public void RefreshLiveState()
         {
 

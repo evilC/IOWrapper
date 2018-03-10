@@ -123,6 +123,11 @@ namespace SharpDX_XInput
             return false;
         }
 
+        public void SetBindModeState(bool state)
+        {
+            throw new NotImplementedException();
+        }
+
         public void RefreshLiveState()
         {
 

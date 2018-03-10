@@ -185,6 +185,11 @@ namespace Core_vJoyInterfaceWrap
             return false;
         }
 
+        public void SetBindModeState(bool state)
+        {
+            throw new NotImplementedException();
+        }
+
         public void RefreshLiveState()
         {
 

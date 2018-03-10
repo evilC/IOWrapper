@@ -101,8 +101,7 @@ namespace SharpDX_DirectInput.Handlers
                 var joystick = new Joystick(DirectInput, device.InstanceGuid);
                 joystick.Acquire();
 
-                var handle =
-                    $"VID_{joystick.Properties.VendorId:X4}&PID_{joystick.Properties.ProductId:X4}";
+                var handle = Lookups.JoystickToHandle(joystick);
 
                 if (!unsortedInstances.ContainsKey(handle))
                 {

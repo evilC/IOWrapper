@@ -89,6 +89,11 @@ namespace Core_ViGEm
             return devicesHandler.SetOutputState(subReq, bindingDescriptor, state);
         }
 
+        public void SetBindModeState(bool state)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool SetProfileState(Guid profileGuid, bool state)
         {
             return false;

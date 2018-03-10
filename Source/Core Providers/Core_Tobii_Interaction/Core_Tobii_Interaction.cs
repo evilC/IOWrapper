@@ -78,6 +78,11 @@ namespace Core_Tobii_Interaction
             return false;
         }
 
+        public void SetBindModeState(bool state)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool SetProfileState(Guid profileGuid, bool state)
         {
             return false;

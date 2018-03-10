@@ -374,6 +374,11 @@ namespace Core_Interception
             return true;
         }
 
+        public void SetBindModeState(bool state)
+        {
+            throw new NotImplementedException();
+        }
+
         public void RefreshLiveState()
         {
 

@@ -45,6 +45,57 @@ namespace SharpDX_DirectInput.Helpers
             return deviceOrders.Values.ToList();
         }
 
+        public static string JoystickToHandle(Joystick joystick)
+        {
+            return $"VID_{joystick.Properties.VendorId:X4}&PID_{joystick.Properties.ProductId:X4}";
+        }
+
+        /// <summary>
+        /// Gets a list of all connected DeviceHandles
+        /// Note that DeviceHandle does not uniquely identify a device ...
+        /// ... DeviceHandle + DeviceInstance does
+        /// </summary>
+        /// <returns></returns>
+        public static List<string> GetConnectedHandles()
+        {
+            var returnedList = new List<string>();
+            var diDeviceInstances = DiHandler.DiInstance.GetDevices();
+
+            //var unsortedInstances = new Dictionary<string, List<DeviceInstance>>();
+            foreach (var device in diDeviceInstances)
+            {
+                if (!Lookups.IsStickType(device))
+                    continue;
+                var joystick = new Joystick(DiHandler.DiInstance, device.InstanceGuid);
+                //if (!DiInstance.IsDeviceAttached(device.InstanceGuid))
+                //{
+                //    continue;
+                //}
+                var handle = Lookups.JoystickToHandle(joystick);
+                if (returnedList.Contains(handle))
+                {
+                    continue;
+                }
+                returnedList.Add(handle);
+            }
+            return returnedList;
+        }
+
+        public static Guid GetInstanceGuid(DeviceDescriptor deviceDescriptor)
+        {
+            var instances = GetDeviceOrders(deviceDescriptor.DeviceHandle);
+            if (instances.Count == 0)
+            {
+                throw new Exception($"DeviceHandle '{deviceDescriptor.DeviceHandle}' was not found");
+            }
+            if (instances.Count >= deviceDescriptor.DeviceInstance)
+            {
+                return instances[deviceDescriptor.DeviceInstance];
+            }
+
+            throw new Exception($"DeviceHandle '{deviceDescriptor.DeviceHandle}' was found, but instance count is {instances.Count} when {deviceDescriptor.DeviceInstance} was requested");
+        }
+
         public static List<DeviceInstance> OrderDevices(string vidpid, List<DeviceInstance> unorderedInstances)
         {
             var orderedGuids = new List<DeviceInstance>();

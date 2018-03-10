@@ -84,6 +84,11 @@ namespace Core_TitanOne
             return outputHandlers[subReq.DeviceDescriptor.DeviceHandle].GetOutputReport();
         }
 
+        public void SetBindModeState(bool state)
+        {
+            throw new NotImplementedException();
+        }
+
         public void RefreshLiveState()
         {
             InitLibrary();
