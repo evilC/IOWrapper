@@ -10,7 +10,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         protected readonly DeviceDescriptor _deviceDescriptor;
         private bool _pollThreadState = false;
 
-        public DevicePoller(DeviceDescriptor deviceDescriptor, Action<DeviceDescriptor, BindingDescriptor, int> callback)
+        public DevicePoller(DeviceDescriptor deviceDescriptor, Action<BindingDescriptor, int> callback)
         {
             _deviceDescriptor = deviceDescriptor;
 

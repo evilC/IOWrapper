@@ -10,9 +10,9 @@ namespace SharpDX_DirectInput.Handlers
     public class DiDevicePoller : DevicePoller
     {
         private readonly Guid _instanceGuid;
-        private readonly Action<DeviceDescriptor, BindingDescriptor, int> _callback;
+        private readonly Action<BindingDescriptor, int> _callback;
 
-        public DiDevicePoller(DeviceDescriptor deviceDescriptor, Action<DeviceDescriptor, BindingDescriptor, int> callback) : base(deviceDescriptor, callback)
+        public DiDevicePoller(DeviceDescriptor deviceDescriptor, Action<BindingDescriptor, int> callback) : base(deviceDescriptor, callback)
         {
             _instanceGuid = Lookups.GetInstanceGuid(deviceDescriptor);
             _callback = callback;
@@ -47,7 +47,7 @@ namespace SharpDX_DirectInput.Handlers
                             {
                                 var bindingType = Lookups.OffsetToType(state.Offset);
 
-                                _callback(_deviceDescriptor, new BindingDescriptor { Type = bindingType, Index = (int)state.Offset }, state.Value);
+                                _callback(new BindingDescriptor { Type = bindingType, Index = (int)state.Offset }, state.Value);
                             }
                             Thread.Sleep(10);
                         }

@@ -62,7 +62,7 @@ namespace SharpDX_DirectInput.Handlers
             }
         }
 
-        public void ProcessSubscriptionModePoll(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor, int state)
+        public void ProcessSubscriptionModePoll(BindingDescriptor bindingDescriptor, int state)
         {
             var bindingType = bindingDescriptor.Type;
             var offset = bindingDescriptor.Index;

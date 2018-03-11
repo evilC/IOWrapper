@@ -52,9 +52,9 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             _devicePoller.SetPollThreadState(true);
         }
 
-        public void ProcessBindModePoll(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor, int state)
+        public void ProcessBindModePoll(BindingDescriptor bindingDescriptor, int state)
         {
-            Console.WriteLine($"IOWrapper| Activity seen from handle {deviceDescriptor.DeviceHandle}, Instance {deviceDescriptor.DeviceInstance}" +
+            Console.WriteLine($"IOWrapper| Activity seen from handle {_deviceDescriptor.DeviceHandle}, Instance {_deviceDescriptor.DeviceInstance}" +
                               $", Type: {bindingDescriptor.Type}, Index: {bindingDescriptor.Index}, State: {state}");
         }
 
