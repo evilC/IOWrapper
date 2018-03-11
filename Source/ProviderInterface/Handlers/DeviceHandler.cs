@@ -45,14 +45,10 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             {
                 return;
             }
-            if (_devicePoller != null)
-            {
-                _devicePoller.SetPollThreadState(false);
-                // ToDo: Implement IDisposable in poller
-                _devicePoller = null;
-            }
-            _devicePoller = CreateDevicePoller(mode);
+
+            _devicePoller?.Dispose();
             _detectionMode = mode;
+            _devicePoller = CreateDevicePoller(mode);
             _devicePoller.SetPollThreadState(true);
         }
 
@@ -64,6 +60,10 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {
+            if (_detectionMode != DetectionMode.Subscription)
+            {
+                throw new Exception($"Tried to subscribe while in mode {_detectionMode}");
+            }
             var handler = GetOrAddBindingHandler(subReq);
             if (handler.Subscribe(subReq))
             {
@@ -76,6 +76,10 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         public virtual bool Unsubscribe(InputSubscriptionRequest subReq)
         {
+            if (_detectionMode != DetectionMode.Subscription)
+            {
+                throw new Exception($"Tried to unsubscribe while in mode {_detectionMode}");
+            }
             var index = GetBindingKey(subReq);
             if (BindingDictionary.ContainsKey(subReq.BindingDescriptor.Type) &&
                 BindingDictionary[subReq.BindingDescriptor.Type].ContainsKey(index))

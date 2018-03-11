@@ -4,7 +4,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 {
-    public abstract class DevicePoller
+    public abstract class DevicePoller : IDisposable
     {
         protected Thread _pollThread;
         protected readonly DeviceDescriptor _deviceDescriptor;
@@ -37,5 +37,19 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         }
 
         protected abstract void PollThread();
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                SetPollThreadState(false);
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
     }
 }
