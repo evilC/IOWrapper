@@ -137,9 +137,4 @@ namespace SharpDX_DirectInput.Handlers
             base.Dispose();
         }
     }
-
-    public class DiPovPollUpdate : DevicePollUpdate
-    {
-        public PovState PovState { get; set; }
-    }
 }

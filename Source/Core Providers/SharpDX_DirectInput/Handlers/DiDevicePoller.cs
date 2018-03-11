@@ -45,14 +45,7 @@ namespace SharpDX_DirectInput.Handlers
                             foreach (var state in data)
                             {
                                 var bindingType = Lookups.OffsetToType(state.Offset);
-                                if (bindingType == BindingType.POV)
-                                {
-                                    _callback(new DiPovPollUpdate() { Type = bindingType, Index = (int)state.Offset, State = state.Value, PovState = new PovState() { X = -1, Y = 0 } });
-                                }
-                                else
-                                {
-                                    _callback(new DevicePollUpdate() { Type = bindingType, Index = (int)state.Offset, State = state.Value });
-                                }
+                                _callback(new DevicePollUpdate() { Type = bindingType, Index = (int)state.Offset, State = state.Value });
                             }
                             Thread.Sleep(10);
                         }
