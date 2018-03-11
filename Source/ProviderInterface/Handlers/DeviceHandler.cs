@@ -19,6 +19,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
     {
         #region fields and properties
         private DetectionMode _detectionMode;
+        protected Action<DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
 
         protected readonly DeviceDescriptor _deviceDescriptor;
 
@@ -39,13 +40,23 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             SetDetectionMode(DetectionMode.Subscription);
         }
 
-        public void SetDetectionMode(DetectionMode mode)
+        //public void EnableBindMode(Action<DeviceDescriptor, BindingDescriptor, int> callback)
+        //{
+        //    _bindModeCallback = callback;
+        //    SetDetectionMode(DetectionMode.Bind);
+        //}
+
+        public void SetDetectionMode(DetectionMode mode, Action<DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
             if (_detectionMode == mode)
             {
                 return;
             }
 
+            if (mode == DetectionMode.Bind)
+            {
+                _bindModeCallback = callback ?? throw new Exception("Bind Mode requested but no callback passed");
+            }
             _devicePoller?.Dispose();
             _detectionMode = mode;
             _devicePoller = CreateDevicePoller(mode);

@@ -89,7 +89,12 @@ namespace Core_ViGEm
             return devicesHandler.SetOutputState(subReq, bindingDescriptor, state);
         }
 
-        public void SetBindModeState(bool state)
+        public void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DisableBindMode()
         {
             throw new NotImplementedException();
         }

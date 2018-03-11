@@ -74,17 +74,18 @@ namespace SharpDX_DirectInput.Handlers
 
         public override void ProcessBindModePoll(DevicePollUpdate update)
         {
-            if (update.Type == BindingType.POV)
-            {
-                var povUpdate = (DiPovPollUpdate) update;
-                Console.WriteLine($"IOWrapper| Activity seen from handle {_deviceDescriptor.DeviceHandle}, Instance {_deviceDescriptor.DeviceInstance}" +
-                                  $", Type: {update.Type}, Index: {update.Index}, X: {povUpdate.PovX}");
-            }
-            else
-            {
-                Console.WriteLine($"IOWrapper| Activity seen from handle {_deviceDescriptor.DeviceHandle}, Instance {_deviceDescriptor.DeviceInstance}" +
-                                  $", Type: {update.Type}, Index: {update.Index}, State: {update.State}");
-            }
+            _bindModeCallback(_deviceDescriptor, new BindingDescriptor {Index = update.Index, SubIndex = update.SubIndex}, update.State);
+            //if (update.Type == BindingType.POV)
+            //{
+            //    var povUpdate = (DiPovPollUpdate) update;
+            //    Console.WriteLine($"IOWrapper| Activity seen from handle {_deviceDescriptor.DeviceHandle}, Instance {_deviceDescriptor.DeviceInstance}" +
+            //                      $", Type: {update.Type}, Index: {update.Index}, X: {povUpdate.PovX}");
+            //}
+            //else
+            //{
+            //    Console.WriteLine($"IOWrapper| Activity seen from handle {_deviceDescriptor.DeviceHandle}, Instance {_deviceDescriptor.DeviceInstance}" +
+            //                      $", Type: {update.Type}, Index: {update.Index}, State: {update.State}");
+            //}
         }
 
         public override void Poll()

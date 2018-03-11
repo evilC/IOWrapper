@@ -22,47 +22,51 @@ namespace SharpDX_DirectInput.Handlers
         public static DirectInput DiInstance { get; } = new DirectInput();
         private readonly List<DiDeviceHandler> _bindModeHandlers = new List<DiDeviceHandler>();
 
-        public override DeviceHandler CreateDeviceHandler(DeviceDescriptor deviceDescriptor)
+        public override void SetDetectionMode(DetectionMode mode, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
-            return new DiDeviceHandler(deviceDescriptor);
-        }
-
-        public void SetBindModeState(bool state)
-        {
-            if (!state)
+            if (mode == DetectionMode.Subscription)
             {
                 throw new NotImplementedException();
             }
-            // Enter Bind Mode
-            // Find a list of all connected devices, and for each...
-            // ... Check if it already has a DeviceHandler, and if so, swap it to Bind Mode
-            // Else new up a DeviceHandler and set it to Bind Mode
-            var connectedHandles = Lookups.GetConnectedHandles();
-
-            foreach (var connectedHandle in connectedHandles)
+            else
             {
-                var guids = Lookups.GetDeviceOrders(connectedHandle);
-                for (var i = 0; i < guids.Count; i++)
-                {
-                    if (!DiInstance.IsDeviceAttached(guids[i]))
-                    {
-                        continue;
-                    }
+                _bindModeCallback = callback;
+                // Enter Bind Mode
+                // Find a list of all connected devices, and for each...
+                // ... Check if it already has a DeviceHandler, and if so, swap it to Bind Mode
+                // Else new up a DeviceHandler and set it to Bind Mode
+                var connectedHandles = Lookups.GetConnectedHandles();
 
-                    if (BindingDictionary.ContainsKey(connectedHandle) &&
-                        BindingDictionary[connectedHandle].ContainsKey(i))
+                foreach (var connectedHandle in connectedHandles)
+                {
+                    var guids = Lookups.GetDeviceOrders(connectedHandle);
+                    for (var i = 0; i < guids.Count; i++)
                     {
-                        BindingDictionary[connectedHandle][i].SetDetectionMode(DetectionMode.Bind);
-                    }
-                    else
-                    {
-                        var deviceDescriptor = new DeviceDescriptor { DeviceHandle = connectedHandle, DeviceInstance = i };
-                        var deviceHandler = new DiDeviceHandler(deviceDescriptor);
-                        deviceHandler.SetDetectionMode(DetectionMode.Bind);
-                        _bindModeHandlers.Add(deviceHandler);
+                        if (!DiInstance.IsDeviceAttached(guids[i]))
+                        {
+                            continue;
+                        }
+
+                        if (BindingDictionary.ContainsKey(connectedHandle) &&
+                            BindingDictionary[connectedHandle].ContainsKey(i))
+                        {
+                            BindingDictionary[connectedHandle][i].SetDetectionMode(DetectionMode.Bind, BindModeCallback);
+                        }
+                        else
+                        {
+                            var deviceDescriptor = new DeviceDescriptor { DeviceHandle = connectedHandle, DeviceInstance = i };
+                            var deviceHandler = new DiDeviceHandler(deviceDescriptor);
+                            deviceHandler.SetDetectionMode(DetectionMode.Bind, BindModeCallback);
+                            _bindModeHandlers.Add(deviceHandler);
+                        }
                     }
                 }
             }
+        }
+
+        public override DeviceHandler CreateDeviceHandler(DeviceDescriptor deviceDescriptor)
+        {
+            return new DiDeviceHandler(deviceDescriptor);
         }
     }
 }

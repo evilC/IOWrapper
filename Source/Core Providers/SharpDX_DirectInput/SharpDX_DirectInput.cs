@@ -132,9 +132,14 @@ namespace SharpDX_DirectInput
             return false;
         }
 
-        public void SetBindModeState(bool state)
+        public void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)
         {
-            _subscriptionHandler.SetBindModeState(state);
+            _subscriptionHandler.SetDetectionMode(DetectionMode.Bind, callback);
+        }
+
+        public void DisableBindMode()
+        {
+            throw new NotImplementedException();
         }
 
         public void RefreshLiveState()

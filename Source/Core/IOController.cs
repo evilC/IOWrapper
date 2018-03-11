@@ -147,10 +147,10 @@ namespace HidWizards.IOWrapper.Core
             return ret;
         }
 
-        public void SetBindModeState(bool state)
+        public void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)
         {
             var prov = GetProvider("SharpDX_DirectInput");
-            prov.SetBindModeState(true);
+            prov.EnableBindMode(callback);
         }
 
         private void LogInputSubReq(string title, InputSubscriptionRequest subReq)
