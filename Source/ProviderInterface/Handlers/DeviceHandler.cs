@@ -18,8 +18,6 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
     public abstract class DeviceHandler : IDisposable
     {
         #region fields and properties
-        private Thread _pollThread;
-        private bool _pollThreadState;
         private DetectionMode _detectionMode;
 
         protected readonly DeviceDescriptor _deviceDescriptor;
