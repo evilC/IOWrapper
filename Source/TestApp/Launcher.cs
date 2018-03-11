@@ -31,8 +31,12 @@ namespace TestApp
             DeviceDescriptor xInputPad_1 = null;
             DeviceDescriptor xInputPad_2 = null;
 
+            IOW.Instance.EnableBindMode(ProcessBindMode);
+            Console.ReadLine();
+            return;
+
             // Comment out these assignments to turn them on or off
-            //genericStick_1 = Library.Devices.DirectInput.T16000M;
+            genericStick_1 = Library.Devices.DirectInput.T16000M;
             //genericStick_1 = Library.BindingDictionary.DirectInput.DS4_1;
             //genericStick_2 = Library.BindingDictionary.DirectInput.DS4_2;
 
@@ -166,6 +170,13 @@ namespace TestApp
             dict.Add(name, new Plugins.IOTester($"{name} Axis 1", providerDescriptor, deviceDescriptor, Library.Bindings.Generic.Axis1));
 
             return dict;
+        }
+
+        public static void ProcessBindMode(ProviderDescriptor providerDescriptor, DeviceDescriptor deviceDescriptor,
+            BindingDescriptor bindingDescriptor, int state)
+        {
+            Console.WriteLine($"IOWrapper| BindMode: Handle {deviceDescriptor.DeviceHandle}/{deviceDescriptor.DeviceInstance}" +
+                              $", Type: {bindingDescriptor.Type}, Index: {bindingDescriptor.Index}, State: {state}");
         }
 
     }
