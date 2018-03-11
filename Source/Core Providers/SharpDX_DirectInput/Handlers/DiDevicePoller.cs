@@ -10,7 +10,6 @@ namespace SharpDX_DirectInput.Handlers
     public class DiDevicePoller : DevicePoller
     {
         private readonly Thread _pollThread;
-        private readonly Joystick _joystick;
         private readonly Guid _instanceGuid;
         private readonly Action<DeviceDescriptor, BindingDescriptor, int> _callback;
 
@@ -19,25 +18,58 @@ namespace SharpDX_DirectInput.Handlers
             _instanceGuid = Lookups.GetInstanceGuid(deviceDescriptor);
             _callback = callback;
 
-            _joystick = new Joystick(DiHandler.DiInstance, _instanceGuid);
-            _joystick.Properties.BufferSize = 128;
-            _joystick.Acquire();
-
             _pollThread = new Thread(PollThread);
             _pollThread.Start();
         }
 
         private void PollThread()
         {
+            Joystick joystick = null;
             while (true)
             {
-                var data = _joystick.GetBufferedData();
-                foreach (var state in data)
+                //JoystickUpdate[] data = null;
+                try
                 {
-                    //Console.WriteLine($"IOWrapper| Activity seen: {state.Value}");
-                    var offset = (int)state.Offset;
-                    var bindingType = Lookups.OffsetToType(state.Offset);
-                    _callback(_deviceDescriptor, new BindingDescriptor{Type  = bindingType, Index = offset}, state.Value);
+                    while (true)    // Main poll loop
+                    {
+                        while (true) // Not Acquired loop
+                        {
+                            while (!DiHandler.DiInstance.IsDeviceAttached(_instanceGuid))
+                            {
+                                Thread.Sleep(100);
+                            }
+                            joystick = new Joystick(DiHandler.DiInstance, _instanceGuid);
+                            joystick.Properties.BufferSize = 128;
+                            joystick.Acquire();
+                            break;
+                        }
+
+                        while (true)  // Acquired loop
+                        {
+                            var data = joystick.GetBufferedData();
+                            foreach (var state in data)
+                            {
+                                var bindingType = Lookups.OffsetToType(state.Offset);
+
+                                _callback(_deviceDescriptor, new BindingDescriptor { Type = bindingType, Index = (int)state.Offset }, state.Value);
+                            }
+                            Thread.Sleep(10);
+                        }
+                    }
+
+                }
+                catch
+                {
+                    try
+                    {
+                        joystick.Dispose();
+                    }
+                    catch
+                    {
+
+                    }
+
+                    joystick = null;
                 }
 
                 Thread.Sleep(10);
