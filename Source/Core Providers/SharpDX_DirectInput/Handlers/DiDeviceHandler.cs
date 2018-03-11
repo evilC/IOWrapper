@@ -14,18 +14,18 @@ namespace SharpDX_DirectInput.Handlers
         //private Joystick _joystick;
         private readonly Guid _instanceGuid = Guid.Empty;
 
-        public DiDeviceHandler(InputSubscriptionRequest subReq) : base(subReq)
+        public DiDeviceHandler(DeviceDescriptor deviceDescriptor) : base(deviceDescriptor)
         {
             //Guid instanceGuid = Guid.Empty;
-            var instances = Lookups.GetDeviceOrders(subReq.DeviceDescriptor.DeviceHandle);
-            if (instances.Count >= subReq.DeviceDescriptor.DeviceInstance)
+            var instances = Lookups.GetDeviceOrders(deviceDescriptor.DeviceHandle);
+            if (instances.Count >= deviceDescriptor.DeviceInstance)
             {
-                _instanceGuid = instances[subReq.DeviceDescriptor.DeviceInstance];
+                _instanceGuid = instances[deviceDescriptor.DeviceInstance];
             }
 
             if (_instanceGuid == Guid.Empty)
             {
-                throw new Exception($"DeviceHandle '{subReq.DeviceDescriptor.DeviceHandle}' was not found");
+                throw new Exception($"DeviceHandle '{deviceDescriptor.DeviceHandle}' was not found");
             }
         }
 
@@ -47,6 +47,11 @@ namespace SharpDX_DirectInput.Handlers
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        protected override DevicePoller CreateDevicePoller(Action<DeviceDescriptor, BindingDescriptor, int> callback)
+        {
+            return new DiDevicePoller(_deviceDescriptor, ProcessPollResult);
         }
 
         protected override void PollThread()

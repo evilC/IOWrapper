@@ -20,15 +20,23 @@ namespace SharpDX_DirectInput.Handlers
     internal class DiHandler : ApiHandler
     {
         public static DirectInput DiInstance { get; } = new DirectInput();
-        private readonly List<DiDevicePoller> _devicePollers = new List<DiDevicePoller>();
+        private readonly List<DiDeviceHandler> _bindModeHandlers = new List<DiDeviceHandler>();
 
-        public override DeviceHandler CreateDeviceHandler(InputSubscriptionRequest subReq)
+        public override DeviceHandler CreateDeviceHandler(DeviceDescriptor deviceDescriptor)
         {
-            return new DiDeviceHandler(subReq);
+            return new DiDeviceHandler(deviceDescriptor);
         }
 
         public void SetBindModeState(bool state)
         {
+            if (!state)
+            {
+                throw new NotImplementedException();
+            }
+            // Enter Bind Mode
+            // Find a list of all connected devices, and for each...
+            // ... Check if it already has a DeviceHandler, and if so, swap it to Bind Mode
+            // Else new up a DeviceHandler and set it to Bind Mode
             var connectedHandles = Lookups.GetConnectedHandles();
 
             foreach (var connectedHandle in connectedHandles)
@@ -40,16 +48,21 @@ namespace SharpDX_DirectInput.Handlers
                     {
                         continue;
                     }
-                    var deviceDescriptor = new DeviceDescriptor {DeviceHandle = connectedHandle, DeviceInstance = i};
-                    _devicePollers.Add(new DiDevicePoller(deviceDescriptor, ProcessPollResult));
+
+                    if (BindingDictionary.ContainsKey(connectedHandle) &&
+                        BindingDictionary[connectedHandle].ContainsKey(i))
+                    {
+                        BindingDictionary[connectedHandle][i].SetDetectionMode(DetectionMode.Bind);
+                    }
+                    else
+                    {
+                        var deviceDescriptor = new DeviceDescriptor { DeviceHandle = connectedHandle, DeviceInstance = i };
+                        var deviceHandler = new DiDeviceHandler(deviceDescriptor);
+                        deviceHandler.SetDetectionMode(DetectionMode.Bind);
+                        _bindModeHandlers.Add(deviceHandler);
+                    }
                 }
             }
-        }
-
-        public void ProcessPollResult(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor, int state)
-        {
-            Console.WriteLine($"IOWrapper| Activity seen from handle {deviceDescriptor.DeviceHandle}, Instance {deviceDescriptor.DeviceInstance}" +
-                              $", Type: {bindingDescriptor.Type}, Index: {bindingDescriptor.Index}, State: {state}");
         }
     }
 }

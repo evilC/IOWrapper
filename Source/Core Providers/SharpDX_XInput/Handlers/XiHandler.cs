@@ -7,9 +7,9 @@ namespace SharpDX_XInput.Handlers
 {
     public class XiHandler : ApiHandler
     {
-        public override DeviceHandler CreateDeviceHandler(InputSubscriptionRequest subReq)
+        public override DeviceHandler CreateDeviceHandler(DeviceDescriptor deviceDescriptor)
         {
-            return new XiDeviceHandler(subReq);
+            return new XiDeviceHandler(deviceDescriptor);
         }
     }
 }

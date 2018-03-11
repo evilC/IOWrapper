@@ -20,20 +20,44 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
     /// </summary>
     public abstract class ApiHandler : IDisposable
     {
+        private DetectionMode _detectionMode = DetectionMode.Subscription;
+
         protected ConcurrentDictionary<string,    // DeviceHandle
             ConcurrentDictionary<int,           // DeviceInstance
                 DeviceHandler>> BindingDictionary
             = new ConcurrentDictionary<string, ConcurrentDictionary<int, DeviceHandler>>();
 
+        public virtual bool SetDetectionMode(DetectionMode mode)
+        {
+            if (_detectionMode != mode)
+            {
+                foreach (var deviceHandle in BindingDictionary)
+                {
+                    foreach (var device in deviceHandle.Value)
+                    {
+                        device.Value.SetDetectionMode(mode);
+                    }
+                }
+            }
+            _detectionMode = mode;
+            return true;
+        }
+
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {
-            if (!GetOrAddDeviceHandler(subReq).Subscribe(subReq)) return false;
-            return true;
-
+            if (_detectionMode != DetectionMode.Subscription)
+            {
+                throw new Exception("Tried to Subscribe while not in Subscribe Mode");
+            }
+            return GetOrAddDeviceHandler(subReq).Subscribe(subReq);
         }
 
         public virtual bool Unsubscribe(InputSubscriptionRequest subReq)
         {
+            if (_detectionMode != DetectionMode.Subscription)
+            {
+                throw new Exception("Tried to Unsubscribe while not in Subscribe Mode");
+            }
             var deviceHandle = subReq.DeviceDescriptor.DeviceHandle;
             var deviceInstance = subReq.DeviceDescriptor.DeviceInstance;
             if (!BindingDictionary.TryGetValue(deviceHandle,
@@ -62,7 +86,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         {
             return BindingDictionary
                 .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, new ConcurrentDictionary<int, DeviceHandler>())
-                .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, CreateDeviceHandler(subReq));
+                .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, CreateDeviceHandler(subReq.DeviceDescriptor));
         }
 
         public virtual DeviceHandler GetDeviceHandler(InputSubscriptionRequest subReq)
@@ -75,7 +99,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         #region Factory methods
 
-        public abstract DeviceHandler CreateDeviceHandler(InputSubscriptionRequest subReq);
+        public abstract DeviceHandler CreateDeviceHandler(DeviceDescriptor deviceDescriptor);
 
 
         #endregion

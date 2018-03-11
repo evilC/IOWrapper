@@ -10,6 +10,17 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 {
+    public class DevicePoller
+    {
+        protected readonly DeviceDescriptor _deviceDescriptor;
+
+        public DevicePoller(DeviceDescriptor deviceDescriptor, Action<DeviceDescriptor, BindingDescriptor, int> callback)
+        {
+            _deviceDescriptor = deviceDescriptor;
+
+        }
+    }
+
     /// <summary>
     /// Handles one type (as in make/model, vid/pid) of device, of which there could be multiple instances
     /// <see cref="BindingDictionary"/> indexes Inputs by the <see cref="BindingDescriptor"/> 
@@ -20,14 +31,17 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         #region fields and properties
         private Thread _pollThread;
         private bool _pollThreadState;
+        private DetectionMode _detectionMode = DetectionMode.Subscription;
 
-        private readonly BindingDescriptor _bindingDescriptor;
+        protected readonly DeviceDescriptor _deviceDescriptor;
 
         // Main binding dictionary that holds handlers          // Uses values from BindingDescriptor
         protected readonly ConcurrentDictionary<BindingType,    // BindingType (Axis / Button / POV)
             ConcurrentDictionary<int,                           // Normally Index, but not mandatory! XI uses Subindex as the key for POVs
                 BindingHandler>> BindingDictionary              // Handles bindings for a specific Device (Or number of instances of a device)
             = new ConcurrentDictionary<BindingType, ConcurrentDictionary<int, BindingHandler>>();
+
+        protected DevicePoller _devicePoller;
         #endregion
 
         #region Public
@@ -36,9 +50,35 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         /// The initial SubReq passed to the ctor does not subscribe to anything, it just configures the handler
         /// </summary>
         /// <param name="subReq"></param>
-        protected DeviceHandler(InputSubscriptionRequest subReq)
+        protected DeviceHandler(DeviceDescriptor deviceDescriptor)
         {
-            _bindingDescriptor = subReq.BindingDescriptor;
+            _deviceDescriptor = deviceDescriptor;
+        }
+
+        public virtual void SetDetectionMode(DetectionMode mode)
+        {
+            if (_detectionMode == mode)
+            {
+                return;
+            }
+
+            if (mode == DetectionMode.Subscription)
+            {
+                //ToDo: Disable BindMode threads
+                SetPollThreadState(true);
+            }
+            else
+            {
+                SetPollThreadState(false);
+                _devicePoller = CreateDevicePoller(ProcessPollResult);
+            }
+            _detectionMode = mode;
+        }
+
+        public void ProcessPollResult(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor, int state)
+        {
+            Console.WriteLine($"IOWrapper| Activity seen from handle {deviceDescriptor.DeviceHandle}, Instance {deviceDescriptor.DeviceInstance}" +
+                              $", Type: {bindingDescriptor.Type}, Index: {bindingDescriptor.Index}, State: {state}");
         }
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
@@ -139,6 +179,11 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             return new BindingHandler(subReq);
         }
 
+        protected abstract DevicePoller CreateDevicePoller(Action<DeviceDescriptor, BindingDescriptor, int> callback);
+        //protected virtual DevicePoller CreateDevicePoller(Action<DeviceDescriptor, BindingDescriptor, int> callback)
+        //{
+        //    return new DevicePoller(_deviceDescriptor, callback);
+        //}
         #endregion
 
         #region Dictionary Management

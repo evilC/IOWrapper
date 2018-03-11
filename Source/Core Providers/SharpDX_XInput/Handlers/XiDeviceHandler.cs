@@ -13,9 +13,9 @@ namespace SharpDX_XInput.Handlers
 
         private readonly XiDevicePoller _devicePoller = new XiDevicePoller();
 
-        public XiDeviceHandler(InputSubscriptionRequest subReq) : base(subReq)
+        public XiDeviceHandler(DeviceDescriptor deviceDescriptor) : base(deviceDescriptor)
         {
-            _controller = new Controller((UserIndex)subReq.DeviceDescriptor.DeviceInstance);
+            _controller = new Controller((UserIndex)deviceDescriptor.DeviceInstance);
         }
 
         /// <summary>
@@ -29,7 +29,12 @@ namespace SharpDX_XInput.Handlers
                 ? new XiTriggerindingHandler(subReq)
                 : base.CreateBindingHandler(subReq);
         }
-        
+
+        protected override DevicePoller CreateDevicePoller(Action<DeviceDescriptor, BindingDescriptor, int> callback)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// XInput only supports one POV (So Index would always be 0), plus it exposes POV directions as Inputs for us...
         /// ... so for POV we use SubIndex as the Dictionary key, as the directions exist as flags

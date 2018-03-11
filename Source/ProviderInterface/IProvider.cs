@@ -4,6 +4,8 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace HidWizards.IOWrapper.ProviderInterface
 {
+    public enum DetectionMode { Subscription, Bind }
+
     public interface IProvider : IDisposable
     {
         string ProviderName { get; }
