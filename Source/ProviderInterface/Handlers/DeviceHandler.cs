@@ -52,11 +52,14 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             _devicePoller.SetPollThreadState(true);
         }
 
-        public void ProcessBindModePoll(BindingDescriptor bindingDescriptor, int state)
-        {
-            Console.WriteLine($"IOWrapper| Activity seen from handle {_deviceDescriptor.DeviceHandle}, Instance {_deviceDescriptor.DeviceInstance}" +
-                              $", Type: {bindingDescriptor.Type}, Index: {bindingDescriptor.Index}, State: {state}");
-        }
+        public abstract void ProcessBindModePoll(DevicePollUpdate update);
+        //public void ProcessBindModePoll(BindingDescriptor bindingDescriptor, DevicePollUpdate update)
+        //{
+        //    Console.WriteLine($"IOWrapper| Activity seen from handle {_deviceDescriptor.DeviceHandle}, Instance {_deviceDescriptor.DeviceInstance}" +
+        //                      $", Type: {bindingDescriptor.Type}, Index: {bindingDescriptor.Index}, State: {update.State}");
+        //}
+
+        public abstract void ProcessSubscriptionModePoll(DevicePollUpdate update);
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {

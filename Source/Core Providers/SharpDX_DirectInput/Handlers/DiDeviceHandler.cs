@@ -62,13 +62,28 @@ namespace SharpDX_DirectInput.Handlers
             }
         }
 
-        public void ProcessSubscriptionModePoll(BindingDescriptor bindingDescriptor, int state)
+        public override void ProcessSubscriptionModePoll(DevicePollUpdate update)
         {
-            var bindingType = bindingDescriptor.Type;
-            var offset = bindingDescriptor.Index;
+            var bindingType = update.Type;
+            var offset = update.Index;
             if (BindingDictionary.ContainsKey(bindingType) && BindingDictionary[bindingType].ContainsKey(offset))
             {
-                BindingDictionary[bindingType][offset].Poll(state);
+                BindingDictionary[bindingType][offset].Poll(update.State);
+            }
+        }
+
+        public override void ProcessBindModePoll(DevicePollUpdate update)
+        {
+            if (update.Type == BindingType.POV)
+            {
+                var povUpdate = (DiPovPollUpdate) update;
+                Console.WriteLine($"IOWrapper| Activity seen from handle {_deviceDescriptor.DeviceHandle}, Instance {_deviceDescriptor.DeviceInstance}" +
+                                  $", Type: {update.Type}, Index: {update.Index}, X: {povUpdate.PovX}");
+            }
+            else
+            {
+                Console.WriteLine($"IOWrapper| Activity seen from handle {_deviceDescriptor.DeviceHandle}, Instance {_deviceDescriptor.DeviceInstance}" +
+                                  $", Type: {update.Type}, Index: {update.Index}, State: {update.State}");
             }
         }
 
@@ -114,5 +129,11 @@ namespace SharpDX_DirectInput.Handlers
             //_joystick = null;
             base.Dispose();
         }
+    }
+
+    public class DiPovPollUpdate : DevicePollUpdate
+    {
+        public int PovX { get; set; }
+        public int PovY { get; set; }
     }
 }

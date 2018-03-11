@@ -9,11 +9,12 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         protected Thread _pollThread;
         protected readonly DeviceDescriptor _deviceDescriptor;
         private bool _pollThreadState = false;
+        protected readonly Action<DevicePollUpdate> _callback;
 
-        public DevicePoller(DeviceDescriptor deviceDescriptor, Action<BindingDescriptor, int> callback)
+        protected DevicePoller(DeviceDescriptor deviceDescriptor, Action<DevicePollUpdate> callback)
         {
+            _callback = callback;
             _deviceDescriptor = deviceDescriptor;
-
         }
 
         public void SetPollThreadState(bool state)
@@ -51,5 +52,13 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+    }
+
+    public class DevicePollUpdate
+    {
+        public BindingType Type { get; set; }
+        public int Index { get; set; }
+        public int SubIndex { get; set; }
+        public int State { get; set; }
     }
 }

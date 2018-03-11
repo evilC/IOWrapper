@@ -48,6 +48,16 @@ namespace SharpDX_XInput.Handlers
         }
 
 
+        public override void ProcessBindModePoll(DevicePollUpdate update)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void ProcessSubscriptionModePoll(DevicePollUpdate update)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void Poll()
         {
             if (!_controller.IsConnected)
