@@ -9,7 +9,6 @@ namespace SharpDX_DirectInput.Handlers
 {
     public class DiDevicePoller : DevicePoller
     {
-        private readonly Thread _pollThread;
         private readonly Guid _instanceGuid;
         private readonly Action<DeviceDescriptor, BindingDescriptor, int> _callback;
 
@@ -17,12 +16,9 @@ namespace SharpDX_DirectInput.Handlers
         {
             _instanceGuid = Lookups.GetInstanceGuid(deviceDescriptor);
             _callback = callback;
-
-            _pollThread = new Thread(PollThread);
-            _pollThread.Start();
         }
 
-        private void PollThread()
+        protected override void PollThread()
         {
             Joystick joystick = null;
             while (true)

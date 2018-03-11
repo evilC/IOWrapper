@@ -49,65 +49,26 @@ namespace SharpDX_DirectInput.Handlers
             }
         }
 
-        protected override DevicePoller CreateDevicePoller(Action<DeviceDescriptor, BindingDescriptor, int> callback)
+        protected override DevicePoller CreateDevicePoller(DetectionMode mode)
         {
-            return new DiDevicePoller(_deviceDescriptor, ProcessPollResult);
+            switch (mode)
+            {
+                case DetectionMode.Bind:
+                    return new DiDevicePoller(_deviceDescriptor, ProcessBindModePoll);
+                case DetectionMode.Subscription:
+                    return new DiDevicePoller(_deviceDescriptor, ProcessSubscriptionModePoll);
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
-        protected override void PollThread()
+        public void ProcessSubscriptionModePoll(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor, int state)
         {
-            Joystick joystick = null;
-            while (true)
+            var bindingType = bindingDescriptor.Type;
+            var offset = bindingDescriptor.Index;
+            if (BindingDictionary.ContainsKey(bindingType) && BindingDictionary[bindingType].ContainsKey(offset))
             {
-                //JoystickUpdate[] data = null;
-                try
-                {
-                    while (true)    // Main poll loop
-                    {
-                        while (true) // Not Acquired loop
-                        {
-                            while (!DiHandler.DiInstance.IsDeviceAttached(_instanceGuid))
-                            {
-                                Thread.Sleep(100);
-                            }
-                            joystick = new Joystick(DiHandler.DiInstance, _instanceGuid);
-                            joystick.Properties.BufferSize = 128;
-                            joystick.Acquire();
-                            break;
-                        }
-
-                        while (true)  // Acquired loop
-                        {
-                            var data = joystick.GetBufferedData();
-                            foreach (var state in data)
-                            {
-                                int offset = (int)state.Offset;
-                                var bindingType = Lookups.OffsetToType(state.Offset);
-                                if (BindingDictionary.ContainsKey(bindingType) && BindingDictionary[bindingType].ContainsKey(offset))
-                                {
-                                    BindingDictionary[bindingType][offset].Poll(state.Value);
-                                }
-                            }
-                            Thread.Sleep(10);
-                        }
-                    }
-
-                }
-                catch
-                {
-                    try
-                    {
-                        joystick.Dispose();
-                    }
-                    catch
-                    {
-
-                    }
-
-                    joystick = null;
-                }
-
-                Thread.Sleep(10);
+                BindingDictionary[bindingType][offset].Poll(state);
             }
         }
 
@@ -140,7 +101,7 @@ namespace SharpDX_DirectInput.Handlers
 
         public override void Dispose()
         {
-            SetPollThreadState(false);
+            _devicePoller.SetPollThreadState(false);
             //try
             //{
             //    _joystick.Unacquire();

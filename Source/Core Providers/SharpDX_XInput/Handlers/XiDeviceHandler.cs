@@ -30,7 +30,7 @@ namespace SharpDX_XInput.Handlers
                 : base.CreateBindingHandler(subReq);
         }
 
-        protected override DevicePoller CreateDevicePoller(Action<DeviceDescriptor, BindingDescriptor, int> callback)
+        protected override DevicePoller CreateDevicePoller(DetectionMode mode)
         {
             throw new NotImplementedException();
         }

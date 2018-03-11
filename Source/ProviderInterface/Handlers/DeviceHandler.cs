@@ -10,17 +10,6 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 {
-    public class DevicePoller
-    {
-        protected readonly DeviceDescriptor _deviceDescriptor;
-
-        public DevicePoller(DeviceDescriptor deviceDescriptor, Action<DeviceDescriptor, BindingDescriptor, int> callback)
-        {
-            _deviceDescriptor = deviceDescriptor;
-
-        }
-    }
-
     /// <summary>
     /// Handles one type (as in make/model, vid/pid) of device, of which there could be multiple instances
     /// <see cref="BindingDictionary"/> indexes Inputs by the <see cref="BindingDescriptor"/> 
@@ -31,7 +20,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         #region fields and properties
         private Thread _pollThread;
         private bool _pollThreadState;
-        private DetectionMode _detectionMode = DetectionMode.Subscription;
+        private DetectionMode _detectionMode;
 
         protected readonly DeviceDescriptor _deviceDescriptor;
 
@@ -46,36 +35,30 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         #region Public
 
-        /// <summary>
-        /// The initial SubReq passed to the ctor does not subscribe to anything, it just configures the handler
-        /// </summary>
-        /// <param name="subReq"></param>
         protected DeviceHandler(DeviceDescriptor deviceDescriptor)
         {
             _deviceDescriptor = deviceDescriptor;
+            SetDetectionMode(DetectionMode.Subscription);
         }
 
-        public virtual void SetDetectionMode(DetectionMode mode)
+        public void SetDetectionMode(DetectionMode mode)
         {
             if (_detectionMode == mode)
             {
                 return;
             }
-
-            if (mode == DetectionMode.Subscription)
+            if (_devicePoller != null)
             {
-                //ToDo: Disable BindMode threads
-                SetPollThreadState(true);
+                _devicePoller.SetPollThreadState(false);
+                // ToDo: Implement IDisposable in poller
+                _devicePoller = null;
             }
-            else
-            {
-                SetPollThreadState(false);
-                _devicePoller = CreateDevicePoller(ProcessPollResult);
-            }
+            _devicePoller = CreateDevicePoller(mode);
             _detectionMode = mode;
+            _devicePoller.SetPollThreadState(true);
         }
 
-        public void ProcessPollResult(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor, int state)
+        public void ProcessBindModePoll(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor, int state)
         {
             Console.WriteLine($"IOWrapper| Activity seen from handle {deviceDescriptor.DeviceHandle}, Instance {deviceDescriptor.DeviceInstance}" +
                               $", Type: {bindingDescriptor.Type}, Index: {bindingDescriptor.Index}, State: {state}");
@@ -86,7 +69,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             var handler = GetOrAddBindingHandler(subReq);
             if (handler.Subscribe(subReq))
             {
-                SetPollThreadState(true);
+                _devicePoller.SetPollThreadState(true);
                 return true;
             }
 
@@ -111,7 +94,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
                             //Log($"Removing BindingType dictionary {subReq.BindingDescriptor.Type}");
                             if (BindingDictionary.IsEmpty)
                             {
-                                SetPollThreadState(false);
+                                _devicePoller.SetPollThreadState(false);
                             }
                         }
                     }
@@ -123,25 +106,25 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         public abstract void Poll();
 
-        protected void SetPollThreadState(bool state)
-        {
-            if (_pollThreadState == state) return;
-            if (!_pollThreadState && state)
-            {
-                _pollThread = new Thread(PollThread);
-                _pollThread.Start();
-                //Log("Started Poll Thread");
-            }
-            else if (_pollThreadState && !state)
-            {
-                _pollThread.Abort();
-                _pollThread.Join();
-                _pollThread = null;
-                //Log("Stopped Poll Thread");
-            }
+        //protected void SetPollThreadState(bool state)
+        //{
+        //    if (_pollThreadState == state) return;
+        //    if (!_pollThreadState && state)
+        //    {
+        //        _pollThread = new Thread(PollThread);
+        //        _pollThread.Start();
+        //        //Log("Started Poll Thread");
+        //    }
+        //    else if (_pollThreadState && !state)
+        //    {
+        //        _pollThread.Abort();
+        //        _pollThread.Join();
+        //        _pollThread = null;
+        //        //Log("Stopped Poll Thread");
+        //    }
 
-            _pollThreadState = state;
-        }
+        //    _pollThreadState = state;
+        //}
 
         protected virtual void PollThread()
         {
@@ -179,7 +162,8 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             return new BindingHandler(subReq);
         }
 
-        protected abstract DevicePoller CreateDevicePoller(Action<DeviceDescriptor, BindingDescriptor, int> callback);
+        protected abstract DevicePoller CreateDevicePoller(DetectionMode mode);
+        //protected abstract DevicePoller CreateDevicePoller(Action<DeviceDescriptor, BindingDescriptor, int> callback);
         //protected virtual DevicePoller CreateDevicePoller(Action<DeviceDescriptor, BindingDescriptor, int> callback)
         //{
         //    return new DevicePoller(_deviceDescriptor, callback);
@@ -226,7 +210,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         public virtual void Dispose()
         {
-            SetPollThreadState(false);
+            _devicePoller.SetPollThreadState(false);
         }
     }
 }
