@@ -176,7 +176,7 @@ namespace TestApp
             BindingDescriptor bindingDescriptor, int state)
         {
             Console.WriteLine($"IOWrapper| BindMode: Handle {deviceDescriptor.DeviceHandle}/{deviceDescriptor.DeviceInstance}" +
-                              $", Type: {bindingDescriptor.Type}, Index: {bindingDescriptor.Index}, State: {state}");
+                              $", Type: {bindingDescriptor.Type}, Index: {bindingDescriptor.Index}/{bindingDescriptor.SubIndex}, State: {state}");
         }
 
     }

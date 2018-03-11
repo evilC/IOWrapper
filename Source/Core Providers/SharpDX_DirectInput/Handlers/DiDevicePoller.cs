@@ -2,6 +2,7 @@
 using System.Threading;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Handlers;
+using HidWizards.IOWrapper.ProviderInterface.Helpers;
 using SharpDX.DirectInput;
 using SharpDX_DirectInput.Helpers;
 
@@ -46,7 +47,7 @@ namespace SharpDX_DirectInput.Handlers
                                 var bindingType = Lookups.OffsetToType(state.Offset);
                                 if (bindingType == BindingType.POV)
                                 {
-                                    _callback(new DiPovPollUpdate() { Type = bindingType, Index = (int)state.Offset, State = state.Value, PovX = -1, PovY = 0 });
+                                    _callback(new DiPovPollUpdate() { Type = bindingType, Index = (int)state.Offset, State = state.Value, PovState = new PovState() { X = -1, Y = 0 } });
                                 }
                                 else
                                 {

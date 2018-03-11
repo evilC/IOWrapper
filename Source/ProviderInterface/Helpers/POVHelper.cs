@@ -8,6 +8,8 @@ namespace HidWizards.IOWrapper.ProviderInterface.Helpers
 {
     public static class POVHelper
     {
+        public static List<int> PovDirections = new List<int> { 0, 9000, 18000, 27000 };
+
         /// <summary>
         /// Decides whether one angle matches another angle, with a tolerance
         /// Basically allows you to get the State (1 or 0) of a virtual "Button" that is a POV direction
@@ -42,5 +44,11 @@ namespace HidWizards.IOWrapper.ProviderInterface.Helpers
 
             return Math.Min(result1, result2);
         }
+    }
+
+    public class PovState
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
     }
 }

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 using HidWizards.IOWrapper.ProviderInterface;
 using HidWizards.IOWrapper.ProviderInterface.Handlers;
 using SharpDX.DirectInput;
 using SharpDX_DirectInput.Helpers;
 using HidWizards.IOWrapper.DataTransferObjects;
+using HidWizards.IOWrapper.ProviderInterface.Helpers;
 
 namespace SharpDX_DirectInput.Handlers
 {
@@ -74,18 +76,22 @@ namespace SharpDX_DirectInput.Handlers
 
         public override void ProcessBindModePoll(DevicePollUpdate update)
         {
-            _bindModeCallback(_deviceDescriptor, new BindingDescriptor {Index = update.Index, SubIndex = update.SubIndex}, update.State);
-            //if (update.Type == BindingType.POV)
-            //{
-            //    var povUpdate = (DiPovPollUpdate) update;
-            //    Console.WriteLine($"IOWrapper| Activity seen from handle {_deviceDescriptor.DeviceHandle}, Instance {_deviceDescriptor.DeviceInstance}" +
-            //                      $", Type: {update.Type}, Index: {update.Index}, X: {povUpdate.PovX}");
-            //}
-            //else
-            //{
-            //    Console.WriteLine($"IOWrapper| Activity seen from handle {_deviceDescriptor.DeviceHandle}, Instance {_deviceDescriptor.DeviceInstance}" +
-            //                      $", Type: {update.Type}, Index: {update.Index}, State: {update.State}");
-            //}
+            if (update.Type == BindingType.POV)
+            {
+                if (update.State == -1) return;
+                for (var i = 0; i < POVHelper.PovDirections.Count; i++)
+                {
+                    if (!Lookups.ValueMatchesAngle(POVHelper.PovDirections[i], update.State)) continue;
+
+                    _bindModeCallback(_deviceDescriptor, new BindingDescriptor { Type = update.Type, Index = update.Index, SubIndex = i }, 1);
+                    _bindModeCallback(_deviceDescriptor, new BindingDescriptor { Type = update.Type, Index = update.Index, SubIndex = i }, 0);
+                }
+            }
+            else
+            {
+                var value = Lookups.InputConversionFuncs[update.Type](update.State);
+                _bindModeCallback(_deviceDescriptor, new BindingDescriptor { Type = update.Type, Index = update.Index, SubIndex = update.SubIndex }, value);
+            }
         }
 
         public override void Poll()
@@ -134,7 +140,6 @@ namespace SharpDX_DirectInput.Handlers
 
     public class DiPovPollUpdate : DevicePollUpdate
     {
-        public int PovX { get; set; }
-        public int PovY { get; set; }
+        public PovState PovState { get; set; }
     }
 }

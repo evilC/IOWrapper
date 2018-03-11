@@ -1,6 +1,7 @@
 ﻿using HidWizards.IOWrapper.ProviderInterface;
 using HidWizards.IOWrapper.ProviderInterface.Handlers;
 using HidWizards.IOWrapper.DataTransferObjects;
+using SharpDX_DirectInput.Helpers;
 
 namespace SharpDX_DirectInput.Handlers
 {
@@ -10,7 +11,7 @@ namespace SharpDX_DirectInput.Handlers
 
         public override int ConvertValue(int value)
         {
-            return value == 128 ? 1 : 0;
+            return Lookups.ConvertButtonValue(value);
         }
 
     }

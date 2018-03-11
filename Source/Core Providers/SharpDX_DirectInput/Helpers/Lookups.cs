@@ -242,5 +242,20 @@ namespace SharpDX_DirectInput.Helpers
 
             return Math.Min(result1, result2);
         }
+
+        public static Dictionary<BindingType, Func<int, int>> InputConversionFuncs = new Dictionary<BindingType, Func<int, int>>()
+        {
+            {BindingType.Axis, ConvertAxisValue }, {BindingType.Button, ConvertButtonValue}
+        };
+
+        public static int ConvertButtonValue(int value)
+        {
+            return value == 128 ? 1 : 0;
+        }
+
+        public static int ConvertAxisValue(int value)
+        {
+            return (65535 - value) - 32768;
+        }
     }
 }
