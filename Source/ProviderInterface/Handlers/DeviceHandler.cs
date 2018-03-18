@@ -79,9 +79,10 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         // Main binding dictionary that holds handlers          // Uses values from BindingDescriptor
         protected readonly ConcurrentDictionary<BindingType,    // BindingType (Axis / Button / POV)
-            ConcurrentDictionary<int,                           // Normally Index, but not mandatory! XI uses Subindex as the key for POVs
-                BindingHandler>> BindingDictionary              // Handles bindings for a specific Device (Or number of instances of a device)
-            = new ConcurrentDictionary<BindingType, ConcurrentDictionary<int, BindingHandler>>();
+            ConcurrentDictionary<int,                           // Index
+                ConcurrentDictionary<int,                       // Subindex
+                    BindingHandler>>> BindingDictionary         // Handles bindings for a specific Device (Or number of instances of a device)
+            = new ConcurrentDictionary<BindingType, ConcurrentDictionary<int, ConcurrentDictionary<int, BindingHandler>>>();
 
         protected DevicePoller _devicePoller;
         #endregion
@@ -172,13 +173,16 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             {
                 throw new Exception($"Tried to unsubscribe while in mode {_detectionMode}");
             }
-            var index = GetBindingKey(subReq);
+            var index = GetBindingIndex(subReq);
+            var subIndex = GetBindingSubIndex(subReq);
+
             if (BindingDictionary.ContainsKey(subReq.BindingDescriptor.Type) &&
-                BindingDictionary[subReq.BindingDescriptor.Type].ContainsKey(index))
+                BindingDictionary[subReq.BindingDescriptor.Type].ContainsKey(index) &&
+                BindingDictionary[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index].ContainsKey(subReq.BindingDescriptor.SubIndex))
             {
-                if (BindingDictionary[subReq.BindingDescriptor.Type][index].Unsubscribe(subReq))
+                if (BindingDictionary[subReq.BindingDescriptor.Type][index][subIndex].Unsubscribe(subReq))
                 {
-                    if (BindingDictionary[subReq.BindingDescriptor.Type][index].IsEmpty())
+                    if (BindingDictionary[subReq.BindingDescriptor.Type][index][subIndex].IsEmpty())
                     {
                         BindingDictionary[subReq.BindingDescriptor.Type].TryRemove(index, out _);
                         //Log($"Removing Index dictionary {index}");
@@ -244,9 +248,14 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         #region Lookups
         // Used to allow overriding of the int key used for the dictionary
-        protected virtual int GetBindingKey(InputSubscriptionRequest subReq)
+        protected virtual int GetBindingIndex(InputSubscriptionRequest subReq)
         {
             return subReq.BindingDescriptor.Index;
+        }
+
+        protected virtual int GetBindingSubIndex(InputSubscriptionRequest subReq)
+        {
+            return subReq.BindingDescriptor.SubIndex;
         }
         #endregion
 
@@ -273,9 +282,19 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         /// <returns></returns>
         protected virtual BindingHandler GetOrAddBindingHandler(InputSubscriptionRequest subReq)
         {
-            return BindingDictionary
-                .GetOrAdd(subReq.BindingDescriptor.Type, new ConcurrentDictionary<int, BindingHandler>())
-                .GetOrAdd(GetBindingKey(subReq), CreateBindingHandler(subReq));
+            var a = BindingDictionary
+                .GetOrAdd(subReq.BindingDescriptor.Type,
+                    new ConcurrentDictionary<int, ConcurrentDictionary<int, BindingHandler>>())
+                .GetOrAdd(GetBindingIndex(subReq), new ConcurrentDictionary<int, BindingHandler>());
+            if (a.ContainsKey(subReq.BindingDescriptor.SubIndex))
+            {
+                return a[subReq.BindingDescriptor.SubIndex];
+            }
+            return a.GetOrAdd(GetBindingSubIndex(subReq), CreateBindingHandler(subReq));
+            //.GetOrAdd(GetBindingIndex(subReq), CreateBindingHandler(subReq));
+            //return BindingDictionary
+            //    .GetOrAdd(subReq.BindingDescriptor.Type, new ConcurrentDictionary<int, BindingHandler>())
+            //    .GetOrAdd(GetBindingIndex(subReq), CreateBindingHandler(subReq));
         }
 
         /// <summary>
@@ -285,15 +304,11 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         /// <returns></returns>
         protected virtual BindingHandler GetBindingHandler(InputSubscriptionRequest subReq)
         {
-            if (BindingDictionary.TryGetValue(subReq.BindingDescriptor.Type, out ConcurrentDictionary<int, BindingHandler> cd))
-            {
-                if (cd.TryGetValue(GetBindingKey(subReq), out BindingHandler bh))
-                {
-                    return bh;
-                }
-            }
-
-            return null;
+            if (!BindingDictionary.TryGetValue(subReq.BindingDescriptor.Type,
+                out var bindingIndexes)) return null;
+            if (!bindingIndexes.TryGetValue(GetBindingIndex(subReq),
+                out var bindingSubIndexes)) return null;
+            return bindingSubIndexes.TryGetValue(GetBindingSubIndex(subReq), out var handler) ? handler : null;
         }
         #endregion
 

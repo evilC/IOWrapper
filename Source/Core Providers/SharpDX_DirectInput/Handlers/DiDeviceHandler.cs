@@ -38,11 +38,12 @@ namespace SharpDX_DirectInput.Handlers
             }
         }
 
-        protected override int GetBindingKey(InputSubscriptionRequest subReq)
+        protected override int GetBindingIndex(InputSubscriptionRequest subReq)
         {
             return (int)Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index];
         }
 
+        //ToDo: This method could be deprecated?
         protected override BindingHandler CreateBindingHandler(InputSubscriptionRequest subReq)
         {
             switch (subReq.BindingDescriptor.Type)
@@ -52,7 +53,8 @@ namespace SharpDX_DirectInput.Handlers
                 case BindingType.Button:
                     return new DiButtonBindingHandler(subReq);
                 case BindingType.POV:
-                    return new DiPovBindingHandler(subReq);
+                    //return new DiPovBindingHandler(subReq);
+                    return new BindingHandler(subReq);
                 default:
                     throw new NotImplementedException();
             }
@@ -76,9 +78,10 @@ namespace SharpDX_DirectInput.Handlers
         {
             var bindingType = update.BindingDescriptor.Type;
             var offset = update.BindingDescriptor.Index;
+            var subIndex = update.BindingDescriptor.SubIndex;
             if (BindingDictionary.ContainsKey(bindingType) && BindingDictionary[bindingType].ContainsKey(offset))
             {
-                BindingDictionary[bindingType][offset].Poll(update.State);
+                BindingDictionary[bindingType][offset][subIndex].Poll(update.State);
             }
         }
 

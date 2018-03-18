@@ -6,6 +6,7 @@ using HidWizards.IOWrapper.ProviderInterface.Helpers;
 
 namespace SharpDX_DirectInput.Handlers
 {
+    /*
     /// <summary>
     /// Handles bindings for one POV
     /// ToDo: Make Generic, move into Core
@@ -20,20 +21,12 @@ namespace SharpDX_DirectInput.Handlers
         // Polls one POV
         public override void Poll(int pollValue)
         {
-            if (_currentValue != pollValue)
+            if (pollValue == _currentValue) return;
+            _currentValue = pollValue;
+            var value = ConvertValue(pollValue);
+            foreach (var subscriptionHandler in BindingDictionary.Values)
             {
-                _currentValue = pollValue;
-                foreach (var directionBinding in BindingDictionary)
-                {
-                    int currentDirectionState = directionBinding.Value.State;
-                    var newDirectionState = 
-                        pollValue == -1 ? 0
-                            : POVHelper.StateFromAngle(pollValue, directionBinding.Key);
-                    if (newDirectionState != currentDirectionState)
-                    {
-                        directionBinding.Value.State = newDirectionState;
-                    }
-                }
+                subscriptionHandler.State = value;
             }
         }
 
@@ -42,4 +35,5 @@ namespace SharpDX_DirectInput.Handlers
             return subIndex * 9000;
         }
     }
+    */
 }

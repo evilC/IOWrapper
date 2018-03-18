@@ -43,9 +43,9 @@ namespace SharpDX_XInput.Handlers
         /// </summary>
         /// <param name="subReq"></param>
         /// <returns></returns>
-        protected override int GetBindingKey(InputSubscriptionRequest subReq)
+        protected override int GetBindingIndex(InputSubscriptionRequest subReq)
         {
-            return subReq.BindingDescriptor.Type == BindingType.POV ? subReq.BindingDescriptor.SubIndex : base.GetBindingKey(subReq);
+            return subReq.BindingDescriptor.Type == BindingType.POV ? subReq.BindingDescriptor.SubIndex : base.GetBindingIndex(subReq);
         }
 
 
@@ -75,7 +75,7 @@ namespace SharpDX_XInput.Handlers
                 if (BindingDictionary.ContainsKey(pollItem.BindingType)
                     && BindingDictionary[pollItem.BindingType].ContainsKey(pollItem.Index))
                 {
-                    BindingDictionary[pollItem.BindingType][pollItem.Index].Poll(pollItem.Value);
+                    //BindingDictionary[pollItem.BindingType][pollItem.Index].Poll(pollItem.Value);
                 }
             }
         }
