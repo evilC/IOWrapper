@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading;
 using HidWizards.IOWrapper.ProviderInterface;
 using SharpDX.XInput;
@@ -35,15 +36,16 @@ namespace SharpDX_XInput.Handlers
                 {
                     var isPovType = j > 9;
                     var bindingType = isPovType ? BindingType.POV : BindingType.Button;
-                    var i = isPovType ? j - 10 : j;
-                    var flag = Lookup.xinputButtonIdentifiers[bindingType][i];
+                    var index = isPovType ? 0 : j;
+                    var subIndex = isPovType ? j - 10 : 0;
+                    var flag = Lookup.xinputButtonIdentifiers[bindingType][isPovType ? subIndex : index];
 
                     var thisValue = (flag & thisState.Gamepad.Buttons) == flag ? 1 : 0;
                     var lastValue = (flag & _lastState.Gamepad.Buttons) == flag ? 1 : 0;
                     if (thisValue != lastValue)
                     {
                         //result.PollItems.Add(new XiPollItem { BindingType = bindingType, Index = i, Value = thisValue });
-                        OnPollEvent(new DevicePollUpdate() { Type = bindingType, Index = i, State = thisValue });
+                        OnPollEvent(new DevicePollUpdate() { Type = bindingType, Index = index, SubIndex = subIndex, State = thisValue });
                     }
                 }
                 // There is one property per Axis in XInput. Avoid reflection nastiness and suffer not being able to have a loop
