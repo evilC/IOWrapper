@@ -29,8 +29,6 @@ namespace SharpDX_DirectInput.Handlers
             {
                 throw new Exception($"DeviceHandle '{deviceDescriptor.DeviceHandle}' was not found");
             }
-
-            //DeviceUpdateEvent += ProcessBindModePoll;
         }
 
         protected override int GetBindingKey(InputSubscriptionRequest subReq)

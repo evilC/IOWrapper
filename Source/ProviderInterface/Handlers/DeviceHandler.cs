@@ -27,9 +27,9 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         private DetectionMode _detectionMode;
         protected Action<DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
 
-        public delegate void DescriptorUpdateHandler(BindingUpdate update);
+        public delegate void BindingUpdateHandler(BindingUpdate update);
 
-        public event DescriptorUpdateHandler DeviceUpdateEvent;
+        public event BindingUpdateHandler BindingUpdateEvent;
 
         protected readonly DeviceDescriptor _deviceDescriptor;
 
@@ -53,7 +53,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         protected void OnDeviceUpdateEvent(BindingUpdate update)
         {
-            DeviceUpdateEvent?.Invoke(update);
+            BindingUpdateEvent?.Invoke(update);
         }
 
         protected abstract List<BindingUpdate> GenerateDesriptors(DevicePollUpdate update);
@@ -85,10 +85,10 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             {
                 case DetectionMode.Bind:
                     _bindModeCallback = callback ?? throw new Exception("Bind Mode requested but no callback passed");
-                    DeviceUpdateEvent += ProcessBindModePoll;
+                    BindingUpdateEvent += ProcessBindModePoll;
                     break;
                 case DetectionMode.Subscription:
-                    DeviceUpdateEvent += ProcessSubscriptionModePoll;
+                    BindingUpdateEvent += ProcessSubscriptionModePoll;
                     break;
                 default:
                     throw new NotImplementedException();
