@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using HidWizards.IOWrapper.ProviderInterface;
 using HidWizards.IOWrapper.ProviderInterface.Handlers;
 using SharpDX.XInput;
@@ -30,7 +31,7 @@ namespace SharpDX_XInput.Handlers
                 : base.CreateBindingHandler(subReq);
         }
 
-        protected override DevicePoller CreateDevicePoller(DetectionMode mode)
+        protected override DevicePoller CreateDevicePoller()
         {
             throw new NotImplementedException();
         }
@@ -48,12 +49,17 @@ namespace SharpDX_XInput.Handlers
         }
 
 
-        public override void ProcessBindModePoll(DevicePollUpdate update)
+        protected override List<DevicePollDescriptor> GenerateDesriptors(DevicePollUpdate update)
         {
             throw new NotImplementedException();
         }
 
-        public override void ProcessSubscriptionModePoll(DevicePollUpdate update)
+        public override void ProcessBindModePoll(DevicePollDescriptor update)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void ProcessSubscriptionModePoll(DevicePollDescriptor update)
         {
             throw new NotImplementedException();
         }

@@ -10,6 +10,13 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 {
+    public class DevicePollDescriptor
+    {
+        public DeviceDescriptor DeviceDescriptor { get; set; }
+        public BindingDescriptor BindingDescriptor { get; set; }
+        public int State { get; set; }
+    }
+
     /// <summary>
     /// Handles one type (as in make/model, vid/pid) of device, of which there could be multiple instances
     /// <see cref="BindingDictionary"/> indexes Inputs by the <see cref="BindingDescriptor"/> 
@@ -20,6 +27,10 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         #region fields and properties
         private DetectionMode _detectionMode;
         protected Action<DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
+
+        public delegate void DescriptorUpdateHandler(DevicePollDescriptor update);
+
+        public event DescriptorUpdateHandler DeviceUpdateEvent;
 
         protected readonly DeviceDescriptor _deviceDescriptor;
 
@@ -32,12 +43,30 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         protected DevicePoller _devicePoller;
         #endregion
 
-        #region Public
+        protected void ProcessPollEvent(DevicePollUpdate update)
+        {
+            var descriptors = GenerateDesriptors(update);
+            foreach (var descriptor in descriptors)
+            {
+                OnDeviceUpdateEvent(descriptor);
+            }
+        }
 
+        protected void OnDeviceUpdateEvent(DevicePollDescriptor update)
+        {
+            DeviceUpdateEvent?.Invoke(update);
+        }
+
+        protected abstract List<DevicePollDescriptor> GenerateDesriptors(DevicePollUpdate update);
+
+        #region Public
         protected DeviceHandler(DeviceDescriptor deviceDescriptor)
         {
             _deviceDescriptor = deviceDescriptor;
+            _devicePoller = CreateDevicePoller();
             SetDetectionMode(DetectionMode.Subscription);
+            _devicePoller.PollEvent += ProcessPollEvent;
+            _devicePoller.SetPollThreadState(true);
         }
 
         //public void EnableBindMode(Action<DeviceDescriptor, BindingDescriptor, int> callback)
@@ -57,20 +86,25 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             {
                 _bindModeCallback = callback ?? throw new Exception("Bind Mode requested but no callback passed");
             }
-            _devicePoller?.Dispose();
-            _detectionMode = mode;
-            _devicePoller = CreateDevicePoller(mode);
-            _devicePoller.SetPollThreadState(true);
+
+            if (mode == DetectionMode.Bind)
+            {
+                DeviceUpdateEvent += ProcessBindModePoll;
+            }
+            else
+            {
+                DeviceUpdateEvent += ProcessSubscriptionModePoll;
+            }
         }
 
-        public abstract void ProcessBindModePoll(DevicePollUpdate update);
+        public abstract void ProcessBindModePoll(DevicePollDescriptor update);
         //public void ProcessBindModePoll(BindingDescriptor bindingDescriptor, DevicePollUpdate update)
         //{
         //    Console.WriteLine($"IOWrapper| Activity seen from handle {_deviceDescriptor.DeviceHandle}, Instance {_deviceDescriptor.DeviceInstance}" +
         //                      $", Type: {bindingDescriptor.Type}, Index: {bindingDescriptor.Index}, State: {update.State}");
         //}
 
-        public abstract void ProcessSubscriptionModePoll(DevicePollUpdate update);
+        public abstract void ProcessSubscriptionModePoll(DevicePollDescriptor update);
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {
@@ -178,7 +212,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             return new BindingHandler(subReq);
         }
 
-        protected abstract DevicePoller CreateDevicePoller(DetectionMode mode);
+        protected abstract DevicePoller CreateDevicePoller();
         //protected abstract DevicePoller CreateDevicePoller(Action<DeviceDescriptor, BindingDescriptor, int> callback);
         //protected virtual DevicePoller CreateDevicePoller(Action<DeviceDescriptor, BindingDescriptor, int> callback)
         //{

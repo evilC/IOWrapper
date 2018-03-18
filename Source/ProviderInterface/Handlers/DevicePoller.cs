@@ -9,12 +9,19 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         protected Thread _pollThread;
         protected readonly DeviceDescriptor _deviceDescriptor;
         private bool _pollThreadState = false;
-        protected readonly Action<DevicePollUpdate> _callback;
 
-        protected DevicePoller(DeviceDescriptor deviceDescriptor, Action<DevicePollUpdate> callback)
+        public delegate void PollUpdateHandler(DevicePollUpdate update);
+        public event PollUpdateHandler PollEvent;
+
+
+        protected DevicePoller(DeviceDescriptor deviceDescriptor)
         {
-            _callback = callback;
             _deviceDescriptor = deviceDescriptor;
+        }
+
+        protected void OnPollEvent(DevicePollUpdate update)
+        {
+            PollEvent?.Invoke(update);
         }
 
         public void SetPollThreadState(bool state)

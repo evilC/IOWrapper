@@ -29,6 +29,8 @@ namespace SharpDX_DirectInput.Handlers
             {
                 throw new Exception($"DeviceHandle '{deviceDescriptor.DeviceHandle}' was not found");
             }
+
+            //DeviceUpdateEvent += ProcessBindModePoll;
         }
 
         protected override int GetBindingKey(InputSubscriptionRequest subReq)
@@ -51,46 +53,70 @@ namespace SharpDX_DirectInput.Handlers
             }
         }
 
-        protected override DevicePoller CreateDevicePoller(DetectionMode mode)
+        protected override DevicePoller CreateDevicePoller()
         {
-            switch (mode)
-            {
-                case DetectionMode.Bind:
-                    return new DiDevicePoller(_deviceDescriptor, ProcessBindModePoll);
-                case DetectionMode.Subscription:
-                    return new DiDevicePoller(_deviceDescriptor, ProcessSubscriptionModePoll);
-                default:
-                    throw new NotImplementedException();
-            }
+            return new DiDevicePoller(_deviceDescriptor);
+            //switch (mode)
+            //{
+            //    case DetectionMode.Bind:
+            //        return new DiDevicePoller(_deviceDescriptor, ProcessBindModePoll);
+            //    case DetectionMode.Subscription:
+            //        return new DiDevicePoller(_deviceDescriptor, ProcessSubscriptionModePoll);
+            //    default:
+            //        throw new NotImplementedException();
+            //}
         }
 
-        public override void ProcessSubscriptionModePoll(DevicePollUpdate update)
+        public override void ProcessSubscriptionModePoll(DevicePollDescriptor update)
         {
-            var bindingType = update.Type;
-            var offset = update.Index;
+            var bindingType = update.BindingDescriptor.Type;
+            var offset = update.BindingDescriptor.Index;
             if (BindingDictionary.ContainsKey(bindingType) && BindingDictionary[bindingType].ContainsKey(offset))
             {
                 BindingDictionary[bindingType][offset].Poll(update.State);
             }
         }
 
-        public override void ProcessBindModePoll(DevicePollUpdate update)
+        protected override List<DevicePollDescriptor> GenerateDesriptors(DevicePollUpdate update)
         {
-            if (update.Type == BindingType.POV)
+            var ret = new List<DevicePollDescriptor>();
+            switch (update.Type)
+            {
+                case BindingType.Axis:
+                case BindingType.Button:
+                    var item = new DevicePollDescriptor
+                    {
+                        DeviceDescriptor = _deviceDescriptor,
+                        BindingDescriptor =
+                            new BindingDescriptor {Index = update.Index, SubIndex = 0, Type = update.Type},
+                        State = Lookups.InputConversionFuncs[update.Type](update.State)
+                    };
+                    ret.Add(item);
+                    break;
+                case BindingType.POV:
+
+                    break;
+            }
+
+            return ret;
+        }
+
+        public override void ProcessBindModePoll(DevicePollDescriptor update)
+        {
+            if (update.BindingDescriptor.Type == BindingType.POV)
             {
                 if (update.State == -1) return;
                 for (var i = 0; i < POVHelper.PovDirections.Count; i++)
                 {
                     if (!Lookups.ValueMatchesAngle(POVHelper.PovDirections[i], update.State)) continue;
 
-                    _bindModeCallback(_deviceDescriptor, new BindingDescriptor { Type = update.Type, Index = update.Index, SubIndex = i }, 1);
-                    _bindModeCallback(_deviceDescriptor, new BindingDescriptor { Type = update.Type, Index = update.Index, SubIndex = i }, 0);
+                    _bindModeCallback(update.DeviceDescriptor, update.BindingDescriptor, 1);
+                    _bindModeCallback(update.DeviceDescriptor, update.BindingDescriptor, 0);
                 }
             }
             else
             {
-                var value = Lookups.InputConversionFuncs[update.Type](update.State);
-                _bindModeCallback(_deviceDescriptor, new BindingDescriptor { Type = update.Type, Index = update.Index, SubIndex = update.SubIndex }, value);
+                _bindModeCallback(_deviceDescriptor, update.BindingDescriptor, update.State);
             }
         }
 
