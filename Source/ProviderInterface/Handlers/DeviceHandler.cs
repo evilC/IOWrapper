@@ -82,18 +82,17 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
                 return;
             }
 
-            if (mode == DetectionMode.Bind)
+            switch (mode)
             {
-                _bindModeCallback = callback ?? throw new Exception("Bind Mode requested but no callback passed");
-            }
-
-            if (mode == DetectionMode.Bind)
-            {
-                DeviceUpdateEvent += ProcessBindModePoll;
-            }
-            else
-            {
-                DeviceUpdateEvent += ProcessSubscriptionModePoll;
+                case DetectionMode.Bind:
+                    _bindModeCallback = callback ?? throw new Exception("Bind Mode requested but no callback passed");
+                    DeviceUpdateEvent += ProcessBindModePoll;
+                    break;
+                case DetectionMode.Subscription:
+                    DeviceUpdateEvent += ProcessSubscriptionModePoll;
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
         }
 
