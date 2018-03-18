@@ -91,11 +91,11 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             var descriptors = GenerateDesriptors(update);
             foreach (var descriptor in descriptors)
             {
-                OnDeviceUpdateEvent(descriptor);
+                OnBindingUpdateEvent(descriptor);
             }
         }
 
-        protected void OnDeviceUpdateEvent(BindingUpdate update)
+        protected void OnBindingUpdateEvent(BindingUpdate update)
         {
             BindingUpdateEvent?.Invoke(update);
         }
