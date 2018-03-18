@@ -94,6 +94,8 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
                 default:
                     throw new NotImplementedException();
             }
+
+            _detectionMode = mode;
         }
 
         public abstract void ProcessBindModePoll(DevicePollDescriptor update);
