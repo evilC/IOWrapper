@@ -86,7 +86,6 @@ namespace SharpDX_DirectInput.Handlers
                 case BindingType.Button:
                     var item = new DevicePollDescriptor
                     {
-                        DeviceDescriptor = _deviceDescriptor,
                         BindingDescriptor =
                             new BindingDescriptor {Index = update.Index, SubIndex = 0, Type = update.Type},
                         State = Lookups.InputConversionFuncs[update.Type](update.State)
@@ -110,8 +109,8 @@ namespace SharpDX_DirectInput.Handlers
                 {
                     if (!Lookups.ValueMatchesAngle(POVHelper.PovDirections[i], update.State)) continue;
 
-                    _bindModeCallback(update.DeviceDescriptor, update.BindingDescriptor, 1);
-                    _bindModeCallback(update.DeviceDescriptor, update.BindingDescriptor, 0);
+                    _bindModeCallback(_deviceDescriptor, update.BindingDescriptor, 1);
+                    _bindModeCallback(_deviceDescriptor, update.BindingDescriptor, 0);
                 }
             }
             else

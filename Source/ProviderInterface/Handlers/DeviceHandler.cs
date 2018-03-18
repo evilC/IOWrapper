@@ -12,7 +12,6 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 {
     public class DevicePollDescriptor
     {
-        public DeviceDescriptor DeviceDescriptor { get; set; }
         public BindingDescriptor BindingDescriptor { get; set; }
         public int State { get; set; }
     }
