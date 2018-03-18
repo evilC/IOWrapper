@@ -10,7 +10,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 {
-    public class DevicePollDescriptor
+    public class BindingUpdate
     {
         public BindingDescriptor BindingDescriptor { get; set; }
         public int State { get; set; }
@@ -27,7 +27,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         private DetectionMode _detectionMode;
         protected Action<DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
 
-        public delegate void DescriptorUpdateHandler(DevicePollDescriptor update);
+        public delegate void DescriptorUpdateHandler(BindingUpdate update);
 
         public event DescriptorUpdateHandler DeviceUpdateEvent;
 
@@ -51,12 +51,12 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             }
         }
 
-        protected void OnDeviceUpdateEvent(DevicePollDescriptor update)
+        protected void OnDeviceUpdateEvent(BindingUpdate update)
         {
             DeviceUpdateEvent?.Invoke(update);
         }
 
-        protected abstract List<DevicePollDescriptor> GenerateDesriptors(DevicePollUpdate update);
+        protected abstract List<BindingUpdate> GenerateDesriptors(DevicePollUpdate update);
 
         #region Public
         protected DeviceHandler(DeviceDescriptor deviceDescriptor)
@@ -97,14 +97,14 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             _detectionMode = mode;
         }
 
-        public abstract void ProcessBindModePoll(DevicePollDescriptor update);
+        public abstract void ProcessBindModePoll(BindingUpdate update);
         //public void ProcessBindModePoll(BindingDescriptor bindingDescriptor, DevicePollUpdate update)
         //{
         //    Console.WriteLine($"IOWrapper| Activity seen from handle {_deviceDescriptor.DeviceHandle}, Instance {_deviceDescriptor.DeviceInstance}" +
         //                      $", Type: {bindingDescriptor.Type}, Index: {bindingDescriptor.Index}, State: {update.State}");
         //}
 
-        public abstract void ProcessSubscriptionModePoll(DevicePollDescriptor update);
+        public abstract void ProcessSubscriptionModePoll(BindingUpdate update);
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {

@@ -49,17 +49,17 @@ namespace SharpDX_XInput.Handlers
         }
 
 
-        protected override List<DevicePollDescriptor> GenerateDesriptors(DevicePollUpdate update)
+        protected override List<BindingUpdate> GenerateDesriptors(DevicePollUpdate update)
         {
             throw new NotImplementedException();
         }
 
-        public override void ProcessBindModePoll(DevicePollDescriptor update)
+        public override void ProcessBindModePoll(BindingUpdate update)
         {
             throw new NotImplementedException();
         }
 
-        public override void ProcessSubscriptionModePoll(DevicePollDescriptor update)
+        public override void ProcessSubscriptionModePoll(BindingUpdate update)
         {
             throw new NotImplementedException();
         }

@@ -67,7 +67,7 @@ namespace SharpDX_DirectInput.Handlers
             //}
         }
 
-        public override void ProcessSubscriptionModePoll(DevicePollDescriptor update)
+        public override void ProcessSubscriptionModePoll(BindingUpdate update)
         {
             var bindingType = update.BindingDescriptor.Type;
             var offset = update.BindingDescriptor.Index;
@@ -77,14 +77,14 @@ namespace SharpDX_DirectInput.Handlers
             }
         }
 
-        protected override List<DevicePollDescriptor> GenerateDesriptors(DevicePollUpdate update)
+        protected override List<BindingUpdate> GenerateDesriptors(DevicePollUpdate update)
         {
-            var ret = new List<DevicePollDescriptor>();
+            var ret = new List<BindingUpdate>();
             switch (update.Type)
             {
                 case BindingType.Axis:
                 case BindingType.Button:
-                    var item = new DevicePollDescriptor
+                    var item = new BindingUpdate
                     {
                         BindingDescriptor =
                             new BindingDescriptor {Index = update.Index, SubIndex = 0, Type = update.Type},
@@ -100,7 +100,7 @@ namespace SharpDX_DirectInput.Handlers
             return ret;
         }
 
-        public override void ProcessBindModePoll(DevicePollDescriptor update)
+        public override void ProcessBindModePoll(BindingUpdate update)
         {
             if (update.BindingDescriptor.Type == BindingType.POV)
             {
