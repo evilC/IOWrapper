@@ -10,13 +10,13 @@ namespace SharpDX_XInput.Handlers
 {
     internal class XiDeviceHandler : DeviceHandler
     {
-        private readonly Controller _controller;
+        //private readonly Controller _controller;
 
-        private readonly XiDevicePoller _devicePoller = new XiDevicePoller();
+        //private readonly XiDevicePoller _devicePoller = new XiDevicePoller();
 
         public XiDeviceHandler(DeviceDescriptor deviceDescriptor) : base(deviceDescriptor)
         {
-            _controller = new Controller((UserIndex)deviceDescriptor.DeviceInstance);
+            //_controller = new Controller((UserIndex)deviceDescriptor.DeviceInstance);
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace SharpDX_XInput.Handlers
 
         protected override DevicePoller CreateDevicePoller()
         {
-            throw new NotImplementedException();
+            return new XiDevicePoller(_deviceDescriptor);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace SharpDX_XInput.Handlers
 
         protected override List<BindingUpdate> GenerateDesriptors(DevicePollUpdate update)
         {
-            throw new NotImplementedException();
+            return new List<BindingUpdate> {new BindingUpdate { BindingDescriptor = new BindingDescriptor {Type = update.Type, Index = update.Index, SubIndex = update.SubIndex}, State = update.State}};
         }
 
         public override void ProcessBindModePoll(BindingUpdate update)
@@ -61,9 +61,16 @@ namespace SharpDX_XInput.Handlers
 
         public override void ProcessSubscriptionModePoll(BindingUpdate update)
         {
-            throw new NotImplementedException();
+            var bindingType = update.BindingDescriptor.Type;
+            var offset = update.BindingDescriptor.Index;
+            var subIndex = update.BindingDescriptor.SubIndex;
+            if (BindingDictionary.ContainsKey(bindingType) && BindingDictionary[bindingType].ContainsKey(offset))
+            {
+                BindingDictionary[bindingType][offset][subIndex].Poll(update.State);
+            }
         }
 
+        /*
         public override void Poll()
         {
             if (!_controller.IsConnected)
@@ -79,5 +86,6 @@ namespace SharpDX_XInput.Handlers
                 }
             }
         }
+        */
     }
 }

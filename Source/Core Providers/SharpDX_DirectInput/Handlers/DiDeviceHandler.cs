@@ -117,32 +117,32 @@ namespace SharpDX_DirectInput.Handlers
             _bindModeCallback(_deviceDescriptor, update.BindingDescriptor, update.State);
         }
 
-        public override void Poll()
-        {
-            //// ToDo: Pollthread should not be spamming here if joystick is not attached
+        //public override void Poll()
+        //{
+        //    //// ToDo: Pollthread should not be spamming here if joystick is not attached
 
 
-            //JoystickUpdate[] data;
-            //// ToDo: Find better way of detecting unplug. DiHandler.DiInstance.IsDeviceAttached(instanceGuid) kills performance
-            //try
-            //{
-            //    // Try / catch seems the only way for now to ensure no crashes on replug
-            //    data = _joystick.GetBufferedData();
-            //}
-            //catch
-            //{
-            //    return;
-            //}
-            //foreach (var state in data)
-            //{
-            //    int offset = (int)state.Offset;
-            //    var bindingType = Lookups.OffsetToType(state.Offset);
-            //    if (BindingDictionary.ContainsKey(bindingType) && BindingDictionary[bindingType].ContainsKey(offset))
-            //    {
-            //        BindingDictionary[bindingType][offset].Poll(state.Value);
-            //    }
-            //}
-        }
+        //    //JoystickUpdate[] data;
+        //    //// ToDo: Find better way of detecting unplug. DiHandler.DiInstance.IsDeviceAttached(instanceGuid) kills performance
+        //    //try
+        //    //{
+        //    //    // Try / catch seems the only way for now to ensure no crashes on replug
+        //    //    data = _joystick.GetBufferedData();
+        //    //}
+        //    //catch
+        //    //{
+        //    //    return;
+        //    //}
+        //    //foreach (var state in data)
+        //    //{
+        //    //    int offset = (int)state.Offset;
+        //    //    var bindingType = Lookups.OffsetToType(state.Offset);
+        //    //    if (BindingDictionary.ContainsKey(bindingType) && BindingDictionary[bindingType].ContainsKey(offset))
+        //    //    {
+        //    //        BindingDictionary[bindingType][offset].Poll(state.Value);
+        //    //    }
+        //    //}
+        //}
 
         public override void Dispose()
         {

@@ -202,7 +202,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             return false;
         }
 
-        public abstract void Poll();
+        //public abstract void Poll();
 
         //protected void SetPollThreadState(bool state)
         //{
@@ -224,21 +224,21 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         //    _pollThreadState = state;
         //}
 
-        protected virtual void PollThread()
-        {
-            while (true)
-            {
-                Poll();
-                //foreach (var deviceHandle in BindingDictionary.Values)
-                //{
-                //    foreach (var deviceInstance in deviceHandle.Values)
-                //    {
-                //        deviceInstance.Poll();
-                //    }
-                //}
-                Thread.Sleep(1);
-            }
-        }
+        //protected virtual void PollThread()
+        //{
+        //    while (true)
+        //    {
+        //        Poll();
+        //        //foreach (var deviceHandle in BindingDictionary.Values)
+        //        //{
+        //        //    foreach (var deviceInstance in deviceHandle.Values)
+        //        //    {
+        //        //        deviceInstance.Poll();
+        //        //    }
+        //        //}
+        //        Thread.Sleep(1);
+        //    }
+        //}
 
         public bool IsEmpty()
         {
