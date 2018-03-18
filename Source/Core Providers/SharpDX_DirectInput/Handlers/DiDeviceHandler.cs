@@ -111,21 +111,7 @@ namespace SharpDX_DirectInput.Handlers
 
         public override void ProcessBindModePoll(BindingUpdate update)
         {
-            if (update.BindingDescriptor.Type == BindingType.POV)
-            {
-                if (update.State == -1) return;
-                for (var i = 0; i < POVHelper.PovDirections.Count; i++)
-                {
-                    if (!POVHelper.ValueMatchesAngle(POVHelper.PovDirections[i], update.State)) continue;
-
-                    _bindModeCallback(_deviceDescriptor, update.BindingDescriptor, 1);
-                    _bindModeCallback(_deviceDescriptor, update.BindingDescriptor, 0);
-                }
-            }
-            else
-            {
-                _bindModeCallback(_deviceDescriptor, update.BindingDescriptor, update.State);
-            }
+            _bindModeCallback(_deviceDescriptor, update.BindingDescriptor, update.State);
         }
 
         public override void Poll()
