@@ -15,9 +15,12 @@ namespace SharpDX_DirectInput.Handlers
     {
         //private Joystick _joystick;
         private readonly Guid _instanceGuid = Guid.Empty;
-        private readonly List<PovDescriptorGenerator> _povDescriptorGenerators = new List<PovDescriptorGenerator>
+        private readonly Dictionary<int, PovDescriptorGenerator> _povDescriptorGenerators = new Dictionary<int, PovDescriptorGenerator>
         {
-            new PovDescriptorGenerator(0), new PovDescriptorGenerator(1), new PovDescriptorGenerator(2), new PovDescriptorGenerator(3)
+            { 32, new PovDescriptorGenerator(0)},
+            { 36, new PovDescriptorGenerator(1)},
+            { 40, new PovDescriptorGenerator(2)},
+            { 44, new PovDescriptorGenerator(3)}
         };
 
         public DiDeviceHandler(DeviceDescriptor deviceDescriptor) : base(deviceDescriptor)
@@ -89,13 +92,17 @@ namespace SharpDX_DirectInput.Handlers
                     var item = new BindingUpdate
                     {
                         BindingDescriptor =
-                            new BindingDescriptor {Index = update.Index, SubIndex = 0, Type = update.Type},
+                            new BindingDescriptor { Index = update.Index, SubIndex = 0, Type = update.Type },
                         State = Lookups.InputConversionFuncs[update.Type](update.State)
                     };
                     ret.Add(item);
                     break;
                 case BindingType.POV:
-
+                    var bindingUpdates = _povDescriptorGenerators[update.Index].GenerateBindingUpdates(update.State);
+                    foreach (var bindingUpdate in bindingUpdates)
+                    {
+                        ret.Add(bindingUpdate);
+                    }
                     break;
             }
 

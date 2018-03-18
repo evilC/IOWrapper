@@ -7,13 +7,57 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using HidWizards.IOWrapper.DataTransferObjects;
+using HidWizards.IOWrapper.ProviderInterface.Helpers;
 
 namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 {
+    //ToDo: Move out to own file
     public class BindingUpdate
     {
         public BindingDescriptor BindingDescriptor { get; set; }
         public int State { get; set; }
+    }
+
+    public class PovDescriptorGenerator
+    {
+        private int _index;
+        private int _currentValue = -1;
+        private List<int> _directionStates = new List<int>{ 0, 0, 0, 0 };
+
+        public PovDescriptorGenerator(int index)
+        {
+            _index = index;
+        }
+
+        public List<BindingUpdate> GenerateBindingUpdates(int pollValue)
+        {
+            var ret = new List<BindingUpdate>();
+            if (_currentValue != pollValue)
+            {
+                _currentValue = pollValue;
+                for (var i = 0; i < 4; i++)
+                {
+                    int currentDirectionState = _directionStates[i];
+                    var newDirectionState =
+                        pollValue == -1 ? 0
+                            : POVHelper.StateFromAngle(pollValue, i * 9000);
+                    if (newDirectionState != currentDirectionState)
+                    {
+                        _directionStates[i] = newDirectionState;
+                        ret.Add(new BindingUpdate{
+                            State = newDirectionState,
+                            BindingDescriptor = new BindingDescriptor
+                            {
+                                Type = BindingType.POV,
+                                Index = _index,
+                                SubIndex = i
+                            }});
+                    }
+                }
+            }
+
+            return ret;
+        }
     }
 
     /// <summary>
