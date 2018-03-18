@@ -282,15 +282,15 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         /// <returns></returns>
         protected virtual BindingHandler GetOrAddBindingHandler(InputSubscriptionRequest subReq)
         {
-            var a = BindingDictionary
+            var deviceSubIndexes = BindingDictionary
                 .GetOrAdd(subReq.BindingDescriptor.Type,
                     new ConcurrentDictionary<int, ConcurrentDictionary<int, BindingHandler>>())
                 .GetOrAdd(GetBindingIndex(subReq), new ConcurrentDictionary<int, BindingHandler>());
-            if (a.ContainsKey(subReq.BindingDescriptor.SubIndex))
+            if (deviceSubIndexes.ContainsKey(subReq.BindingDescriptor.SubIndex))
             {
-                return a[subReq.BindingDescriptor.SubIndex];
+                return deviceSubIndexes[subReq.BindingDescriptor.SubIndex];
             }
-            return a.GetOrAdd(GetBindingSubIndex(subReq), CreateBindingHandler(subReq));
+            return deviceSubIndexes.GetOrAdd(GetBindingSubIndex(subReq), CreateBindingHandler(subReq));
             //.GetOrAdd(GetBindingIndex(subReq), CreateBindingHandler(subReq));
             //return BindingDictionary
             //    .GetOrAdd(subReq.BindingDescriptor.Type, new ConcurrentDictionary<int, BindingHandler>())
