@@ -17,10 +17,10 @@ namespace SharpDX_DirectInput.Handlers
         private readonly Guid _instanceGuid = Guid.Empty;
         private readonly Dictionary<int, PovDescriptorGenerator> _povDescriptorGenerators = new Dictionary<int, PovDescriptorGenerator>
         {
-            { 32, new PovDescriptorGenerator(0)},
-            { 36, new PovDescriptorGenerator(1)},
-            { 40, new PovDescriptorGenerator(2)},
-            { 44, new PovDescriptorGenerator(3)}
+            { 32, new PovDescriptorGenerator(32)},
+            { 36, new PovDescriptorGenerator(36)},
+            { 40, new PovDescriptorGenerator(40)},
+            { 44, new PovDescriptorGenerator(44)}
         };
 
         public DiDeviceHandler(DeviceDescriptor deviceDescriptor) : base(deviceDescriptor)
