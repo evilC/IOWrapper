@@ -88,9 +88,17 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         public virtual DeviceHandler GetOrAddDeviceHandler(InputSubscriptionRequest subReq)
         {
-            return BindingDictionary
-                .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, new ConcurrentDictionary<int, DeviceHandler>())
-                .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, CreateDeviceHandler(subReq.DeviceDescriptor));
+            var deviceInstances = BindingDictionary
+                .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, new ConcurrentDictionary<int, DeviceHandler>());
+            if (deviceInstances.ContainsKey(subReq.DeviceDescriptor.DeviceInstance))
+            {
+                return deviceInstances[subReq.DeviceDescriptor.DeviceInstance];
+            }
+
+            return deviceInstances.GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, CreateDeviceHandler(subReq.DeviceDescriptor));
+            //return BindingDictionary
+            //    .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, new ConcurrentDictionary<int, DeviceHandler>())
+            //    .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, CreateDeviceHandler(subReq.DeviceDescriptor));
         }
 
         public virtual DeviceHandler GetDeviceHandler(InputSubscriptionRequest subReq)
