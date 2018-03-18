@@ -44,6 +44,19 @@ namespace HidWizards.IOWrapper.ProviderInterface.Helpers
 
             return Math.Min(result1, result2);
         }
+
+        public static bool ValueMatchesAngle(int value, int angle, int povTolerance = 90)
+        {
+            if (value == -1)
+                return false;
+            var diff = AngleDiff(value, angle);
+            return value != -1 && AngleDiff(value, angle) <= povTolerance;
+        }
+
+        public static int StateFromAngle(int value, int angle, int povTolerance = 90)
+        {
+            return Convert.ToInt32(ValueMatchesAngle(value, angle, povTolerance));
+        }
     }
 
     public class PovState

@@ -217,32 +217,6 @@ namespace SharpDX_DirectInput.Helpers
             return BindingType.Button;
         }
 
-        public static bool ValueMatchesAngle(int value, int angle, int povTolerance = 90)
-        {
-            if (value == -1)
-                return false;
-            var diff = AngleDiff(value, angle);
-            return value != -1 && AngleDiff(value, angle) <= povTolerance;
-        }
-
-        public static int StateFromAngle(int value, int angle, int povTolerance = 90)
-        {
-            return Convert.ToInt32(ValueMatchesAngle(value, angle, povTolerance));
-        }
-
-        public static int AngleDiff(int a, int b)
-        {
-            var result1 = a - b;
-            if (result1 < 0)
-                result1 += 36000;
-
-            var result2 = b - a;
-            if (result2 < 0)
-                result2 += 36000;
-
-            return Math.Min(result1, result2);
-        }
-
         public static Dictionary<BindingType, Func<int, int>> InputConversionFuncs = new Dictionary<BindingType, Func<int, int>>()
         {
             {BindingType.Axis, ConvertAxisValue }, {BindingType.Button, ConvertButtonValue}

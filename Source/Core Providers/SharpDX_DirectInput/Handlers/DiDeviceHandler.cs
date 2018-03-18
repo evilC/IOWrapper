@@ -15,6 +15,10 @@ namespace SharpDX_DirectInput.Handlers
     {
         //private Joystick _joystick;
         private readonly Guid _instanceGuid = Guid.Empty;
+        private readonly List<PovDescriptorGenerator> _povDescriptorGenerators = new List<PovDescriptorGenerator>
+        {
+            new PovDescriptorGenerator(0), new PovDescriptorGenerator(1), new PovDescriptorGenerator(2), new PovDescriptorGenerator(3)
+        };
 
         public DiDeviceHandler(DeviceDescriptor deviceDescriptor) : base(deviceDescriptor)
         {
@@ -105,7 +109,7 @@ namespace SharpDX_DirectInput.Handlers
                 if (update.State == -1) return;
                 for (var i = 0; i < POVHelper.PovDirections.Count; i++)
                 {
-                    if (!Lookups.ValueMatchesAngle(POVHelper.PovDirections[i], update.State)) continue;
+                    if (!POVHelper.ValueMatchesAngle(POVHelper.PovDirections[i], update.State)) continue;
 
                     _bindModeCallback(_deviceDescriptor, update.BindingDescriptor, 1);
                     _bindModeCallback(_deviceDescriptor, update.BindingDescriptor, 0);

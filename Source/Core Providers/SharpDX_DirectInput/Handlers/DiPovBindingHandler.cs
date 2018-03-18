@@ -2,6 +2,7 @@
 using HidWizards.IOWrapper.ProviderInterface.Handlers;
 using SharpDX_DirectInput.Helpers;
 using HidWizards.IOWrapper.DataTransferObjects;
+using HidWizards.IOWrapper.ProviderInterface.Helpers;
 
 namespace SharpDX_DirectInput.Handlers
 {
@@ -27,7 +28,7 @@ namespace SharpDX_DirectInput.Handlers
                     int currentDirectionState = directionBinding.Value.State;
                     var newDirectionState = 
                         pollValue == -1 ? 0
-                            : Lookups.StateFromAngle(pollValue, directionBinding.Key);
+                            : POVHelper.StateFromAngle(pollValue, directionBinding.Key);
                     if (newDirectionState != currentDirectionState)
                     {
                         directionBinding.Value.State = newDirectionState;
