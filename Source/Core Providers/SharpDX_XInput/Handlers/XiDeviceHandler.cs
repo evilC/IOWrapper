@@ -22,7 +22,7 @@ namespace SharpDX_XInput.Handlers
         protected override BindingHandler CreateBindingHandler(InputSubscriptionRequest subReq)
         {
             return subReq.BindingDescriptor.Type == BindingType.Axis && subReq.BindingDescriptor.Index > 3
-                ? new XiTriggerindingHandler(subReq)
+                ? new XiTriggerBindingHandler(subReq)
                 : base.CreateBindingHandler(subReq);
         }
 

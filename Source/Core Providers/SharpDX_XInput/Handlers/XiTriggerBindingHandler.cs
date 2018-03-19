@@ -4,9 +4,9 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace SharpDX_XInput.Handlers
 {
-    public class XiTriggerindingHandler : BindingHandler
+    public class XiTriggerBindingHandler : BindingHandler
     {
-        public XiTriggerindingHandler(InputSubscriptionRequest subReq) : base(subReq) { }
+        public XiTriggerBindingHandler(InputSubscriptionRequest subReq) : base(subReq) { }
 
         public override void Poll(int pollValue)
         {
