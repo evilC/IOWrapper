@@ -18,7 +18,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Helpers
         /// <param name="b">the second angle, in degrees</param>
         /// <param name="povTolerance">the tolerance, in degrees</param>
         /// <returns>1 for matches, 0 for does not match</returns>
-        public static int ValueFromAngle(int a, int b, int povTolerance = 90)
+        public static int ValueFromAngle(int a, int b, int povTolerance = 4500)
         {
             if (a == -1)
                 return 0;
@@ -45,15 +45,15 @@ namespace HidWizards.IOWrapper.ProviderInterface.Helpers
             return Math.Min(result1, result2);
         }
 
-        public static bool ValueMatchesAngle(int value, int angle, int povTolerance = 90)
+        public static bool ValueMatchesAngle(int value, int angle, int povTolerance = 4500)
         {
             if (value == -1)
                 return false;
             var diff = AngleDiff(value, angle);
-            return value != -1 && AngleDiff(value, angle) <= povTolerance;
+            return value != -1 && (diff <= povTolerance);
         }
 
-        public static int StateFromAngle(int value, int angle, int povTolerance = 90)
+        public static int StateFromAngle(int value, int angle, int povTolerance = 4500)
         {
             return Convert.ToInt32(ValueMatchesAngle(value, angle, povTolerance));
         }
