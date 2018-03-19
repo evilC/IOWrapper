@@ -21,7 +21,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
     public abstract class ApiHandler : IDisposable
     {
         private DetectionMode _detectionMode = DetectionMode.Subscription;
-        private ProviderDescriptor _providerDescriptor;
+        private readonly ProviderDescriptor _providerDescriptor;
         protected Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
 
         protected ConcurrentDictionary<string,    // DeviceHandle
