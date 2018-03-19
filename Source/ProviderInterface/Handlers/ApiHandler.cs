@@ -29,7 +29,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
                 DeviceHandler>> BindingDictionary
             = new ConcurrentDictionary<string, ConcurrentDictionary<int, DeviceHandler>>();
 
-        public ApiHandler(ProviderDescriptor providerDescriptor)
+        protected ApiHandler(ProviderDescriptor providerDescriptor)
         {
             _providerDescriptor = providerDescriptor;
         }
