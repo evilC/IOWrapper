@@ -45,7 +45,6 @@ namespace SharpDX_DirectInput.Handlers
                             foreach (var state in data)
                             {
                                 var bindingType = Lookups.OffsetToType(state.Offset);
-                                //_callback(new DevicePollUpdate() { Type = bindingType, Index = (int)state.Offset, State = state.Value });
                                 OnPollEvent(new DevicePollUpdate() { Type = bindingType, Index = (int)state.Offset, State = state.Value });
                             }
                             Thread.Sleep(10);

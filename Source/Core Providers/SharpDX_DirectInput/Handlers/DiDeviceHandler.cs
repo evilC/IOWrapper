@@ -13,7 +13,6 @@ namespace SharpDX_DirectInput.Handlers
 {
     internal class DiDeviceHandler : DeviceHandler
     {
-        //private Joystick _joystick;
         private readonly Guid _instanceGuid = Guid.Empty;
         private readonly Dictionary<int, PovDescriptorGenerator> _povDescriptorGenerators = new Dictionary<int, PovDescriptorGenerator>
         {
@@ -25,7 +24,6 @@ namespace SharpDX_DirectInput.Handlers
 
         public DiDeviceHandler(DeviceDescriptor deviceDescriptor) : base(deviceDescriptor)
         {
-            //Guid instanceGuid = Guid.Empty;
             var instances = Lookups.GetDeviceOrders(deviceDescriptor.DeviceHandle);
             if (instances.Count >= deviceDescriptor.DeviceInstance)
             {
@@ -116,33 +114,6 @@ namespace SharpDX_DirectInput.Handlers
         {
             _bindModeCallback(_deviceDescriptor, update.BindingDescriptor, update.State);
         }
-
-        //public override void Poll()
-        //{
-        //    //// ToDo: Pollthread should not be spamming here if joystick is not attached
-
-
-        //    //JoystickUpdate[] data;
-        //    //// ToDo: Find better way of detecting unplug. DiHandler.DiInstance.IsDeviceAttached(instanceGuid) kills performance
-        //    //try
-        //    //{
-        //    //    // Try / catch seems the only way for now to ensure no crashes on replug
-        //    //    data = _joystick.GetBufferedData();
-        //    //}
-        //    //catch
-        //    //{
-        //    //    return;
-        //    //}
-        //    //foreach (var state in data)
-        //    //{
-        //    //    int offset = (int)state.Offset;
-        //    //    var bindingType = Lookups.OffsetToType(state.Offset);
-        //    //    if (BindingDictionary.ContainsKey(bindingType) && BindingDictionary[bindingType].ContainsKey(offset))
-        //    //    {
-        //    //        BindingDictionary[bindingType][offset].Poll(state.Value);
-        //    //    }
-        //    //}
-        //}
 
         public override void Dispose()
         {

@@ -113,12 +113,6 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             _devicePoller.SetPollThreadState(true);
         }
 
-        //public void EnableBindMode(Action<DeviceDescriptor, BindingDescriptor, int> callback)
-        //{
-        //    _bindModeCallback = callback;
-        //    SetDetectionMode(DetectionMode.Bind);
-        //}
-
         public void SetDetectionMode(DetectionMode mode, Action<DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
             if (_detectionMode == mode)
@@ -143,11 +137,6 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         }
 
         public abstract void ProcessBindModePoll(BindingUpdate update);
-        //public void ProcessBindModePoll(BindingDescriptor bindingDescriptor, DevicePollUpdate update)
-        //{
-        //    Console.WriteLine($"IOWrapper| Activity seen from handle {_deviceDescriptor.DeviceHandle}, Instance {_deviceDescriptor.DeviceInstance}" +
-        //                      $", Type: {bindingDescriptor.Type}, Index: {bindingDescriptor.Index}, State: {update.State}");
-        //}
 
         public abstract void ProcessSubscriptionModePoll(BindingUpdate update);
 
@@ -202,44 +191,6 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             return false;
         }
 
-        //public abstract void Poll();
-
-        //protected void SetPollThreadState(bool state)
-        //{
-        //    if (_pollThreadState == state) return;
-        //    if (!_pollThreadState && state)
-        //    {
-        //        _pollThread = new Thread(PollThread);
-        //        _pollThread.Start();
-        //        //Log("Started Poll Thread");
-        //    }
-        //    else if (_pollThreadState && !state)
-        //    {
-        //        _pollThread.Abort();
-        //        _pollThread.Join();
-        //        _pollThread = null;
-        //        //Log("Stopped Poll Thread");
-        //    }
-
-        //    _pollThreadState = state;
-        //}
-
-        //protected virtual void PollThread()
-        //{
-        //    while (true)
-        //    {
-        //        Poll();
-        //        //foreach (var deviceHandle in BindingDictionary.Values)
-        //        //{
-        //        //    foreach (var deviceInstance in deviceHandle.Values)
-        //        //    {
-        //        //        deviceInstance.Poll();
-        //        //    }
-        //        //}
-        //        Thread.Sleep(1);
-        //    }
-        //}
-
         public bool IsEmpty()
         {
             return BindingDictionary.IsEmpty;
@@ -266,11 +217,6 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         }
 
         protected abstract DevicePoller CreateDevicePoller();
-        //protected abstract DevicePoller CreateDevicePoller(Action<DeviceDescriptor, BindingDescriptor, int> callback);
-        //protected virtual DevicePoller CreateDevicePoller(Action<DeviceDescriptor, BindingDescriptor, int> callback)
-        //{
-        //    return new DevicePoller(_deviceDescriptor, callback);
-        //}
         #endregion
 
         #region Dictionary Management

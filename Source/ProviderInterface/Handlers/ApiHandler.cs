@@ -33,17 +33,6 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         {
             _providerDescriptor = providerDescriptor;
         }
-        //public virtual void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)
-        //{
-        //    _bindModeCallback = callback;
-        //    SetDetectionMode(DetectionMode.Bind);
-        //}
-
-        //public virtual void DisableBindMode()
-        //{
-        //    SetDetectionMode(DetectionMode.Subscription);
-        //    _bindModeCallback = null;
-        //}
 
         public abstract void SetDetectionMode(DetectionMode mode, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null);
 

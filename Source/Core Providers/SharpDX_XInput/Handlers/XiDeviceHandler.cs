@@ -10,13 +10,8 @@ namespace SharpDX_XInput.Handlers
 {
     internal class XiDeviceHandler : DeviceHandler
     {
-        //private readonly Controller _controller;
-
-        //private readonly XiDevicePoller _devicePoller = new XiDevicePoller();
-
         public XiDeviceHandler(DeviceDescriptor deviceDescriptor) : base(deviceDescriptor)
         {
-            //_controller = new Controller((UserIndex)deviceDescriptor.DeviceInstance);
         }
 
         /// <summary>
@@ -35,19 +30,6 @@ namespace SharpDX_XInput.Handlers
         {
             return new XiDevicePoller(_deviceDescriptor);
         }
-
-        ///// <summary>
-        ///// XInput only supports one POV (So Index would always be 0), plus it exposes POV directions as Inputs for us...
-        ///// ... so for POV we use SubIndex as the Dictionary key, as the directions exist as flags
-        ///// Override default method for POVs
-        ///// </summary>
-        ///// <param name="subReq"></param>
-        ///// <returns></returns>
-        //protected override int GetBindingIndex(InputSubscriptionRequest subReq)
-        //{
-        //    return subReq.BindingDescriptor.Type == BindingType.POV ? subReq.BindingDescriptor.SubIndex : base.GetBindingIndex(subReq);
-        //}
-
 
         protected override List<BindingUpdate> GenerateDesriptors(DevicePollUpdate update)
         {
@@ -69,23 +51,5 @@ namespace SharpDX_XInput.Handlers
                 BindingDictionary[bindingType][offset][subIndex].Poll(update.State);
             }
         }
-
-        /*
-        public override void Poll()
-        {
-            if (!_controller.IsConnected)
-                return;
-            var state = _controller.GetState();
-            var pollResult = _devicePoller.ProcessPollResult(state);
-            foreach (var pollItem in pollResult.PollItems)
-            {
-                if (BindingDictionary.ContainsKey(pollItem.BindingType)
-                    && BindingDictionary[pollItem.BindingType].ContainsKey(pollItem.Index))
-                {
-                    //BindingDictionary[pollItem.BindingType][pollItem.Index].Poll(pollItem.Value);
-                }
-            }
-        }
-        */
     }
 }
