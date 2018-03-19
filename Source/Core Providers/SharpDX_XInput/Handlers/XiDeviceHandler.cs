@@ -56,7 +56,7 @@ namespace SharpDX_XInput.Handlers
 
         public override void ProcessBindModePoll(BindingUpdate update)
         {
-            throw new NotImplementedException();
+            _bindModeCallback(_deviceDescriptor, update.BindingDescriptor, update.State);
         }
 
         public override void ProcessSubscriptionModePoll(BindingUpdate update)

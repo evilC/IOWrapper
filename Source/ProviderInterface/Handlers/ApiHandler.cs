@@ -21,6 +21,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
     public abstract class ApiHandler : IDisposable
     {
         private DetectionMode _detectionMode = DetectionMode.Subscription;
+        private ProviderDescriptor _providerDescriptor;
         protected Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
 
         protected ConcurrentDictionary<string,    // DeviceHandle
@@ -28,7 +29,10 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
                 DeviceHandler>> BindingDictionary
             = new ConcurrentDictionary<string, ConcurrentDictionary<int, DeviceHandler>>();
 
-
+        public ApiHandler(ProviderDescriptor providerDescriptor)
+        {
+            _providerDescriptor = providerDescriptor;
+        }
         //public virtual void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)
         //{
         //    _bindModeCallback = callback;
@@ -82,7 +86,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         public void BindModeCallback(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor, int state)
         {
-            _bindModeCallback(new ProviderDescriptor(), deviceDescriptor, bindingDescriptor, state);
+            _bindModeCallback(_providerDescriptor, deviceDescriptor, bindingDescriptor, state);
         }
         #region Dictionary Management
 

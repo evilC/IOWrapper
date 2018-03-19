@@ -25,7 +25,7 @@ namespace SharpDX_DirectInput
         private bool _disposed;
 
         // Handles subscriptions and callbacks
-        private readonly DiHandler _subscriptionHandler = new DiHandler();
+        private readonly DiHandler _subscriptionHandler;
 
         private readonly DiReportHandler _diReportHandler = new DiReportHandler();
 
@@ -33,6 +33,7 @@ namespace SharpDX_DirectInput
 
         public SharpDX_DirectInput()
         {
+            _subscriptionHandler = new DiHandler(new ProviderDescriptor { ProviderName = ProviderName });
             _logger = new Logger(ProviderName);
             _diReportHandler.RefreshDevices();
         }

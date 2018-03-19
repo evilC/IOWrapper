@@ -149,8 +149,10 @@ namespace HidWizards.IOWrapper.Core
 
         public void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)
         {
-            var prov = GetProvider("SharpDX_DirectInput");
-            prov.EnableBindMode(callback);
+            var di = GetProvider("SharpDX_DirectInput");
+            di.EnableBindMode(callback);
+            var xi = GetProvider("SharpDX_XInput");
+            xi.EnableBindMode(callback);
         }
 
         private void LogInputSubReq(string title, InputSubscriptionRequest subReq)

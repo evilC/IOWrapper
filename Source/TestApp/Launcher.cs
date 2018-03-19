@@ -31,9 +31,9 @@ namespace TestApp
             DeviceDescriptor xInputPad_1 = null;
             DeviceDescriptor xInputPad_2 = null;
 
-            //IOW.Instance.EnableBindMode(ProcessBindMode);
-            //Console.ReadLine();
-            //return;
+            IOW.Instance.EnableBindMode(ProcessBindMode);
+            Console.ReadLine();
+            return;
 
             // Comment out these assignments to turn them on or off
             //genericStick_1 = Library.Devices.DirectInput.T16000M;
@@ -175,7 +175,7 @@ namespace TestApp
         public static void ProcessBindMode(ProviderDescriptor providerDescriptor, DeviceDescriptor deviceDescriptor,
             BindingDescriptor bindingDescriptor, int state)
         {
-            Console.WriteLine($"IOWrapper| BindMode: Handle {deviceDescriptor.DeviceHandle}/{deviceDescriptor.DeviceInstance}" +
+            Console.WriteLine($"IOWrapper| BindMode: Proivider: {providerDescriptor.ProviderName}, Handle {deviceDescriptor.DeviceHandle}/{deviceDescriptor.DeviceInstance}" +
                               $", Type: {bindingDescriptor.Type}, Index: {bindingDescriptor.Index}/{bindingDescriptor.SubIndex}, State: {state}");
         }
 

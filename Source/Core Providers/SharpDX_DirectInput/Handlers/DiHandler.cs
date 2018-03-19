@@ -22,6 +22,10 @@ namespace SharpDX_DirectInput.Handlers
         public static DirectInput DiInstance { get; } = new DirectInput();
         private readonly List<DiDeviceHandler> _bindModeHandlers = new List<DiDeviceHandler>();
 
+        public DiHandler(ProviderDescriptor providerDescriptor) : base(providerDescriptor)
+        {
+        }
+
         public override void SetDetectionMode(DetectionMode mode, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
             if (mode == DetectionMode.Subscription)
