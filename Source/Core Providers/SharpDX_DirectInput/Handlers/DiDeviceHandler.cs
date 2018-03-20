@@ -41,35 +41,9 @@ namespace SharpDX_DirectInput.Handlers
             return (int)Lookups.directInputMappings[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index];
         }
 
-        ////ToDo: This method could be deprecated?
-        //protected override BindingHandler CreateBindingHandler(InputSubscriptionRequest subReq)
-        //{
-        //    switch (subReq.BindingDescriptor.Type)
-        //    {
-        //        case BindingType.Axis:
-        //            return new BindingHandler(subReq);
-        //        case BindingType.Button:
-        //            return new BindingHandler(subReq);
-        //        case BindingType.POV:
-        //            //return new DiPovBindingHandler(subReq);
-        //            return new BindingHandler(subReq);
-        //        default:
-        //            throw new NotImplementedException();
-        //    }
-        //}
-
         protected override DevicePoller CreateDevicePoller()
         {
             return new DiDevicePoller(_deviceDescriptor);
-            //switch (mode)
-            //{
-            //    case DetectionMode.Bind:
-            //        return new DiDevicePoller(_deviceDescriptor, ProcessBindModePoll);
-            //    case DetectionMode.Subscription:
-            //        return new DiDevicePoller(_deviceDescriptor, ProcessSubscriptionModePoll);
-            //    default:
-            //        throw new NotImplementedException();
-            //}
         }
 
         public override void ProcessSubscriptionModePoll(BindingUpdate update)

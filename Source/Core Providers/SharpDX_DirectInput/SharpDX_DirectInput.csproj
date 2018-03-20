@@ -50,8 +50,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Handlers\DiAxisBindingHandler.cs" />
-    <Compile Include="Handlers\DiButtonBindingHandler.cs" />
     <Compile Include="Handlers\DiDeviceHandler.cs" />
     <Compile Include="Handlers\DiDevicePoller.cs" />
     <Compile Include="Handlers\DiHandler.cs" />
