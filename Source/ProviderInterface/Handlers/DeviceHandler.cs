@@ -100,12 +100,11 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         public virtual void ProcessSubscriptionModePoll(BindingUpdate update)
         {
-            var bindingType = update.BindingDescriptor.Type;
-            var index = update.BindingDescriptor.Index;
-            var subIndex = update.BindingDescriptor.SubIndex;
-            if (BindingDictionary.ContainsKey(bindingType) && BindingDictionary[bindingType].ContainsKey(index) && BindingDictionary[bindingType][index].ContainsKey(subIndex))
+            if (BindingDictionary.TryGetValue(update.BindingDescriptor.Type, out var deviceIndexes)
+                && deviceIndexes.TryGetValue(update.BindingDescriptor.Index, out var deviceSubIndexes)
+                && deviceSubIndexes.TryGetValue(update.BindingDescriptor.SubIndex, out var bindingHandler))
             {
-                BindingDictionary[bindingType][index][subIndex].Poll(update.State);
+                bindingHandler.Poll(update.State);
             }
         }
 
