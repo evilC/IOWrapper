@@ -58,6 +58,7 @@ namespace SharpDX_DirectInput.Handlers
                         }
                         else
                         {
+                            //ToDo: This code does not try to use the same DeviceInstance order as is reported in the Descriptors. It is just placeholder code
                             var deviceDescriptor = new DeviceDescriptor { DeviceHandle = connectedHandle, DeviceInstance = i };
                             var deviceHandler = new DiDeviceHandler(deviceDescriptor);
                             deviceHandler.SetDetectionMode(DetectionMode.Bind, BindModeCallback);
