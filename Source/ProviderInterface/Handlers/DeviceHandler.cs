@@ -93,7 +93,10 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             _detectionMode = mode;
         }
 
-        public abstract void ProcessBindModePoll(BindingUpdate update);
+        public virtual void ProcessBindModePoll(BindingUpdate update)
+        {
+            _bindModeCallback(_deviceDescriptor, update.BindingDescriptor, update.State);
+        }
 
         public abstract void ProcessSubscriptionModePoll(BindingUpdate update);
 

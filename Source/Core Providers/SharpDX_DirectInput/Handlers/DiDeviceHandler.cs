@@ -85,11 +85,6 @@ namespace SharpDX_DirectInput.Handlers
             return ret;
         }
 
-        public override void ProcessBindModePoll(BindingUpdate update)
-        {
-            _bindModeCallback(_deviceDescriptor, update.BindingDescriptor, update.State);
-        }
-
         public override void Dispose()
         {
             _devicePoller.SetPollThreadState(false);

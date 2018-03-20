@@ -38,11 +38,6 @@ namespace SharpDX_XInput.Handlers
             return new List<BindingUpdate>{ bindingUpdate };
         }
 
-        public override void ProcessBindModePoll(BindingUpdate update)
-        {
-            _bindModeCallback(_deviceDescriptor, update.BindingDescriptor, update.State);
-        }
-
         public override void ProcessSubscriptionModePoll(BindingUpdate update)
         {
             var bindingType = update.BindingDescriptor.Type;
