@@ -31,12 +31,12 @@ namespace TestApp
             DeviceDescriptor xInputPad_1 = null;
             DeviceDescriptor xInputPad_2 = null;
 
-            IOW.Instance.EnableBindMode(ProcessBindMode);
-            Console.ReadLine();
-            return;
+            //IOW.Instance.EnableBindMode(ProcessBindMode);
+            //Console.ReadLine();
+            //return;
 
             // Comment out these assignments to turn them on or off
-            //genericStick_1 = Library.Devices.DirectInput.T16000M;
+            genericStick_1 = Library.Devices.DirectInput.T16000M;
             //genericStick_1 = Library.BindingDictionary.DirectInput.DS4_1;
             //genericStick_2 = Library.BindingDictionary.DirectInput.DS4_2;
 
