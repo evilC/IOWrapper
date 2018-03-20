@@ -46,17 +46,6 @@ namespace SharpDX_DirectInput.Handlers
             return new DiDevicePoller(_deviceDescriptor);
         }
 
-        public override void ProcessSubscriptionModePoll(BindingUpdate update)
-        {
-            var bindingType = update.BindingDescriptor.Type;
-            var offset = update.BindingDescriptor.Index;
-            var subIndex = update.BindingDescriptor.SubIndex;
-            if (BindingDictionary.ContainsKey(bindingType) && BindingDictionary[bindingType].ContainsKey(offset))
-            {
-                BindingDictionary[bindingType][offset][subIndex].Poll(update.State);
-            }
-        }
-
         //ToDo: Axis / Button value conversions can be done here and the BindingHandler overrides removed
         protected override List<BindingUpdate> GenerateDesriptors(DevicePollUpdate update)
         {

@@ -37,16 +37,5 @@ namespace SharpDX_XInput.Handlers
             };
             return new List<BindingUpdate>{ bindingUpdate };
         }
-
-        public override void ProcessSubscriptionModePoll(BindingUpdate update)
-        {
-            var bindingType = update.BindingDescriptor.Type;
-            var offset = update.BindingDescriptor.Index;
-            var subIndex = update.BindingDescriptor.SubIndex;
-            if (BindingDictionary.ContainsKey(bindingType) && BindingDictionary[bindingType].ContainsKey(offset) && BindingDictionary[bindingType][offset].ContainsKey(subIndex))
-            {
-                BindingDictionary[bindingType][offset][subIndex].Poll(update.State);
-            }
-        }
     }
 }

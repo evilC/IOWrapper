@@ -98,7 +98,16 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             _bindModeCallback(_deviceDescriptor, update.BindingDescriptor, update.State);
         }
 
-        public abstract void ProcessSubscriptionModePoll(BindingUpdate update);
+        public virtual void ProcessSubscriptionModePoll(BindingUpdate update)
+        {
+            var bindingType = update.BindingDescriptor.Type;
+            var index = update.BindingDescriptor.Index;
+            var subIndex = update.BindingDescriptor.SubIndex;
+            if (BindingDictionary.ContainsKey(bindingType) && BindingDictionary[bindingType].ContainsKey(index) && BindingDictionary[bindingType][index].ContainsKey(subIndex))
+            {
+                BindingDictionary[bindingType][index][subIndex].Poll(update.State);
+            }
+        }
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {
