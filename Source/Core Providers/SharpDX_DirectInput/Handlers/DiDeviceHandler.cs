@@ -46,7 +46,6 @@ namespace SharpDX_DirectInput.Handlers
             return new DiDevicePoller(_deviceDescriptor);
         }
 
-        //ToDo: Axis / Button value conversions can be done here and the BindingHandler overrides removed
         protected override List<BindingUpdate> GenerateDesriptors(DevicePollUpdate update)
         {
             var ret = new List<BindingUpdate>();
