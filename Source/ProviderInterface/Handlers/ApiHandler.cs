@@ -20,7 +20,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
     /// </summary>
     public abstract class ApiHandler : IDisposable
     {
-        private DetectionMode _detectionMode = DetectionMode.Subscription;
+        protected DetectionMode CurrentDetectionMode = DetectionMode.Subscription;
         private readonly ProviderDescriptor _providerDescriptor;
         protected Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
 
@@ -38,7 +38,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {
-            if (_detectionMode != DetectionMode.Subscription)
+            if (CurrentDetectionMode != DetectionMode.Subscription)
             {
                 throw new Exception("Tried to Subscribe while not in Subscribe Mode");
             }
@@ -47,7 +47,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         public virtual bool Unsubscribe(InputSubscriptionRequest subReq)
         {
-            if (_detectionMode != DetectionMode.Subscription)
+            if (CurrentDetectionMode != DetectionMode.Subscription)
             {
                 throw new Exception("Tried to Unsubscribe while not in Subscribe Mode");
             }

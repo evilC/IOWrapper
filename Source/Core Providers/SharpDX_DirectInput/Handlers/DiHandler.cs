@@ -27,6 +27,8 @@ namespace SharpDX_DirectInput.Handlers
 
         public override void SetDetectionMode(DetectionMode mode, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
+            if (mode == CurrentDetectionMode) return;
+            CurrentDetectionMode = mode;
             if (mode == DetectionMode.Subscription)
             {
                 foreach (var connectedDeviceList in DiWrapper.Instance.ConnectedDevices)

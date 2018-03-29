@@ -17,6 +17,9 @@ namespace SharpDX_XInput.Handlers
 
         public override void SetDetectionMode(DetectionMode mode, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
+            if (mode == CurrentDetectionMode) return;
+            CurrentDetectionMode = mode;
+            const string deviceHandle = "xb360";
             switch (mode)
             {
                 case DetectionMode.Bind:
@@ -25,8 +28,7 @@ namespace SharpDX_XInput.Handlers
                     // Find a list of all connected devices, and for each...
                     // ... Check if it already has a DeviceHandler, and if so, swap it to Bind Mode
                     // Else new up a DeviceHandler and set it to Bind Mode
-                    var deviceHandle = "xb360";
-                    for (int i = 0; i < 4; i++)
+                    for (var i = 0; i < 4; i++)
                     {
                         if (BindingDictionary.ContainsKey(deviceHandle) && BindingDictionary[deviceHandle].ContainsKey(i))
                         {
@@ -42,7 +44,19 @@ namespace SharpDX_XInput.Handlers
                     }
                     break;
                 case DetectionMode.Subscription:
-                    throw new NotImplementedException();
+                    for (var i = 0; i < 4; i++)
+                    {
+                        if (BindingDictionary.ContainsKey(deviceHandle) && BindingDictionary[deviceHandle].ContainsKey(i))
+                        {
+                            BindingDictionary[deviceHandle][i].SetDetectionMode(DetectionMode.Bind, BindModeCallback);
+                        }
+                    }
+
+                    foreach (var bindModeHandler in _bindModeHandlers)
+                    {
+                        bindModeHandler.Dispose();
+                    }
+                    _bindModeHandlers.Clear();
                     break;
                 default:
                     throw new NotImplementedException();
