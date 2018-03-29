@@ -29,7 +29,27 @@ namespace SharpDX_DirectInput.Handlers
         {
             if (mode == DetectionMode.Subscription)
             {
-                throw new NotImplementedException();
+                foreach (var connectedDeviceList in DiWrapper.Instance.ConnectedDevices)
+                {
+                    var connectedHandle = connectedDeviceList.Key;
+                    // Iterate through each instance of the device handle
+                    for (var i = 0; i < connectedDeviceList.Value.Count; i++)
+                    {
+                        if (BindingDictionary.ContainsKey(connectedHandle) &&
+                            BindingDictionary[connectedHandle].ContainsKey(i))
+                        {
+                            // This device has bindings, so set the existing handler to Subscription Mode
+                            BindingDictionary[connectedHandle][i].SetDetectionMode(DetectionMode.Bind, BindModeCallback);
+                        }
+                    }
+                }
+
+                // Shut down all the temporary Bind Mode handlers
+                foreach (var bindModeHandler in _bindModeHandlers)
+                {
+                    bindModeHandler.Dispose();
+                }
+                _bindModeHandlers.Clear();
             }
             else
             {
