@@ -19,4 +19,6 @@ namespace HidWizards.IOWrapper.DataTransferObjects
     //public enum AxisCategory { Signed, Unsigned, Delta }
     //public enum ButtonCategory { Momentary, Event }
     //public enum POVCategory { POV1, POV2, POV3, POV4 }
+
+    public enum DetectionMode { Subscription, Bind }
 }

@@ -31,9 +31,9 @@ namespace TestApp
             DeviceDescriptor xInputPad_1 = null;
             DeviceDescriptor xInputPad_2 = null;
 
-            IOW.Instance.EnableBindMode(ProcessBindMode);
+            IOW.Instance.SetDetectionMode(DetectionMode.Bind, new List<string> { "SharpDX_DirectInput", "SharpDX_XInput" }, ProcessBindMode);
             Console.ReadLine();
-            return;
+            IOW.Instance.SetDetectionMode(DetectionMode.Subscription, new List<string> { "SharpDX_DirectInput", "SharpDX_XInput" });
 
             // Comment out these assignments to turn them on or off
             genericStick_1 = Library.Devices.DirectInput.T16000M;

@@ -84,12 +84,7 @@ namespace Core_TitanOne
             return outputHandlers[subReq.DeviceDescriptor.DeviceHandle].GetOutputReport();
         }
 
-        public void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DisableBindMode()
+        public void SetDetectionMode(DetectionMode detectionMode, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
             throw new NotImplementedException();
         }

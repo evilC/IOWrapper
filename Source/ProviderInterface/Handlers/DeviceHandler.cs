@@ -72,11 +72,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         public void SetDetectionMode(DetectionMode mode, Action<DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
-            if (_detectionMode == mode)
-            {
-                return;
-            }
-
+            BindingUpdateEvent = null;
             switch (mode)
             {
                 case DetectionMode.Bind:

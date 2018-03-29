@@ -78,12 +78,7 @@ namespace Core_Tobii_Interaction
             return false;
         }
 
-        public void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DisableBindMode()
+        public void SetDetectionMode(DetectionMode detectionMode, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
             throw new NotImplementedException();
         }

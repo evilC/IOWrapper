@@ -133,15 +133,20 @@ namespace SharpDX_DirectInput
             return false;
         }
 
-        public void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)
+        public void SetDetectionMode(DetectionMode detectionMode, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
-            _subscriptionHandler.SetDetectionMode(DetectionMode.Bind, callback);
+            _subscriptionHandler.SetDetectionMode(detectionMode, callback);
         }
 
-        public void DisableBindMode()
-        {
-            _subscriptionHandler.SetDetectionMode(DetectionMode.Subscription);
-        }
+        //public void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)
+        //{
+        //    _subscriptionHandler.SetDetectionMode(DetectionMode.Bind, callback);
+        //}
+
+        //public void DisableBindMode()
+        //{
+        //    _subscriptionHandler.SetDetectionMode(DetectionMode.Subscription);
+        //}
 
         public void RefreshLiveState()
         {
