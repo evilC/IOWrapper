@@ -1,149 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Win32;
-using HidWizards.IOWrapper.ProviderInterface;
-using SharpDX.DirectInput;
-using SharpDX_DirectInput.Handlers;
+using System.Text;
+using System.Threading.Tasks;
 using HidWizards.IOWrapper.DataTransferObjects;
+using SharpDX.DirectInput;
 
-namespace SharpDX_DirectInput.Helpers
+namespace SharpDX_DirectInput.Wrappers
 {
-    static class Lookups
+    public static class Lookups
     {
-        /*
-        public static List<Guid> GetDeviceOrders(string vidpid)
-        {
-            // Build a list of all known devices matching this VID/PID
-            // This includes unplugged devices
-
-            var keyname = String.Format(@"System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{0}\Calibration", vidpid);
-
-            var deviceOrders = new SortedDictionary<int, Guid>();
-            using (RegistryKey hkcu = Registry.CurrentUser)
-            {
-                using (RegistryKey calibkey = hkcu.OpenSubKey(keyname))
-                {
-                    foreach (string key in calibkey.GetSubKeyNames())
-                    {
-                        using (RegistryKey orderkey = calibkey.OpenSubKey(key))
-                        {
-                            byte[] reg_guid = (byte[])orderkey.GetValue("GUID");
-                            byte[] reg_id = (byte[])orderkey.GetValue("Joystick Id");
-                            if (reg_id == null)
-                                continue;
-                            int id = BitConverter.ToInt32(reg_id, 0);
-                            // Two duplicates can share the same JoystickID - use next ID in this case
-                            while (deviceOrders.ContainsKey(id))
-                            {
-                                id++;
-                            }
-                            deviceOrders.Add(id, new Guid(reg_guid));
-                        }
-                    }
-                }
-            }
-            return deviceOrders.Values.ToList();
-        }
-
-        public static string JoystickToHandle(Joystick joystick)
-        {
-            return $"VID_{joystick.Properties.VendorId:X4}&PID_{joystick.Properties.ProductId:X4}";
-        }
-
-        /// <summary>
-        /// Gets a list of all connected DeviceHandles
-        /// Note that DeviceHandle does not uniquely identify a device ...
-        /// ... DeviceHandle + DeviceInstance does
-        /// </summary>
-        /// <returns></returns>
-        public static List<string> GetConnectedHandles()
-        {
-            var returnedList = new List<string>();
-            var diDeviceInstances = DiHandler.DiInstance.GetDevices();
-
-            //var unsortedInstances = new Dictionary<string, List<DeviceInstance>>();
-            foreach (var device in diDeviceInstances)
-            {
-                if (!Lookups.IsStickType(device))
-                    continue;
-                var joystick = new Joystick(DiHandler.DiInstance, device.InstanceGuid);
-                //if (!DiInstance.IsDeviceAttached(device.InstanceGuid))
-                //{
-                //    continue;
-                //}
-                var handle = Lookups.JoystickToHandle(joystick);
-                if (returnedList.Contains(handle))
-                {
-                    continue;
-                }
-                returnedList.Add(handle);
-            }
-            return returnedList;
-        }
-
-        public static Guid GetInstanceGuid(DeviceDescriptor deviceDescriptor)
-        {
-            var instances = GetDeviceOrders(deviceDescriptor.DeviceHandle);
-            if (instances.Count == 0)
-            {
-                throw new Exception($"DeviceHandle '{deviceDescriptor.DeviceHandle}' was not found");
-            }
-            if (instances.Count >= deviceDescriptor.DeviceInstance)
-            {
-                return instances[deviceDescriptor.DeviceInstance];
-            }
-
-            throw new Exception($"DeviceHandle '{deviceDescriptor.DeviceHandle}' was found, but instance count is {instances.Count} when {deviceDescriptor.DeviceInstance} was requested");
-        }
-
-        public static List<DeviceInstance> OrderDevices(string vidpid, List<DeviceInstance> unorderedInstances)
-        {
-            var orderedGuids = new List<DeviceInstance>();
-
-            //var keyname = String.Format(@"System\CurrentControlSet\Control\MediaProperties\PrivateProperties\DirectInput\{0}\Calibration", vidpid);
-
-            var deviceOrders = GetDeviceOrders(vidpid);
-            // Now iterate the Ordered (sparse) array and assign IDs to the connected devices
-            foreach (var deviceGuid in deviceOrders)
-            {
-                for (int i = 0; i < unorderedInstances.Count; i++)
-                {
-                    if (unorderedInstances[i].InstanceGuid == deviceGuid)
-                    {
-                        orderedGuids.Add(unorderedInstances[i]);
-                        break;
-                    }
-                }
-            }
-
-            return orderedGuids;
-        }
-
-        public static Guid DeviceHandleToInstanceGuid(string handle)
-        {
-            var diDeviceInstances = DiHandler.DiInstance.GetDevices();
-
-            foreach (var device in diDeviceInstances)
-            {
-                if (!IsStickType(device))
-                    continue;
-                var joystick = new Joystick(DiHandler.DiInstance, device.InstanceGuid);
-                joystick.Acquire();
-
-                var thisHandle = string.Format("VID_{0}&PID_{1}"
-                    , joystick.Properties.VendorId.ToString("X4")
-                    , joystick.Properties.ProductId.ToString("X4"));
-
-                joystick.Unacquire();
-                if (handle == thisHandle)
-                {
-                    return device.InstanceGuid;
-                }
-            }
-            return Guid.Empty;
-        }
-
         public static bool IsStickType(DeviceInstance deviceInstance)
         {
             return deviceInstance.Type == DeviceType.Joystick
@@ -152,6 +18,12 @@ namespace SharpDX_DirectInput.Helpers
                    || deviceInstance.Type == DeviceType.Flight
                    || deviceInstance.Type == DeviceType.Driving
                    || deviceInstance.Type == DeviceType.Supplemental;
+        }
+
+
+        public static string JoystickToHandle(Joystick joystick)
+        {
+            return $"VID_{joystick.Properties.VendorId:X4}&PID_{joystick.Properties.ProductId:X4}";
         }
 
         // Maps SharpDX "Offsets" (Input Identifiers) to both iinput type and input index (eg x axis to axis 1)
@@ -232,6 +104,6 @@ namespace SharpDX_DirectInput.Helpers
         {
             return (65535 - value) - 32768;
         }
-        */
+
     }
 }

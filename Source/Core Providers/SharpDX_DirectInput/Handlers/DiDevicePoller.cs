@@ -2,9 +2,8 @@
 using System.Threading;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Handlers;
-using HidWizards.IOWrapper.ProviderInterface.Helpers;
 using SharpDX.DirectInput;
-using SharpDX_DirectInput.Helpers;
+using SharpDX_DirectInput.Wrappers;
 
 namespace SharpDX_DirectInput.Handlers
 {
@@ -14,7 +13,7 @@ namespace SharpDX_DirectInput.Handlers
 
         public DiDevicePoller(DeviceDescriptor deviceDescriptor) : base(deviceDescriptor)
         {
-            _instanceGuid = Lookups.GetInstanceGuid(deviceDescriptor);
+            _instanceGuid = DiWrapper.Instance.DeviceDescriptorToInstanceGuid(deviceDescriptor);
         }
 
         protected override void PollThread()
@@ -29,11 +28,11 @@ namespace SharpDX_DirectInput.Handlers
                     {
                         while (true) // Not Acquired loop
                         {
-                            while (!DiHandler.DiInstance.IsDeviceAttached(_instanceGuid))
+                            while (!DiWrapper.DiInstance.IsDeviceAttached(_instanceGuid))
                             {
                                 Thread.Sleep(100);
                             }
-                            joystick = new Joystick(DiHandler.DiInstance, _instanceGuid);
+                            joystick = new Joystick(DiWrapper.DiInstance, _instanceGuid);
                             joystick.Properties.BufferSize = 128;
                             joystick.Acquire();
                             break;

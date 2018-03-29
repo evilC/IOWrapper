@@ -5,7 +5,7 @@ using System.Threading;
 using HidWizards.IOWrapper.ProviderInterface;
 using HidWizards.IOWrapper.ProviderInterface.Handlers;
 using SharpDX.DirectInput;
-using SharpDX_DirectInput.Helpers;
+using SharpDX_DirectInput.Wrappers;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Helpers;
 
@@ -24,16 +24,7 @@ namespace SharpDX_DirectInput.Handlers
 
         public DiDeviceHandler(DeviceDescriptor deviceDescriptor) : base(deviceDescriptor)
         {
-            var instances = Lookups.GetDeviceOrders(deviceDescriptor.DeviceHandle);
-            if (instances.Count >= deviceDescriptor.DeviceInstance)
-            {
-                _instanceGuid = instances[deviceDescriptor.DeviceInstance];
-            }
-
-            if (_instanceGuid == Guid.Empty)
-            {
-                throw new Exception($"DeviceHandle '{deviceDescriptor.DeviceHandle}' was not found");
-            }
+            _instanceGuid = DiWrapper.Instance.DeviceDescriptorToInstanceGuid(deviceDescriptor);
         }
 
         protected override int GetBindingIndex(InputSubscriptionRequest subReq)

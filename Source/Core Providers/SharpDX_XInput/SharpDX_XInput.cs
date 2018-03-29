@@ -131,7 +131,7 @@ namespace SharpDX_XInput
 
         public void DisableBindMode()
         {
-            throw new NotImplementedException();
+            _subscriptionHandler.SetDetectionMode(DetectionMode.Subscription);
         }
 
         public void RefreshLiveState()

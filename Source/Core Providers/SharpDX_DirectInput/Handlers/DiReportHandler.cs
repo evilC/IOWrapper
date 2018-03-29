@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using HidWizards.IOWrapper.ProviderInterface;
 using HidWizards.IOWrapper.ProviderInterface.Handlers;
 using SharpDX.DirectInput;
-using SharpDX_DirectInput.Helpers;
+using SharpDX_DirectInput.Wrappers;
 using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace SharpDX_DirectInput.Handlers
@@ -90,48 +90,48 @@ namespace SharpDX_DirectInput.Handlers
 
             _deviceReports = new List<DeviceReport>();
 
-            // ToDo: device list should be returned in handle order for duplicate devices
-            var diDeviceInstances = DirectInput.GetDevices();
+            //// ToDo: device list should be returned in handle order for duplicate devices
+            //var diDeviceInstances = DirectInput.GetDevices();
 
-            var unsortedInstances = new Dictionary<string, List<DeviceInstance>>();
-            foreach (var device in diDeviceInstances)
+            //var unsortedInstances = new Dictionary<string, List<DeviceInstance>>();
+            //foreach (var device in diDeviceInstances)
+            //{
+            //    if (!Lookups.IsStickType(device))
+            //        continue;
+            //    var joystick = new Joystick(DirectInput, device.InstanceGuid);
+            //    joystick.Acquire();
+
+            //    var handle = Lookups.JoystickToHandle(joystick);
+
+            //    if (!unsortedInstances.ContainsKey(handle))
+            //    {
+            //        unsortedInstances[handle] = new List<DeviceInstance>();
+            //    }
+            //    unsortedInstances[handle].Add(device);
+            //    joystick.Unacquire();
+            //}
+
+            //foreach (var diDeviceInstance in unsortedInstances)
+            //{
+            //    _devicesList.Add(diDeviceInstance.Key, Lookups.OrderDevices(diDeviceInstance.Key, diDeviceInstance.Value));
+            //}
+
+            foreach (var deviceList in DiWrapper.Instance.ConnectedDevices)
             {
-                if (!Lookups.IsStickType(device))
-                    continue;
-                var joystick = new Joystick(DirectInput, device.InstanceGuid);
-                joystick.Acquire();
-
-                var handle = Lookups.JoystickToHandle(joystick);
-
-                if (!unsortedInstances.ContainsKey(handle))
+                var deviceHandle = deviceList.Key;
+                for (var index = 0; index < deviceList.Value.Count; index++)
                 {
-                    unsortedInstances[handle] = new List<DeviceInstance>();
-                }
-                unsortedInstances[handle].Add(device);
-                joystick.Unacquire();
-            }
+                    var deviceGuid = deviceList.Value[index];
 
-            foreach (var diDeviceInstance in unsortedInstances)
-            {
-                _devicesList.Add(diDeviceInstance.Key, Lookups.OrderDevices(diDeviceInstance.Key, diDeviceInstance.Value));
-            }
-
-            foreach (var deviceList in _devicesList.Values)
-            {
-                for (int index = 0; index < deviceList.Count; index++)
-                {
-                    var joystick = new Joystick(DirectInput, deviceList[index].InstanceGuid);
+                    var joystick = new Joystick(DirectInput, deviceGuid);
                     joystick.Acquire();
-
-                    var handle =
-                        $"VID_{joystick.Properties.VendorId:X4}&PID_{joystick.Properties.ProductId:X4}";
 
                     var device = new DeviceReport
                     {
-                        DeviceName = deviceList[index].ProductName,
+                        DeviceName = joystick.Information.ProductName,
                         DeviceDescriptor = new DeviceDescriptor
                         {
-                            DeviceHandle = handle,
+                            DeviceHandle = deviceHandle,
                             DeviceInstance = index
                         }
                     };
