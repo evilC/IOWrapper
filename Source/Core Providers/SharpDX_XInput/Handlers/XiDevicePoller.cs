@@ -32,7 +32,7 @@ namespace SharpDX_XInput.Handlers
                 if (!_controller.IsConnected)
                     return;
                 var thisState = _controller.GetState();
-                for (var j = 0; j < 13; j++)
+                for (var j = 0; j < 14; j++)
                 {
                     var isPovType = j > 9;
                     var bindingType = isPovType ? BindingType.POV : BindingType.Button;
