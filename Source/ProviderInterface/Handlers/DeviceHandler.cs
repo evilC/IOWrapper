@@ -129,34 +129,38 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             var index = GetBindingIndex(subReq);
             var subIndex = GetBindingSubIndex(subReq);
 
-            if (BindingDictionary.ContainsKey(subReq.BindingDescriptor.Type) &&
-                BindingDictionary[subReq.BindingDescriptor.Type].ContainsKey(index) &&
-                BindingDictionary[subReq.BindingDescriptor.Type][index].ContainsKey(subIndex))
+            // Check that Binding exists
+            if (!BindingDictionary.ContainsKey(subReq.BindingDescriptor.Type) ||
+                !BindingDictionary[subReq.BindingDescriptor.Type].ContainsKey(index) ||
+                !BindingDictionary[subReq.BindingDescriptor.Type][index].ContainsKey(subIndex)) return false;
+
+            // Try to Unsubscribe
+            if (!BindingDictionary[subReq.BindingDescriptor.Type][index][subIndex].Unsubscribe(subReq)) return false;
+
+            // If this is the last item for this SubIndex...
+            if (!BindingDictionary[subReq.BindingDescriptor.Type][index][subIndex].IsEmpty()) return true;
+            // ... Then remove this Subindex from the dictionary
+            BindingDictionary[subReq.BindingDescriptor.Type][index].TryRemove(subIndex, out _);
+
+            // If this is the last item for this Index...
+            if (!BindingDictionary[subReq.BindingDescriptor.Type][index].IsEmpty) return true;
+            // ... Then remove this Index from the dictionary
+            BindingDictionary[subReq.BindingDescriptor.Type].TryRemove(index, out _);
+
+            //Log($"Removing Index dictionary {index}");
+            // If this is the last item for this Type...
+            if (!BindingDictionary[subReq.BindingDescriptor.Type].IsEmpty) return true;
+            // ... Then remove this Type from the dictionary
+            BindingDictionary.TryRemove(subReq.BindingDescriptor.Type, out _);
+
+            //Log($"Removing BindingType dictionary {subReq.BindingDescriptor.Type}");
+            // If the whole dictionary is empty...
+            if (BindingDictionary.IsEmpty)
             {
-                if (BindingDictionary[subReq.BindingDescriptor.Type][index][subIndex].Unsubscribe(subReq))
-                {
-                    if (BindingDictionary[subReq.BindingDescriptor.Type][index][subIndex].IsEmpty())
-                    {
-                        BindingDictionary[subReq.BindingDescriptor.Type][index].TryRemove(subIndex, out _);
-                        if (BindingDictionary[subReq.BindingDescriptor.Type][index].IsEmpty)
-                        {
-                            BindingDictionary[subReq.BindingDescriptor.Type].TryRemove(index, out _);
-                            //Log($"Removing Index dictionary {index}");
-                            if (BindingDictionary[subReq.BindingDescriptor.Type].IsEmpty)
-                            {
-                                BindingDictionary.TryRemove(subReq.BindingDescriptor.Type, out _);
-                                //Log($"Removing BindingType dictionary {subReq.BindingDescriptor.Type}");
-                                if (BindingDictionary.IsEmpty)
-                                {
-                                    _devicePoller.SetPollThreadState(false);
-                                }
-                            }
-                        }
-                    }
-                    return true;
-                }
+                // ... Kill the Poll Thread
+                _devicePoller.SetPollThreadState(false);
             }
-            return false;
+            return true;
         }
 
         public bool IsEmpty()
