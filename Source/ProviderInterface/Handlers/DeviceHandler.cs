@@ -131,21 +131,25 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
             if (BindingDictionary.ContainsKey(subReq.BindingDescriptor.Type) &&
                 BindingDictionary[subReq.BindingDescriptor.Type].ContainsKey(index) &&
-                BindingDictionary[subReq.BindingDescriptor.Type][subReq.BindingDescriptor.Index].ContainsKey(subReq.BindingDescriptor.SubIndex))
+                BindingDictionary[subReq.BindingDescriptor.Type][index].ContainsKey(subIndex))
             {
                 if (BindingDictionary[subReq.BindingDescriptor.Type][index][subIndex].Unsubscribe(subReq))
                 {
                     if (BindingDictionary[subReq.BindingDescriptor.Type][index][subIndex].IsEmpty())
                     {
-                        BindingDictionary[subReq.BindingDescriptor.Type].TryRemove(index, out _);
-                        //Log($"Removing Index dictionary {index}");
-                        if (BindingDictionary[subReq.BindingDescriptor.Type].IsEmpty)
+                        BindingDictionary[subReq.BindingDescriptor.Type][index].TryRemove(subIndex, out _);
+                        if (BindingDictionary[subReq.BindingDescriptor.Type][index].IsEmpty)
                         {
-                            BindingDictionary.TryRemove(subReq.BindingDescriptor.Type, out _);
-                            //Log($"Removing BindingType dictionary {subReq.BindingDescriptor.Type}");
-                            if (BindingDictionary.IsEmpty)
+                            BindingDictionary[subReq.BindingDescriptor.Type].TryRemove(index, out _);
+                            //Log($"Removing Index dictionary {index}");
+                            if (BindingDictionary[subReq.BindingDescriptor.Type].IsEmpty)
                             {
-                                _devicePoller.SetPollThreadState(false);
+                                BindingDictionary.TryRemove(subReq.BindingDescriptor.Type, out _);
+                                //Log($"Removing BindingType dictionary {subReq.BindingDescriptor.Type}");
+                                if (BindingDictionary.IsEmpty)
+                                {
+                                    _devicePoller.SetPollThreadState(false);
+                                }
                             }
                         }
                     }
