@@ -63,7 +63,10 @@ namespace Core_ViGEm
             protected override void SetAxisState(BindingDescriptor bindingDescriptor, int state)
             {
                 var inputId = bindingDescriptor.Index;
-                report.SetAxis(axisIndexes[inputId], (short)state);
+                var outState = bindingDescriptor.Index > 3      // If Index is 4 or 5 (Triggers)...
+                    ? (short)((state / 256) + 128)              // Xbox Triggers are shorts, but 0..255
+                    : (short) state;                            // Other axes are regular shorts
+                report.SetAxis(axisIndexes[inputId], outState);
                 SendReport();
             }
 
