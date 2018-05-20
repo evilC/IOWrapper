@@ -78,6 +78,11 @@ namespace Core_Tobii_Interaction
             return false;
         }
 
+        public void SetDetectionMode(DetectionMode detectionMode, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool SetProfileState(Guid profileGuid, bool state)
         {
             return false;

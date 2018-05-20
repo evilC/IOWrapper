@@ -53,7 +53,6 @@
     <Compile Include="Handlers\XiDeviceHandler.cs" />
     <Compile Include="Handlers\XiDevicePoller.cs" />
     <Compile Include="Handlers\XiReportHandler.cs" />
-    <Compile Include="Handlers\XiTriggerindingHandler.cs" />
     <Compile Include="Helpers\Lookup.cs" />
     <Compile Include="SharpDX_XInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

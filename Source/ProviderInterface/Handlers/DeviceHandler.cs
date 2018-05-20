@@ -10,6 +10,13 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 {
+    //ToDo: Move out to own file
+    public class BindingUpdate
+    {
+        public BindingDescriptor BindingDescriptor { get; set; }
+        public int State { get; set; }
+    }
+
     /// <summary>
     /// Handles one type (as in make/model, vid/pid) of device, of which there could be multiple instances
     /// <see cref="BindingDictionary"/> indexes Inputs by the <see cref="BindingDescriptor"/> 
@@ -18,35 +25,95 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
     public abstract class DeviceHandler : IDisposable
     {
         #region fields and properties
-        private Thread _pollThread;
-        private bool _pollThreadState;
+        private DetectionMode _detectionMode;
+        protected Action<DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
 
-        private readonly BindingDescriptor _bindingDescriptor;
+        public delegate void BindingUpdateHandler(BindingUpdate update);
+
+        public event BindingUpdateHandler BindingUpdateEvent;
+
+        protected readonly DeviceDescriptor _deviceDescriptor;
 
         // Main binding dictionary that holds handlers          // Uses values from BindingDescriptor
         protected readonly ConcurrentDictionary<BindingType,    // BindingType (Axis / Button / POV)
-            ConcurrentDictionary<int,                           // Normally Index, but not mandatory! XI uses Subindex as the key for POVs
-                BindingHandler>> BindingDictionary              // Handles bindings for a specific Device (Or number of instances of a device)
-            = new ConcurrentDictionary<BindingType, ConcurrentDictionary<int, BindingHandler>>();
+            ConcurrentDictionary<int,                           // Index
+                ConcurrentDictionary<int,                       // Subindex
+                    BindingHandler>>> BindingDictionary         // Handles bindings for a specific Device (Or number of instances of a device)
+            = new ConcurrentDictionary<BindingType, ConcurrentDictionary<int, ConcurrentDictionary<int, BindingHandler>>>();
+
+        protected DevicePoller _devicePoller;
         #endregion
 
-        #region Public
-
-        /// <summary>
-        /// The initial SubReq passed to the ctor does not subscribe to anything, it just configures the handler
-        /// </summary>
-        /// <param name="subReq"></param>
-        protected DeviceHandler(InputSubscriptionRequest subReq)
+        protected void ProcessPollEvent(DevicePollUpdate update)
         {
-            _bindingDescriptor = subReq.BindingDescriptor;
+            var descriptors = GenerateDesriptors(update);
+            foreach (var descriptor in descriptors)
+            {
+                OnBindingUpdateEvent(descriptor);
+            }
+        }
+
+        protected void OnBindingUpdateEvent(BindingUpdate update)
+        {
+            BindingUpdateEvent?.Invoke(update);
+        }
+
+        protected abstract List<BindingUpdate> GenerateDesriptors(DevicePollUpdate update);
+
+        #region Public
+        protected DeviceHandler(DeviceDescriptor deviceDescriptor)
+        {
+            _deviceDescriptor = deviceDescriptor;
+            _devicePoller = CreateDevicePoller();
+            SetDetectionMode(DetectionMode.Subscription);
+            _devicePoller.PollEvent += ProcessPollEvent;
+            _devicePoller.SetPollThreadState(true);
+        }
+
+        public void SetDetectionMode(DetectionMode mode, Action<DeviceDescriptor, BindingDescriptor, int> callback = null)
+        {
+            BindingUpdateEvent = null;
+            switch (mode)
+            {
+                case DetectionMode.Bind:
+                    _bindModeCallback = callback ?? throw new Exception("Bind Mode requested but no callback passed");
+                    BindingUpdateEvent += ProcessBindModePoll;
+                    break;
+                case DetectionMode.Subscription:
+                    BindingUpdateEvent += ProcessSubscriptionModePoll;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            _detectionMode = mode;
+        }
+
+        public virtual void ProcessBindModePoll(BindingUpdate update)
+        {
+            _bindModeCallback(_deviceDescriptor, update.BindingDescriptor, update.State);
+        }
+
+        public virtual void ProcessSubscriptionModePoll(BindingUpdate update)
+        {
+            if (BindingDictionary.TryGetValue(update.BindingDescriptor.Type, out var deviceIndexes)
+                && deviceIndexes.TryGetValue(update.BindingDescriptor.Index, out var deviceSubIndexes)
+                && deviceSubIndexes.TryGetValue(update.BindingDescriptor.SubIndex, out var bindingHandler))
+            {
+                bindingHandler.Poll(update.State);
+            }
         }
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {
+            if (_detectionMode != DetectionMode.Subscription)
+            {
+                throw new Exception($"Tried to subscribe while in mode {_detectionMode}");
+            }
             var handler = GetOrAddBindingHandler(subReq);
             if (handler.Subscribe(subReq))
             {
-                SetPollThreadState(true);
+                _devicePoller.SetPollThreadState(true);
                 return true;
             }
 
@@ -55,68 +122,45 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         public virtual bool Unsubscribe(InputSubscriptionRequest subReq)
         {
-            var index = GetBindingKey(subReq);
-            if (BindingDictionary.ContainsKey(subReq.BindingDescriptor.Type) &&
-                BindingDictionary[subReq.BindingDescriptor.Type].ContainsKey(index))
+            if (_detectionMode != DetectionMode.Subscription)
             {
-                if (BindingDictionary[subReq.BindingDescriptor.Type][index].Unsubscribe(subReq))
-                {
-                    if (BindingDictionary[subReq.BindingDescriptor.Type][index].IsEmpty())
-                    {
-                        BindingDictionary[subReq.BindingDescriptor.Type].TryRemove(index, out _);
-                        //Log($"Removing Index dictionary {index}");
-                        if (BindingDictionary[subReq.BindingDescriptor.Type].IsEmpty)
-                        {
-                            BindingDictionary.TryRemove(subReq.BindingDescriptor.Type, out _);
-                            //Log($"Removing BindingType dictionary {subReq.BindingDescriptor.Type}");
-                            if (BindingDictionary.IsEmpty)
-                            {
-                                SetPollThreadState(false);
-                            }
-                        }
-                    }
-                    return true;
-                }
+                throw new Exception($"Tried to unsubscribe while in mode {_detectionMode}");
             }
-            return false;
-        }
+            var index = GetBindingIndex(subReq);
+            var subIndex = GetBindingSubIndex(subReq);
 
-        public abstract void Poll();
+            // Check that Binding exists
+            if (!BindingDictionary.ContainsKey(subReq.BindingDescriptor.Type) ||
+                !BindingDictionary[subReq.BindingDescriptor.Type].ContainsKey(index) ||
+                !BindingDictionary[subReq.BindingDescriptor.Type][index].ContainsKey(subIndex)) return false;
 
-        protected void SetPollThreadState(bool state)
-        {
-            if (_pollThreadState == state) return;
-            if (!_pollThreadState && state)
+            // Try to Unsubscribe
+            if (!BindingDictionary[subReq.BindingDescriptor.Type][index][subIndex].Unsubscribe(subReq)) return false;
+
+            // If this is the last item for this SubIndex...
+            if (!BindingDictionary[subReq.BindingDescriptor.Type][index][subIndex].IsEmpty()) return true;
+            // ... Then remove this Subindex from the dictionary
+            BindingDictionary[subReq.BindingDescriptor.Type][index].TryRemove(subIndex, out _);
+
+            // If this is the last item for this Index...
+            if (!BindingDictionary[subReq.BindingDescriptor.Type][index].IsEmpty) return true;
+            // ... Then remove this Index from the dictionary
+            BindingDictionary[subReq.BindingDescriptor.Type].TryRemove(index, out _);
+
+            //Log($"Removing Index dictionary {index}");
+            // If this is the last item for this Type...
+            if (!BindingDictionary[subReq.BindingDescriptor.Type].IsEmpty) return true;
+            // ... Then remove this Type from the dictionary
+            BindingDictionary.TryRemove(subReq.BindingDescriptor.Type, out _);
+
+            //Log($"Removing BindingType dictionary {subReq.BindingDescriptor.Type}");
+            // If the whole dictionary is empty...
+            if (BindingDictionary.IsEmpty)
             {
-                _pollThread = new Thread(PollThread);
-                _pollThread.Start();
-                //Log("Started Poll Thread");
+                // ... Kill the Poll Thread
+                _devicePoller.SetPollThreadState(false);
             }
-            else if (_pollThreadState && !state)
-            {
-                _pollThread.Abort();
-                _pollThread.Join();
-                _pollThread = null;
-                //Log("Stopped Poll Thread");
-            }
-
-            _pollThreadState = state;
-        }
-
-        protected virtual void PollThread()
-        {
-            while (true)
-            {
-                Poll();
-                //foreach (var deviceHandle in BindingDictionary.Values)
-                //{
-                //    foreach (var deviceInstance in deviceHandle.Values)
-                //    {
-                //        deviceInstance.Poll();
-                //    }
-                //}
-                Thread.Sleep(1);
-            }
+            return true;
         }
 
         public bool IsEmpty()
@@ -127,9 +171,14 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         #region Lookups
         // Used to allow overriding of the int key used for the dictionary
-        protected virtual int GetBindingKey(InputSubscriptionRequest subReq)
+        protected virtual int GetBindingIndex(InputSubscriptionRequest subReq)
         {
             return subReq.BindingDescriptor.Index;
+        }
+
+        protected virtual int GetBindingSubIndex(InputSubscriptionRequest subReq)
+        {
+            return subReq.BindingDescriptor.SubIndex;
         }
         #endregion
 
@@ -139,6 +188,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             return new BindingHandler(subReq);
         }
 
+        protected abstract DevicePoller CreateDevicePoller();
         #endregion
 
         #region Dictionary Management
@@ -150,9 +200,19 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         /// <returns></returns>
         protected virtual BindingHandler GetOrAddBindingHandler(InputSubscriptionRequest subReq)
         {
-            return BindingDictionary
-                .GetOrAdd(subReq.BindingDescriptor.Type, new ConcurrentDictionary<int, BindingHandler>())
-                .GetOrAdd(GetBindingKey(subReq), CreateBindingHandler(subReq));
+            var deviceSubIndexes = BindingDictionary
+                .GetOrAdd(subReq.BindingDescriptor.Type,
+                    new ConcurrentDictionary<int, ConcurrentDictionary<int, BindingHandler>>())
+                .GetOrAdd(GetBindingIndex(subReq), new ConcurrentDictionary<int, BindingHandler>());
+            if (deviceSubIndexes.ContainsKey(subReq.BindingDescriptor.SubIndex))
+            {
+                return deviceSubIndexes[subReq.BindingDescriptor.SubIndex];
+            }
+            return deviceSubIndexes.GetOrAdd(GetBindingSubIndex(subReq), CreateBindingHandler(subReq));
+            //.GetOrAdd(GetBindingIndex(subReq), CreateBindingHandler(subReq));
+            //return BindingDictionary
+            //    .GetOrAdd(subReq.BindingDescriptor.Type, new ConcurrentDictionary<int, BindingHandler>())
+            //    .GetOrAdd(GetBindingIndex(subReq), CreateBindingHandler(subReq));
         }
 
         /// <summary>
@@ -162,15 +222,11 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         /// <returns></returns>
         protected virtual BindingHandler GetBindingHandler(InputSubscriptionRequest subReq)
         {
-            if (BindingDictionary.TryGetValue(subReq.BindingDescriptor.Type, out ConcurrentDictionary<int, BindingHandler> cd))
-            {
-                if (cd.TryGetValue(GetBindingKey(subReq), out BindingHandler bh))
-                {
-                    return bh;
-                }
-            }
-
-            return null;
+            if (!BindingDictionary.TryGetValue(subReq.BindingDescriptor.Type,
+                out var bindingIndexes)) return null;
+            if (!bindingIndexes.TryGetValue(GetBindingIndex(subReq),
+                out var bindingSubIndexes)) return null;
+            return bindingSubIndexes.TryGetValue(GetBindingSubIndex(subReq), out var handler) ? handler : null;
         }
         #endregion
 
@@ -181,7 +237,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         public virtual void Dispose()
         {
-            SetPollThreadState(false);
+            _devicePoller.SetPollThreadState(false);
         }
     }
 }

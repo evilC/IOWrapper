@@ -147,6 +147,23 @@ namespace HidWizards.IOWrapper.Core
             return ret;
         }
 
+        public void SetDetectionMode(DetectionMode detectionMode, List<string> providerNames, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
+        {
+            foreach (var providerName in providerNames)
+            {
+                var provider = GetProvider(providerName);
+                provider.SetDetectionMode(detectionMode, callback);
+            }
+        }
+
+        //public void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)
+        //{
+        //    var di = GetProvider("SharpDX_DirectInput");
+        //    di.EnableBindMode(callback);
+        //    var xi = GetProvider("SharpDX_XInput");
+        //    xi.EnableBindMode(callback);
+        //}
+
         private void LogInputSubReq(string title, InputSubscriptionRequest subReq)
         {
             Log("{0}: Provider {1}, Device {2}, Type {3}, Index {4}, SubIndex {5}, Guid {6}",

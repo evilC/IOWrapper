@@ -46,6 +46,8 @@
     <Compile Include="Handlers\ApiHandler.cs" />
     <Compile Include="Handlers\BindingHandler.cs" />
     <Compile Include="Handlers\DeviceHandler.cs" />
+    <Compile Include="Handlers\DevicePoller.cs" />
+    <Compile Include="Handlers\PovDescriptorGenerator.cs" />
     <Compile Include="Handlers\ReportHandler.cs" />
     <Compile Include="Handlers\SubscriptionHandler.cs" />
     <Compile Include="Helpers\DeviceHelper.cs" />

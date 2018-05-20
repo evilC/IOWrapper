@@ -25,7 +25,7 @@ namespace SharpDX_DirectInput
         private bool _disposed;
 
         // Handles subscriptions and callbacks
-        private readonly DiHandler _subscriptionHandler = new DiHandler();
+        private readonly DiHandler _subscriptionHandler;
 
         private readonly DiReportHandler _diReportHandler = new DiReportHandler();
 
@@ -33,6 +33,7 @@ namespace SharpDX_DirectInput
 
         public SharpDX_DirectInput()
         {
+            _subscriptionHandler = new DiHandler(new ProviderDescriptor { ProviderName = ProviderName });
             _logger = new Logger(ProviderName);
             _diReportHandler.RefreshDevices();
         }
@@ -131,6 +132,21 @@ namespace SharpDX_DirectInput
         {
             return false;
         }
+
+        public void SetDetectionMode(DetectionMode detectionMode, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
+        {
+            _subscriptionHandler.SetDetectionMode(detectionMode, callback);
+        }
+
+        //public void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)
+        //{
+        //    _subscriptionHandler.SetDetectionMode(DetectionMode.Bind, callback);
+        //}
+
+        //public void DisableBindMode()
+        //{
+        //    _subscriptionHandler.SetDetectionMode(DetectionMode.Subscription);
+        //}
 
         public void RefreshLiveState()
         {

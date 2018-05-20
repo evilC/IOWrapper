@@ -89,6 +89,11 @@ namespace Core_ViGEm
             return devicesHandler.SetOutputState(subReq, bindingDescriptor, state);
         }
 
+        public void SetDetectionMode(DetectionMode detectionMode, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool SetProfileState(Guid profileGuid, bool state)
         {
             return false;

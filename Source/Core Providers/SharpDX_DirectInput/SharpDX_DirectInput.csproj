@@ -50,15 +50,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Handlers\DiAxisBindingHandler.cs" />
-    <Compile Include="Handlers\DiButtonBindingHandler.cs" />
     <Compile Include="Handlers\DiDeviceHandler.cs" />
+    <Compile Include="Handlers\DiDevicePoller.cs" />
     <Compile Include="Handlers\DiHandler.cs" />
-    <Compile Include="Handlers\DiPovBindingHandler.cs" />
     <Compile Include="Handlers\DiReportHandler.cs" />
     <Compile Include="Helpers\Lookups.cs" />
     <Compile Include="SharpDX_DirectInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Wrappers\DiWrapper.cs" />
+    <Compile Include="Wrappers\Lookups.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\DataObjects\DTOs.csproj">

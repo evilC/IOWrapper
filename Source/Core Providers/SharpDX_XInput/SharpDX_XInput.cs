@@ -23,7 +23,7 @@ namespace SharpDX_XInput
 
         bool disposed;
 
-        private XiHandler subscriptionHandler = new XiHandler();
+        private readonly XiHandler _subscriptionHandler;
         private XiReportHandler xiReportHandler = new XiReportHandler();
 
         //private static List<Guid> ActiveProfiles = new List<Guid>();
@@ -31,6 +31,7 @@ namespace SharpDX_XInput
 
         public SharpDX_XInput()
         {
+            _subscriptionHandler = new XiHandler(new ProviderDescriptor { ProviderName = ProviderName });
             logger = new Logger(ProviderName);
         }
 
@@ -46,7 +47,7 @@ namespace SharpDX_XInput
             if (disposing)
             {
                 //pollHandler.Dispose();
-                subscriptionHandler.Dispose();
+                _subscriptionHandler.Dispose();
             }
             disposed = true;
             logger.Log("Disposed");
@@ -99,13 +100,13 @@ namespace SharpDX_XInput
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
             //return pollHandler.SubscribeInput(subReq);
-            return subscriptionHandler.Subscribe(subReq);
+            return _subscriptionHandler.Subscribe(subReq);
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
             //return pollHandler.UnsubscribeInput(subReq);
-            return subscriptionHandler.Unsubscribe(subReq);
+            return _subscriptionHandler.Unsubscribe(subReq);
         }
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
@@ -122,6 +123,21 @@ namespace SharpDX_XInput
         {
             return false;
         }
+
+        public void SetDetectionMode(DetectionMode detectionMode, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
+        {
+            _subscriptionHandler.SetDetectionMode(detectionMode, callback);
+        }
+
+        //public void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)
+        //{
+        //    _subscriptionHandler.SetDetectionMode(DetectionMode.Bind, callback);
+        //}
+
+        //public void DisableBindMode()
+        //{
+        //    _subscriptionHandler.SetDetectionMode(DetectionMode.Subscription);
+        //}
 
         public void RefreshLiveState()
         {

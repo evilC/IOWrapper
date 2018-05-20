@@ -31,8 +31,12 @@ namespace TestApp
             DeviceDescriptor xInputPad_1 = null;
             DeviceDescriptor xInputPad_2 = null;
 
+            IOW.Instance.SetDetectionMode(DetectionMode.Bind, new List<string> { "SharpDX_DirectInput", "SharpDX_XInput" }, ProcessBindMode);
+            Console.ReadLine();
+            IOW.Instance.SetDetectionMode(DetectionMode.Subscription, new List<string> { "SharpDX_DirectInput", "SharpDX_XInput" });
+
             // Comment out these assignments to turn them on or off
-            //genericStick_1 = Library.Devices.DirectInput.T16000M;
+            genericStick_1 = Library.Devices.DirectInput.T16000M;
             //genericStick_1 = Library.BindingDictionary.DirectInput.DS4_1;
             //genericStick_2 = Library.BindingDictionary.DirectInput.DS4_2;
 
@@ -42,7 +46,7 @@ namespace TestApp
             //snesPad_1 = Library.Devices.DirectInput.SnesPad_1;
             //snesPad_2 = Library.Devices.DirectInput.SnesPad_2;
 
-            //xInputPad_1 = Library.Devices.Console.Xb360_1;
+            xInputPad_1 = Library.Devices.Console.Xb360_1;
             //xInputPad_2 = Library.BindingDictionary.Console.Xb360_2;
 
             if (vJoy_1 != null)
@@ -166,6 +170,13 @@ namespace TestApp
             dict.Add(name, new Plugins.IOTester($"{name} Axis 1", providerDescriptor, deviceDescriptor, Library.Bindings.Generic.Axis1));
 
             return dict;
+        }
+
+        public static void ProcessBindMode(ProviderDescriptor providerDescriptor, DeviceDescriptor deviceDescriptor,
+            BindingDescriptor bindingDescriptor, int state)
+        {
+            Console.WriteLine($"IOWrapper| BindMode: Proivider: {providerDescriptor.ProviderName}, Handle {deviceDescriptor.DeviceHandle}/{deviceDescriptor.DeviceInstance}" +
+                              $", Type: {bindingDescriptor.Type}, Index: {bindingDescriptor.Index}/{bindingDescriptor.SubIndex}, State: {state}");
         }
 
     }
