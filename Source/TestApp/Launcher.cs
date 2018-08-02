@@ -31,9 +31,27 @@ namespace TestApp
             DeviceDescriptor xInputPad_1 = null;
             DeviceDescriptor xInputPad_2 = null;
 
-            IOW.Instance.SetDetectionMode(DetectionMode.Bind, new List<string> { "SharpDX_DirectInput", "SharpDX_XInput" }, ProcessBindMode);
-            Console.ReadLine();
-            IOW.Instance.SetDetectionMode(DetectionMode.Subscription, new List<string> { "SharpDX_DirectInput", "SharpDX_XInput" });
+            var vds4 = new OutputSubscriptionRequest{DeviceDescriptor = Library.Devices.Console.DS4_1, ProviderDescriptor = Library.Providers.ViGEm,
+                SubscriptionDescriptor = new SubscriptionDescriptor
+                {
+                    ProfileGuid = Library.Profiles.Default,
+                    SubscriberGuid = Guid.NewGuid()
+                }
+            };
+            //IOW.Instance.SubscribeOutput(vds4);
+            //IOW.Instance.SetOutputstate(vds4, Library.Bindings.Generic.DpadRight, 1);
+            //IOW.Instance.SetOutputstate(vds4, Library.Bindings.Generic.POV1Up, 1);
+            //IOW.Instance.SetOutputstate(vds4, Library.Bindings.Generic.DpadRight, 0);
+            //IOW.Instance.SetOutputstate(vds4, Library.Bindings.Generic.DpadUp, 0);
+            //IOW.Instance.SetOutputstate(vds4, Library.Bindings.Generic.POV1Up, 0);
+            //IOW.Instance.SetOutputstate(vds4, Library.Bindings.Generic.Button2, 1);
+            //Thread.Sleep(500);
+            //IOW.Instance.SetOutputstate(vds4, Library.Bindings.Generic.Button1, 0);
+
+            //IOW.Instance.SetDetectionMode(DetectionMode.Bind, new List<string> { "SharpDX_DirectInput", "SharpDX_XInput" }, ProcessBindMode);
+            //Console.ReadLine();
+            //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, new List<string> { "SharpDX_XInput" });
+            //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, new List<string> { "SharpDX_DirectInput", "SharpDX_XInput" });
 
             // Comment out these assignments to turn them on or off
             genericStick_1 = Library.Devices.DirectInput.T16000M;
@@ -46,8 +64,10 @@ namespace TestApp
             //snesPad_1 = Library.Devices.DirectInput.SnesPad_1;
             //snesPad_2 = Library.Devices.DirectInput.SnesPad_2;
 
-            xInputPad_1 = Library.Devices.Console.Xb360_1;
+            //xInputPad_1 = Library.Devices.Console.Xb360_1;
             //xInputPad_2 = Library.BindingDictionary.Console.Xb360_2;
+            var ds4w = new Plugins.IOTester("DS4W", Library.Providers.DS4Windows, Library.Devices.vJoy.vJoy_1,
+                Library.Bindings.Generic.Ds4Gyro).Subscribe();
 
             if (vJoy_1 != null)
             {
@@ -60,7 +80,7 @@ namespace TestApp
                 var vj1p1d = new Plugins.IOTester("vJoy_1 POV 1 Down", Library.Providers.DirectInput, vJoy_1, Library.Bindings.Generic.POV1Down).Subscribe();
                 var vj1p2u = new Plugins.IOTester("vJoy_1 POV 2 Up", Library.Providers.DirectInput, vJoy_1, Library.Bindings.Generic.POV2Up).Subscribe();
                 var vj1p2d = new Plugins.IOTester("vJoy_1 POV 2 Down", Library.Providers.DirectInput, vJoy_1, Library.Bindings.Generic.POV2Down).Subscribe();
-                if (false)
+                if (true)
                 {
                     vj1a1.Unsubscribe();
                     vj1a2.Unsubscribe();
@@ -92,10 +112,11 @@ namespace TestApp
                 // DirectInput testers - Physical stick bindings, for when you want to test physical stick behavior
                 var ps1a1 = new Plugins.IOTester("genericStick_1 Axis 1", Library.Providers.DirectInput, genericStick_1, Library.Bindings.Generic.Axis1)
                     //.SubscribeOutput(Library.Providers.vJoy, Library.Devices.vJoy.vJoy_1, Library.Bindings.Generic.Axis1)
+                    .SubscribeOutput(Library.Providers.ViGEm, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Axis5)
                     .Subscribe();
                 var ps1a2 = new Plugins.IOTester("genericStick_1 Axis 2", Library.Providers.DirectInput, genericStick_1, Library.Bindings.Generic.Axis2).Subscribe();
                 var ps1b1 = new Plugins.IOTester("genericStick_1 Button 1", Library.Providers.DirectInput, genericStick_1, Library.Bindings.Generic.Button1)
-                    //.SubscribeOutput(Library.Providers.ViGEm, Library.Devices.Console.DS4_1, Library.Bindings.Generic.Button1)
+                    .SubscribeOutput(Library.Providers.ViGEm, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Button1)
                     .Subscribe();
                 var ps1b2 = new Plugins.IOTester("genericStick_1 Button 2", Library.Providers.DirectInput, genericStick_1, Library.Bindings.Generic.Button2).Subscribe();
                 var ps1p1u = new Plugins.IOTester("genericStick_1 POV 1 Up", Library.Providers.DirectInput, genericStick_1, Library.Bindings.Generic.POV1Up).Subscribe();
@@ -122,7 +143,7 @@ namespace TestApp
                 var xib1 = new Plugins.IOTester("xInputPad_1 Button 1", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Button1).Subscribe();
                 var xib2 = new Plugins.IOTester("xInputPad_1 Button 2", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.Button2).Subscribe();
                 var xip1 = new Plugins.IOTester("xInputPad_1 POV 1 Up", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.POV1Up).Subscribe();
-                var xip2 = new Plugins.IOTester("xInputPad_1 POV 1 Down", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.POV1Down).Subscribe();
+                var xip2 = new Plugins.IOTester("xInputPad_1 POV 1 Left", Library.Providers.XInput, Library.Devices.Console.Xb360_1, Library.Bindings.Generic.POV1Left).Subscribe();
             }
 
             if (xInputPad_2 != null)

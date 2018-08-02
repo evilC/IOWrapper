@@ -48,6 +48,9 @@ namespace TestApp.Library
             public static BindingDescriptor POV2Right = new BindingDescriptor { Index = 1, SubIndex = 1, Type = BindingType.POV };
             public static BindingDescriptor POV2Down = new BindingDescriptor { Index = 1, SubIndex = 2, Type = BindingType.POV };
             public static BindingDescriptor POV2Left = new BindingDescriptor { Index = 1, SubIndex = 3, Type = BindingType.POV };
+            public static BindingDescriptor DpadUp = new BindingDescriptor { Index = 0, SubIndex = 0, Type = BindingType.POV };
+            public static BindingDescriptor DpadRight = new BindingDescriptor { Index = 1, SubIndex = 0, Type = BindingType.POV };
+            public static BindingDescriptor Ds4Gyro = new BindingDescriptor { Index = 0, SubIndex = 2, Type = BindingType.Axis }; // DS4 Gyro
         }
         #endregion
 

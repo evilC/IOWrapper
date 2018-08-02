@@ -1,4 +1,6 @@
-﻿using Nefarius.ViGEm.Client.Targets;
+﻿using System;
+using System.Collections.Concurrent;
+using Nefarius.ViGEm.Client.Targets;
 using Nefarius.ViGEm.Client.Targets.DualShock4;
 using System.Collections.Generic;
 using HidWizards.IOWrapper.DataTransferObjects;
@@ -46,8 +48,33 @@ namespace Core_ViGEm
 
             private static readonly List<DualShock4DPadValues> povIndexes = new List<DualShock4DPadValues>
             {
-
                 DualShock4DPadValues.North, DualShock4DPadValues.East, DualShock4DPadValues.South, DualShock4DPadValues.West
+            };
+
+            private readonly Dictionary<string, int> _povAxisStates = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+            {
+                {"x", 0 }, {"y", 0}
+            };
+
+            private static readonly Dictionary<int, (string Axis, int Direction)> IndexToVector = new Dictionary<int, (string, int)>()
+            {
+                {0, ("y", -1)},
+                {1, ("x", 1)},
+                {2, ("y", 1)},
+                {3, ("x", -1)}
+            };
+
+            private static readonly Dictionary<(int x, int y), DualShock4DPadValues> AxisStatesToDpadValue = new Dictionary<(int x, int y), DualShock4DPadValues>()
+            {
+                {(0, 0), DualShock4DPadValues.None},
+                {(0, -1), DualShock4DPadValues.North},
+                {(1, -1), DualShock4DPadValues.Northeast},
+                {(1, 0), DualShock4DPadValues.East},
+                {(1, 1), DualShock4DPadValues.Southeast},
+                {(0, 1), DualShock4DPadValues.South},
+                {(-1, 1), DualShock4DPadValues.Southwest},
+                {(-1, 0), DualShock4DPadValues.West},
+                {(-1, -1), DualShock4DPadValues.Northwest}
             };
 
             public DS4Handler(DeviceClassDescriptor descriptor, int index) : base(descriptor, index)
@@ -90,10 +117,17 @@ namespace Core_ViGEm
             protected override void SetPovState(BindingDescriptor bindingDescriptor, int state)
             {
                 var inputId = bindingDescriptor.Index;
-                if (state == 0)
-                    report.SetDPad(DualShock4DPadValues.None);
-                else
-                    report.SetDPad(povIndexes[inputId]);
+                var mapping = IndexToVector[inputId];
+                var axisState = _povAxisStates[mapping.Axis];
+                var newState = state == 1 ? mapping.Direction : 0;
+                if (axisState == newState) return;
+                _povAxisStates[mapping.Axis] = newState;
+
+                var buttons = (int)report.Buttons;
+                buttons &= ~15; // Clear all the Dpad bits
+                
+                buttons |= (int)AxisStatesToDpadValue[(_povAxisStates["x"], _povAxisStates["y"])];
+                report.Buttons = (ushort) buttons;
                 SendReport();
             }
 
