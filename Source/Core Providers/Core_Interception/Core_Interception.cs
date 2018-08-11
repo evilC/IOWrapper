@@ -20,7 +20,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 namespace Core_Interception
 {
     [Export(typeof(IProvider))]
-    public partial class Core_Interception : IProvider
+    public class Core_Interception : IProvider
     {
         public bool IsLive { get { return isLive; } }
         private bool isLive = false;
