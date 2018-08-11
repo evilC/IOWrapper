@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Core_Interception.Helpers;
 using Core_Interception.Lib;
 using Core_Interception.Monitors;
 using HidWizards.IOWrapper.DataTransferObjects;
@@ -51,7 +52,7 @@ namespace Core_Interception
             }
             catch
             {
-                //Log("WARNING: Tried to add mouse button monitor but failed");
+                HelperFunctions.Log("WARNING: Tried to add mouse button monitor but failed");
             }
 
             return false;
@@ -81,7 +82,7 @@ namespace Core_Interception
             }
             catch
             {
-                //Log("WARNING: Tried to remove mouse button monitor but failed");
+                HelperFunctions.Log("WARNING: Tried to remove mouse button monitor but failed");
             }
 
             return false;

@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core_Interception.cs" />
+    <Compile Include="Helpers\HelperFunctions.cs" />
     <Compile Include="Lib\ManagedWrapper.cs" />
     <Compile Include="Monitors\KeyboardKeyMonitor.cs" />
     <Compile Include="Monitors\KeyboardMonitor.cs" />
@@ -68,9 +69,7 @@
   <ItemGroup>
     <Content Include="Settings.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Helpers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if exist "$(SolutionDir)Artifacts\Providers\$(ProjectName)" rmdir "$(SolutionDir)Artifacts\Providers\$(ProjectName)" /s /q

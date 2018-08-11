@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Core_Interception.Helpers;
 using Core_Interception.Lib;
 using HidWizards.IOWrapper.DataTransferObjects;
 
@@ -34,7 +35,7 @@ namespace Core_Interception.Monitors
             }
             catch
             {
-                //Log("WARNING: Tried to add key monitor but failed");
+                HelperFunctions.Log("WARNING: Tried to add key monitor but failed");
             }
 
             return false;
@@ -61,7 +62,7 @@ namespace Core_Interception.Monitors
             }
             catch
             {
-                //Log("WARNING: Tried to remove keyboard monitor but failed");
+                HelperFunctions.Log("WARNING: Tried to remove keyboard monitor but failed");
             }
 
             return false;

@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using Core_Interception.Helpers;
 using Core_Interception.Lib;
 using Core_Interception.Monitors;
 using HidWizards.IOWrapper.DataTransferObjects;
@@ -106,7 +107,7 @@ namespace Core_Interception
                 }
                 catch { }
             }
-            Log("Blocking Enabled: {0}", blockingEnabled);
+            HelperFunctions.Log("Blocking Enabled: {0}", blockingEnabled);
 
             deviceContext = ManagedWrapper.CreateContext();
 
@@ -134,7 +135,7 @@ namespace Core_Interception
                 SetPollThreadState(false);
             }
             disposed = true;
-            Log("Provider {0} was Disposed", ProviderName);
+            HelperFunctions.Log("Provider {0} was Disposed", ProviderName);
         }
 
         /// <summary>
@@ -179,7 +180,7 @@ namespace Core_Interception
                 {
                     Thread.Sleep(10);
                 }
-                Log("Started PollThread for {0}", ProviderName);
+                HelperFunctions.Log("Started PollThread for {0}", ProviderName);
             }
             else if (!state && pollThreadRunning)
             {
@@ -190,13 +191,8 @@ namespace Core_Interception
                     Thread.Sleep(10);
                 }
                 pollThread = null;
-                Log("Stopped PollThread for {0}", ProviderName);
+                HelperFunctions.Log("Stopped PollThread for {0}", ProviderName);
             }
-        }
-
-        private static void Log(string formatStr, params object[] arguments)
-        {
-            Debug.WriteLine("IOWrapper| " + formatStr, arguments);
         }
 
         #region IProvider Members
