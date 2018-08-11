@@ -45,6 +45,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core_Interception.cs" />
+    <Compile Include="Lib\ManagedWrapper.cs" />
+    <Compile Include="Monitors\KeyboardKeyMonitor.cs" />
+    <Compile Include="Monitors\KeyboardMonitor.cs" />
+    <Compile Include="Monitors\MouseAxisMonitor.cs" />
+    <Compile Include="Monitors\MouseButtonMonitor.cs" />
+    <Compile Include="Monitors\MouseMonitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +67,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Settings.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Helpers\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
