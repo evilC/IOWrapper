@@ -89,7 +89,7 @@ namespace Core_Interception
                 }
             }
         };
-        private static List<string> mouseButtonNames = new List<string> { "Left Mouse", "Right Mouse", "Middle Mouse", "Side Button 1", "Side Button 2", "Wheel Up", "Wheel Down" };
+        private static List<string> mouseButtonNames = new List<string> { "Left Mouse", "Right Mouse", "Middle Mouse", "Side Button 1", "Side Button 2", "Wheel Up", "Wheel Down", "Wheel Left", "Wheel Right" };
 
         public Core_Interception()
         {
@@ -488,7 +488,7 @@ namespace Core_Interception
                 });
             }
             
-            for (int i = 5; i < 7; i++)
+            for (int i = 5; i < 9; i++)
             {
                 mouseButtonList.Bindings.Add(new BindingReport
                 {

@@ -34,21 +34,21 @@ namespace Core_Interception.Monitors
             {
                 //Log("State: {0}", MonitoredState);
                 ThreadPool.QueueUserWorkItem(cb => subscriptionRequest.Callback(state));
-                if (subscriptionRequest.BindingDescriptor.Index > 4)
-                {
-                    // Wheel - simulate release
-                    ThreadPool.QueueUserWorkItem(cb => DelayWheelRelease(subscriptionRequest));
-                }
+                //if (subscriptionRequest.BindingDescriptor.Index > 4)
+                //{
+                //    // Wheel - simulate release
+                //    ThreadPool.QueueUserWorkItem(cb => DelayWheelRelease(subscriptionRequest));
+                //}
             }
 
             return true;
         }
 
-        // Delays Mouse Wheel Release, so that if a user maps it to a key, the game's poll loop has a decent chance of seeing the key change state
-        public void DelayWheelRelease(InputSubscriptionRequest subscriptionRequest)
-        {
-            Thread.Sleep(50);
-            subscriptionRequest.Callback(0);
-        }
+        //// Delays Mouse Wheel Release, so that if a user maps it to a key, the game's poll loop has a decent chance of seeing the key change state
+        //public void DelayWheelRelease(InputSubscriptionRequest subscriptionRequest)
+        //{
+        //    Thread.Sleep(50);
+        //    subscriptionRequest.Callback(0);
+        //}
     }
 }
