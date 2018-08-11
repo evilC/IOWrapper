@@ -70,6 +70,13 @@ namespace TestApp.Library
             {
                 public static BindingDescriptor LButton = Generic.Button1;
                 public static BindingDescriptor RButton = Generic.Button2;
+                public static BindingDescriptor MButton = Generic.Button3;
+                public static BindingDescriptor XButton1 = Generic.Button4;
+                public static BindingDescriptor XButton2 = Generic.Button5;
+                public static BindingDescriptor WheelUp = Generic.Button6;
+                public static BindingDescriptor WheelDown = Generic.Button7;
+                public static BindingDescriptor WheelLeft = Generic.Button8;
+                public static BindingDescriptor WheelRight = Generic.Button9;
             }
 
             public static class MouseAxis

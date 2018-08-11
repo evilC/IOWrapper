@@ -18,23 +18,23 @@ namespace Core_Interception
                 if (subReq.BindingDescriptor.Type == BindingType.Button)
                 {
                     var i = (ushort) subReq.BindingDescriptor.Index;
-                    ushort downbit = (ushort) (1 << (i * 2));
-                    ushort upbit = (ushort) (1 << ((i * 2) + 1));
+                    //ushort downbit = (ushort) (1 << (i * 2));
+                    //ushort upbit = (ushort) (1 << ((i * 2) + 1));
 
                     //Log("Added subscription to mouse button {0}", subReq.BindingDescriptor.Index);
-                    if (!monitoredStates.ContainsKey(downbit))
+                    if (!monitoredStates.ContainsKey(i))
                     {
-                        monitoredStates.Add(downbit, new MouseButtonMonitor {MonitoredState = 1});
+                        monitoredStates.Add((i), new MouseButtonMonitor());
                     }
 
-                    monitoredStates[downbit].Add(subReq);
+                    monitoredStates[i].Add(subReq);
 
-                    if (!monitoredStates.ContainsKey(upbit))
-                    {
-                        monitoredStates.Add(upbit, new MouseButtonMonitor {MonitoredState = 0});
-                    }
+                    //if (!monitoredStates.ContainsKey(upbit))
+                    //{
+                    //    monitoredStates.Add(upbit, new MouseButtonMonitor {MonitoredState = 0});
+                    //}
 
-                    monitoredStates[upbit].Add(subReq);
+                    //monitoredStates[upbit].Add(subReq);
                     return true;
                 }
 
@@ -95,33 +95,64 @@ namespace Core_Interception
 
         public bool Poll(ManagedWrapper.Stroke stroke)
         {
-            if (monitoredStates.ContainsKey(stroke.mouse.state))
+            if (stroke.mouse.state > 0)
             {
-                return monitoredStates[stroke.mouse.state].Poll(stroke);
+                var buttonAndState = HelperFunctions.StrokeToMouseButtonAndState(stroke);
+                if (monitoredStates.ContainsKey(buttonAndState.Button))
+                {
+                    return monitoredStates[buttonAndState.Button].Poll(buttonAndState.State);
+                }
+
+                return false;
             }
 
-            if (stroke.mouse.state == 0)
+            try
             {
-                try
+                var xvalue = stroke.mouse.GetAxis(0);
+                if (xvalue != 0 && monitoredAxes.ContainsKey(0))
                 {
-                    var xvalue = stroke.mouse.GetAxis(0);
-                    if (xvalue != 0 && monitoredAxes.ContainsKey(0))
-                    {
-                        monitoredAxes[0].Poll(xvalue);
-                    }
+                    return monitoredAxes[0].Poll(xvalue);
+                }
 
-                    var yvalue = stroke.mouse.GetAxis(1);
-                    if (yvalue != 0 && monitoredAxes.ContainsKey(1))
-                    {
-                        monitoredAxes[1].Poll(yvalue);
-                    }
-                }
-                catch
+                var yvalue = stroke.mouse.GetAxis(1);
+                if (yvalue != 0 && monitoredAxes.ContainsKey(1))
                 {
+                    return monitoredAxes[1].Poll(yvalue);
                 }
+            }
+            catch
+            {
+                return false;
             }
 
             return false;
+            //if (monitoredStates.ContainsKey(stroke.mouse.state))
+            //{
+            //    return monitoredStates[stroke.mouse.state].Poll(stroke);
+            //}
+
+            //if (stroke.mouse.state == 0)
+            //{
+            //    try
+            //    {
+            //        var xvalue = stroke.mouse.GetAxis(0);
+            //        if (xvalue != 0 && monitoredAxes.ContainsKey(0))
+            //        {
+            //            monitoredAxes[0].Poll(xvalue);
+            //        }
+
+            //        var yvalue = stroke.mouse.GetAxis(1);
+            //        if (yvalue != 0 && monitoredAxes.ContainsKey(1))
+            //        {
+            //            monitoredAxes[1].Poll(yvalue);
+            //        }
+            //    }
+            //    catch
+            //    {
+            //    }
+            //}
+
+            //return false;
         }
     }
 }

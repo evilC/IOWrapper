@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using Core_Interception.Helpers;
 using Core_Interception.Lib;
 using HidWizards.IOWrapper.DataTransferObjects;
 
@@ -8,9 +9,8 @@ namespace Core_Interception.Monitors
 {
     public class MouseButtonMonitor
     {
-        public int MonitoredState { get; set; }
-
         private Dictionary<Guid, InputSubscriptionRequest> subReqs = new Dictionary<Guid, InputSubscriptionRequest>();
+        private int _index = -1;
 
         public void Add(InputSubscriptionRequest subReq)
         {
@@ -28,34 +28,20 @@ namespace Core_Interception.Monitors
             return subReqs.Count > 0;
         }
 
-        public bool Poll(ManagedWrapper.Stroke stroke)
+        public bool Poll(int state)
         {
-            bool block = false;
-            if ((stroke.mouse.state & (ushort) ManagedWrapper.Filter.MouseButtonAny) != 0)
+            foreach (var subscriptionRequest in subReqs.Values)
             {
-                block = true;
-                foreach (var subscriptionRequest in subReqs.Values)
+                //Log("State: {0}", MonitoredState);
+                ThreadPool.QueueUserWorkItem(cb => subscriptionRequest.Callback(state));
+                if (subscriptionRequest.BindingDescriptor.Index > 4)
                 {
-                    //Log("State: {0}", MonitoredState);
-                    ThreadPool.QueueUserWorkItem(
-                        new InterceptionCallback {subReq = subscriptionRequest, value = MonitoredState}
-                            .FireCallback
-                    );
+                    // Wheel - simulate release
+                    ThreadPool.QueueUserWorkItem(cb => subscriptionRequest.Callback(0));
                 }
             }
 
-            return block;
-        }
-
-        class InterceptionCallback
-        {
-            public InputSubscriptionRequest subReq;
-            public int value;
-
-            public void FireCallback(Object state)
-            {
-                subReq.Callback(value);
-            }
+            return true;
         }
     }
 }

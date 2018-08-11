@@ -54,7 +54,7 @@ namespace TestApp
             //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, new List<string> { "SharpDX_DirectInput", "SharpDX_XInput" });
 
             // Comment out these assignments to turn them on or off
-            genericStick_1 = Library.Devices.DirectInput.T16000M;
+            //genericStick_1 = Library.Devices.DirectInput.T16000M;
             //genericStick_1 = Library.BindingDictionary.DirectInput.DS4_1;
             //genericStick_2 = Library.BindingDictionary.DirectInput.DS4_2;
 
@@ -66,8 +66,8 @@ namespace TestApp
 
             //xInputPad_1 = Library.Devices.Console.Xb360_1;
             //xInputPad_2 = Library.BindingDictionary.Console.Xb360_2;
-            var ds4w = new Plugins.IOTester("DS4W", Library.Providers.DS4Windows, Library.Devices.vJoy.vJoy_1,
-                Library.Bindings.Generic.Ds4Gyro).Subscribe();
+            //var ds4w = new Plugins.IOTester("DS4W", Library.Providers.DS4Windows, Library.Devices.vJoy.vJoy_1,
+            //    Library.Bindings.Generic.Ds4Gyro).Subscribe();
 
             if (vJoy_1 != null)
             {
@@ -175,7 +175,12 @@ namespace TestApp
 
 
             // Interception testers
-            //var interception = new Plugins.IOTester("Interception", Library.Providers.Interception, Library.BindingDictionary.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.One).Subscribe();
+            //var interceptionKb = new Plugins.IOTester("Interception", Library.Providers.Interception, Library.Devices.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.One).Subscribe();
+            var interceptionMouse1 = new Plugins.IOTester("Interception Mouse 1", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.LButton).Subscribe();
+            var interceptionMouse2 = new Plugins.IOTester("Interception Mouse 2", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.RButton).Subscribe();
+            var interceptionMouse3 = new Plugins.IOTester("Interception Mouse 3", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.MButton).Subscribe();
+            var interceptionMouse4 = new Plugins.IOTester("Interception Mouse Wheel Up", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.WheelUp).Subscribe();
+            var interceptionMouse5 = new Plugins.IOTester("Interception Mouse Wheel Down", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.WheelDown).Subscribe();
 
             Console.WriteLine("Load Complete");
             Console.ReadLine();

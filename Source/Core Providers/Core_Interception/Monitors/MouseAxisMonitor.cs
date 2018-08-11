@@ -25,12 +25,14 @@ namespace Core_Interception.Monitors
             return subReqs.Count > 0;
         }
 
-        public void Poll(int value)
+        public bool Poll(int value)
         {
             foreach (var subscriptionRequest in subReqs.Values)
             {
                 subscriptionRequest.Callback(value);
             }
+
+            return true;
         }
     }
 }

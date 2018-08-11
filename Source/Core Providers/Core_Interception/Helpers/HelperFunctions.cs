@@ -15,7 +15,7 @@ namespace Core_Interception.Helpers
             Debug.WriteLine("IOWrapper| Core_Interception | " + formatStr, arguments);
         }
 
-        public static ButtonState StrokeStateToButtonState(ManagedWrapper.Stroke stroke)
+        public static ButtonState StrokeToMouseButtonAndState(ManagedWrapper.Stroke stroke)
         {
             int state = stroke.mouse.state;
             ushort btn = 0;
@@ -30,9 +30,10 @@ namespace Core_Interception.Helpers
             }
             else
             {
-                if (state == 0x400) btn = 5; // Vertical mouse wheel
-                else if (state == 0x800) btn = 6; // Horizontal mouse wheel
-                state = stroke.mouse.rolling < 0 ? -1 : 1;
+                if (state == 0x400) btn = (ushort) (stroke.mouse.rolling > 0 ? 5 : 6); // Vertical mouse wheel
+                else if (state == 0x800) btn = (ushort)(stroke.mouse.rolling > 0 ? 7 : 8); // Horizontal mouse wheel
+                //state = stroke.mouse.rolling < 0 ? -1 : 1;
+                state = 1;
             }
             return new ButtonState { Button = btn, State = state };
         }
