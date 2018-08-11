@@ -365,10 +365,11 @@ namespace Core_Interception
             }
             else
             {
-                int bit = bindingDescriptor.Index * 2;
-                if (state == 0)
-                    bit += 1;
-                stroke.mouse.state = (ushort)(1 << bit);
+                var btn = bindingDescriptor.Index;
+                var power = btn < 5 ? btn * 2 + (state == 0 ? 1 : 0) : btn + 5;
+                stroke.mouse.state = (ushort)(1 << power);
+                if (btn >= 5) stroke.mouse.rolling = (short)(state * 120);
+
             }
             Send(deviceContext, devId, ref stroke, 1);
             return true;
