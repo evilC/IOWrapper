@@ -364,10 +364,19 @@ namespace Core_Interception
             else
             {
                 var btn = bindingDescriptor.Index;
-                var power = btn < 5 ? btn * 2 + (state == 0 ? 1 : 0) : btn + 5;
-                stroke.mouse.state = (ushort)(1 << power);
-                if (btn >= 5) stroke.mouse.rolling = (short)(state * 120);
+                var flag = (int)ManagedWrapper.MouseButtonFlags[btn];
+                if (btn < 5)
+                {
+                    // Regular buttons
+                    if (state == 0) flag *= 2;
+                }
+                else
+                {
+                    // Wheel
+                    stroke.mouse.rolling = (short)((btn == 5 || btn == 8) ? 120 : -120);
+                }
 
+                stroke.mouse.state = (ushort)flag;
             }
             ManagedWrapper.Send(deviceContext, devId, ref stroke, 1);
             return true;

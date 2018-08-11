@@ -20,6 +20,12 @@ namespace Core_Interception.Lib
         typedef int (*InterceptionPredicate)(InterceptionDevice device);
         */
 
+        // Index to state lookup
+        public static readonly List<MouseState> MouseButtonFlags = new List<MouseState>
+        {
+            MouseState.Button1Down, MouseState.Button2Down, MouseState.Button3Down, MouseState.Button4Down, MouseState.Button5Down, MouseState.Wheel, MouseState.Wheel, MouseState.HWheel, MouseState.HWheel
+        };
+
         [Flags]
         public enum KeyState
         {

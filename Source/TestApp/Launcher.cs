@@ -31,13 +31,13 @@ namespace TestApp
             DeviceDescriptor xInputPad_1 = null;
             DeviceDescriptor xInputPad_2 = null;
 
-            var vds4 = new OutputSubscriptionRequest{DeviceDescriptor = Library.Devices.Console.DS4_1, ProviderDescriptor = Library.Providers.ViGEm,
-                SubscriptionDescriptor = new SubscriptionDescriptor
-                {
-                    ProfileGuid = Library.Profiles.Default,
-                    SubscriberGuid = Guid.NewGuid()
-                }
-            };
+            //var vds4 = new OutputSubscriptionRequest{DeviceDescriptor = Library.Devices.Console.DS4_1, ProviderDescriptor = Library.Providers.ViGEm,
+            //    SubscriptionDescriptor = new SubscriptionDescriptor
+            //    {
+            //        ProfileGuid = Library.Profiles.Default,
+            //        SubscriberGuid = Guid.NewGuid()
+            //    }
+            //};
             //IOW.Instance.SubscribeOutput(vds4);
             //IOW.Instance.SetOutputstate(vds4, Library.Bindings.Generic.DpadRight, 1);
             //IOW.Instance.SetOutputstate(vds4, Library.Bindings.Generic.POV1Up, 1);
@@ -52,6 +52,40 @@ namespace TestApp
             //Console.ReadLine();
             //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, new List<string> { "SharpDX_XInput" });
             //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, new List<string> { "SharpDX_DirectInput", "SharpDX_XInput" });
+
+            // ==================================================== Interception Mouse Buttons =======================================
+            //var interceptionMouseSubReq = new OutputSubscriptionRequest
+            //{
+            //    DeviceDescriptor = Library.Devices.Interception.LogitechWeelMouseUSB,
+            //    ProviderDescriptor = Library.Providers.Interception,
+            //    SubscriptionDescriptor = new SubscriptionDescriptor
+            //    {
+            //        ProfileGuid = Library.Profiles.Default,
+            //        SubscriberGuid = Guid.NewGuid()
+            //    }
+            //};
+            //IOW.Instance.SubscribeOutput(interceptionMouseSubReq);
+            //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.LButton, 1);
+            //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.LButton, 0);
+
+            //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.RButton, 1);
+            //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.RButton, 0);
+
+            //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.MButton, 1);
+            //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.MButton, 0);
+
+            //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.XButton1, 1);
+            //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.XButton1, 0);
+
+            //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.XButton2, 1);
+            //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.XButton2, 0);
+
+            //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.WheelUp, 1);
+            //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.WheelDown, 1);
+
+            //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.WheelLeft, 1);
+            //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.WheelRight, 1);
+
 
             // Comment out these assignments to turn them on or off
             //genericStick_1 = Library.Devices.DirectInput.T16000M;
