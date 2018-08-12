@@ -16,4 +16,13 @@
 ~LShift::ToolTip % A_ThisHotkey
 ~LShift up::ToolTip % A_ThisHotkey
 
+~RShift::ToolTip % A_ThisHotkey
+~RShift up::ToolTip % A_ThisHotkey
+
+~Delete::ToolTip % A_ThisHotkey
+~Delete up::ToolTip % A_ThisHotkey
+
+~NumpadDot::ToolTip % A_ThisHotkey
+~NumpadDot up::ToolTip % A_ThisHotkey
+
 ^Esc::ExitApp

@@ -31,6 +31,8 @@ namespace TestApp
             DeviceDescriptor xInputPad_1 = null;
             DeviceDescriptor xInputPad_2 = null;
 
+            #region ViGEm DS4 Output Test
+
             //var vds4 = new OutputSubscriptionRequest{DeviceDescriptor = Library.Devices.Console.DS4_1, ProviderDescriptor = Library.Providers.ViGEm,
             //    SubscriptionDescriptor = new SubscriptionDescriptor
             //    {
@@ -53,7 +55,9 @@ namespace TestApp
             //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, new List<string> { "SharpDX_XInput" });
             //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, new List<string> { "SharpDX_DirectInput", "SharpDX_XInput" });
 
-            // ==================================================== Interception Mouse Buttons =======================================
+            #endregion
+
+            #region Interception Mouse Button Output Test
             //var interceptionMouseSubReq = new OutputSubscriptionRequest
             //{
             //    DeviceDescriptor = Library.Devices.Interception.LogitechWeelMouseUSB,
@@ -85,22 +89,44 @@ namespace TestApp
 
             //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.WheelLeft, 1);
             //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.WheelRight, 1);
-            var interceptionKeyboardSubReq = new OutputSubscriptionRequest
-            {
-                DeviceDescriptor = Library.Devices.Interception.ChiconyKeyboard,
-                ProviderDescriptor = Library.Providers.Interception,
-                SubscriptionDescriptor = new SubscriptionDescriptor
-                {
-                    ProfileGuid = Library.Profiles.Default,
-                    SubscriberGuid = Guid.NewGuid()
-                }
-            };
-            IOW.Instance.SubscribeOutput(interceptionKeyboardSubReq);
+            #endregion
+
+            #region Interception Keyboard Key Output Test
+            //var interceptionKeyboardSubReq = new OutputSubscriptionRequest
+            //{
+            //    DeviceDescriptor = Library.Devices.Interception.ChiconyKeyboard,
+            //    ProviderDescriptor = Library.Providers.Interception,
+            //    SubscriptionDescriptor = new SubscriptionDescriptor
+            //    {
+            //        ProfileGuid = Library.Profiles.Default,
+            //        SubscriberGuid = Guid.NewGuid()
+            //    }
+            //};
+            //IOW.Instance.SubscribeOutput(interceptionKeyboardSubReq);
             //IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.Alt, 1);
             //IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.Alt, 0);
 
-            IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.RightAlt, 1);
-            IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.RightAlt, 0);
+            //IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.RightAlt, 1);
+            //IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.RightAlt, 0);
+
+            //IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.Up, 1);
+            //IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.Up, 0);
+
+            //IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.NumUp, 1);
+            //IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.NumUp, 0);
+
+            //IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.Delete, 1);
+            //IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.Delete, 0);
+
+            //IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.NumDelete, 1);
+            //IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.NumDelete, 0);
+
+            //IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.Shift, 1);
+            //IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.Shift, 0);
+
+            //IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.RightShift, 1);
+            //IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.RightShift, 0);
+            #endregion
 
             // Comment out these assignments to turn them on or off
             //genericStick_1 = Library.Devices.DirectInput.T16000M;
@@ -222,6 +248,7 @@ namespace TestApp
             }
 
 
+            #region Interception Input Testers
 
             // Interception testers
             //var interceptionKb = new Plugins.IOTester("Interception", Library.Providers.Interception, Library.Devices.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.One).Subscribe();
@@ -233,6 +260,8 @@ namespace TestApp
 
             //var interceptionKeyboard1 = new Plugins.IOTester("Interception Keyboard 1", Library.Providers.Interception, Library.Devices.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.Up).Subscribe();
             //var interceptionKeyboard2 = new Plugins.IOTester("Interception Keyboard 2", Library.Providers.Interception, Library.Devices.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.NumUp).Subscribe();
+
+            #endregion
 
             Console.WriteLine("Load Complete");
             Console.ReadLine();
