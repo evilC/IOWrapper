@@ -85,18 +85,22 @@ namespace TestApp
 
             //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.WheelLeft, 1);
             //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.WheelRight, 1);
-            //var interceptionKeyboardSubReq = new OutputSubscriptionRequest
-            //{
-            //    DeviceDescriptor = Library.Devices.Interception.ChiconyKeyboard,
-            //    ProviderDescriptor = Library.Providers.Interception,
-            //    SubscriptionDescriptor = new SubscriptionDescriptor
-            //    {
-            //        ProfileGuid = Library.Profiles.Default,
-            //        SubscriberGuid = Guid.NewGuid()
-            //    }
-            //};
-            //IOW.Instance.SubscribeOutput(interceptionKeyboardSubReq);
+            var interceptionKeyboardSubReq = new OutputSubscriptionRequest
+            {
+                DeviceDescriptor = Library.Devices.Interception.ChiconyKeyboard,
+                ProviderDescriptor = Library.Providers.Interception,
+                SubscriptionDescriptor = new SubscriptionDescriptor
+                {
+                    ProfileGuid = Library.Profiles.Default,
+                    SubscriberGuid = Guid.NewGuid()
+                }
+            };
+            IOW.Instance.SubscribeOutput(interceptionKeyboardSubReq);
+            //IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.Alt, 1);
+            //IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.Alt, 0);
 
+            IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.RightAlt, 1);
+            IOW.Instance.SetOutputstate(interceptionKeyboardSubReq, Library.Bindings.Interception.Keyboard.RightAlt, 0);
 
             // Comment out these assignments to turn them on or off
             //genericStick_1 = Library.Devices.DirectInput.T16000M;
