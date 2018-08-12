@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Core_Interception.Helpers;
 using Core_Interception.Lib;
 using Core_Interception.Monitors;
@@ -8,46 +9,38 @@ namespace Core_Interception
 {
     public class MouseMonitor
     {
-        private Dictionary<ushort, MouseButtonMonitor> monitoredStates = new Dictionary<ushort, MouseButtonMonitor>();
-        private Dictionary<int, MouseAxisMonitor> monitoredAxes = new Dictionary<int, MouseAxisMonitor>();
+        private readonly Dictionary<ushort, MouseButtonMonitor> _monitoredStates = new Dictionary<ushort, MouseButtonMonitor>();
+        private readonly Dictionary<int, MouseAxisMonitor> _monitoredAxes = new Dictionary<int, MouseAxisMonitor>();
 
         public bool Add(InputSubscriptionRequest subReq)
         {
             try
             {
-                if (subReq.BindingDescriptor.Type == BindingType.Button)
+                switch (subReq.BindingDescriptor.Type)
                 {
-                    var i = (ushort) subReq.BindingDescriptor.Index;
-                    //ushort downbit = (ushort) (1 << (i * 2));
-                    //ushort upbit = (ushort) (1 << ((i * 2) + 1));
+                    case BindingType.Button:
+                        var i = (ushort)subReq.BindingDescriptor.Index;
+                        //Log("Added subscription to mouse button {0}", subReq.BindingDescriptor.Index);
+                        if (!_monitoredStates.ContainsKey(i))
+                        {
+                            _monitoredStates.Add((i), new MouseButtonMonitor());
+                        }
 
-                    //Log("Added subscription to mouse button {0}", subReq.BindingDescriptor.Index);
-                    if (!monitoredStates.ContainsKey(i))
-                    {
-                        monitoredStates.Add((i), new MouseButtonMonitor());
-                    }
+                        _monitoredStates[i].Add(subReq);
 
-                    monitoredStates[i].Add(subReq);
+                        return true;
+                    case BindingType.Axis:
+                        if (!_monitoredAxes.ContainsKey(subReq.BindingDescriptor.Index))
+                        {
+                            _monitoredAxes.Add(subReq.BindingDescriptor.Index,
+                                new MouseAxisMonitor { MonitoredAxis = subReq.BindingDescriptor.Index });
+                        }
 
-                    //if (!monitoredStates.ContainsKey(upbit))
-                    //{
-                    //    monitoredStates.Add(upbit, new MouseButtonMonitor {MonitoredState = 0});
-                    //}
-
-                    //monitoredStates[upbit].Add(subReq);
-                    return true;
-                }
-
-                if (subReq.BindingDescriptor.Type == BindingType.Axis)
-                {
-                    if (!monitoredAxes.ContainsKey(subReq.BindingDescriptor.Index))
-                    {
-                        monitoredAxes.Add(subReq.BindingDescriptor.Index,
-                            new MouseAxisMonitor {MonitoredAxis = subReq.BindingDescriptor.Index});
-                    }
-
-                    monitoredAxes[subReq.BindingDescriptor.Index].Add(subReq);
-                    return true;
+                        _monitoredAxes[subReq.BindingDescriptor.Index].Add(subReq);
+                        return true;
+                    case BindingType.POV:
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
             catch
@@ -63,21 +56,12 @@ namespace Core_Interception
             try
             {
                 var i = (ushort) subReq.BindingDescriptor.Index;
-                ushort downbit = (ushort) (1 << (i * 2));
-                ushort upbit = (ushort) (1 << ((i * 2) + 1));
 
-                monitoredStates[downbit].Remove(subReq);
-                if (!monitoredStates[downbit].HasSubscriptions())
+                _monitoredStates[i].Remove(subReq);
+                if (!_monitoredStates[i].HasSubscriptions())
                 {
-                    monitoredStates.Remove(downbit);
+                    _monitoredStates.Remove(i);
                 }
-
-                monitoredStates[upbit].Remove(subReq);
-                if (!monitoredStates[upbit].HasSubscriptions())
-                {
-                    monitoredStates.Remove(upbit);
-                }
-
                 return true;
             }
             catch
@@ -90,7 +74,7 @@ namespace Core_Interception
 
         public bool HasSubscriptions()
         {
-            return monitoredStates.Count > 0;
+            return _monitoredStates.Count > 0;
         }
 
         public bool Poll(ManagedWrapper.Stroke stroke)
@@ -98,26 +82,21 @@ namespace Core_Interception
             if (stroke.mouse.state > 0)
             {
                 var buttonAndState = HelperFunctions.StrokeToMouseButtonAndState(stroke);
-                if (monitoredStates.ContainsKey(buttonAndState.Button))
-                {
-                    return monitoredStates[buttonAndState.Button].Poll(buttonAndState.State);
-                }
-
-                return false;
+                return _monitoredStates.ContainsKey(buttonAndState.Button) && _monitoredStates[buttonAndState.Button].Poll(buttonAndState.State);
             }
 
             try
             {
                 var xvalue = stroke.mouse.GetAxis(0);
-                if (xvalue != 0 && monitoredAxes.ContainsKey(0))
+                if (xvalue != 0 && _monitoredAxes.ContainsKey(0))
                 {
-                    return monitoredAxes[0].Poll(xvalue);
+                    return _monitoredAxes[0].Poll(xvalue);
                 }
 
                 var yvalue = stroke.mouse.GetAxis(1);
-                if (yvalue != 0 && monitoredAxes.ContainsKey(1))
+                if (yvalue != 0 && _monitoredAxes.ContainsKey(1))
                 {
-                    return monitoredAxes[1].Poll(yvalue);
+                    return _monitoredAxes[1].Poll(yvalue);
                 }
             }
             catch
@@ -126,33 +105,6 @@ namespace Core_Interception
             }
 
             return false;
-            //if (monitoredStates.ContainsKey(stroke.mouse.state))
-            //{
-            //    return monitoredStates[stroke.mouse.state].Poll(stroke);
-            //}
-
-            //if (stroke.mouse.state == 0)
-            //{
-            //    try
-            //    {
-            //        var xvalue = stroke.mouse.GetAxis(0);
-            //        if (xvalue != 0 && monitoredAxes.ContainsKey(0))
-            //        {
-            //            monitoredAxes[0].Poll(xvalue);
-            //        }
-
-            //        var yvalue = stroke.mouse.GetAxis(1);
-            //        if (yvalue != 0 && monitoredAxes.ContainsKey(1))
-            //        {
-            //            monitoredAxes[1].Poll(yvalue);
-            //        }
-            //    }
-            //    catch
-            //    {
-            //    }
-            //}
-
-            //return false;
         }
     }
 }
