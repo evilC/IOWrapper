@@ -348,13 +348,13 @@ namespace Core_Interception
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
-            int devId = _deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle] + 1;
+            var devId = _deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle] + 1;
             //Log("SetOutputState. Type: {0}, Index: {1}, State: {2}, Device: {3}", inputType, inputIndex, state, devId);
-            ManagedWrapper.Stroke stroke = new ManagedWrapper.Stroke();
+            var stroke = new ManagedWrapper.Stroke();
             if (devId < 11)
             {
-                ushort st = (ushort)(1 - state);
-                ushort code = (ushort)(bindingDescriptor.Index + 1);
+                var st = (ushort)(1 - state);
+                var code = (ushort)(bindingDescriptor.Index + 1);
                 if (code > 255)
                 {
                     st += 2;
