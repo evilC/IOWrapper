@@ -14,19 +14,10 @@ namespace Core_Interception.Monitors
             try
             {
                 var code = (ushort) (subReq.BindingDescriptor.Index + 1);
-                ushort stateDown = 0;
-                ushort stateUp = 1;
-                if (code > 256)
-                {
-                    code -= 256;
-                    stateDown = 2;
-                    stateUp = 3;
-                }
 
                 if (!monitoredKeys.ContainsKey(code))
                 {
-                    monitoredKeys.Add(code,
-                        new KeyboardKeyMonitor {code = code, stateDown = stateDown, stateUp = stateUp});
+                    monitoredKeys.Add(code, new KeyboardKeyMonitor());
                 }
 
                 monitoredKeys[code].Add(subReq);
@@ -73,19 +64,46 @@ namespace Core_Interception.Monitors
             return monitoredKeys.Count > 0;
         }
 
+        // ScanCode notes: https://www.win.tue.nl/~aeb/linux/kbd/scancodes-1.html
         public bool Poll(ManagedWrapper.Stroke stroke)
         {
-            bool block = false;
-            foreach (var monitoredKey in monitoredKeys.Values)
+            var code = stroke.key.code;
+            var state = stroke.key.state;
+
+            // Begin translation of incoming key code, state, extended flag etc...
+            // If state is shifted up by 2 (1 or 2 instead of 0 or 1), then this is an "Extended" key code
+            if (state > 1)
             {
-                var b = monitoredKey.Poll(stroke);
-                if (b)
+                if (code == 42)
                 {
-                    block = true;
+                    // Shift (42/0x2a) with extended flag = the key after this one is extended.
+                    // Example case is Delete (The one above the arrow keys, not on numpad)...
+                    // ... this generates a stroke of 0x2a (Shift) with *extended flag set* (Normal shift does not do this)...
+                    // ... followed by 0x53 with extended flag set.
+                    // We do not want to fire subsriptions for the extended shift, but *do* want to let the key flow through...
+                    // ... so that is handled here.
+                    // When the extended key (Delete in the above example) subsequently comes through...
+                    // ... it will have code 0x53, which we shift to 0x153 (Adding 256 Dec) to signify extended version...
+                    // ... as this is how AHK behaves with GetKeySC()
+
+                    // return false to not block this stroke
+                    return false;
+                }
+                else
+                {
+                    // Extended flag set
+                    // Shift code up by 256 (0x100) to signify extended code
+                    code += 256;
+                    state -= 2;
                 }
             }
 
-            return block;
+            if (monitoredKeys.ContainsKey(code))
+            {
+                return monitoredKeys[code].Poll(state);
+            }
+
+            return false;
         }
     }
 }

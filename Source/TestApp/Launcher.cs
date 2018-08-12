@@ -85,6 +85,17 @@ namespace TestApp
 
             //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.WheelLeft, 1);
             //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.WheelRight, 1);
+            //var interceptionKeyboardSubReq = new OutputSubscriptionRequest
+            //{
+            //    DeviceDescriptor = Library.Devices.Interception.ChiconyKeyboard,
+            //    ProviderDescriptor = Library.Providers.Interception,
+            //    SubscriptionDescriptor = new SubscriptionDescriptor
+            //    {
+            //        ProfileGuid = Library.Profiles.Default,
+            //        SubscriberGuid = Guid.NewGuid()
+            //    }
+            //};
+            //IOW.Instance.SubscribeOutput(interceptionKeyboardSubReq);
 
 
             // Comment out these assignments to turn them on or off
@@ -210,11 +221,14 @@ namespace TestApp
 
             // Interception testers
             //var interceptionKb = new Plugins.IOTester("Interception", Library.Providers.Interception, Library.Devices.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.One).Subscribe();
-            var interceptionMouse1 = new Plugins.IOTester("Interception Mouse 1", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.LButton).Subscribe();
-            var interceptionMouse2 = new Plugins.IOTester("Interception Mouse 2", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.RButton).Subscribe();
-            var interceptionMouse3 = new Plugins.IOTester("Interception Mouse 3", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.MButton).Subscribe();
-            var interceptionMouse4 = new Plugins.IOTester("Interception Mouse Wheel Up", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.WheelUp).Subscribe();
-            var interceptionMouse5 = new Plugins.IOTester("Interception Mouse Wheel Down", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.WheelDown).Subscribe();
+            //var interceptionMouse1 = new Plugins.IOTester("Interception Mouse 1", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.LButton).Subscribe();
+            //var interceptionMouse2 = new Plugins.IOTester("Interception Mouse 2", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.RButton).Subscribe();
+            //var interceptionMouse3 = new Plugins.IOTester("Interception Mouse 3", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.MButton).Subscribe();
+            //var interceptionMouse4 = new Plugins.IOTester("Interception Mouse Wheel Up", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.WheelUp).Subscribe();
+            //var interceptionMouse5 = new Plugins.IOTester("Interception Mouse Wheel Down", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.WheelDown).Subscribe();
+
+            //var interceptionKeyboard1 = new Plugins.IOTester("Interception Keyboard 1", Library.Providers.Interception, Library.Devices.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.Up).Subscribe();
+            //var interceptionKeyboard2 = new Plugins.IOTester("Interception Keyboard 2", Library.Providers.Interception, Library.Devices.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.NumUp).Subscribe();
 
             Console.WriteLine("Load Complete");
             Console.ReadLine();

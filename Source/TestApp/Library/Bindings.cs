@@ -64,6 +64,13 @@ namespace TestApp.Library
             {
                 public static BindingDescriptor Esc = Generic.Button1;
                 public static BindingDescriptor One = Generic.Button2;
+                public static BindingDescriptor RightAlt = new BindingDescriptor {Index = 311, SubIndex = 0, Type = BindingType.Button};
+                public static BindingDescriptor RightShift = new BindingDescriptor {Index = 53, SubIndex = 0, Type = BindingType.Button};
+                public static BindingDescriptor Shift = new BindingDescriptor {Index = 41, SubIndex = 0, Type = BindingType.Button};
+                public static BindingDescriptor Delete = new BindingDescriptor {Index = 338, SubIndex = 0, Type = BindingType.Button};
+                public static BindingDescriptor NumDelete = new BindingDescriptor {Index = 82, SubIndex = 0, Type = BindingType.Button};
+                public static BindingDescriptor Up = new BindingDescriptor {Index = 327, SubIndex = 0, Type = BindingType.Button};
+                public static BindingDescriptor NumUp = new BindingDescriptor {Index = 71, SubIndex = 0, Type = BindingType.Button};
             }
 
             public static class MouseButton
