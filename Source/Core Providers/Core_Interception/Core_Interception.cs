@@ -17,52 +17,52 @@ using Core_Interception.Helpers;
 using Core_Interception.Lib;
 using Core_Interception.Monitors;
 using HidWizards.IOWrapper.DataTransferObjects;
+using static System.String;
 
 namespace Core_Interception
 {
     [Export(typeof(IProvider))]
     public class Core_Interception : IProvider
     {
-        public bool IsLive { get { return isLive; } }
-        private bool isLive = false;
+        public bool IsLive { get; } = false;
 
-        bool disposed;
-        private IntPtr deviceContext;
+        private bool _disposed;
+        private readonly IntPtr _deviceContext;
         //private ProviderReport providerReport;
-        private List<DeviceReport> deviceReports;
+        private List<DeviceReport> _deviceReports;
 
         // The thread which handles input detection
-        private Thread pollThread;
+        private Thread _pollThread;
         // Is the thread currently running? This is set by the thread itself.
-        private volatile bool pollThreadRunning;
+        private volatile bool _pollThreadRunning;
         // Do we want the thread to be on or off?
         // This is independent of whether or not the thread is running...
         // ... for example, we may be updating bindings, so the thread may be temporarily stopped
-        private bool pollThreadDesired;
+        private bool _pollThreadDesired;
         // Set to true to cause the thread to stop running. When it stops, it will set pollThreadRunning to false
         private volatile bool pollThreadStopRequested;
 
-        private bool filterState = false;
+        private bool _filterState = false;
 
-        private bool blockingEnabled;
+        private bool _blockingEnabled;
         public static string AssemblyDirectory
         {
             get
             {
-                string codeBase = Assembly.GetExecutingAssembly().CodeBase;
-                UriBuilder uri = new UriBuilder(codeBase);
-                string path = Uri.UnescapeDataString(uri.Path);
+                var codeBase = Assembly.GetExecutingAssembly().CodeBase;
+                var uri = new UriBuilder(codeBase);
+                var path = Uri.UnescapeDataString(uri.Path);
                 return Path.GetDirectoryName(path);
             }
         }
 
-        private Dictionary<int, KeyboardMonitor> MonitoredKeyboards = new Dictionary<int, KeyboardMonitor>();
-        private Dictionary<int, MouseMonitor> MonitoredMice = new Dictionary<int, MouseMonitor>();
-        private Dictionary<string, int> deviceHandleToId;
+        private readonly Dictionary<int, KeyboardMonitor> _monitoredKeyboards = new Dictionary<int, KeyboardMonitor>();
+        private readonly Dictionary<int, MouseMonitor> _monitoredMice = new Dictionary<int, MouseMonitor>();
+        private Dictionary<string, int> _deviceHandleToId;
 
-        private static DeviceReportNode keyboardList;
-        private static DeviceReportNode mouseButtonList;
-        private static DeviceReportNode mouseAxisList = new DeviceReportNode
+        private static DeviceReportNode _keyboardList;
+        private static DeviceReportNode _mouseButtonList;
+        private static readonly DeviceReportNode MouseAxisList = new DeviceReportNode
         {
             Title = "Axes",
             Bindings = new List<BindingReport>
@@ -89,12 +89,12 @@ namespace Core_Interception
                 }
             }
         };
-        private static List<string> mouseButtonNames = new List<string> { "Left Mouse", "Right Mouse", "Middle Mouse", "Side Button 1", "Side Button 2", "Wheel Up", "Wheel Down", "Wheel Left", "Wheel Right" };
+        private static readonly List<string> MouseButtonNames = new List<string> { "Left Mouse", "Right Mouse", "Middle Mouse", "Side Button 1", "Side Button 2", "Wheel Up", "Wheel Down", "Wheel Left", "Wheel Right" };
 
         public Core_Interception()
         {
             var settingsFile = Path.Combine(AssemblyDirectory, "Settings.xml");
-            blockingEnabled = false;
+            _blockingEnabled = false;
             if (File.Exists(settingsFile))
             {
                 var doc = new XmlDocument();
@@ -102,18 +102,22 @@ namespace Core_Interception
 
                 try
                 {
-                    blockingEnabled = Convert.ToBoolean(doc.SelectSingleNode("/Settings/Setting[Name = \"BlockingEnabled\"]")
-                        .SelectSingleNode("Value").InnerText);
+                    _blockingEnabled = Convert.ToBoolean(doc.SelectSingleNode("/Settings/Setting[Name = \"BlockingEnabled\"]")
+                        ?.SelectSingleNode("Value")
+                        ?.InnerText);
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
             }
-            HelperFunctions.Log("Blocking Enabled: {0}", blockingEnabled);
+            HelperFunctions.Log("Blocking Enabled: {0}", _blockingEnabled);
 
-            deviceContext = ManagedWrapper.CreateContext();
+            _deviceContext = ManagedWrapper.CreateContext();
 
             QueryDevices();
 
-            pollThreadDesired = true;
+            _pollThreadDesired = true;
         }
 
         ~Core_Interception()
@@ -128,13 +132,13 @@ namespace Core_Interception
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposed)
+            if (_disposed)
                 return;
             if (disposing)
             {
                 SetPollThreadState(false);
             }
-            disposed = true;
+            _disposed = true;
             HelperFunctions.Log("Provider {0} was Disposed", ProviderName);
         }
 
@@ -146,58 +150,58 @@ namespace Core_Interception
         /// <param name="state">Set to true to turn filtering on</param>
         private void SetFilterState(bool state)
         {
-            if (state && !filterState)
+            if (state && !_filterState)
             {
-                ManagedWrapper.SetFilter(deviceContext, IsMonitoredKeyboard, ManagedWrapper.Filter.All);
-                ManagedWrapper.SetFilter(deviceContext, IsMonitoredMouse, ManagedWrapper.Filter.All);
+                ManagedWrapper.SetFilter(_deviceContext, IsMonitoredKeyboard, ManagedWrapper.Filter.All);
+                ManagedWrapper.SetFilter(_deviceContext, IsMonitoredMouse, ManagedWrapper.Filter.All);
             }
-            else if (!state && filterState)
+            else if (!state && _filterState)
             {
-                ManagedWrapper.SetFilter(deviceContext, IsMonitoredKeyboard, ManagedWrapper.Filter.None);
-                ManagedWrapper.SetFilter(deviceContext, IsMonitoredMouse, ManagedWrapper.Filter.None);
+                ManagedWrapper.SetFilter(_deviceContext, IsMonitoredKeyboard, ManagedWrapper.Filter.None);
+                ManagedWrapper.SetFilter(_deviceContext, IsMonitoredMouse, ManagedWrapper.Filter.None);
             }
         }
 
         private int IsMonitoredKeyboard(int device)
         {
-            return Convert.ToInt32(MonitoredKeyboards.ContainsKey(device));
+            return Convert.ToInt32(_monitoredKeyboards.ContainsKey(device));
         }
 
         private int IsMonitoredMouse(int device)
         {
-            return Convert.ToInt32(MonitoredMice.ContainsKey(device));
+            return Convert.ToInt32(_monitoredMice.ContainsKey(device));
         }
 
         private void SetPollThreadState(bool state)
         {
-            if (state && !pollThreadRunning)
+            if (state && !_pollThreadRunning)
             {
                 SetFilterState(true);
                 pollThreadStopRequested = false;
-                pollThread = new Thread(() => PollThread(blockingEnabled));
-                pollThread.Start();
-                while (!pollThreadRunning)
+                _pollThread = new Thread(() => PollThread(_blockingEnabled));
+                _pollThread.Start();
+                while (!_pollThreadRunning)
                 {
                     Thread.Sleep(10);
                 }
                 HelperFunctions.Log("Started PollThread for {0}", ProviderName);
             }
-            else if (!state && pollThreadRunning)
+            else if (!state && _pollThreadRunning)
             {
                 SetFilterState(false);
                 pollThreadStopRequested = true;
-                while (pollThreadRunning)
+                while (_pollThreadRunning)
                 {
                     Thread.Sleep(10);
                 }
-                pollThread = null;
+                _pollThread = null;
                 HelperFunctions.Log("Stopped PollThread for {0}", ProviderName);
             }
         }
 
         #region IProvider Members
         // ToDo: Need better way to handle this. MEF meta-data?
-        public string ProviderName { get { return typeof(Core_Interception).Namespace; } }
+        public string ProviderName => typeof(Core_Interception).Namespace;
 
         public bool SetProfileState(Guid profileGuid, bool state)
         {
@@ -225,7 +229,7 @@ namespace Core_Interception
                 {
                     ProviderName = ProviderName
                 },
-                Devices = deviceReports
+                Devices = _deviceReports
             };
 
             return providerReport;
@@ -243,7 +247,7 @@ namespace Core_Interception
 
         private DeviceReport GetIODeviceReport(SubscriptionRequest subReq)
         {
-            foreach (var deviceReport in deviceReports)
+            foreach (var deviceReport in _deviceReports)
             {
                 if (deviceReport.DeviceDescriptor.DeviceHandle == subReq.DeviceDescriptor.DeviceHandle && deviceReport.DeviceDescriptor.DeviceInstance == subReq.DeviceDescriptor.DeviceInstance)
                 {
@@ -255,75 +259,73 @@ namespace Core_Interception
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            bool ret = false;
-            if (deviceHandleToId.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
+            if (!_deviceHandleToId.ContainsKey(subReq.DeviceDescriptor.DeviceHandle)) return false;
+            var ret = false;
+            try
             {
-                try
-                {
-                    if (pollThreadRunning)
-                        SetPollThreadState(false);
+                if (_pollThreadRunning)
+                    SetPollThreadState(false);
 
-                    var id = deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle];
-                    var devId = id + 1;
-                    if (id < 10)
-                    {
-                        if (!MonitoredKeyboards.ContainsKey(devId))
-                        {
-                            MonitoredKeyboards.Add(devId, new KeyboardMonitor());
-                        }
-                        ret = MonitoredKeyboards[devId].Add(subReq);
-                    }
-                    else
-                    {
-                        if (!MonitoredMice.ContainsKey(devId))
-                        {
-                            MonitoredMice.Add(devId, new MouseMonitor());
-                        }
-                        ret = MonitoredMice[devId].Add(subReq);
-                    }
-
-                    if (pollThreadDesired)
-                        SetPollThreadState(true);
-                }
-                catch
+                var id = _deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle];
+                var devId = id + 1;
+                if (id < 10)
                 {
-                    ret = false;
+                    if (!_monitoredKeyboards.ContainsKey(devId))
+                    {
+                        _monitoredKeyboards.Add(devId, new KeyboardMonitor());
+                    }
+                    ret = _monitoredKeyboards[devId].Add(subReq);
                 }
+                else
+                {
+                    if (!_monitoredMice.ContainsKey(devId))
+                    {
+                        _monitoredMice.Add(devId, new MouseMonitor());
+                    }
+                    ret = _monitoredMice[devId].Add(subReq);
+                }
+
+                if (_pollThreadDesired)
+                    SetPollThreadState(true);
+            }
+            catch
+            {
+                ret = false;
             }
             return ret;
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            bool ret = false;
+            var ret = false;
 
             try
             {
-                if (deviceHandleToId.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
+                if (_deviceHandleToId.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
                 {
-                    var id = deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle];
+                    var id = _deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle];
                     var devId = id + 1;
-                    if (pollThreadRunning)
+                    if (_pollThreadRunning)
                         SetPollThreadState(false);
 
                     if (id < 10)
                     {
-                        ret = MonitoredKeyboards[devId].Remove(subReq);
-                        if (!MonitoredKeyboards[devId].HasSubscriptions())
+                        ret = _monitoredKeyboards[devId].Remove(subReq);
+                        if (!_monitoredKeyboards[devId].HasSubscriptions())
                         {
-                            MonitoredKeyboards.Remove(devId);
+                            _monitoredKeyboards.Remove(devId);
                         }
                     }
                     else
                     {
-                        ret = MonitoredMice[devId].Remove(subReq);
-                        if (!MonitoredMice[devId].HasSubscriptions())
+                        ret = _monitoredMice[devId].Remove(subReq);
+                        if (!_monitoredMice[devId].HasSubscriptions())
                         {
-                            MonitoredMice.Remove(devId);
+                            _monitoredMice.Remove(devId);
                         }
                     }
 
-                    if (pollThreadDesired)
+                    if (_pollThreadDesired)
                         SetPollThreadState(true);
                 }
             }
@@ -346,7 +348,7 @@ namespace Core_Interception
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
-            int devId = deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle] + 1;
+            int devId = _deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle] + 1;
             //Log("SetOutputState. Type: {0}, Index: {1}, State: {2}, Device: {3}", inputType, inputIndex, state, devId);
             ManagedWrapper.Stroke stroke = new ManagedWrapper.Stroke();
             if (devId < 11)
@@ -378,7 +380,7 @@ namespace Core_Interception
 
                 stroke.mouse.state = (ushort)flag;
             }
-            ManagedWrapper.Send(deviceContext, devId, ref stroke, 1);
+            ManagedWrapper.Send(_deviceContext, devId, ref stroke, 1);
             return true;
         }
 
@@ -401,19 +403,19 @@ namespace Core_Interception
         #region Device Querying
         private void QueryDevices()
         {
-            deviceHandleToId = new Dictionary<string, int>();
-            deviceReports = new List<DeviceReport>();
+            _deviceHandleToId = new Dictionary<string, int>();
+            _deviceReports = new List<DeviceReport>();
 
             UpdateKeyList();
             UpdateMouseButtonList();
             string handle;
-            int i = 1;
+            var i = 1;
             while (i < 11)
             {
-                handle = ManagedWrapper.GetHardwareStr(deviceContext, i, 1000);
+                handle = ManagedWrapper.GetHardwareStr(_deviceContext, i, 1000);
                 int vid = 0, pid = 0;
                 GetVidPid(handle, ref vid, ref pid);
-                string name = "";
+                var name = "";
                 if (vid != 0 && pid != 0)
                 {
                     name = DeviceHelper.GetDeviceName(vid, pid);
@@ -422,7 +424,7 @@ namespace Core_Interception
                 if (name != "" && ManagedWrapper.IsKeyboard(i) == 1)
                 {
                     handle = @"Keyboard\" + handle;
-                    deviceReports.Add(new DeviceReport
+                    _deviceReports.Add(new DeviceReport
                     {
                         DeviceName = name,
                         DeviceDescriptor = new DeviceDescriptor
@@ -432,20 +434,20 @@ namespace Core_Interception
                         //Bindings = { keyboardList }
                         Nodes = new List<DeviceReportNode>
                         {
-                            keyboardList
+                            _keyboardList
                         }
                     });
-                    deviceHandleToId.Add(handle, i - 1);
+                    _deviceHandleToId.Add(handle, i - 1);
                     //Log(String.Format("{0} (Keyboard) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
                 }
                 i++;
             }
             while (i < 21)
             {
-                handle = ManagedWrapper.GetHardwareStr(deviceContext, i, 1000);
+                handle = ManagedWrapper.GetHardwareStr(_deviceContext, i, 1000);
                 int vid = 0, pid = 0;
                 GetVidPid(handle, ref vid, ref pid);
-                string name = "";
+                var name = "";
                 if (vid != 0 && pid != 0)
                 {
                     name = DeviceHelper.GetDeviceName(vid, pid);
@@ -455,7 +457,7 @@ namespace Core_Interception
                 if (name != "" && ManagedWrapper.IsMouse(i) == 1)
                 {
                     handle = @"Mouse\" + handle;
-                    deviceReports.Add(new DeviceReport
+                    _deviceReports.Add(new DeviceReport
                     {
                         DeviceName = name,
                         DeviceDescriptor = new DeviceDescriptor
@@ -465,11 +467,11 @@ namespace Core_Interception
                         //Bindings = { mouseButtonList }
                         Nodes = new List<DeviceReportNode>
                         {
-                            mouseButtonList,
-                            mouseAxisList
+                            _mouseButtonList,
+                            MouseAxisList
                         }
                     });
-                    deviceHandleToId.Add(handle, i - 1);
+                    _deviceHandleToId.Add(handle, i - 1);
                     //Log(String.Format("{0} (Mouse) = VID/PID: {1}", i, handle));
                     //Log(String.Format("{0} (Mouse) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
                 }
@@ -477,17 +479,17 @@ namespace Core_Interception
             }
         }
 
-        private void UpdateMouseButtonList()
+        private static void UpdateMouseButtonList()
         {
-            mouseButtonList = new DeviceReportNode
+            _mouseButtonList = new DeviceReportNode
             {
                 Title = "Buttons"
             };
-            for (int i = 0; i < 5; i++)
+            for (var i = 0; i < 5; i++)
             {
-                mouseButtonList.Bindings.Add(new BindingReport
+                _mouseButtonList.Bindings.Add(new BindingReport
                 {
-                    Title = mouseButtonNames[i],
+                    Title = MouseButtonNames[i],
                     Category = BindingCategory.Momentary,
                     BindingDescriptor = new BindingDescriptor
                     {
@@ -497,11 +499,11 @@ namespace Core_Interception
                 });
             }
             
-            for (int i = 5; i < 9; i++)
+            for (var i = 5; i < 9; i++)
             {
-                mouseButtonList.Bindings.Add(new BindingReport
+                _mouseButtonList.Bindings.Add(new BindingReport
                 {
-                    Title = mouseButtonNames[i],
+                    Title = MouseButtonNames[i],
                     Category = BindingCategory.Event,
                     BindingDescriptor = new BindingDescriptor
                     {
@@ -515,28 +517,25 @@ namespace Core_Interception
 
         private void UpdateKeyList()
         {
-            keyboardList = new DeviceReportNode
+            _keyboardList = new DeviceReportNode
             {
                 Title = "Keys"
             };
             //buttonNames = new Dictionary<int, string>();
-            uint lParam = 0;
-            StringBuilder sb = new StringBuilder(260);
-            string keyName;
-            string altKeyName;
+            var sb = new StringBuilder(260);
 
-            for (int i = 0; i < 256; i++)
+            for (var i = 0; i < 256; i++)
             {
-                lParam = (uint)(i+1) << 16;
+                var lParam = (uint)(i+1) << 16;
                 if (ManagedWrapper.GetKeyNameTextW(lParam, sb, 260) == 0)
                 {
                     continue;
                 }
-                keyName = sb.ToString().Trim();
+                var keyName = sb.ToString().Trim();
                 if (keyName == "")
                     continue;
                 //Log("Button Index: {0}, name: '{1}'", i, keyName);
-                keyboardList.Bindings.Add(new BindingReport
+                _keyboardList.Bindings.Add(new BindingReport
                 {
                     Title = keyName,
                     Category = BindingCategory.Momentary,
@@ -554,11 +553,11 @@ namespace Core_Interception
                 {
                     continue;
                 }
-                altKeyName = sb.ToString().Trim();
+                var altKeyName = sb.ToString().Trim();
                 if (altKeyName == "" || altKeyName == keyName)
                     continue;
                 //Log("ALT Button Index: {0}, name: '{1}'", i + 256, altKeyName);
-                keyboardList.Bindings.Add(new BindingReport
+                _keyboardList.Bindings.Add(new BindingReport
                 {
                     Title = altKeyName,
                     Category = BindingCategory.Momentary,
@@ -571,68 +570,66 @@ namespace Core_Interception
                 //Log("Button Index: {0}, name: '{1}'", i + 256, altKeyName);
                 //buttonNames.Add(i + 256, altKeyName);
             }
-            keyboardList.Bindings.Sort((x, y) => x.Title.CompareTo(y.Title));
+            _keyboardList.Bindings.Sort((x, y) => Compare(x.Title, y.Title, StringComparison.Ordinal));
         }
 
-#endregion
+        #endregion
 
         #region PollThread
         private void PollThread(bool blockingEnabled)
         {
-            pollThreadRunning = true;
+            _pollThreadRunning = true;
 
-            ManagedWrapper.Stroke stroke = new ManagedWrapper.Stroke();
+            var stroke = new ManagedWrapper.Stroke();
 
             while (!pollThreadStopRequested)
             {
-                for (int i = 1; i < 11; i++)
+                for (var i = 1; i < 11; i++)
                 {
-                    bool isMonitoredKeyboard = MonitoredKeyboards.ContainsKey(i);
+                    var isMonitoredKeyboard = _monitoredKeyboards.ContainsKey(i);
 
-                    while (ManagedWrapper.Receive(deviceContext, i, ref stroke, 1) > 0)
+                    while (ManagedWrapper.Receive(_deviceContext, i, ref stroke, 1) > 0)
                     {
-                        bool block = false;
+                        var block = false;
                         if (isMonitoredKeyboard)
                         {
-                            block = MonitoredKeyboards[i].Poll(stroke);
+                            block = _monitoredKeyboards[i].Poll(stroke);
                         }
                         if (!(blockingEnabled && block))
                         {
-                            ManagedWrapper.Send(deviceContext, i, ref stroke, 1);
+                            ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
                         }
                     }
                 }
-                for (int i = 11; i < 21; i++)
+                for (var i = 11; i < 21; i++)
                 {
-                    bool isMonitoredMouse = MonitoredMice.ContainsKey(i);
+                    var isMonitoredMouse = _monitoredMice.ContainsKey(i);
 
-                    while (ManagedWrapper.Receive(deviceContext, i, ref stroke, 1) > 0)
+                    while (ManagedWrapper.Receive(_deviceContext, i, ref stroke, 1) > 0)
                     {
-                        bool block = false;
+                        var block = false;
                         if (isMonitoredMouse)
                         {
-                            block = MonitoredMice[i].Poll(stroke);
+                            block = _monitoredMice[i].Poll(stroke);
                         }
                         if (!(blockingEnabled && block))
                         {
-                            ManagedWrapper.Send(deviceContext, i, ref stroke, 1);
+                            ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
                         }
                     }
                 }
                 Thread.Sleep(1);
             }
-            pollThreadRunning = false;
+            _pollThreadRunning = false;
         }
         #endregion
 
         private static void GetVidPid(string str, ref int vid, ref int pid)
         {
-            MatchCollection matches = Regex.Matches(str, @"VID_(\w{4})&PID_(\w{4})");
-            if ((matches.Count > 0) && (matches[0].Groups.Count > 1))
-            {
-                vid = Convert.ToInt32(matches[0].Groups[1].Value, 16);
-                pid = Convert.ToInt32(matches[0].Groups[2].Value, 16);
-            }
+            var matches = Regex.Matches(str, @"VID_(\w{4})&PID_(\w{4})");
+            if ((matches.Count <= 0) || (matches[0].Groups.Count <= 1)) return;
+            vid = Convert.ToInt32(matches[0].Groups[1].Value, 16);
+            pid = Convert.ToInt32(matches[0].Groups[2].Value, 16);
         }
     }
 }

@@ -9,28 +9,27 @@ namespace Core_Interception.Monitors
 {
     public class MouseButtonMonitor
     {
-        private Dictionary<Guid, InputSubscriptionRequest> subReqs = new Dictionary<Guid, InputSubscriptionRequest>();
-        private int _index = -1;
+        private readonly Dictionary<Guid, InputSubscriptionRequest> _subReqs = new Dictionary<Guid, InputSubscriptionRequest>();
 
         public void Add(InputSubscriptionRequest subReq)
         {
-            subReqs.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
+            _subReqs.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
             //Log("Added Subscription to Mouse Button {0}", subReq.InputIndex);
         }
 
         public void Remove(InputSubscriptionRequest subReq)
         {
-            subReqs.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
+            _subReqs.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
         }
 
         public bool HasSubscriptions()
         {
-            return subReqs.Count > 0;
+            return _subReqs.Count > 0;
         }
 
         public bool Poll(int state)
         {
-            foreach (var subscriptionRequest in subReqs.Values)
+            foreach (var subscriptionRequest in _subReqs.Values)
             {
                 //Log("State: {0}", MonitoredState);
                 ThreadPool.QueueUserWorkItem(cb => subscriptionRequest.Callback(state));

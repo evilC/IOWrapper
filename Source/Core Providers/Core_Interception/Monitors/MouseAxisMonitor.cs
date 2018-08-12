@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Core_Interception.Monitors
@@ -29,7 +30,7 @@ namespace Core_Interception.Monitors
         {
             foreach (var subscriptionRequest in subReqs.Values)
             {
-                subscriptionRequest.Callback(value);
+                ThreadPool.QueueUserWorkItem(cb => subscriptionRequest.Callback(value));
             }
 
             return true;

@@ -7,7 +7,7 @@ namespace Core_Interception.Monitors
 {
     public class KeyboardMonitor
     {
-        private Dictionary<ushort, KeyboardKeyMonitor> monitoredKeys = new Dictionary<ushort, KeyboardKeyMonitor>();
+        private readonly Dictionary<ushort, KeyboardKeyMonitor> _monitoredKeys = new Dictionary<ushort, KeyboardKeyMonitor>();
 
         public bool Add(InputSubscriptionRequest subReq)
         {
@@ -15,12 +15,12 @@ namespace Core_Interception.Monitors
             {
                 var code = (ushort) (subReq.BindingDescriptor.Index + 1);
 
-                if (!monitoredKeys.ContainsKey(code))
+                if (!_monitoredKeys.ContainsKey(code))
                 {
-                    monitoredKeys.Add(code, new KeyboardKeyMonitor());
+                    _monitoredKeys.Add(code, new KeyboardKeyMonitor());
                 }
 
-                monitoredKeys[code].Add(subReq);
+                _monitoredKeys[code].Add(subReq);
                 //Log("Added key monitor for key {0}", code);
                 return true;
             }
@@ -42,10 +42,10 @@ namespace Core_Interception.Monitors
 
             try
             {
-                monitoredKeys[code].Remove(subReq);
-                if (!monitoredKeys[code].HasSubscriptions())
+                _monitoredKeys[code].Remove(subReq);
+                if (!_monitoredKeys[code].HasSubscriptions())
                 {
-                    monitoredKeys.Remove(code);
+                    _monitoredKeys.Remove(code);
                 }
 
                 //Log("Removed key monitor for key {0}", code);
@@ -61,7 +61,7 @@ namespace Core_Interception.Monitors
 
         public bool HasSubscriptions()
         {
-            return monitoredKeys.Count > 0;
+            return _monitoredKeys.Count > 0;
         }
 
         // ScanCode notes: https://www.win.tue.nl/~aeb/linux/kbd/scancodes-1.html
@@ -98,12 +98,7 @@ namespace Core_Interception.Monitors
                 }
             }
 
-            if (monitoredKeys.ContainsKey(code))
-            {
-                return monitoredKeys[code].Poll(state);
-            }
-
-            return false;
+            return _monitoredKeys.ContainsKey(code) && _monitoredKeys[code].Poll(state);
         }
     }
 }
