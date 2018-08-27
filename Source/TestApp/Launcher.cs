@@ -252,7 +252,8 @@ namespace TestApp
 
             if (hidDevice != null)
             {
-                var sma1 = new Plugins.IOTester("HidSharp Axis 1", Library.Providers.HidSharp, hidDevice, Library.Bindings.Generic.Axis1).Subscribe();
+                var sma1 = new Plugins.IOTester("HidSharp Axis 1", Library.Providers.HidSharp, hidDevice, Library.Bindings.Hid.AxisX).Subscribe();
+                var sma2 = new Plugins.IOTester("HidSharp Axis 2", Library.Providers.HidSharp, hidDevice, Library.Bindings.Hid.AxisY).Subscribe();
             }
 
             #region Interception Input Testers

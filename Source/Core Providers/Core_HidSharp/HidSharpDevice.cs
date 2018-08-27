@@ -16,7 +16,7 @@ namespace Core_HidSharp
     {
         private Thread _pollThread;
         private HidDevice _device;
-        private dynamic _callback;
+        private Dictionary<Usage, dynamic> _callbacks = new Dictionary<Usage, dynamic>();
 
         public HidSharpDevice(DeviceDescriptor deviceDescriptor)
         {
@@ -89,9 +89,9 @@ namespace Core_HidSharp
                 //value = value > 350 ? (65536 - value) * -1 : value;
                 //value = (int)(value * 93.6228);
 
-                if (usage == Usage.GenericDesktopRz && _callback != null)
+                if (_callbacks.ContainsKey(usage))
                 {
-                    _callback(value);
+                    _callbacks[usage](value);
                 }
 
                 //Console.WriteLine(
@@ -122,7 +122,8 @@ namespace Core_HidSharp
 
         public void SubscribeInput(InputSubscriptionRequest subReq)
         {
-            _callback = subReq.Callback;
+            var usage = (Usage) subReq.BindingDescriptor.Index;
+            _callbacks[usage] = subReq.Callback;
         }
     }
 }

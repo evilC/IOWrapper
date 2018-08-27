@@ -54,6 +54,20 @@ namespace TestApp.Library
         }
         #endregion
 
+        #region Hid
+
+        public static class Hid
+        {
+            public static BindingDescriptor AxisX = new BindingDescriptor { Index = (int)HidSharp.Reports.Usage.GenericDesktopX, Type = BindingType.Axis };
+            public static BindingDescriptor AxisY = new BindingDescriptor { Index = (int)HidSharp.Reports.Usage.GenericDesktopY, Type = BindingType.Axis };
+            public static BindingDescriptor AxisZ = new BindingDescriptor { Index = (int)HidSharp.Reports.Usage.GenericDesktopZ, Type = BindingType.Axis };
+            public static BindingDescriptor AxisRx = new BindingDescriptor { Index = (int)HidSharp.Reports.Usage.GenericDesktopRx, Type = BindingType.Axis };
+            public static BindingDescriptor AxisRy = new BindingDescriptor { Index = (int)HidSharp.Reports.Usage.GenericDesktopRy, Type = BindingType.Axis };
+            public static BindingDescriptor AxisRz = new BindingDescriptor { Index = (int)HidSharp.Reports.Usage.GenericDesktopRz, Type = BindingType.Axis };
+        }
+
+        #endregion
+
         /// <summary>
         /// Interception Provider bindings
         /// </summary>
