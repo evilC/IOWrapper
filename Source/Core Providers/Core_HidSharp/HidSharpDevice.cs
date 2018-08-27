@@ -21,22 +21,15 @@ namespace Core_HidSharp
         public HidSharpDevice(DeviceDescriptor deviceDescriptor)
         {
             var list = DeviceList.Local;
-            //var vid = 1103;
-            //var pid = 45322;
+
             var vid = 0;
             var pid = 0;
-
             GetVidPid(deviceDescriptor.DeviceHandle, ref vid, ref pid);
 
             var hidDeviceList = list.GetHidDevices().ToArray();
             var dev = hidDeviceList.FirstOrDefault(hidDevice => hidDevice.VendorID == vid && hidDevice.ProductID == pid);
 
-            if (dev == null)
-            {
-                throw new Exception("Device not found");
-            }
-
-            _device = dev;
+            _device = dev ?? throw new Exception("Device not found");
 
             _pollThread = new Thread(PollThread);
             _pollThread.Start();
@@ -47,8 +40,7 @@ namespace Core_HidSharp
             var reportDescriptor = _device.GetReportDescriptor();
             var deviceItem = reportDescriptor.DeviceItems.FirstOrDefault();
 
-            HidStream hidStream;
-            if (_device.TryOpen(out hidStream))
+            if (_device.TryOpen(out var hidStream))
             {
                 using (hidStream)
                 {
@@ -80,6 +72,7 @@ namespace Core_HidSharp
                     }
                 }
             }
+            throw new Exception("Could not open device");
         }
 
         private void WriteDeviceItemInputParserResult(DeviceItemInputParser parser)
