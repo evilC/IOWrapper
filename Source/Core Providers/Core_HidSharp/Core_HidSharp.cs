@@ -1,26 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using HidSharp;
 using HidSharp.Reports;
 using HidSharp.Reports.Input;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface;
 
-namespace SpaceMouse
+namespace Core_HidSharp
 {
     [Export(typeof(IProvider))]
-    public class SpaceMouse : IProvider
+    public class Core_HidSharp : IProvider
     {
         private Thread _pollThread;
         private HidDevice _device;
         private dynamic _callback;
 
-        public SpaceMouse()
+        public Core_HidSharp()
         {
             var list = DeviceList.Local;
             var vid = 1103;
@@ -118,7 +115,7 @@ namespace SpaceMouse
             _pollThread = null;
         }
 
-        public string ProviderName { get { return typeof(SpaceMouse).Namespace; } }
+        public string ProviderName { get { return typeof(Core_HidSharp).Namespace; } }
         public bool IsLive { get; }
         public ProviderReport GetInputList()
         {

@@ -7,8 +7,8 @@
     <ProjectGuid>{5D6EFA1C-41A4-4C32-ACD7-8A02750AE685}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SpaceMouse</RootNamespace>
-    <AssemblyName>SpaceMouse</AssemblyName>
+    <RootNamespace>Core_HidSharp</RootNamespace>
+    <AssemblyName>Core_HidSharp</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -45,7 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SpaceMouse.cs" />
+    <Compile Include="Core_HidSharp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

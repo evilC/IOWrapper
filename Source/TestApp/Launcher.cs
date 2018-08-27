@@ -21,7 +21,7 @@ namespace TestApp
 
             DeviceDescriptor genericStick_1 = null;
             DeviceDescriptor genericStick_2 = null;
-            DeviceDescriptor spaceMouse = null;
+            DeviceDescriptor hidDevice = null;
 
             DeviceDescriptor vJoy_1 = null;
             DeviceDescriptor vJoy_2 = null;
@@ -145,7 +145,7 @@ namespace TestApp
             //var ds4w = new Plugins.IOTester("DS4W", Library.Providers.DS4Windows, Library.Devices.vJoy.vJoy_1,
             //    Library.Bindings.Generic.Ds4Gyro).Subscribe();
 
-            spaceMouse = new DeviceDescriptor();
+            hidDevice = new DeviceDescriptor();
 
             if (vJoy_1 != null)
             {
@@ -250,9 +250,9 @@ namespace TestApp
                 var ps1b2 = new Plugins.IOTester("snesPad_2 Button 2", Library.Providers.DirectInput, snesPad_2, Library.Bindings.Generic.Button2).Subscribe();
             }
 
-            if (spaceMouse != null)
+            if (hidDevice != null)
             {
-                var sma1 = new Plugins.IOTester("SpaceMouse Axis 1", Library.Providers.SpaceMouse, spaceMouse, Library.Bindings.Generic.Axis1).Subscribe();
+                var sma1 = new Plugins.IOTester("HidSharp Axis 1", Library.Providers.HidSharp, hidDevice, Library.Bindings.Generic.Axis1).Subscribe();
             }
 
             #region Interception Input Testers

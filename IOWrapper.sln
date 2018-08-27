@@ -41,7 +41,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpDX_XInput", "Source\Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core_Tobii_Interaction", "Source\Core Providers\Core_Tobii_Interaction\Core_Tobii_Interaction.csproj", "{30781D26-C5B4-4F6F-B21D-F3357E43A192}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceMouse", "Source\Core Providers\SpaceMouse\SpaceMouse.csproj", "{5D6EFA1C-41A4-4C32-ACD7-8A02750AE685}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core_HidSharp", "Source\Core Providers\Core_HidSharp\Core_HidSharp.csproj", "{5D6EFA1C-41A4-4C32-ACD7-8A02750AE685}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
