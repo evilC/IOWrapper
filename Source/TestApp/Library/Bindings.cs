@@ -64,6 +64,7 @@ namespace TestApp.Library
             public static BindingDescriptor AxisRx = new BindingDescriptor { Index = (int)HidSharp.Reports.Usage.GenericDesktopRx, Type = BindingType.Axis };
             public static BindingDescriptor AxisRy = new BindingDescriptor { Index = (int)HidSharp.Reports.Usage.GenericDesktopRy, Type = BindingType.Axis };
             public static BindingDescriptor AxisRz = new BindingDescriptor { Index = (int)HidSharp.Reports.Usage.GenericDesktopRz, Type = BindingType.Axis };
+            public static BindingDescriptor Button1 = new BindingDescriptor { Index = (int)HidSharp.Reports.Usage.Button1, Type = BindingType.Button };
         }
 
         #endregion
