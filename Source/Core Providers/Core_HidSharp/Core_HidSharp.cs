@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
@@ -13,106 +14,16 @@ namespace Core_HidSharp
     [Export(typeof(IProvider))]
     public class Core_HidSharp : IProvider
     {
-        private Thread _pollThread;
-        private HidDevice _device;
-        private dynamic _callback;
+        private List<HidSharpDevice> _devices = new List<HidSharpDevice>();
 
         public Core_HidSharp()
         {
-            var list = DeviceList.Local;
-            var vid = 1103;
-            var pid = 45322;
-
-            var hidDeviceList = list.GetHidDevices().ToArray();
-            var dev = hidDeviceList.FirstOrDefault(hidDevice => hidDevice.VendorID == vid && hidDevice.ProductID == pid);
-
-            if (dev == null)
-            {
-                throw new Exception("Device not found");
-            }
-
-            _device = dev;
-
-            _pollThread = new Thread(PollThread);
-            _pollThread.Start();
-        }
-
-        private void PollThread()
-        {
-            var reportDescriptor = _device.GetReportDescriptor();
-            var deviceItem = reportDescriptor.DeviceItems.FirstOrDefault();
-
-            HidStream hidStream;
-            if (_device.TryOpen(out hidStream))
-            {
-                using (hidStream)
-                {
-                    var inputReportBuffer = new byte[_device.GetMaxInputReportLength()];
-                    var inputReceiver = reportDescriptor.CreateHidDeviceInputReceiver();
-                    var inputParser = deviceItem.CreateDeviceItemInputParser();
-
-                    inputReceiver.Start(hidStream);
-
-                    while (true)
-                    {
-                        if (inputReceiver.WaitHandle.WaitOne(1000))
-                        {
-                            if (!inputReceiver.IsRunning) { break; } // Disconnected?
-
-                            Report report;
-
-                            while (inputReceiver.TryRead(inputReportBuffer, 0, out report))
-                            {
-                                // Parse the report if possible.
-                                // This will return false if (for example) the report applies to a different DeviceItem.
-                                if (inputParser.TryParseReport(inputReportBuffer, 0, report))
-                                {
-                                    WriteDeviceItemInputParserResult(inputParser);
-                                }
-                            }
-                        }
-                        Thread.Sleep(10);
-                    }
-                }
-            }
-        }
-
-        private void WriteDeviceItemInputParserResult(DeviceItemInputParser parser)
-        {
-            while (parser.HasChanged)
-            {
-                int changedIndex = parser.GetNextChangedIndex();
-                var previousDataValue = parser.GetPreviousValue(changedIndex);
-                var dataValue = parser.GetValue(changedIndex);
-
-                var usage = (Usage)dataValue.Usages.FirstOrDefault();
-
-                var value = dataValue.GetLogicalValue();
-                //value = value > 350 ? (65536 - value) * -1 : value;
-                //value = (int)(value * 93.6228);
-
-                if (usage == Usage.GenericDesktopRz && _callback != null)
-                {
-                    _callback(value);
-                }
-
-                //Console.WriteLine(
-                //    $"  {usage}: {value}");
-
-                //if (usage == (Usage) 4278190112) // This usage seems really noisy, I am hoping it is maybe Gyro?
-                //{
-                //    Console.WriteLine(
-                //        $"  {usage}: {dataValue.GetPhysicalValue()}");
-                //}
-            }
         }
 
 
         public void Dispose()
         {
-            _pollThread.Abort();
-            _pollThread.Join();
-            _pollThread = null;
+
         }
 
         public string ProviderName { get { return typeof(Core_HidSharp).Namespace; } }
@@ -174,8 +85,9 @@ namespace Core_HidSharp
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            _callback = subReq.Callback;
-            //subReq.Callback(100);
+            var device = new HidSharpDevice(subReq.DeviceDescriptor);
+            _devices.Add(device);
+            device.SubscribeInput(subReq);
             return true;
         }
 

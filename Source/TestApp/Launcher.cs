@@ -145,7 +145,7 @@ namespace TestApp
             //var ds4w = new Plugins.IOTester("DS4W", Library.Providers.DS4Windows, Library.Devices.vJoy.vJoy_1,
             //    Library.Bindings.Generic.Ds4Gyro).Subscribe();
 
-            hidDevice = new DeviceDescriptor();
+            hidDevice = Library.Devices.DirectInput.T16000M;
 
             if (vJoy_1 != null)
             {
