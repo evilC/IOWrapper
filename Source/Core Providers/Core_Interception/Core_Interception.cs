@@ -409,42 +409,12 @@ namespace Core_Interception
             UpdateKeyList();
             UpdateMouseButtonList();
             string handle;
-            var i = 1;
-            while (i < 11)
+
+            for (var i = 1; i < 11; i++)
             {
+                if (ManagedWrapper.IsKeyboard(i) != 1) continue;
                 handle = ManagedWrapper.GetHardwareStr(_deviceContext, i, 1000);
-                int vid = 0, pid = 0;
-                GetVidPid(handle, ref vid, ref pid);
-                var name = "";
-                if (vid != 0 && pid != 0)
-                {
-                    name = DeviceHelper.GetDeviceName(vid, pid);
-                }
-                //if (handle != "" && IsKeyboard(i) == 1)
-                if (name != "" && ManagedWrapper.IsKeyboard(i) == 1)
-                {
-                    handle = @"Keyboard\" + handle;
-                    _deviceReports.Add(new DeviceReport
-                    {
-                        DeviceName = name,
-                        DeviceDescriptor = new DeviceDescriptor
-                        {
-                            DeviceHandle = handle
-                        },
-                        //Bindings = { keyboardList }
-                        Nodes = new List<DeviceReportNode>
-                        {
-                            _keyboardList
-                        }
-                    });
-                    _deviceHandleToId.Add(handle, i - 1);
-                    //Log(String.Format("{0} (Keyboard) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
-                }
-                i++;
-            }
-            while (i < 21)
-            {
-                handle = ManagedWrapper.GetHardwareStr(_deviceContext, i, 1000);
+                if (handle == "") continue;
                 int vid = 0, pid = 0;
                 GetVidPid(handle, ref vid, ref pid);
                 var name = "";
@@ -453,30 +423,67 @@ namespace Core_Interception
                     name = DeviceHelper.GetDeviceName(vid, pid);
                 }
 
-                //if (handle != "" && IsMouse(i) == 1)
-                if (name != "" && ManagedWrapper.IsMouse(i) == 1)
+                if (name == "")
                 {
-                    handle = @"Mouse\" + handle;
-                    _deviceReports.Add(new DeviceReport
-                    {
-                        DeviceName = name,
-                        DeviceDescriptor = new DeviceDescriptor
-                        {
-                            DeviceHandle = handle
-                        },
-                        //Bindings = { mouseButtonList }
-                        Nodes = new List<DeviceReportNode>
-                        {
-                            _mouseButtonList,
-                            MouseAxisList
-                        }
-                    });
-                    _deviceHandleToId.Add(handle, i - 1);
-                    //Log(String.Format("{0} (Mouse) = VID/PID: {1}", i, handle));
-                    //Log(String.Format("{0} (Mouse) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
+                    name = handle;
                 }
-                i++;
+
+                name = $"K: {name}";
+                handle = $@"Keyboard\{handle}";
+                _deviceReports.Add(new DeviceReport
+                {
+                    DeviceName = name,
+                    DeviceDescriptor = new DeviceDescriptor
+                    {
+                        DeviceHandle = handle
+                    },
+                    Nodes = new List<DeviceReportNode>
+                    {
+                        _keyboardList
+                    }
+                });
+                _deviceHandleToId.Add(handle, i - 1);
+                //Log(String.Format("{0} (Keyboard) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
             }
+
+            for (var i = 11; i < 21; i++)
+            {
+                if (ManagedWrapper.IsMouse(i) != 1) continue;
+                handle = ManagedWrapper.GetHardwareStr(_deviceContext, i, 1000);
+                if (handle == "") continue;
+                int vid = 0, pid = 0;
+                GetVidPid(handle, ref vid, ref pid);
+                var name = "";
+                if (vid != 0 && pid != 0)
+                {
+                    name = DeviceHelper.GetDeviceName(vid, pid);
+                }
+
+                if (name == "")
+                {
+                    name = handle;
+                }
+
+                name = $"M: {name}";
+                handle = $@"Mouse\{handle}";
+                _deviceReports.Add(new DeviceReport
+                {
+                    DeviceName = name,
+                    DeviceDescriptor = new DeviceDescriptor
+                    {
+                        DeviceHandle = handle
+                    },
+                    Nodes = new List<DeviceReportNode>
+                    {
+                        _mouseButtonList,
+                        MouseAxisList
+                    }
+                });
+                _deviceHandleToId.Add(handle, i - 1);
+                //Log(String.Format("{0} (Mouse) = VID/PID: {1}", i, handle));
+                //Log(String.Format("{0} (Mouse) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
+            }
+
         }
 
         private static void UpdateMouseButtonList()
