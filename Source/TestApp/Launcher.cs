@@ -57,7 +57,7 @@ namespace TestApp
 
             #endregion
 
-            #region Interception Mouse Button Output Test
+            #region Interception Mouse Output Test
             //var interceptionMouseSubReq = new OutputSubscriptionRequest
             //{
             //    DeviceDescriptor = Library.Devices.Interception.LogitechWeelMouseUSB,
@@ -69,6 +69,7 @@ namespace TestApp
             //    }
             //};
             //IOW.Instance.SubscribeOutput(interceptionMouseSubReq);
+
             //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.LButton, 1);
             //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.LButton, 0);
 
@@ -89,6 +90,8 @@ namespace TestApp
 
             //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.WheelLeft, 1);
             //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseButton.WheelRight, 1);
+
+            //IOW.Instance.SetOutputstate(interceptionMouseSubReq, Library.Bindings.Interception.MouseAxis.X, 100);
             #endregion
 
             #region Interception Keyboard Key Output Test

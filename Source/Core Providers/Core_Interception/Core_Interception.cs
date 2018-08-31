@@ -365,20 +365,48 @@ namespace Core_Interception
             }
             else
             {
-                var btn = bindingDescriptor.Index;
-                var flag = (int)ManagedWrapper.MouseButtonFlags[btn];
-                if (btn < 5)
+                if (bindingDescriptor.Type == BindingType.Axis)
                 {
-                    // Regular buttons
-                    if (state == 0) flag *= 2;
+                    var mouse = new ManagedWrapper.MouseStroke
+                    {
+                        //ToDo: This only implements mouse relative mode - can we allow absolute mode too?
+                        flags = (ushort) ManagedWrapper.MouseFlag.MouseMoveRelative
+                    };
+                    if (bindingDescriptor.Index != 0)
+                        if (bindingDescriptor.Index == 1)
+                        {
+                            mouse.y = state;
+                        }
+                        else
+                        {
+                            throw new NotImplementedException();
+                        }
+                    else
+                        mouse.x = state;
+
+                    stroke.mouse = mouse;
+                }
+                else if (bindingDescriptor.Type == BindingType.Button)
+                {
+                    var btn = bindingDescriptor.Index;
+                    var flag = (int) ManagedWrapper.MouseButtonFlags[btn];
+                    if (btn < 5)
+                    {
+                        // Regular buttons
+                        if (state == 0) flag *= 2;
+                    }
+                    else
+                    {
+                        // Wheel
+                        stroke.mouse.rolling = (short) ((btn == 5 || btn == 8) ? 120 : -120);
+                    }
+
+                    stroke.mouse.state = (ushort) flag;
                 }
                 else
                 {
-                    // Wheel
-                    stroke.mouse.rolling = (short)((btn == 5 || btn == 8) ? 120 : -120);
+                    throw new NotImplementedException();
                 }
-
-                stroke.mouse.state = (ushort)flag;
             }
             ManagedWrapper.Send(_deviceContext, devId, ref stroke, 1);
             return true;
