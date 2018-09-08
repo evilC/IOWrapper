@@ -98,6 +98,8 @@ namespace Core_Interception.Monitors
                 }
             }
 
+            // state should now be 1 for pressed and 0 for released. Convert to UCR format (pressed == 1)
+            state = (ushort) (1 - state);
             return _monitoredKeys.ContainsKey(code) && _monitoredKeys[code].Poll(state);
         }
     }
