@@ -19,6 +19,8 @@ namespace TestApp.Library
         public static class Interception
         {
             public static DeviceDescriptor ChiconyKeyboard = new DeviceDescriptor { DeviceHandle = "Keyboard\\HID\\VID_04F2&PID_0112&REV_0103&MI_00" };
+            public static DeviceDescriptor DellKeyboard1 = new DeviceDescriptor { DeviceHandle = "Keyboard\\HID\\VID_413C&PID_2107&REV_0178", DeviceInstance = 0};            
+            public static DeviceDescriptor DellKeyboard2 = new DeviceDescriptor { DeviceHandle = "Keyboard\\HID\\VID_413C&PID_2107&REV_0178", DeviceInstance = 1};            
             public static DeviceDescriptor LogitechWeelMouseUSB = new DeviceDescriptor { DeviceHandle = "Mouse\\HID\\VID_046D&PID_C00C&REV_0620" };
             public static DeviceDescriptor LogitechReceiverMouse = new DeviceDescriptor { DeviceHandle = "Mouse\\HID\\VID_046D&PID_C531&REV_2100&MI_00" };
         }

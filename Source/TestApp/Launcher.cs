@@ -254,7 +254,6 @@ namespace TestApp
             #region Interception Input Testers
 
             // Interception testers
-            //var interceptionKb = new Plugins.IOTester("Interception", Library.Providers.Interception, Library.Devices.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.One).Subscribe();
             //var interceptionMouse1 = new Plugins.IOTester("Interception Mouse 1", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.LButton).Subscribe();
             //var interceptionMouse2 = new Plugins.IOTester("Interception Mouse 2", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.RButton).Subscribe();
             //var interceptionMouse3 = new Plugins.IOTester("Interception Mouse 3", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.MButton).Subscribe();
@@ -263,6 +262,8 @@ namespace TestApp
 
             //var interceptionKeyboard1 = new Plugins.IOTester("Interception Keyboard 1", Library.Providers.Interception, Library.Devices.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.Up).Subscribe();
             //var interceptionKeyboard2 = new Plugins.IOTester("Interception Keyboard 2", Library.Providers.Interception, Library.Devices.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.NumUp).Subscribe();
+            var interceptionDupe1 = new Plugins.IOTester("Interception Dupe Test 1", Library.Providers.Interception, Library.Devices.Interception.DellKeyboard1, Library.Bindings.Interception.Keyboard.One).Subscribe();
+            var interceptionDupe2 = new Plugins.IOTester("Interception Dupe Test 2", Library.Providers.Interception, Library.Devices.Interception.DellKeyboard2, Library.Bindings.Interception.Keyboard.Two).Subscribe();
 
             #endregion
 

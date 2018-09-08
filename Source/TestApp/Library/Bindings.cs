@@ -64,6 +64,7 @@ namespace TestApp.Library
             {
                 public static BindingDescriptor Esc = Generic.Button1;
                 public static BindingDescriptor One = Generic.Button2;
+                public static BindingDescriptor Two = Generic.Button3;
                 public static BindingDescriptor Alt = new BindingDescriptor {Index = 55, SubIndex = 0, Type = BindingType.Button};
                 public static BindingDescriptor RightAlt = new BindingDescriptor {Index = 311, SubIndex = 0, Type = BindingType.Button};
                 public static BindingDescriptor RightShift = new BindingDescriptor {Index = 53, SubIndex = 0, Type = BindingType.Button};
