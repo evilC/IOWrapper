@@ -58,7 +58,7 @@ namespace Core_Interception
 
         private readonly Dictionary<int, KeyboardMonitor> _monitoredKeyboards = new Dictionary<int, KeyboardMonitor>();
         private readonly Dictionary<int, MouseMonitor> _monitoredMice = new Dictionary<int, MouseMonitor>();
-        private Dictionary<string, int> _deviceHandleToId;
+        private Dictionary<string, List<int>> _deviceHandleToId;
 
         private static DeviceReportNode _keyboardList;
         private static DeviceReportNode _mouseButtonList;
@@ -266,7 +266,7 @@ namespace Core_Interception
                 if (_pollThreadRunning)
                     SetPollThreadState(false);
 
-                var id = _deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle];
+                var id = _deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle][subReq.DeviceDescriptor.DeviceInstance];
                 var devId = id + 1;
                 if (id < 10)
                 {
@@ -303,7 +303,7 @@ namespace Core_Interception
             {
                 if (_deviceHandleToId.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
                 {
-                    var id = _deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle];
+                    var id = _deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle][subReq.DeviceDescriptor.DeviceInstance];
                     var devId = id + 1;
                     if (_pollThreadRunning)
                         SetPollThreadState(false);
@@ -348,7 +348,7 @@ namespace Core_Interception
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
-            var devId = _deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle] + 1;
+            var devId = _deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle][subReq.DeviceDescriptor.DeviceInstance] + 1;
             //Log("SetOutputState. Type: {0}, Index: {1}, State: {2}, Device: {3}", inputType, inputIndex, state, devId);
             var stroke = new ManagedWrapper.Stroke();
             if (devId < 11)
@@ -431,7 +431,7 @@ namespace Core_Interception
         #region Device Querying
         private void QueryDevices()
         {
-            _deviceHandleToId = new Dictionary<string, int>();
+            _deviceHandleToId = new Dictionary<string, List<int>>();
             _deviceReports = new List<DeviceReport>();
 
             UpdateKeyList();
@@ -458,19 +458,28 @@ namespace Core_Interception
 
                 name = $"K: {name}";
                 handle = $@"Keyboard\{handle}";
+
+                if (!_deviceHandleToId.ContainsKey(handle))
+                {
+                    _deviceHandleToId.Add(handle, new List<int>());
+                }
+
+                var instance = _deviceHandleToId[handle].Count;
+                _deviceHandleToId[handle].Add(i - 1);
+
                 _deviceReports.Add(new DeviceReport
                 {
                     DeviceName = name,
                     DeviceDescriptor = new DeviceDescriptor
                     {
-                        DeviceHandle = handle
+                        DeviceHandle = handle,
+                        DeviceInstance = instance
                     },
                     Nodes = new List<DeviceReportNode>
                     {
                         _keyboardList
                     }
                 });
-                _deviceHandleToId.Add(handle, i - 1);
                 //Log(String.Format("{0} (Keyboard) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
             }
 
@@ -494,12 +503,22 @@ namespace Core_Interception
 
                 name = $"M: {name}";
                 handle = $@"Mouse\{handle}";
+
+                if (!_deviceHandleToId.ContainsKey(handle))
+                {
+                    _deviceHandleToId.Add(handle, new List<int>());
+                }
+
+                var instance = _deviceHandleToId[handle].Count;
+                _deviceHandleToId[handle].Add(i - 1);
+
                 _deviceReports.Add(new DeviceReport
                 {
                     DeviceName = name,
                     DeviceDescriptor = new DeviceDescriptor
                     {
-                        DeviceHandle = handle
+                        DeviceHandle = handle,
+                        DeviceInstance = instance
                     },
                     Nodes = new List<DeviceReportNode>
                     {
@@ -507,7 +526,6 @@ namespace Core_Interception
                         MouseAxisList
                     }
                 });
-                _deviceHandleToId.Add(handle, i - 1);
                 //Log(String.Format("{0} (Mouse) = VID/PID: {1}", i, handle));
                 //Log(String.Format("{0} (Mouse) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
             }
