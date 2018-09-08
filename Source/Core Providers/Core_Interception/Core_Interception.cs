@@ -456,7 +456,6 @@ namespace Core_Interception
                     name = handle;
                 }
 
-                name = $"K: {name}";
                 handle = $@"Keyboard\{handle}";
 
                 if (!_deviceHandleToId.ContainsKey(handle))
@@ -466,6 +465,9 @@ namespace Core_Interception
 
                 var instance = _deviceHandleToId[handle].Count;
                 _deviceHandleToId[handle].Add(i - 1);
+
+                name = $"K: {name}";
+                if (instance > 0) name += $" #{instance + 1}";
 
                 _deviceReports.Add(new DeviceReport
                 {
@@ -501,7 +503,6 @@ namespace Core_Interception
                     name = handle;
                 }
 
-                name = $"M: {name}";
                 handle = $@"Mouse\{handle}";
 
                 if (!_deviceHandleToId.ContainsKey(handle))
@@ -511,6 +512,9 @@ namespace Core_Interception
 
                 var instance = _deviceHandleToId[handle].Count;
                 _deviceHandleToId[handle].Add(i - 1);
+
+                name = $"M: {name}";
+                if (instance > 0) name += $" #{instance + 1}";
 
                 _deviceReports.Add(new DeviceReport
                 {
