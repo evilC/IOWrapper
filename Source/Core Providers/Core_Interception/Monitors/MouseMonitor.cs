@@ -85,18 +85,19 @@ namespace Core_Interception
                 return _monitoredStates.ContainsKey(buttonAndState.Button) && _monitoredStates[buttonAndState.Button].Poll(buttonAndState.State);
             }
 
+            var res = true;
             try
             {
                 var xvalue = stroke.mouse.GetAxis(0);
                 if (xvalue != 0 && _monitoredAxes.ContainsKey(0))
                 {
-                    return _monitoredAxes[0].Poll(xvalue);
+                    res = _monitoredAxes[0].Poll(xvalue);
                 }
 
                 var yvalue = stroke.mouse.GetAxis(1);
                 if (yvalue != 0 && _monitoredAxes.ContainsKey(1))
                 {
-                    return _monitoredAxes[1].Poll(yvalue);
+                    res &= _monitoredAxes[1].Poll(yvalue);
                 }
             }
             catch
@@ -104,7 +105,7 @@ namespace Core_Interception
                 return false;
             }
 
-            return false;
+            return res;
         }
     }
 }
