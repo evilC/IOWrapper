@@ -12,7 +12,7 @@ namespace HidWizards.IOWrapper.DataTransferObjects
     /// <summary>
     /// Identifies the Provider responsible for handling the Binding
     /// </summary>
-    public struct ProviderDescriptor
+    public class ProviderDescriptor
     {
         /// <summary>
         /// The API implementation that handles this input
@@ -40,7 +40,7 @@ namespace HidWizards.IOWrapper.DataTransferObjects
     /// <summary>
     /// Identifies a Binding within a Device
     /// </summary>
-    public struct BindingDescriptor
+    public class BindingDescriptor
     {
         /// <summary>
         /// The Type of the Binding - ie Button / Axis / POV
@@ -52,7 +52,7 @@ namespace HidWizards.IOWrapper.DataTransferObjects
         /// This is often a Sparse Index (it may often be a BitMask value) ...
         /// ... as it is often refers to an enum value in a Device Report
         /// </summary>
-        public int Index { get; set; }
+        public int Index { get; set; } = 0;
 
         /// <summary>
         /// The Type-specific SubIndex of the Binding
@@ -63,13 +63,13 @@ namespace HidWizards.IOWrapper.DataTransferObjects
         ///     So we need to specify the angle of that direction in SubIndex...
         ///     ... as well as the POV# in Index. Directinput supports 4 POVs
         /// </summary>
-        public int SubIndex { get; set; }
+        public int SubIndex { get; set; } = 0;
     }
 
     /// <summary>
     /// Identifies the Subscriber
     /// </summary>
-    public struct SubscriptionDescriptor
+    public class SubscriptionDescriptor
     {
         /// <summary>
         /// Uniquely identifies a Binding - each subscriber can only be subscribed to one input / output
