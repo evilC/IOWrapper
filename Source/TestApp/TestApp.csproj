@@ -50,6 +50,15 @@
     <Compile Include="Library\Devices.cs" />
     <Compile Include="Library\Profiles.cs" />
     <Compile Include="Plugins\IOTester.cs" />
+    <Compile Include="Testers\BindModeTester.cs" />
+    <Compile Include="Testers\GenericDiTester.cs" />
+    <Compile Include="Testers\InterceptionKeyboardInputTester.cs" />
+    <Compile Include="Testers\InterceptionKeyboardOutputTester.cs" />
+    <Compile Include="Testers\InterceptionMouseInputTester.cs" />
+    <Compile Include="Testers\InterceptionMouseOutputTester.cs" />
+    <Compile Include="Testers\VigemDs4OutputTester.cs" />
+    <Compile Include="Testers\VJoyTester.cs" />
+    <Compile Include="Testers\XiTester.cs" />
     <Compile Include="Wrappers\Wrappers.cs" />
     <Compile Include="Library\Providers.cs" />
     <Compile Include="Launcher.cs" />
