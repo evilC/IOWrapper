@@ -19,7 +19,7 @@ namespace SharpDX_DirectInput.Handlers
     /// </summary>
     internal class DiHandler : ApiHandler
     {
-        private readonly List<DiDeviceHandler> _bindModeHandlers = new List<DiDeviceHandler>();
+        private readonly Dictionary<DeviceDescriptor ,DiDeviceHandler> _tempBindModeDevices = new Dictionary<DeviceDescriptor, DiDeviceHandler>();
 
         public DiHandler(ProviderDescriptor providerDescriptor) : base(providerDescriptor)
         {
@@ -27,34 +27,76 @@ namespace SharpDX_DirectInput.Handlers
 
         public override void SetDetectionMode(DetectionMode mode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
-            if (mode == CurrentDetectionMode) return;
-            CurrentDetectionMode = mode;
+            DeviceHandler subscribedDevice = null;
+            if (SubscribedDevices.ContainsKey(deviceDescriptor.DeviceHandle) &&
+                SubscribedDevices[deviceDescriptor.DeviceHandle].ContainsKey(deviceDescriptor.DeviceInstance))
+            {
+                subscribedDevice = SubscribedDevices[deviceDescriptor.DeviceHandle][deviceDescriptor.DeviceInstance];
+            }
+
+            DeviceHandler tempBindModeDevice = null;
+            if (_tempBindModeDevices.ContainsKey(deviceDescriptor))
+            {
+                tempBindModeDevice = _tempBindModeDevices[deviceDescriptor];
+            }
+
             if (mode == DetectionMode.Subscription)
             {
+                if (subscribedDevice == null)
+                {
+                    if (tempBindModeDevice != null)
+                    {
+                        tempBindModeDevice.Dispose();
+                        _tempBindModeDevices.Remove(deviceDescriptor);
+                    }
+                }
+                else
+                {
+                    subscribedDevice.SetDetectionMode(DetectionMode.Subscription);
+                }
+
+                /*
                 foreach (var connectedDeviceList in DiWrapper.Instance.ConnectedDevices)
                 {
                     var connectedHandle = connectedDeviceList.Key;
                     // Iterate through each instance of the device handle
                     for (var i = 0; i < connectedDeviceList.Value.Count; i++)
                     {
-                        if (BindingDictionary.ContainsKey(connectedHandle) &&
-                            BindingDictionary[connectedHandle].ContainsKey(i))
+                        if (SubscribedDevices.ContainsKey(connectedHandle) &&
+                            SubscribedDevices[connectedHandle].ContainsKey(i))
                         {
                             // This device has bindings, so set the existing handler to Subscription Mode
-                            BindingDictionary[connectedHandle][i].SetDetectionMode(DetectionMode.Bind, BindModeCallback);
+                            SubscribedDevices[connectedHandle][i].SetDetectionMode(DetectionMode.Bind, BindModeCallback);
                         }
                     }
                 }
 
                 // Shut down all the temporary Bind Mode handlers
-                foreach (var bindModeHandler in _bindModeHandlers)
+                foreach (var bindModeHandler in _tempBindModeDevices)
                 {
                     bindModeHandler.Dispose();
                 }
-                _bindModeHandlers.Clear();
+                _tempBindModeDevices.Clear();
+                */
             }
             else
             {
+                // Enter Bind Mode
+                if (subscribedDevice == null)
+                {
+                    if (tempBindModeDevice == null)
+                    {
+                        var deviceHandler = new DiDeviceHandler(deviceDescriptor);
+                        deviceHandler.SetDetectionMode(DetectionMode.Bind, BindModeCallback);
+                        _tempBindModeDevices.Add(deviceDescriptor, deviceHandler);
+                    }
+                }
+                else
+                {
+                    subscribedDevice.SetDetectionMode(DetectionMode.Bind);
+                }
+
+                /*
                 _bindModeCallback = callback;
                 // Enter Bind Mode
                 // Iterate the list of all connected devices, and for each...
@@ -66,11 +108,11 @@ namespace SharpDX_DirectInput.Handlers
                     // Iterate through each instance of the device handle
                     for (var i = 0; i < connectedDeviceList.Value.Count; i++)
                     {
-                        if (BindingDictionary.ContainsKey(connectedHandle) &&
-                            BindingDictionary[connectedHandle].ContainsKey(i))
+                        if (SubscribedDevices.ContainsKey(connectedHandle) &&
+                            SubscribedDevices[connectedHandle].ContainsKey(i))
                         {
                             // This device has bindings, so set the existing handler to Bind Mode
-                            BindingDictionary[connectedHandle][i].SetDetectionMode(DetectionMode.Bind, BindModeCallback);
+                            SubscribedDevices[connectedHandle][i].SetDetectionMode(DetectionMode.Bind, BindModeCallback);
                         }
                         else
                         {
@@ -78,10 +120,11 @@ namespace SharpDX_DirectInput.Handlers
                             //ToDo: This code does not try to use the same DeviceInstance order as is reported in the Descriptors. It is just placeholder code
                             var deviceHandler = new DiDeviceHandler(new DeviceDescriptor { DeviceHandle = connectedHandle, DeviceInstance = i });
                             deviceHandler.SetDetectionMode(DetectionMode.Bind, BindModeCallback);
-                            _bindModeHandlers.Add(deviceHandler);
+                            _tempBindModeDevices.Add(deviceHandler);
                         }
                     }
                 }
+                */
             }
         }
 

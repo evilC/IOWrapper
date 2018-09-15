@@ -212,7 +212,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             }
             return deviceSubIndexes.GetOrAdd(GetBindingSubIndex(subReq), CreateBindingHandler(subReq));
             //.GetOrAdd(GetBindingIndex(subReq), CreateBindingHandler(subReq));
-            //return BindingDictionary
+            //return SubscribedDevices
             //    .GetOrAdd(subReq.BindingDescriptor.Type, new ConcurrentDictionary<int, BindingHandler>())
             //    .GetOrAdd(GetBindingIndex(subReq), CreateBindingHandler(subReq));
         }

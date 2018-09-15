@@ -37,7 +37,7 @@ namespace Core_TitanOne
 
         #endregion
 
-        #region Output BindingDictionary
+        #region Output SubscribedDevices
 
         #endregion
 
