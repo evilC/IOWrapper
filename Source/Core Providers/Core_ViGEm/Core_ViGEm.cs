@@ -89,7 +89,7 @@ namespace Core_ViGEm
             return devicesHandler.SetOutputState(subReq, bindingDescriptor, state);
         }
 
-        public void SetDetectionMode(DetectionMode detectionMode, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
+        public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
             throw new NotImplementedException();
         }

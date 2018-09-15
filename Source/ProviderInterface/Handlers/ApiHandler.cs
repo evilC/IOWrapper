@@ -34,7 +34,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             _providerDescriptor = providerDescriptor;
         }
 
-        public abstract void SetDetectionMode(DetectionMode mode, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null);
+        public abstract void SetDetectionMode(DetectionMode mode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null);
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {

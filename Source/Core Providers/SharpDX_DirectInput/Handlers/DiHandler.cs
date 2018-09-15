@@ -25,7 +25,7 @@ namespace SharpDX_DirectInput.Handlers
         {
         }
 
-        public override void SetDetectionMode(DetectionMode mode, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
+        public override void SetDetectionMode(DetectionMode mode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
             if (mode == CurrentDetectionMode) return;
             CurrentDetectionMode = mode;
@@ -76,8 +76,7 @@ namespace SharpDX_DirectInput.Handlers
                         {
                             // This device has no bindings, so new up a handler and set it to bind mode
                             //ToDo: This code does not try to use the same DeviceInstance order as is reported in the Descriptors. It is just placeholder code
-                            var deviceDescriptor = new DeviceDescriptor { DeviceHandle = connectedHandle, DeviceInstance = i };
-                            var deviceHandler = new DiDeviceHandler(deviceDescriptor);
+                            var deviceHandler = new DiDeviceHandler(new DeviceDescriptor { DeviceHandle = connectedHandle, DeviceInstance = i });
                             deviceHandler.SetDetectionMode(DetectionMode.Bind, BindModeCallback);
                             _bindModeHandlers.Add(deviceHandler);
                         }

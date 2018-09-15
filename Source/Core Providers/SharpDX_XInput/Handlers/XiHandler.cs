@@ -15,7 +15,7 @@ namespace SharpDX_XInput.Handlers
         {
         }
 
-        public override void SetDetectionMode(DetectionMode mode, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
+        public override void SetDetectionMode(DetectionMode mode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
             if (mode == CurrentDetectionMode) return;
             CurrentDetectionMode = mode;
@@ -36,8 +36,7 @@ namespace SharpDX_XInput.Handlers
                         }
                         else
                         {
-                            var deviceDescriptor = new DeviceDescriptor { DeviceHandle = deviceHandle, DeviceInstance = i };
-                            var deviceHandler = new XiDeviceHandler(deviceDescriptor);
+                            var deviceHandler = new XiDeviceHandler(new DeviceDescriptor { DeviceHandle = deviceHandle, DeviceInstance = i });
                             deviceHandler.SetDetectionMode(DetectionMode.Bind, BindModeCallback);
                             _bindModeHandlers.Add(deviceHandler);
                         }
