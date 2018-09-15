@@ -59,11 +59,6 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
             if (!SubscribedDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler)) return false;
 
-            //if (!SubscribedDevices.TryGetValue(deviceHandle,
-            //    out var handleNode)) return false;
-            //if (!handleNode.TryGetValue(deviceInstance, out DeviceHandler deviceHandler)) return false;
-
-
             if (!deviceHandler.Unsubscribe(subReq)) return false;
             if (!deviceHandler.IsEmpty()) return true;
             // Dispose the device (Some APIs like unused devices to be relinquished)
@@ -89,31 +84,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             SubscribedDevices.TryGetValue(subReq.DeviceDescriptor, out var handler);
             if (handler != null) return handler;
             return SubscribedDevices.GetOrAdd(subReq.DeviceDescriptor, CreateDeviceHandler(subReq.DeviceDescriptor));
-
-
-            /*
-            var deviceInstances = SubscribedDevices
-                .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, new ConcurrentDictionary<int, DeviceHandler>());
-            if (deviceInstances.ContainsKey(subReq.DeviceDescriptor.DeviceInstance))
-            {
-                return deviceInstances[subReq.DeviceDescriptor.DeviceInstance];
-            }
-
-            return deviceInstances.GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, CreateDeviceHandler(subReq.DeviceDescriptor));
-            //return SubscribedDevices
-            //    .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, new ConcurrentDictionary<int, DeviceHandler>())
-            //    .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, CreateDeviceHandler(subReq.DeviceDescriptor));
-            */
         }
-
-        /*
-        public virtual DeviceHandler GetDeviceHandler(InputSubscriptionRequest subReq)
-        {
-            if (!SubscribedDevices.TryGetValue(subReq.DeviceDescriptor.DeviceHandle,
-                out ConcurrentDictionary<int, DeviceHandler> dd)) return null;
-            return dd.TryGetValue(subReq.DeviceDescriptor.DeviceInstance, out DeviceHandler dh) ? dh : null;
-        }
-        */
 
         #endregion
 

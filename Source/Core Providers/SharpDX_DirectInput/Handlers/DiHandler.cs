@@ -28,12 +28,7 @@ namespace SharpDX_DirectInput.Handlers
         public override void SetDetectionMode(DetectionMode mode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
             SubscribedDevices.TryGetValue(deviceDescriptor, out var subscribedDevice);
-
-            DeviceHandler tempBindModeDevice = null;
-            if (_tempBindModeDevices.ContainsKey(deviceDescriptor))
-            {
-                tempBindModeDevice = _tempBindModeDevices[deviceDescriptor];
-            }
+            _tempBindModeDevices.TryGetValue(deviceDescriptor, out var tempBindModeDevice);
 
             if (mode == DetectionMode.Subscription)
             {

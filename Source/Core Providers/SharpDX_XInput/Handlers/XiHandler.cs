@@ -24,9 +24,9 @@ namespace SharpDX_XInput.Handlers
                 case DetectionMode.Bind:
                     _bindModeCallback = callback ?? throw new Exception("Bind Mode requested but no callback passed");
 
-                    if (SubscribedDevices.ContainsKey(deviceDescriptor))
+                    if (SubscribedDevices.TryGetValue(deviceDescriptor, out var bindDevice))
                     {
-                        SubscribedDevices[deviceDescriptor].SetDetectionMode(DetectionMode.Bind, BindModeCallback);
+                        bindDevice.SetDetectionMode(DetectionMode.Bind, BindModeCallback);
                     }
                     else
                     {
@@ -36,15 +36,15 @@ namespace SharpDX_XInput.Handlers
                     }
                     break;
                 case DetectionMode.Subscription:
-                    if (SubscribedDevices.ContainsKey(deviceDescriptor))
+                    if (SubscribedDevices.TryGetValue(deviceDescriptor, out var subscriptionDevice))
                     {
-                        SubscribedDevices[deviceDescriptor].SetDetectionMode(DetectionMode.Subscription, BindModeCallback);
+                        subscriptionDevice.SetDetectionMode(DetectionMode.Subscription, BindModeCallback);
                     }
                     else
                     {
-                        if (_tempBindModeDevices.ContainsKey(i))
+                        if (_tempBindModeDevices.TryGetValue(i, out var tempDevice))
                         {
-                            _tempBindModeDevices[i].Dispose();
+                            tempDevice.Dispose();
                             _tempBindModeDevices.Remove(i);
                         }
                     }
