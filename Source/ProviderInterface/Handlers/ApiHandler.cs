@@ -25,10 +25,8 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
         // ToDo: Bind Mode is now Per-Device, so we may need a dictionary of callbacks?
         protected Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
 
-        protected ConcurrentDictionary<string,    // DeviceHandle
-            ConcurrentDictionary<int,           // DeviceInstance
-                DeviceHandler>> SubscribedDevices
-            = new ConcurrentDictionary<string, ConcurrentDictionary<int, DeviceHandler>>();
+        protected ConcurrentDictionary<DeviceDescriptor, DeviceHandler> SubscribedDevices
+            = new ConcurrentDictionary<DeviceDescriptor, DeviceHandler>();
 
         protected ApiHandler(ProviderDescriptor providerDescriptor)
         {
@@ -50,25 +48,28 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         public virtual bool Unsubscribe(InputSubscriptionRequest subReq)
         {
-            var handler = GetOrAddDeviceHandler(subReq);
+            SubscribedDevices.TryGetValue(subReq.DeviceDescriptor, out var handler);
+            if (handler == null) return false;
             if (handler.DetectionMode != DetectionMode.Subscription)
             {
                 throw new Exception("Tried to Unsubscribe while not in Subscribe Mode");
             }
             var deviceHandle = subReq.DeviceDescriptor.DeviceHandle;
             var deviceInstance = subReq.DeviceDescriptor.DeviceInstance;
-            if (!SubscribedDevices.TryGetValue(deviceHandle,
-                out var handleNode)) return false;
-            if (!handleNode.TryGetValue(deviceInstance, out DeviceHandler deviceHandler)) return false;
+
+            if (!SubscribedDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler)) return false;
+
+            //if (!SubscribedDevices.TryGetValue(deviceHandle,
+            //    out var handleNode)) return false;
+            //if (!handleNode.TryGetValue(deviceInstance, out DeviceHandler deviceHandler)) return false;
+
+
             if (!deviceHandler.Unsubscribe(subReq)) return false;
             if (!deviceHandler.IsEmpty()) return true;
             // Dispose the device (Some APIs like unused devices to be relinquished)
             deviceHandler.Dispose();
-            // Clean up dictionaries - walk up the tree, pruning as we go
-            handleNode.TryRemove(deviceInstance, out _);
-            //Log($"Removed dictionary for DeviceInstance {deviceInstance} of DeviceHandle {deviceHandle}");
-            if (!handleNode.IsEmpty) return true;
-            SubscribedDevices.TryRemove(deviceHandle, out _);
+
+            SubscribedDevices.TryRemove(subReq.DeviceDescriptor, out _);
             //Log($"Removed dictiondary for DeviceHandle {deviceHandle}");
             if (SubscribedDevices.IsEmpty)
             {
@@ -85,6 +86,12 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         public virtual DeviceHandler GetOrAddDeviceHandler(InputSubscriptionRequest subReq)
         {
+            SubscribedDevices.TryGetValue(subReq.DeviceDescriptor, out var handler);
+            if (handler != null) return handler;
+            return SubscribedDevices.GetOrAdd(subReq.DeviceDescriptor, CreateDeviceHandler(subReq.DeviceDescriptor));
+
+
+            /*
             var deviceInstances = SubscribedDevices
                 .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, new ConcurrentDictionary<int, DeviceHandler>());
             if (deviceInstances.ContainsKey(subReq.DeviceDescriptor.DeviceInstance))
@@ -96,14 +103,18 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             //return SubscribedDevices
             //    .GetOrAdd(subReq.DeviceDescriptor.DeviceHandle, new ConcurrentDictionary<int, DeviceHandler>())
             //    .GetOrAdd(subReq.DeviceDescriptor.DeviceInstance, CreateDeviceHandler(subReq.DeviceDescriptor));
+            */
         }
 
+        /*
         public virtual DeviceHandler GetDeviceHandler(InputSubscriptionRequest subReq)
         {
             if (!SubscribedDevices.TryGetValue(subReq.DeviceDescriptor.DeviceHandle,
                 out ConcurrentDictionary<int, DeviceHandler> dd)) return null;
             return dd.TryGetValue(subReq.DeviceDescriptor.DeviceInstance, out DeviceHandler dh) ? dh : null;
         }
+        */
+
         #endregion
 
         #region Factory methods
@@ -129,12 +140,9 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             if (_disposed) return;
             if (disposing)
             {
-                foreach (var deviceHandle in SubscribedDevices.Values)
+                foreach (var deviceInstance in SubscribedDevices.Values)
                 {
-                    foreach (var deviceInstance in deviceHandle.Values)
-                    {
-                        deviceInstance.Dispose();
-                    }
+                    deviceInstance.Dispose();
                 }
             }
 
