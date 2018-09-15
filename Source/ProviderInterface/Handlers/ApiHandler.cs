@@ -54,8 +54,6 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
             {
                 throw new Exception("Tried to Unsubscribe while not in Subscribe Mode");
             }
-            var deviceHandle = subReq.DeviceDescriptor.DeviceHandle;
-            var deviceInstance = subReq.DeviceDescriptor.DeviceInstance;
 
             if (!SubscribedDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler)) return false;
 
