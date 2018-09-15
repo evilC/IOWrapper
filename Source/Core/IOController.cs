@@ -147,13 +147,10 @@ namespace HidWizards.IOWrapper.Core
             return ret;
         }
 
-        public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, List<string> providerNames, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
+        public void SetDetectionMode(DetectionMode detectionMode, ProviderDescriptor providerDescriptor, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
-            foreach (var providerName in providerNames)
-            {
-                var provider = GetProvider(providerName);
-                provider.SetDetectionMode(detectionMode, deviceDescriptor, callback);
-            }
+            var provider = GetProvider(providerDescriptor.ProviderName);
+            provider.SetDetectionMode(detectionMode, deviceDescriptor, callback);
         }
 
         //public void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)

@@ -49,11 +49,12 @@ namespace TestApp
             //IOW.Instance.SetOutputstate(vds4, Library.Bindings.Generic.Button2, 1);
             //Thread.Sleep(500);
             //IOW.Instance.SetOutputstate(vds4, Library.Bindings.Generic.Button1, 0);
+            #endregion
 
-            //IOW.Instance.SetDetectionMode(DetectionMode.Bind, new List<string> { "SharpDX_DirectInput", "SharpDX_XInput" }, ProcessBindMode);
-            //Console.ReadLine();
-            //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, new List<string> { "SharpDX_XInput" });
-            //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, new List<string> { "SharpDX_DirectInput", "SharpDX_XInput" });
+            #region Bind Mode Test
+
+            IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, ProcessBindMode);
+            Console.ReadLine();
 
             #endregion
 
