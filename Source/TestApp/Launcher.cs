@@ -53,10 +53,10 @@ namespace TestApp
 
             #region Bind Mode Test
 
-            IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, ProcessBindMode);
-            IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.XInput, Library.Devices.Console.Xb360_1, ProcessBindMode);
-            Console.WriteLine("Loaded");
-            Console.ReadLine();
+            //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, ProcessBindMode);
+            //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.XInput, Library.Devices.Console.Xb360_1, ProcessBindMode);
+            //Console.WriteLine("Loaded");
+            //Console.ReadLine();
 
             #endregion
 
