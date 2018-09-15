@@ -81,6 +81,8 @@ namespace SharpDX_DirectInput.Handlers
             }
             else
             {
+                _bindModeCallback = callback ?? throw new Exception("Bind Mode requested but no callback passed");
+
                 // Enter Bind Mode
                 if (subscribedDevice == null)
                 {
