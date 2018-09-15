@@ -22,6 +22,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
     {
         //protected DetectionMode CurrentDetectionMode = DetectionMode.Subscription;
         private readonly ProviderDescriptor _providerDescriptor;
+        // ToDo: Bind Mode is now Per-Device, so we may need a dictionary of callbacks?
         protected Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
 
         protected ConcurrentDictionary<string,    // DeviceHandle
