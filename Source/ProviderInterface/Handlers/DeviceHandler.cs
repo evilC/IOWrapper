@@ -25,7 +25,9 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
     public abstract class DeviceHandler : IDisposable
     {
         #region fields and properties
-        private DetectionMode _detectionMode;
+
+        public DetectionMode DetectionMode { get; private set; }
+
         protected Action<DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
 
         public delegate void BindingUpdateHandler(BindingUpdate update);
@@ -86,7 +88,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
                     throw new NotImplementedException();
             }
 
-            _detectionMode = mode;
+            DetectionMode = mode;
         }
 
         public virtual void ProcessBindModePoll(BindingUpdate update)
@@ -106,9 +108,9 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         public virtual bool Subscribe(InputSubscriptionRequest subReq)
         {
-            if (_detectionMode != DetectionMode.Subscription)
+            if (DetectionMode != DetectionMode.Subscription)
             {
-                throw new Exception($"Tried to subscribe while in mode {_detectionMode}");
+                throw new Exception($"Tried to subscribe while in mode {DetectionMode}");
             }
             var handler = GetOrAddBindingHandler(subReq);
             if (handler.Subscribe(subReq))
@@ -122,9 +124,9 @@ namespace HidWizards.IOWrapper.ProviderInterface.Handlers
 
         public virtual bool Unsubscribe(InputSubscriptionRequest subReq)
         {
-            if (_detectionMode != DetectionMode.Subscription)
+            if (DetectionMode != DetectionMode.Subscription)
             {
-                throw new Exception($"Tried to unsubscribe while in mode {_detectionMode}");
+                throw new Exception($"Tried to unsubscribe while in mode {DetectionMode}");
             }
             var index = GetBindingIndex(subReq);
             var subIndex = GetBindingSubIndex(subReq);

@@ -9,7 +9,7 @@ namespace SharpDX_XInput.Handlers
 {
     public class XiHandler : ApiHandler
     {
-        private readonly List<XiDeviceHandler> _bindModeHandlers = new List<XiDeviceHandler>();
+        private readonly Dictionary<int, XiDeviceHandler> _tempBindModeDevices = new Dictionary<int, XiDeviceHandler>();
 
         public XiHandler(ProviderDescriptor providerDescriptor) : base(providerDescriptor)
         {
@@ -17,45 +17,37 @@ namespace SharpDX_XInput.Handlers
 
         public override void SetDetectionMode(DetectionMode mode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
-            if (mode == CurrentDetectionMode) return;
-            CurrentDetectionMode = mode;
             const string deviceHandle = "xb360";
+            var i = deviceDescriptor.DeviceInstance;
             switch (mode)
             {
                 case DetectionMode.Bind:
                     _bindModeCallback = callback ?? throw new Exception("Bind Mode requested but no callback passed");
-                    // Enter Bind Mode
-                    // Find a list of all connected devices, and for each...
-                    // ... Check if it already has a DeviceHandler, and if so, swap it to Bind Mode
-                    // Else new up a DeviceHandler and set it to Bind Mode
-                    for (var i = 0; i < 4; i++)
+
+                    if (SubscribedDevices.ContainsKey(deviceHandle) && SubscribedDevices[deviceHandle].ContainsKey(i))
                     {
-                        if (BindingDictionary.ContainsKey(deviceHandle) && BindingDictionary[deviceHandle].ContainsKey(i))
-                        {
-                            BindingDictionary[deviceHandle][i].SetDetectionMode(DetectionMode.Bind, BindModeCallback);
-                        }
-                        else
-                        {
-                            var deviceHandler = new XiDeviceHandler(new DeviceDescriptor { DeviceHandle = deviceHandle, DeviceInstance = i });
-                            deviceHandler.SetDetectionMode(DetectionMode.Bind, BindModeCallback);
-                            _bindModeHandlers.Add(deviceHandler);
-                        }
+                        SubscribedDevices[deviceHandle][i].SetDetectionMode(DetectionMode.Bind, BindModeCallback);
+                    }
+                    else
+                    {
+                        var deviceHandler = new XiDeviceHandler(new DeviceDescriptor { DeviceHandle = deviceHandle, DeviceInstance = i });
+                        deviceHandler.SetDetectionMode(DetectionMode.Bind, BindModeCallback);
+                        _tempBindModeDevices.Add(i, deviceHandler);
                     }
                     break;
                 case DetectionMode.Subscription:
-                    for (var i = 0; i < 4; i++)
+                    if (SubscribedDevices.ContainsKey(deviceHandle) && SubscribedDevices[deviceHandle].ContainsKey(i))
                     {
-                        if (BindingDictionary.ContainsKey(deviceHandle) && BindingDictionary[deviceHandle].ContainsKey(i))
+                        SubscribedDevices[deviceHandle][i].SetDetectionMode(DetectionMode.Subscription, BindModeCallback);
+                    }
+                    else
+                    {
+                        if (_tempBindModeDevices.ContainsKey(i))
                         {
-                            BindingDictionary[deviceHandle][i].SetDetectionMode(DetectionMode.Bind, BindModeCallback);
+                            _tempBindModeDevices[i].Dispose();
+                            _tempBindModeDevices.Remove(i);
                         }
                     }
-
-                    foreach (var bindModeHandler in _bindModeHandlers)
-                    {
-                        bindModeHandler.Dispose();
-                    }
-                    _bindModeHandlers.Clear();
                     break;
                 default:
                     throw new NotImplementedException();
