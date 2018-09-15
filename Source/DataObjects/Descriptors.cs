@@ -12,7 +12,7 @@ namespace HidWizards.IOWrapper.DataTransferObjects
     /// <summary>
     /// Identifies the Provider responsible for handling the Binding
     /// </summary>
-    public class ProviderDescriptor
+    public struct ProviderDescriptor
     {
         /// <summary>
         /// The API implementation that handles this input
@@ -24,7 +24,7 @@ namespace HidWizards.IOWrapper.DataTransferObjects
     /// <summary>
     /// Identifies a device within a Provider
     /// </summary>
-    public class DeviceDescriptor
+    public struct DeviceDescriptor
     {
         /// <summary>
         /// A way to uniquely identify a device instance via it's API
@@ -40,7 +40,7 @@ namespace HidWizards.IOWrapper.DataTransferObjects
     /// <summary>
     /// Identifies a Binding within a Device
     /// </summary>
-    public class BindingDescriptor
+    public struct BindingDescriptor
     {
         /// <summary>
         /// The Type of the Binding - ie Button / Axis / POV
@@ -52,7 +52,7 @@ namespace HidWizards.IOWrapper.DataTransferObjects
         /// This is often a Sparse Index (it may often be a BitMask value) ...
         /// ... as it is often refers to an enum value in a Device Report
         /// </summary>
-        public int Index { get; set; } = 0;
+        public int Index { get; set; }
 
         /// <summary>
         /// The Type-specific SubIndex of the Binding
@@ -63,13 +63,13 @@ namespace HidWizards.IOWrapper.DataTransferObjects
         ///     So we need to specify the angle of that direction in SubIndex...
         ///     ... as well as the POV# in Index. Directinput supports 4 POVs
         /// </summary>
-        public int SubIndex { get; set; } = 0;
+        public int SubIndex { get; set; }
     }
 
     /// <summary>
     /// Identifies the Subscriber
     /// </summary>
-    public class SubscriptionDescriptor
+    public struct SubscriptionDescriptor
     {
         /// <summary>
         /// Uniquely identifies a Binding - each subscriber can only be subscribed to one input / output
