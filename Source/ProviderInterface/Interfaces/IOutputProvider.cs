@@ -2,6 +2,7 @@
 
 namespace HidWizards.IOWrapper.ProviderInterface.Interfaces
 {
+    /// <inheritdoc />
     /// <summary>
     /// Provider supports Sending of Output
     /// </summary>

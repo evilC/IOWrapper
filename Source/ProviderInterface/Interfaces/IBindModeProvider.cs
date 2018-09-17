@@ -3,6 +3,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace HidWizards.IOWrapper.ProviderInterface.Interfaces
 {
+    /// <inheritdoc />
     /// <summary>
     /// Provider supports "Bind Mode" (Press any input to bind)
     /// </summary>

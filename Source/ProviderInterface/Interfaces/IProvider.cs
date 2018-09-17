@@ -2,6 +2,7 @@
 
 namespace HidWizards.IOWrapper.ProviderInterface.Interfaces
 {
+    /// <inheritdoc />
     /// <summary>
     /// A Base Interface that all Providers must implement
     /// </summary>

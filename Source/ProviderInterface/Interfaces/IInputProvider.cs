@@ -2,6 +2,7 @@
 
 namespace HidWizards.IOWrapper.ProviderInterface.Interfaces
 {
+    /// <inheritdoc />
     /// <summary>
     /// Provider supports Reading of Input
     /// </summary>
