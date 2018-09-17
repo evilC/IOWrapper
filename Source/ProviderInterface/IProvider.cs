@@ -28,4 +28,19 @@ namespace HidWizards.IOWrapper.ProviderInterface
         void RefreshLiveState();
         void RefreshDevices();
     }
+
+    public interface IInputProvider : IProvider
+    {
+
+    }
+
+    public interface IOutputProvider : IProvider
+    {
+
+    }
+
+    public interface IBindModeProvider : IProvider
+    {
+
+    }
 }
