@@ -82,19 +82,9 @@ namespace SharpDX_XInput
             return xiReportHandler.GetInputList();
         }
 
-        public ProviderReport GetOutputList()
-        {
-            return null;
-        }
-
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
         {
             return xiReportHandler.GetInputDeviceReport(subReq);
-        }
-
-        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
-        {
-            return null;
         }
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
@@ -107,21 +97,6 @@ namespace SharpDX_XInput
         {
             //return pollHandler.UnsubscribeInput(subReq);
             return _subscriptionHandler.Unsubscribe(subReq);
-        }
-
-        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
-        {
-            return false;
-        }
-
-        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
-        {
-            return false;
-        }
-
-        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
-        {
-            return false;
         }
 
         public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)

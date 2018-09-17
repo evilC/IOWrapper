@@ -9,18 +9,8 @@ namespace HidWizards.IOWrapper.ProviderInterface
         string ProviderName { get; }
         bool IsLive { get; }
 
-        ProviderReport GetInputList();
-        ProviderReport GetOutputList();
-        DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq);
-        DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq);
-
         bool SetProfileState(Guid profileGuid, bool state);
-        bool SubscribeInput(InputSubscriptionRequest subReq);
-        bool UnsubscribeInput(InputSubscriptionRequest subReq);
-        bool SubscribeOutputDevice(OutputSubscriptionRequest subReq);
-        bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq);
         //bool SetOutputButton(string dev, uint button, bool state);
-        bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state);
         //bool SubscribeAxis(string deviceHandle, uint axisId, dynamic callback);
         //void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback);
         //void DisableBindMode();
@@ -31,12 +21,19 @@ namespace HidWizards.IOWrapper.ProviderInterface
 
     public interface IInputProvider : IProvider
     {
-
+        ProviderReport GetInputList();
+        DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq);
+        bool SubscribeInput(InputSubscriptionRequest subReq);
+        bool UnsubscribeInput(InputSubscriptionRequest subReq);
     }
 
     public interface IOutputProvider : IProvider
     {
-
+        ProviderReport GetOutputList();
+        DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq);
+        bool SubscribeOutputDevice(OutputSubscriptionRequest subReq);
+        bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq);
+        bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state);
     }
 
     public interface IBindModeProvider : IProvider

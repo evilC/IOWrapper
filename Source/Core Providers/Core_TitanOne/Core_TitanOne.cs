@@ -14,7 +14,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 namespace Core_TitanOne
 {
     [Export(typeof(IProvider))]
-    public class Core_TitanOne : IProvider
+    public class Core_TitanOne : IInputProvider, IOutputProvider
     {
         sbyte[] outputState = new sbyte[GCMAPIConstants.Output];
         private Dictionary<string, OutputHandler> outputHandlers = new Dictionary<string, OutputHandler>(StringComparer.OrdinalIgnoreCase)

@@ -17,7 +17,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 namespace Core_DS4WindowsApi
 {
     [Export(typeof(IProvider))]
-    public class Core_DS4WindowsApi : IProvider
+    public class Core_DS4WindowsApi : IInputProvider
     {
         private Logger logger;
         DS4ControllerHandler[] connectedControllers = new DS4ControllerHandler[4];
@@ -631,11 +631,6 @@ namespace Core_DS4WindowsApi
         }
 
 
-        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
-        {
-            return null;
-        }
-
         public bool SetProfileState(Guid profileGuid, bool state)
         {
             return false;
@@ -656,21 +651,6 @@ namespace Core_DS4WindowsApi
             {
                 return connectedControllers[subReq.DeviceDescriptor.DeviceInstance].UnsubscribeInput(subReq);
             }
-            return false;
-        }
-
-        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
-        {
-            return false;
-        }
-
-        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
-        {
-            return false;
-        }
-
-        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
-        {
             return false;
         }
 

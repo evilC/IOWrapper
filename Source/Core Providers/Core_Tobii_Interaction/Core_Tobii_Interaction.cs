@@ -12,7 +12,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 namespace Core_Tobii_Interaction
 {
     [Export(typeof(IProvider))]
-    public class Core_Tobii_Interaction : IProvider
+    public class Core_Tobii_Interaction : IInputProvider
     {
         public bool IsLive { get { return isLive; } }
         private bool isLive = false;
@@ -51,11 +51,6 @@ namespace Core_Tobii_Interaction
             return providerReport;
         }
 
-        public ProviderReport GetOutputList()
-        {
-            return null;
-        }
-
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
         {
             foreach (var deviceReport in deviceReports)
@@ -66,16 +61,6 @@ namespace Core_Tobii_Interaction
                 }
             }
             return null;
-        }
-
-        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
-        {
-            return null;
-        }
-
-        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
-        {
-            return false;
         }
 
         public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
@@ -98,17 +83,7 @@ namespace Core_Tobii_Interaction
             return false;
         }
 
-        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
-        {
-            return false;
-        }
-
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
-        {
-            return false;
-        }
-
-        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
             return false;
         }

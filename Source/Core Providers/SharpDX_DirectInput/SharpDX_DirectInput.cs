@@ -16,7 +16,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 namespace SharpDX_DirectInput
 {
     [Export(typeof(IProvider))]
-    public class SharpDX_DirectInput : IProvider
+    public class SharpDX_DirectInput : IInputProvider
     {
         public bool IsLive { get; } = true;
 
@@ -93,19 +93,9 @@ namespace SharpDX_DirectInput
             return _diReportHandler.GetInputList();
         }
 
-        public ProviderReport GetOutputList()
-        {
-            return null;
-        }
-
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
         {
             return _diReportHandler.GetInputDeviceReport(subReq);
-        }
-
-        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
-        {
-            return null;
         }
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
@@ -116,21 +106,6 @@ namespace SharpDX_DirectInput
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
             return _subscriptionHandler.Unsubscribe(subReq);
-        }
-
-        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
-        {
-            return false;
-        }
-
-        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
-        {
-            return false;
-        }
-
-        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
-        {
-            return false;
         }
 
         public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)

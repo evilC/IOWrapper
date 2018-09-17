@@ -13,7 +13,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 namespace Core_ViGEm
 {
     [Export(typeof(IProvider))]
-    public partial class Core_ViGEm : IProvider
+    public partial class Core_ViGEm : IOutputProvider
     //public class Core_ViGEm
     {
         public bool IsLive { get { return isLive; } }
@@ -51,11 +51,6 @@ namespace Core_ViGEm
         // ToDo: Need better way to handle this. MEF meta-data?
         public string ProviderName { get { return typeof(Core_ViGEm).Namespace; } }
 
-        public ProviderReport GetInputList()
-        {
-            return null;
-        }
-
         public ProviderReport GetOutputList()
         {
             providerReport = new ProviderReport
@@ -70,11 +65,6 @@ namespace Core_ViGEm
             };
             providerReport.Devices = devicesHandler.GetDeviceList();
             return providerReport;
-        }
-
-        public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
-        {
-            return null;
         }
 
         public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
@@ -99,21 +89,11 @@ namespace Core_ViGEm
             return false;
         }
 
-        public bool SubscribeInput(InputSubscriptionRequest subReq)
-        {
-            return false;
-        }
-
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
             if (!isLive)
                 return false;
             return devicesHandler.SubscribeOutput(subReq);
-        }
-
-        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
-        {
-            return false;
         }
 
         public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)

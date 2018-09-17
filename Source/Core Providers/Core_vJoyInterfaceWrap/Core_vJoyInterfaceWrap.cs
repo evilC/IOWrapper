@@ -11,7 +11,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 namespace Core_vJoyInterfaceWrap
 {
     [Export(typeof(IProvider))]
-    public class Core_vJoyInterfaceWrap : IProvider
+    public class Core_vJoyInterfaceWrap : IOutputProvider
     {
         public bool IsLive { get { return isLive; } }
         private bool isLive = false;
@@ -93,11 +93,6 @@ namespace Core_vJoyInterfaceWrap
             return false;
         }
 
-        public ProviderReport GetInputList()
-        {
-            return null;
-        }
-
         public ProviderReport GetOutputList()
         {
             var pr = new ProviderReport
@@ -114,11 +109,6 @@ namespace Core_vJoyInterfaceWrap
             return pr;
         }
 
-        public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
-        {
-            return null;
-        }
-
         public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
         {
             foreach (var deviceReport in deviceReports)
@@ -129,11 +119,6 @@ namespace Core_vJoyInterfaceWrap
                 }
             }
             return null;
-        }
-
-        public bool SubscribeInput(InputSubscriptionRequest subReq)
-        {
-            return false;
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)

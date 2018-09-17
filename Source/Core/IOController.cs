@@ -75,7 +75,8 @@ namespace HidWizards.IOWrapper.Core
             var list = new SortedDictionary<string, ProviderReport>();
             foreach (var provider in _Providers.Values)
             {
-                var report = provider.GetInputList();
+                if (!(provider is IInputProvider prov)) continue;
+                var report = prov.GetInputList();
                 if (report != null)
                 {
                     list.Add(provider.ProviderName, report);
@@ -89,7 +90,8 @@ namespace HidWizards.IOWrapper.Core
             var list = new SortedDictionary<string, ProviderReport>();
             foreach (var provider in _Providers.Values)
             {
-                var report = provider.GetOutputList();
+                if (!(provider is IOutputProvider prov)) continue;
+                var report = prov.GetOutputList();
                 if (report != null)
                 {
                     list.Add(provider.ProviderName, report);
@@ -103,7 +105,8 @@ namespace HidWizards.IOWrapper.Core
             var provider = GetProvider(subReq.ProviderDescriptor.ProviderName);
             if (provider != null)
             {
-                return provider.GetOutputDeviceReport(subReq);
+                if (!(provider is IOutputProvider prov)) return null;
+                return prov.GetOutputDeviceReport(subReq);
             }
             return null;
         }
@@ -121,8 +124,8 @@ namespace HidWizards.IOWrapper.Core
                 var oldSub = ActiveInputSubscriptions[subReq.SubscriptionDescriptor.SubscriberGuid];
                 UnsubscribeInput(oldSub);
             }
-            var prov = GetProvider(subReq.ProviderDescriptor.ProviderName);
-            var ret = prov.SubscribeInput(subReq);
+            var provider = GetProvider<IInputProvider>(subReq.ProviderDescriptor.ProviderName);
+            var ret = provider.SubscribeInput(subReq);
             if (ret)
             {
                 ActiveInputSubscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
@@ -137,7 +140,7 @@ namespace HidWizards.IOWrapper.Core
             var ret = false;
             if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriptionDescriptor.SubscriberGuid))
             {
-                var provider = GetProvider(subReq.ProviderDescriptor.ProviderName);
+                var provider = GetProvider<IInputProvider>(subReq.ProviderDescriptor.ProviderName);
                 ret = provider.UnsubscribeInput(ActiveInputSubscriptions[subReq.SubscriptionDescriptor.SubscriberGuid]);
                 if (ret)
                 {
@@ -184,7 +187,7 @@ namespace HidWizards.IOWrapper.Core
                 // unsub output here
                 UnsubscribeOutput(ActiveOutputSubscriptions[subReq.SubscriptionDescriptor.SubscriberGuid]);
             }
-            var provider = GetProvider(subReq.ProviderDescriptor.ProviderName);
+            var provider = GetProvider<IOutputProvider>(subReq.ProviderDescriptor.ProviderName);
             bool ret = false;
             ret = provider.SubscribeOutputDevice(subReq);
             if (ret)
@@ -201,7 +204,7 @@ namespace HidWizards.IOWrapper.Core
             var ret = false;
             if (ActiveOutputSubscriptions.ContainsKey(subReq.SubscriptionDescriptor.SubscriberGuid))
             {
-                var provider = GetProvider(subReq.ProviderDescriptor.ProviderName);
+                var provider = GetProvider<IOutputProvider>(subReq.ProviderDescriptor.ProviderName);
                 ret = provider.UnSubscribeOutputDevice(subReq);
                 if (ret)
                 {
@@ -222,7 +225,7 @@ namespace HidWizards.IOWrapper.Core
 
         public bool SetOutputstate(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
-            var provider = GetProvider(subReq.ProviderDescriptor.ProviderName);
+            var provider = GetProvider<IOutputProvider>(subReq.ProviderDescriptor.ProviderName);
             return provider.SetOutputState(subReq, bindingDescriptor, state);
         }
 
@@ -252,14 +255,25 @@ namespace HidWizards.IOWrapper.Core
             provider.RefreshDevices();
         }
 
-        private IProvider GetProvider(string providerName)
+        public IProvider GetProvider(string providerName)
         {
-            if (_Providers.ContainsKey(providerName))
-            {
-                return _Providers[providerName];
-            }
+            if (!_Providers.ContainsKey(providerName)) throw new Exception($"Provider {providerName} Not found");
+            return _Providers[providerName];
+        }
 
-            throw new Exception(String.Format("Provider {0} not found", providerName));
+        public TInterface GetProvider<TInterface>(IProvider provider)
+        {
+            if (provider is TInterface returnedProvider)
+            {
+                return returnedProvider;
+            }
+            throw new Exception($"Provider {provider.ProviderName} does not support interface {typeof(TInterface)}");
+        }
+
+        public TInterface GetProvider<TInterface>(string providerName)
+        {
+            var provider = GetProvider(providerName);
+            return GetProvider<TInterface>(provider);
         }
     }
 }

@@ -22,7 +22,7 @@ using static System.String;
 namespace Core_Interception
 {
     [Export(typeof(IProvider))]
-    public class Core_Interception : IProvider
+    public class Core_Interception : IInputProvider, IOutputProvider
     {
         public bool IsLive { get; } = false;
 
