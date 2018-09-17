@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface;
+using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 
 namespace HidWizards.IOWrapper.Core
 {

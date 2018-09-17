@@ -17,6 +17,7 @@ using Core_Interception.Helpers;
 using Core_Interception.Lib;
 using Core_Interception.Monitors;
 using HidWizards.IOWrapper.DataTransferObjects;
+using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 using static System.String;
 
 namespace Core_Interception

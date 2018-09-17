@@ -10,6 +10,7 @@ using HidWizards.IOWrapper.ProviderInterface.Helpers;
 using SharpDX_XInput.Handlers;
 using SharpDX_XInput.Helpers;
 using HidWizards.IOWrapper.DataTransferObjects;
+using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 
 namespace SharpDX_XInput
 {

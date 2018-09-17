@@ -53,7 +53,10 @@
     <Compile Include="Helpers\DeviceHelper.cs" />
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\POVHelper.cs" />
-    <Compile Include="IProvider.cs" />
+    <Compile Include="Interfaces\IBindModeProvider.cs" />
+    <Compile Include="Interfaces\IInputProvider.cs" />
+    <Compile Include="Interfaces\IOutputProvider.cs" />
+    <Compile Include="Interfaces\IProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
