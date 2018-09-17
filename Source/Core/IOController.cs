@@ -142,7 +142,7 @@ namespace HidWizards.IOWrapper.Core
 
         public void SetDetectionMode(DetectionMode detectionMode, ProviderDescriptor providerDescriptor, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
-            var provider = GetProvider(providerDescriptor.ProviderName);
+            var provider = GetProvider<IBindModeProvider>(providerDescriptor.ProviderName);
             provider.SetDetectionMode(detectionMode, deviceDescriptor, callback);
         }
 

@@ -6,11 +6,24 @@ namespace HidWizards.IOWrapper.ProviderInterface
 {
     public interface IProvider : IDisposable
     {
+        /// <summary>
+        /// The name of the provider
+        /// </summary>
         string ProviderName { get; }
+
+        /// <summary>
+        /// True if the Provider thinks everything has loaded OK
+        /// </summary>
         bool IsLive { get; }
 
-        void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor , Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null);
+        /// <summary>
+        /// Instruct the Provider to attempt to load dependencies etc
+        /// </summary>
         void RefreshLiveState();
+
+        /// <summary>
+        /// Refresh the list of available devices
+        /// </summary>
         void RefreshDevices();
     }
 
@@ -33,6 +46,6 @@ namespace HidWizards.IOWrapper.ProviderInterface
 
     public interface IBindModeProvider : IProvider
     {
-
+        void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null);
     }
 }

@@ -14,7 +14,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 namespace SharpDX_XInput
 {
     [Export(typeof(IProvider))]
-    public class SharpDX_XInput : IProvider
+    public class SharpDX_XInput : IInputProvider, IBindModeProvider
     {
         public bool IsLive { get { return isLive; } }
         private bool isLive = true;

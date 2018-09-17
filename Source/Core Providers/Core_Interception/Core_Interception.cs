@@ -407,11 +407,6 @@ namespace Core_Interception
             return true;
         }
 
-        public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
-        {
-            throw new NotImplementedException();
-        }
-
         public void RefreshLiveState()
         {
 

@@ -63,11 +63,6 @@ namespace Core_Tobii_Interaction
             return null;
         }
 
-        public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
-        {
-            throw new NotImplementedException();
-        }
-
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
             if (streamHandlers.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
