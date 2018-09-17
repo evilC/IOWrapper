@@ -26,9 +26,6 @@ namespace SharpDX_XInput
         private readonly XiHandler _subscriptionHandler;
         private XiReportHandler xiReportHandler = new XiReportHandler();
 
-        //private static List<Guid> ActiveProfiles = new List<Guid>();
-        //private static List<> PluggedInControllers
-
         public SharpDX_XInput()
         {
             _subscriptionHandler = new XiHandler(new ProviderDescriptor { ProviderName = ProviderName });
@@ -55,27 +52,6 @@ namespace SharpDX_XInput
 
         #region IProvider Members
         public string ProviderName { get { return typeof(SharpDX_XInput).Namespace; } }
-
-        // This should probably be a default interface method once they get added to C#
-        // https://github.com/dotnet/csharplang/blob/master/proposals/default-interface-methods.md
-        public bool SetProfileState(Guid profileGuid, bool state)
-        {
-            //if (state)
-            //{
-            //    if (!ActiveProfiles.Contains(profileGuid))
-            //    {
-            //        ActiveProfiles.Add(profileGuid);
-            //    }
-            //}
-            //else
-            //{
-            //    if (ActiveProfiles.Contains(profileGuid))
-            //    {
-            //        ActiveProfiles.Remove(profileGuid);
-            //    }
-            //}
-            return true;
-        }
 
         public ProviderReport GetInputList()
         {

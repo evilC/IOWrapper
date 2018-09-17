@@ -203,11 +203,6 @@ namespace Core_Interception
         // ToDo: Need better way to handle this. MEF meta-data?
         public string ProviderName => typeof(Core_Interception).Namespace;
 
-        public bool SetProfileState(Guid profileGuid, bool state)
-        {
-            return false;
-        }
-
         public ProviderReport GetInputList()
         {
             return GetIOList();

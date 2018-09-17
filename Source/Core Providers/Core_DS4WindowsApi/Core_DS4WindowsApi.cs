@@ -630,12 +630,6 @@ namespace Core_DS4WindowsApi
             };
         }
 
-
-        public bool SetProfileState(Guid profileGuid, bool state)
-        {
-            return false;
-        }
-
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
             if (connectedControllers[subReq.DeviceDescriptor.DeviceInstance] != null)

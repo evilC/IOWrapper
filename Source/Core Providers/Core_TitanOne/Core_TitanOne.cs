@@ -115,11 +115,6 @@ namespace Core_TitanOne
             return false;
         }
 
-        public bool SetProfileState(Guid profileGuid, bool state)
-        {
-            return false;
-        }
-
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
             return false;

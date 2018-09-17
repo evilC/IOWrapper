@@ -29,8 +29,6 @@ namespace SharpDX_DirectInput
 
         private readonly DiReportHandler _diReportHandler = new DiReportHandler();
 
-        //private static List<Guid> ActiveProfiles = new List<Guid>();
-
         public SharpDX_DirectInput()
         {
             _subscriptionHandler = new DiHandler(new ProviderDescriptor { ProviderName = ProviderName });
@@ -58,35 +56,6 @@ namespace SharpDX_DirectInput
 
         // ToDo: Need better way to handle this. MEF meta-data?
         public string ProviderName { get { return typeof(SharpDX_DirectInput).Namespace; } }
-
-        // This should probably be a default interface method once they get added to C#
-        // https://github.com/dotnet/csharplang/blob/master/proposals/default-interface-methods.md
-        public bool SetProfileState(Guid profileGuid, bool state)
-        {
-            //var prev_state = pollThreadActive;
-            //if (pollThreadActive)
-            //    SetPollThreadState(false);
-
-            //if (state)
-            //{
-            //    if (!ActiveProfiles.Contains(profileGuid))
-            //    {
-            //        ActiveProfiles.Add(profileGuid);
-            //    }
-            //}
-            //else
-            //{
-            //    if (ActiveProfiles.Contains(profileGuid))
-            //    {
-            //        ActiveProfiles.Remove(profileGuid);
-            //    }
-            //}
-
-            //if (prev_state)
-            //    SetPollThreadState(true);
-
-            return true;
-        }
 
         public ProviderReport GetInputList()
         {

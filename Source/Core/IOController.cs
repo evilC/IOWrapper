@@ -60,16 +60,6 @@ namespace HidWizards.IOWrapper.Core
             Debug.WriteLine("IOWrapper| IOController| " + formatStr, arguments);
         }
 
-        public bool SetProfileState(Guid profileGuid, bool state)
-        {
-            foreach (var provider in _Providers.Values)
-            {
-                provider.SetProfileState(profileGuid, state);
-            }
-            return true;
-        }
-
-
         public SortedDictionary<string, ProviderReport> GetInputList()
         {
             var list = new SortedDictionary<string, ProviderReport>();

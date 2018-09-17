@@ -9,11 +9,6 @@ namespace HidWizards.IOWrapper.ProviderInterface
         string ProviderName { get; }
         bool IsLive { get; }
 
-        bool SetProfileState(Guid profileGuid, bool state);
-        //bool SetOutputButton(string dev, uint button, bool state);
-        //bool SubscribeAxis(string deviceHandle, uint axisId, dynamic callback);
-        //void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback);
-        //void DisableBindMode();
         void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor , Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null);
         void RefreshLiveState();
         void RefreshDevices();

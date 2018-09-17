@@ -84,11 +84,6 @@ namespace Core_ViGEm
             throw new NotImplementedException();
         }
 
-        public bool SetProfileState(Guid profileGuid, bool state)
-        {
-            return false;
-        }
-
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
             if (!isLive)

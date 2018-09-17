@@ -88,11 +88,6 @@ namespace Core_vJoyInterfaceWrap
         // ToDo: Need better way to handle this. MEF meta-data?
         public string ProviderName { get { return typeof(Core_vJoyInterfaceWrap).Namespace; } }
 
-        public bool SetProfileState(Guid profileGuid, bool state)
-        {
-            return false;
-        }
-
         public ProviderReport GetOutputList()
         {
             var pr = new ProviderReport

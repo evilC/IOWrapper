@@ -68,11 +68,6 @@ namespace Core_Tobii_Interaction
             throw new NotImplementedException();
         }
 
-        public bool SetProfileState(Guid profileGuid, bool state)
-        {
-            return false;
-        }
-
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
             if (streamHandlers.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
