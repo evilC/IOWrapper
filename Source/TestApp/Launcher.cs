@@ -27,7 +27,7 @@ namespace TestApp
             #region DI
             //var vj1 = new VJoyTester(1, false);
             //var vj2 = new VJoyTester(2, false);
-            //var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
+            var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
             #endregion
 
             //var xInputPad_1 = new XiTester(1);

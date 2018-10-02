@@ -7,11 +7,9 @@ using System.Threading;
 using Microsoft.Win32;
 using System.Linq;
 using System.Diagnostics;
-using HidWizards.IOWrapper.ProviderInterface.Handlers;
 using HidWizards.IOWrapper.ProviderInterface.Helpers;
-using SharpDX_DirectInput.Handlers;
-using SharpDX_DirectInput.Helpers;
 using HidWizards.IOWrapper.DataTransferObjects;
+using HidWizards.IOWrapper.ProviderInterface.Devices;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 
 namespace SharpDX_DirectInput
@@ -19,6 +17,10 @@ namespace SharpDX_DirectInput
     [Export(typeof(IProvider))]
     public class SharpDX_DirectInput : IInputProvider, IBindModeProvider
     {
+        private readonly Dictionary<DeviceDescriptor, DiDeviceHandler> _tempBindModeDevices = new Dictionary<DeviceDescriptor, DiDeviceHandler>();
+        private readonly Dictionary<DeviceDescriptor, DiDeviceHandler> _subscribedDevices = new Dictionary<DeviceDescriptor, DiDeviceHandler>();
+        private readonly IDeviceManager<Guid> _deviceManager = new DiDeviceManager();
+
         public bool IsLive { get; } = true;
 
         private Logger _logger;
@@ -26,15 +28,10 @@ namespace SharpDX_DirectInput
         private bool _disposed;
 
         // Handles subscriptions and callbacks
-        private readonly DiHandler _subscriptionHandler;
-
-        private readonly DiReportHandler _diReportHandler = new DiReportHandler();
 
         public SharpDX_DirectInput()
         {
-            _subscriptionHandler = new DiHandler(new ProviderDescriptor { ProviderName = ProviderName });
             _logger = new Logger(ProviderName);
-            _diReportHandler.RefreshDevices();
         }
 
         public void Dispose()
@@ -48,7 +45,7 @@ namespace SharpDX_DirectInput
                 return;
             if (disposing)
             {
-                _subscriptionHandler.Dispose();
+                //_subscriptionHandler.Dispose();
             }
             _disposed = true;
         }
@@ -60,27 +57,33 @@ namespace SharpDX_DirectInput
 
         public ProviderReport GetInputList()
         {
-            return _diReportHandler.GetInputList();
+            return null;
         }
 
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
         {
-            return _diReportHandler.GetInputDeviceReport(subReq);
+            return null;
         }
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            return _subscriptionHandler.Subscribe(subReq);
+            if (!_subscribedDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
+            {
+                deviceHandler = new DiDeviceHandler(subReq.DeviceDescriptor, _deviceManager);
+                _subscribedDevices.Add(subReq.DeviceDescriptor, deviceHandler);
+            }
+            deviceHandler.SubscribeInput(subReq);
+            return true;
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            return _subscriptionHandler.Unsubscribe(subReq);
+            return false;
         }
 
         public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
-            _subscriptionHandler.SetDetectionMode(detectionMode, deviceDescriptor, callback);
+            
         }
 
         //public void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)
@@ -100,7 +103,7 @@ namespace SharpDX_DirectInput
 
         public void RefreshDevices()
         {
-            _diReportHandler.RefreshDevices();
+            
         }
         #endregion
     }

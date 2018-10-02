@@ -5,10 +5,7 @@ using System.Collections.Generic;
 using SharpDX.XInput;
 using System.Threading;
 using System.Diagnostics;
-using HidWizards.IOWrapper.ProviderInterface.Handlers;
 using HidWizards.IOWrapper.ProviderInterface.Helpers;
-using SharpDX_XInput.Handlers;
-using SharpDX_XInput.Helpers;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 
@@ -24,12 +21,8 @@ namespace SharpDX_XInput
 
         bool disposed;
 
-        private readonly XiHandler _subscriptionHandler;
-        private XiReportHandler xiReportHandler = new XiReportHandler();
-
         public SharpDX_XInput()
         {
-            _subscriptionHandler = new XiHandler(new ProviderDescriptor { ProviderName = ProviderName });
             logger = new Logger(ProviderName);
         }
 
@@ -45,7 +38,6 @@ namespace SharpDX_XInput
             if (disposing)
             {
                 //pollHandler.Dispose();
-                _subscriptionHandler.Dispose();
             }
             disposed = true;
             logger.Log("Disposed");
@@ -56,29 +48,29 @@ namespace SharpDX_XInput
 
         public ProviderReport GetInputList()
         {
-            return xiReportHandler.GetInputList();
+            return null;
         }
 
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
         {
-            return xiReportHandler.GetInputDeviceReport(subReq);
+            return null;
         }
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
             //return pollHandler.SubscribeInput(subReq);
-            return _subscriptionHandler.Subscribe(subReq);
+            return false;
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
             //return pollHandler.UnsubscribeInput(subReq);
-            return _subscriptionHandler.Unsubscribe(subReq);
+            return false;
         }
 
         public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
-            _subscriptionHandler.SetDetectionMode(detectionMode, deviceDescriptor, callback);
+            
         }
 
         //public void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)

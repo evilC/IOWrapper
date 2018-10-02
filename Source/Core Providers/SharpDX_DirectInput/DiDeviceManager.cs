@@ -1,27 +1,37 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HidWizards.IOWrapper.DataTransferObjects;
+using HidWizards.IOWrapper.ProviderInterface.Devices;
 using SharpDX.DirectInput;
 
-namespace SharpDX_DirectInput.Wrappers
+namespace SharpDX_DirectInput
 {
-    public class DiWrapper
+    //ToDo: Rename. DeviceLibrary?
+    public class DiDeviceManager : IDeviceManager<Guid>
     {
-        public ConcurrentDictionary<string, List<Guid>> ConnectedDevices { get; private set; } = new ConcurrentDictionary<string, List<Guid>>();
+        private ConcurrentDictionary<string, List<Guid>> ConnectedDevices = new ConcurrentDictionary<string, List<Guid>>();
+        public static DirectInput DiInstance = new DirectInput();
 
-        #region Singleton setup
-        private static DiWrapper _instance;
-        public static DiWrapper Instance => _instance ?? (_instance = new DiWrapper());
-        public static DirectInput DiInstance { get; } = new DirectInput();
-        #endregion
-
-        public DiWrapper()
+        public DiDeviceManager()
         {
             RefreshConnectedDevices();
+        }
+
+        public DeviceDescriptor GetDeviceDescriptor(Guid deviceGuid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Guid GetDevice(DeviceDescriptor deviceDescriptor)
+        {
+            if (ConnectedDevices.TryGetValue(deviceDescriptor.DeviceHandle, out var instances) &&
+                instances.Count >= deviceDescriptor.DeviceInstance)
+            {
+                return instances[deviceDescriptor.DeviceInstance];
+            }
+
+            return Guid.Empty;
         }
 
         private void RefreshConnectedDevices()
@@ -30,10 +40,10 @@ namespace SharpDX_DirectInput.Wrappers
             var diDeviceInstances = DiInstance.GetDevices();
             foreach (var device in diDeviceInstances)
             {
-                if (!Lookups.IsStickType(device))
+                if (!Utilities.IsStickType(device))
                     continue;
                 var joystick = new Joystick(DiInstance, device.InstanceGuid);
-                var handle = Lookups.JoystickToHandle(joystick);
+                var handle = Utilities.JoystickToHandle(joystick);
                 if (!ConnectedDevices.ContainsKey(handle))
                 {
                     ConnectedDevices[handle] = new List<Guid>();
@@ -42,7 +52,7 @@ namespace SharpDX_DirectInput.Wrappers
             }
         }
 
-        public Guid DeviceDescriptorToInstanceGuid(DeviceDescriptor deviceDescriptor)
+        private Guid DeviceDescriptorToInstanceGuid(DeviceDescriptor deviceDescriptor)
         {
             if (ConnectedDevices.ContainsKey(deviceDescriptor.DeviceHandle)
                 && ConnectedDevices[deviceDescriptor.DeviceHandle].Count >= deviceDescriptor.DeviceInstance)
@@ -53,16 +63,6 @@ namespace SharpDX_DirectInput.Wrappers
             //return Guid.Empty;
         }
 
-        //public DeviceDescriptor DeviceGuidToDeviceDescriptor(Guid deviceGuid)
-        //{
-        //    foreach (var connectedDevice in ConnectedDevices)
-        //    {
-        //        if (connectedDevice.Value.Contains(deviceGuid))
-        //        {
-        //            return new DeviceDescriptor {DeviceHandle = connectedDevice.Key, DeviceInstance = connectedDevice.Value.IndexOf(deviceGuid)};
-        //        }
-        //    }
-        //    throw new Exception($"Could not find device GUID {deviceGuid} in Connected Devices list");
-        //}
+
     }
 }

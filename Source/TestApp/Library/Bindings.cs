@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HidWizards.IOWrapper.DataTransferObjects;
+using SharpDX.DirectInput;
 
 namespace TestApp.Library
 {
@@ -32,14 +33,14 @@ namespace TestApp.Library
             public static BindingDescriptor Button8 = new BindingDescriptor { Index = 7, Type = BindingType.Button };
             public static BindingDescriptor Button9 = new BindingDescriptor { Index = 8, Type = BindingType.Button };
             public static BindingDescriptor Button10 = new BindingDescriptor { Index = 9, Type = BindingType.Button };
-            public static BindingDescriptor AxisX = Axis1;
-            public static BindingDescriptor AxisY = Axis2;
             public static BindingDescriptor Axis1 = new BindingDescriptor { Index = 0, Type = BindingType.Axis };
             public static BindingDescriptor Axis2 = new BindingDescriptor { Index = 1, Type = BindingType.Axis };
             public static BindingDescriptor Axis3 = new BindingDescriptor { Index = 2, Type = BindingType.Axis };
             public static BindingDescriptor Axis4 = new BindingDescriptor { Index = 3, Type = BindingType.Axis };
             public static BindingDescriptor Axis5 = new BindingDescriptor { Index = 4, Type = BindingType.Axis };
             public static BindingDescriptor Axis6 = new BindingDescriptor { Index = 5, Type = BindingType.Axis };
+            public static BindingDescriptor AxisX = Axis1;
+            public static BindingDescriptor AxisY = Axis2;
             public static BindingDescriptor POV1Up = new BindingDescriptor { Index = 0, SubIndex = 0, Type = BindingType.POV };
             public static BindingDescriptor POV1Right = new BindingDescriptor { Index = 0, SubIndex = 1, Type = BindingType.POV };
             public static BindingDescriptor POV1Down = new BindingDescriptor { Index = 0, SubIndex = 2, Type = BindingType.POV };
@@ -51,6 +52,27 @@ namespace TestApp.Library
             public static BindingDescriptor DpadUp = new BindingDescriptor { Index = 0, SubIndex = 0, Type = BindingType.POV };
             public static BindingDescriptor DpadRight = new BindingDescriptor { Index = 1, SubIndex = 0, Type = BindingType.POV };
             public static BindingDescriptor Ds4Gyro = new BindingDescriptor { Index = 0, SubIndex = 2, Type = BindingType.Axis }; // DS4 Gyro
+        }
+        #endregion
+
+        #region DI
+
+        public static class DirectInput
+        {
+            public static BindingDescriptor Button1 = new BindingDescriptor { Index = (int) JoystickOffset.Buttons0, Type = BindingType.Button };
+            public static BindingDescriptor Button2 = new BindingDescriptor { Index = (int) JoystickOffset.Buttons1, Type = BindingType.Button };
+            public static BindingDescriptor Button3 = new BindingDescriptor { Index = (int)JoystickOffset.Buttons2, Type = BindingType.Button };
+            public static BindingDescriptor Button4 = new BindingDescriptor { Index = (int)JoystickOffset.Buttons3, Type = BindingType.Button };
+            public static BindingDescriptor Button5 = new BindingDescriptor { Index = (int)JoystickOffset.Buttons4, Type = BindingType.Button };
+            public static BindingDescriptor Button6 = new BindingDescriptor { Index = (int)JoystickOffset.Buttons5, Type = BindingType.Button };
+            public static BindingDescriptor Button7 = new BindingDescriptor { Index = (int)JoystickOffset.Buttons6, Type = BindingType.Button };
+            public static BindingDescriptor Button8 = new BindingDescriptor { Index = (int)JoystickOffset.Buttons7, Type = BindingType.Button };
+            public static BindingDescriptor Button9 = new BindingDescriptor { Index = (int)JoystickOffset.Buttons8, Type = BindingType.Button };
+            public static BindingDescriptor Button10 = new BindingDescriptor { Index = (int)JoystickOffset.Buttons9, Type = BindingType.Button };
+            public static BindingDescriptor Axis1 = new BindingDescriptor { Index = (int)JoystickOffset.X, Type = BindingType.Axis };
+            public static BindingDescriptor Axis2 = new BindingDescriptor { Index = (int)JoystickOffset.Y, Type = BindingType.Axis };
+            public static BindingDescriptor AxisX = Axis1;
+            public static BindingDescriptor AxisY = Axis2;
         }
         #endregion
 
