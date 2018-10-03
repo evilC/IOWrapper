@@ -11,22 +11,22 @@ using SharpDX.DirectInput;
 
 namespace SharpDX_DirectInput
 {
-    public class DiDeviceHandler : IDisposable
+    public class DiDevice : IDisposable
     {
         private DeviceDescriptor _deviceDescriptor;
         private DiDeviceUpdateHandler _deviceUpdateHandler;
         private SubscriptionHandler _subHandler;
         public static DirectInput DiInstance { get; } = new DirectInput();
-        private IDeviceManager<Guid> _deviceManager;
+        private IDeviceLibrary<Guid> _deviceLibrary;
         private Guid _instanceGuid = Guid.Empty;
         private Thread _pollThread;
         public EventHandler<BindModeUpdate> BindModeUpdate;
 
-        public DiDeviceHandler(DeviceDescriptor deviceDescriptor, IDeviceManager<Guid> deviceManager)
+        public DiDevice(DeviceDescriptor deviceDescriptor, IDeviceLibrary<Guid> deviceLibrary)
         {
             _deviceDescriptor = deviceDescriptor;
-            _deviceManager = deviceManager;
-            _instanceGuid = _deviceManager.GetDevice(_deviceDescriptor);
+            _deviceLibrary = deviceLibrary;
+            _instanceGuid = _deviceLibrary.GetDevice(_deviceDescriptor);
             _subHandler = new SubscriptionHandler(deviceDescriptor, DeviceEmptyHandler);
             _deviceUpdateHandler = new DiDeviceUpdateHandler(deviceDescriptor, _subHandler);
             _deviceUpdateHandler.BindModeUpdate = BindModeHandler;

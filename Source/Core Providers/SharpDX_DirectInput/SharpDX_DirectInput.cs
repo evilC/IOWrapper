@@ -17,9 +17,9 @@ namespace SharpDX_DirectInput
     [Export(typeof(IProvider))]
     public class SharpDX_DirectInput : IInputProvider, IBindModeProvider
     {
-        private readonly Dictionary<DeviceDescriptor, DiDeviceHandler> _tempBindModeDevices = new Dictionary<DeviceDescriptor, DiDeviceHandler>();
-        private readonly Dictionary<DeviceDescriptor, DiDeviceHandler> _subscribedDevices = new Dictionary<DeviceDescriptor, DiDeviceHandler>();
-        private readonly IDeviceManager<Guid> _deviceManager = new DiDeviceManager();
+        private readonly Dictionary<DeviceDescriptor, DiDevice> _tempBindModeDevices = new Dictionary<DeviceDescriptor, DiDevice>();
+        private readonly Dictionary<DeviceDescriptor, DiDevice> _subscribedDevices = new Dictionary<DeviceDescriptor, DiDevice>();
+        private readonly IDeviceLibrary<Guid> _deviceLibrary = new DiDeviceLibrary();
         private Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
 
         public bool IsLive { get; } = true;
@@ -70,7 +70,7 @@ namespace SharpDX_DirectInput
         {
             if (!_subscribedDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
-                deviceHandler = new DiDeviceHandler(subReq.DeviceDescriptor, _deviceManager);
+                deviceHandler = new DiDevice(subReq.DeviceDescriptor, _deviceLibrary);
                 _subscribedDevices.Add(subReq.DeviceDescriptor, deviceHandler);
             }
             deviceHandler.SubscribeInput(subReq);
@@ -86,7 +86,7 @@ namespace SharpDX_DirectInput
         {
             if (!_subscribedDevices.TryGetValue(deviceDescriptor, out var deviceHandler))
             {
-                deviceHandler = new DiDeviceHandler(deviceDescriptor, _deviceManager);
+                deviceHandler = new DiDevice(deviceDescriptor, _deviceLibrary);
                 _tempBindModeDevices.Add(deviceDescriptor, deviceHandler);
             }
 

@@ -8,7 +8,7 @@ using HidWizards.IOWrapper.ProviderInterface.Devices;
 
 namespace SharpDX_XInput
 {
-    class XiDeviceManager : IDeviceManager<int>
+    class XiDeviceLibrary : IDeviceLibrary<int>
     {
         public DeviceDescriptor GetDeviceDescriptor(int device)
         {

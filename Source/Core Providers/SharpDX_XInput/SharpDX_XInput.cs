@@ -15,8 +15,8 @@ namespace SharpDX_XInput
     [Export(typeof(IProvider))]
     public class SharpDX_XInput : IInputProvider, IBindModeProvider
     {
-        private readonly Dictionary<DeviceDescriptor, XiDeviceHandler> _subscribedDevices = new Dictionary<DeviceDescriptor, XiDeviceHandler>();
-        private readonly IDeviceManager<int> _deviceManager = new XiDeviceManager();
+        private readonly Dictionary<DeviceDescriptor, XiDevice> _subscribedDevices = new Dictionary<DeviceDescriptor, XiDevice>();
+        private readonly IDeviceLibrary<int> _deviceLibrary = new XiDeviceLibrary();
 
         public bool IsLive { get { return isLive; } }
         private bool isLive = true;
@@ -65,7 +65,7 @@ namespace SharpDX_XInput
             //return pollHandler.SubscribeInput(subReq);
             if (!_subscribedDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
-                deviceHandler = new XiDeviceHandler(subReq.DeviceDescriptor, _deviceManager);
+                deviceHandler = new XiDevice(subReq.DeviceDescriptor, _deviceLibrary);
                 _subscribedDevices.Add(subReq.DeviceDescriptor, deviceHandler);
             }
             deviceHandler.SubscribeInput(subReq);

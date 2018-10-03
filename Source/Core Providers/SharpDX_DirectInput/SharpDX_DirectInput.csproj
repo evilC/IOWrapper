@@ -56,8 +56,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DiDeviceHandler.cs" />
-    <Compile Include="DiDeviceManager.cs" />
+    <Compile Include="DiDevice.cs" />
+    <Compile Include="DiDeviceLibrary.cs" />
     <Compile Include="DiDeviceUpdateHandler.cs" />
     <Compile Include="DiUpdatelProcessors.cs" />
     <Compile Include="SharpDX_DirectInput.cs" />

@@ -11,19 +11,19 @@ using SharpDX.XInput;
 
 namespace SharpDX_XInput
 {
-    public class XiDeviceHandler
+    public class XiDevice
     {
         private DeviceDescriptor _deviceDescriptor;
-        private IDeviceManager<int> _deviceManager;
+        private IDeviceLibrary<int> _deviceLibrary;
         private SubscriptionHandler _subHandler;
         private XiDeviceUpdateHandler _deviceUpdateHandler;
         private Thread _pollThread;
         private readonly Controller _controller;
 
-        public XiDeviceHandler(DeviceDescriptor deviceDescriptor, IDeviceManager<int> deviceManager)
+        public XiDevice(DeviceDescriptor deviceDescriptor, IDeviceLibrary<int> deviceLibrary)
         {
             _deviceDescriptor = deviceDescriptor;
-            _deviceManager = deviceManager;
+            _deviceLibrary = deviceLibrary;
             _subHandler = new SubscriptionHandler(deviceDescriptor, DeviceEmptyHandler);
             _deviceUpdateHandler = new XiDeviceUpdateHandler(deviceDescriptor, _subHandler);
 
