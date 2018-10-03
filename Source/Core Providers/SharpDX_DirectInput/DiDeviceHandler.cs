@@ -20,6 +20,7 @@ namespace SharpDX_DirectInput
         private IDeviceManager<Guid> _deviceManager;
         private Guid _instanceGuid = Guid.Empty;
         private Thread _pollThread;
+        public EventHandler<BindModeUpdate> BindModeUpdate;
 
         public DiDeviceHandler(DeviceDescriptor deviceDescriptor, IDeviceManager<Guid> deviceManager)
         {
@@ -28,14 +29,25 @@ namespace SharpDX_DirectInput
             _instanceGuid = _deviceManager.GetDevice(_deviceDescriptor);
             _subHandler = new SubscriptionHandler(deviceDescriptor, DeviceEmptyHandler);
             _deviceUpdateHandler = new DiDeviceUpdateHandler(deviceDescriptor, _subHandler);
+            _deviceUpdateHandler.BindModeUpdate = BindModeHandler;
 
             _pollThread = new Thread(PollThread);
             _pollThread.Start();
         }
 
+        private void BindModeHandler(object sender, BindModeUpdate e)
+        {
+            BindModeUpdate?.Invoke(sender, e);
+        }
+
         private void DeviceEmptyHandler(object sender, DeviceDescriptor e)
         {
             
+        }
+
+        public void SetDetectionMode(DetectionMode detectionMode)
+        {
+            _deviceUpdateHandler.SetDetectionMode(detectionMode);
         }
 
         public void SubscribeInput(InputSubscriptionRequest subReq)

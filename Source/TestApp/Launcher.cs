@@ -27,10 +27,11 @@ namespace TestApp
             #region DI
             //var vj1 = new VJoyTester(1, false);
             //var vj2 = new VJoyTester(2, false);
-            var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
+            //var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
+            IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, BindModeHandler);
             #endregion
 
-            var xInputPad_1 = new XiTester(1);
+            //var xInputPad_1 = new XiTester(1);
 
             #region Interception
 
@@ -47,6 +48,10 @@ namespace TestApp
             IOW.Instance.Dispose();
         }
 
+        private static void BindModeHandler(ProviderDescriptor provider, DeviceDescriptor device, BindingDescriptor binding, int value)
+        {
+            Console.WriteLine($"Provider: {provider.ProviderName} | Device: {device.DeviceHandle}/{device.DeviceInstance} | Binding: {binding.Type}/{binding.Index}/{binding.SubIndex} | Value: {value}");
+        }
     }
 }
 

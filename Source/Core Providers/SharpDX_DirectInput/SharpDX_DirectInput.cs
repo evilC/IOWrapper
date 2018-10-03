@@ -20,6 +20,7 @@ namespace SharpDX_DirectInput
         private readonly Dictionary<DeviceDescriptor, DiDeviceHandler> _tempBindModeDevices = new Dictionary<DeviceDescriptor, DiDeviceHandler>();
         private readonly Dictionary<DeviceDescriptor, DiDeviceHandler> _subscribedDevices = new Dictionary<DeviceDescriptor, DiDeviceHandler>();
         private readonly IDeviceManager<Guid> _deviceManager = new DiDeviceManager();
+        private Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
 
         public bool IsLive { get; } = true;
 
@@ -83,7 +84,20 @@ namespace SharpDX_DirectInput
 
         public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
-            
+            if (!_subscribedDevices.TryGetValue(deviceDescriptor, out var deviceHandler))
+            {
+                deviceHandler = new DiDeviceHandler(deviceDescriptor, _deviceManager);
+                _tempBindModeDevices.Add(deviceDescriptor, deviceHandler);
+            }
+
+            _bindModeCallback = callback;
+            deviceHandler.BindModeUpdate = BindModeHandler;
+            deviceHandler.SetDetectionMode(detectionMode);
+        }
+
+        private void BindModeHandler(object sender, BindModeUpdate e)
+        {
+            _bindModeCallback?.Invoke(new ProviderDescriptor{ProviderName = ProviderName}, e.Device, e.Binding, e.Value);
         }
 
         //public void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)
