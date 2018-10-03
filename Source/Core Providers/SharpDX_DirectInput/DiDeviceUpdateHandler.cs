@@ -5,6 +5,7 @@ using SharpDX.DirectInput;
 
 namespace SharpDX_DirectInput
 {
+    // ToDo: Replace tuples with struct?
     public class DiDeviceUpdateHandler : DeviceUpdateHandler<JoystickUpdate, (BindingType, int)>
     {
         public DiDeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler) : base(deviceDescriptor, subhandler)
