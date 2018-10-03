@@ -30,7 +30,7 @@ namespace TestApp
             var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
             #endregion
 
-            //var xInputPad_1 = new XiTester(1);
+            var xInputPad_1 = new XiTester(1);
 
             #region Interception
 

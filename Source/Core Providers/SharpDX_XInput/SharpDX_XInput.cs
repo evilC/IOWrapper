@@ -7,6 +7,7 @@ using System.Threading;
 using System.Diagnostics;
 using HidWizards.IOWrapper.ProviderInterface.Helpers;
 using HidWizards.IOWrapper.DataTransferObjects;
+using HidWizards.IOWrapper.ProviderInterface.Devices;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 
 namespace SharpDX_XInput
@@ -14,6 +15,9 @@ namespace SharpDX_XInput
     [Export(typeof(IProvider))]
     public class SharpDX_XInput : IInputProvider, IBindModeProvider
     {
+        private readonly Dictionary<DeviceDescriptor, XiDeviceHandler> _subscribedDevices = new Dictionary<DeviceDescriptor, XiDeviceHandler>();
+        private readonly IDeviceManager<int> _deviceManager = new XiDeviceManager();
+
         public bool IsLive { get { return isLive; } }
         private bool isLive = true;
 
@@ -59,7 +63,14 @@ namespace SharpDX_XInput
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
             //return pollHandler.SubscribeInput(subReq);
-            return false;
+            if (!_subscribedDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
+            {
+                deviceHandler = new XiDeviceHandler(subReq.DeviceDescriptor, _deviceManager);
+                _subscribedDevices.Add(subReq.DeviceDescriptor, deviceHandler);
+            }
+            deviceHandler.SubscribeInput(subReq);
+            return true;
+
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)

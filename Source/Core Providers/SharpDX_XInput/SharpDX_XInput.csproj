@@ -56,6 +56,8 @@
     <Compile Include="SharpDX_XInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
+    <Compile Include="XiDeviceHandler.cs" />
+    <Compile Include="XiDeviceManager.cs" />
     <Compile Include="XiDeviceUpdateHandler.cs" />
     <Compile Include="XiUpdateProcessors.cs" />
   </ItemGroup>
