@@ -17,6 +17,7 @@ namespace SharpDX_XInput
     {
         private readonly Dictionary<DeviceDescriptor, PollingDeviceHandler<State, (BindingType, int)>> _activeDevices = new Dictionary<DeviceDescriptor, PollingDeviceHandler<State, (BindingType, int)>>();
         private Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
+        private readonly XiDeviceLibrary _deviceLibrary;
 
         public bool IsLive { get { return isLive; } }
         private bool isLive = true;
@@ -28,6 +29,7 @@ namespace SharpDX_XInput
         public SharpDX_XInput()
         {
             logger = new Logger(ProviderName);
+            _deviceLibrary = new XiDeviceLibrary(new ProviderDescriptor{ProviderName = ProviderName});
         }
 
         public void Dispose()
@@ -52,13 +54,12 @@ namespace SharpDX_XInput
 
         public ProviderReport GetInputList()
         {
-            //throw new NotImplementedException();
-            return null;
+            return _deviceLibrary.GetInputList();
         }
 
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
         {
-            throw new NotImplementedException();
+            return _deviceLibrary.GetInputDeviceReport(subReq.DeviceDescriptor);
         }
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
