@@ -19,22 +19,16 @@ namespace SharpDX_DirectInput
         public static DirectInput DiInstance { get; } = new DirectInput();
         private readonly Guid _instanceGuid;
         private Thread _pollThread;
-        public EventHandler<BindModeUpdate> BindModeUpdate;
 
-        public DiDevice(DeviceDescriptor deviceDescriptor, Guid guid, EventHandler<DeviceDescriptor> deviceEmptyHandler)
+        public DiDevice(DeviceDescriptor deviceDescriptor, Guid guid, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler)
         {
             _deviceDescriptor = deviceDescriptor;
             _instanceGuid = guid;
             _subHandler = new SubscriptionHandler(deviceDescriptor, deviceEmptyHandler);
-            _deviceUpdateHandler = new DiDeviceUpdateHandler(deviceDescriptor, _subHandler, BindModeHandler);
+            _deviceUpdateHandler = new DiDeviceUpdateHandler(deviceDescriptor, _subHandler, bindModeHandler);
 
             _pollThread = new Thread(PollThread);
             _pollThread.Start();
-        }
-
-        private void BindModeHandler(object sender, BindModeUpdate e)
-        {
-            BindModeUpdate?.Invoke(sender, e);
         }
 
         public bool IsEmpty()

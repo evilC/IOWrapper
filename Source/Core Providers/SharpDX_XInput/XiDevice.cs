@@ -18,22 +18,16 @@ namespace SharpDX_XInput
         private readonly XiDeviceUpdateHandler _deviceUpdateHandler;
         private Thread _pollThread;
         private readonly Controller _controller;
-        public EventHandler<BindModeUpdate> BindModeUpdate;
 
-        public XiDevice(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler)
+        public XiDevice(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler)
         {
             _deviceDescriptor = deviceDescriptor;
             _subHandler = new SubscriptionHandler(deviceDescriptor, deviceEmptyHandler);
-            _deviceUpdateHandler = new XiDeviceUpdateHandler(deviceDescriptor, _subHandler, BindModeHandler);
+            _deviceUpdateHandler = new XiDeviceUpdateHandler(deviceDescriptor, _subHandler, bindModeHandler);
             _controller = new Controller((UserIndex)deviceDescriptor.DeviceInstance);
 
             _pollThread = new Thread(PollThread);
             _pollThread.Start();
-        }
-
-        private void BindModeHandler(object sender, BindModeUpdate e)
-        {
-            BindModeUpdate?.Invoke(sender, e);
         }
 
         public void SubscribeInput(InputSubscriptionRequest subReq)
