@@ -15,7 +15,7 @@ namespace SharpDX_XInput
             throw new NotImplementedException();
         }
 
-        public int GetDevice(DeviceDescriptor deviceDescriptor)
+        public int GetDeviceIdentifier(DeviceDescriptor deviceDescriptor)
         {
             throw new NotImplementedException();
         }
