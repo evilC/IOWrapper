@@ -22,7 +22,7 @@ namespace SharpDX_DirectInput
             _instanceGuid = guid;
         }
 
-        protected override DeviceUpdateHandler<JoystickUpdate, (BindingType, int)> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler,
+        protected override IDeviceUpdateHandler<JoystickUpdate> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler,
             EventHandler<BindModeUpdate> bindModeHandler)
         {
             return new DiDeviceUpdateHandler(deviceDescriptor, _subHandler, bindModeHandler);

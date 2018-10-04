@@ -21,7 +21,7 @@ namespace SharpDX_XInput
             _controller = new Controller((UserIndex)_deviceDescriptor.DeviceInstance);
         }
 
-        protected override DeviceUpdateHandler<State, (BindingType, int)> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler,
+        protected override IDeviceUpdateHandler<State> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler,
             EventHandler<BindModeUpdate> bindModeHandler)
         {
             return new XiDeviceUpdateHandler(deviceDescriptor, _subHandler, bindModeHandler);

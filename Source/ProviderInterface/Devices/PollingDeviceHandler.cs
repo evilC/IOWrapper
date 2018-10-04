@@ -13,7 +13,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Devices
     public abstract class PollingDeviceHandler<TUpdate, TProcessorKey> : IDisposable
     {
         private Thread _pollThread;
-        protected DeviceUpdateHandler<TUpdate, TProcessorKey> _deviceUpdateHandler;
+        protected IDeviceUpdateHandler<TUpdate> _deviceUpdateHandler;
         protected SubscriptionHandler _subHandler;
         protected DeviceDescriptor _deviceDescriptor;
 
@@ -53,7 +53,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Devices
             _subHandler.Unsubscribe(subReq);
         }
 
-        protected abstract DeviceUpdateHandler<TUpdate, TProcessorKey> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler, EventHandler<BindModeUpdate> bindModeHandler);
+        protected abstract IDeviceUpdateHandler<TUpdate> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler, EventHandler<BindModeUpdate> bindModeHandler);
 
         protected abstract void PollThread();
 

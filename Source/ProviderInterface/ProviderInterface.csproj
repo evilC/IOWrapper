@@ -58,7 +58,8 @@
     <Compile Include="Subscriptions\SubscriptionHandler.cs" />
     <Compile Include="Subscriptions\SubscriptionProcessor.cs" />
     <Compile Include="Updates\DeviceUpdateHandler.cs" />
-    <Compile Include="Updates\Interfaces.cs" />
+    <Compile Include="Updates\IDeviceUpdateHandler.cs" />
+    <Compile Include="Updates\IUpdateProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
