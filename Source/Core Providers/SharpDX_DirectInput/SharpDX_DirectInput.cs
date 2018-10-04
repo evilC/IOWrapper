@@ -57,12 +57,12 @@ namespace SharpDX_DirectInput
 
         public ProviderReport GetInputList()
         {
-            return null;
+            throw new NotImplementedException();
         }
 
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
         {
-            return null;
+            throw new NotImplementedException();
         }
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
@@ -123,12 +123,12 @@ namespace SharpDX_DirectInput
 
         public void RefreshLiveState()
         {
-            
+            throw new NotImplementedException();
         }
 
         public void RefreshDevices()
         {
-            
+            throw new NotImplementedException();
         }
         #endregion
     }
