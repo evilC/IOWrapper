@@ -70,6 +70,10 @@
       <Name>DTOs</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\Provider Libraries\SubscriptionDictionaryWrapper\SubscriptionDictionaryWrapper.csproj">
+      <Project>{B63C6F07-3D10-4A2D-8E78-87A8BF43220B}</Project>
+      <Name>SubscriptionDictionaryWrapper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ProviderHelpers\ProviderHelpers.csproj">
       <Project>{3D5AFCCE-CB28-401C-83B0-20C0BA5FD8F3}</Project>
       <Name>ProviderHelpers</Name>

@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace ProviderHelpers.Subscriptions
+namespace SubscriptionDictionaryWrapper
 {
     public class SubscriptionDictionary<TKey, TValue, TEmptyEventArgs>
     {

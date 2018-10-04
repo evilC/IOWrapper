@@ -1,8 +1,8 @@
 ﻿using System;
 using HidWizards.IOWrapper.DataTransferObjects;
-using ProviderHelpers.Subscriptions;
 using ProviderHelpers.Updates;
 using SharpDX.DirectInput;
+using SubscriptionDictionaryWrapper;
 
 namespace SharpDX_DirectInput
 {

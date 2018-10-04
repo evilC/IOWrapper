@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using HidWizards.IOWrapper.DataTransferObjects;
-using ProviderHelpers.Subscriptions;
 using ProviderHelpers.Updates;
+using SubscriptionDictionaryWrapper;
 
 namespace ProviderHelpers.Devices
 {

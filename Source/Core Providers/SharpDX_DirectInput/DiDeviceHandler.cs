@@ -6,9 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using HidWizards.IOWrapper.DataTransferObjects;
 using ProviderHelpers.Devices;
-using ProviderHelpers.Subscriptions;
 using ProviderHelpers.Updates;
 using SharpDX.DirectInput;
+using SubscriptionDictionaryWrapper;
 
 namespace SharpDX_DirectInput
 {

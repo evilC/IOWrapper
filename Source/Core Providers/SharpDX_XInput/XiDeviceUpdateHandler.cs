@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using HidWizards.IOWrapper.DataTransferObjects;
-using ProviderHelpers.Subscriptions;
 using ProviderHelpers.Updates;
 using SharpDX.XInput;
+using SubscriptionDictionaryWrapper;
 
 namespace SharpDX_XInput
 {
