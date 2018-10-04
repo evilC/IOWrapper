@@ -21,11 +21,6 @@ namespace SharpDX_DirectInput
             RefreshConnectedDevices();
         }
 
-        public DeviceDescriptor GetDeviceDescriptor(Guid deviceGuid)
-        {
-            throw new NotImplementedException();
-        }
-
         public Guid GetDeviceIdentifier(DeviceDescriptor deviceDescriptor)
         {
             if (_connectedDevices.TryGetValue(deviceDescriptor.DeviceHandle, out var instances) &&

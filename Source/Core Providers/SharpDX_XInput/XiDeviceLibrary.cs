@@ -24,11 +24,6 @@ namespace SharpDX_XInput
             BuildDeviceList();
         }
 
-        public DeviceDescriptor GetDeviceDescriptor(int device)
-        {
-            throw new NotImplementedException();
-        }
-
         public int GetDeviceIdentifier(DeviceDescriptor deviceDescriptor)
         {
             return deviceDescriptor.DeviceInstance;

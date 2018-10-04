@@ -4,7 +4,6 @@ namespace HidWizards.IOWrapper.ProviderInterface.Devices
 {
     public interface IDeviceLibrary<TDeviceIdentifier>
     {
-        DeviceDescriptor GetDeviceDescriptor(TDeviceIdentifier device);
         TDeviceIdentifier GetDeviceIdentifier(DeviceDescriptor deviceDescriptor);
     }
 
