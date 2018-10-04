@@ -9,7 +9,7 @@ namespace SharpDX_DirectInput
 {
     public class DiDeviceLibrary : IInputDeviceLibrary<Guid>
     {
-        private ConcurrentDictionary<string, List<Guid>> ConnectedDevices = new ConcurrentDictionary<string, List<Guid>>();
+        private ConcurrentDictionary<string, List<Guid>> _connectedDevices = new ConcurrentDictionary<string, List<Guid>>();
         public static DirectInput DiInstance = new DirectInput();
         private static readonly List<BindingReport>[] PovBindingInfos = new List<BindingReport>[4];
         private readonly ProviderDescriptor _providerDescriptor;
@@ -28,7 +28,7 @@ namespace SharpDX_DirectInput
 
         public Guid GetDeviceIdentifier(DeviceDescriptor deviceDescriptor)
         {
-            if (ConnectedDevices.TryGetValue(deviceDescriptor.DeviceHandle, out var instances) &&
+            if (_connectedDevices.TryGetValue(deviceDescriptor.DeviceHandle, out var instances) &&
                 instances.Count >= deviceDescriptor.DeviceInstance)
             {
                 return instances[deviceDescriptor.DeviceInstance];
@@ -38,7 +38,7 @@ namespace SharpDX_DirectInput
 
         private void RefreshConnectedDevices()
         {
-            ConnectedDevices = new ConcurrentDictionary<string, List<Guid>>();
+            _connectedDevices = new ConcurrentDictionary<string, List<Guid>>();
             var diDeviceInstances = DiInstance.GetDevices();
             foreach (var device in diDeviceInstances)
             {
@@ -46,11 +46,11 @@ namespace SharpDX_DirectInput
                     continue;
                 var joystick = new Joystick(DiInstance, device.InstanceGuid);
                 var handle = Utilities.JoystickToHandle(joystick);
-                if (!ConnectedDevices.ContainsKey(handle))
+                if (!_connectedDevices.ContainsKey(handle))
                 {
-                    ConnectedDevices[handle] = new List<Guid>();
+                    _connectedDevices[handle] = new List<Guid>();
                 }
-                ConnectedDevices[handle].Add(device.InstanceGuid);
+                _connectedDevices[handle].Add(device.InstanceGuid);
             }
         }
 
@@ -63,7 +63,7 @@ namespace SharpDX_DirectInput
                 API = "DirectInput",
                 ProviderDescriptor = _providerDescriptor
             };
-            foreach (var guidList in ConnectedDevices)
+            foreach (var guidList in _connectedDevices)
             {
                 for (var i = 0; i < guidList.Value.Count; i++)
                 {
