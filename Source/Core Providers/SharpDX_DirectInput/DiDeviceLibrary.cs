@@ -29,8 +29,7 @@ namespace SharpDX_DirectInput
             {
                 return instances[deviceDescriptor.DeviceInstance];
             }
-
-            return Guid.Empty;
+            throw new Exception($"Could not find device Handle {deviceDescriptor.DeviceHandle}, Instance {deviceDescriptor.DeviceInstance}");
         }
 
         private void RefreshConnectedDevices()
@@ -49,17 +48,6 @@ namespace SharpDX_DirectInput
                 }
                 ConnectedDevices[handle].Add(device.InstanceGuid);
             }
-        }
-
-        private Guid DeviceDescriptorToInstanceGuid(DeviceDescriptor deviceDescriptor)
-        {
-            if (ConnectedDevices.ContainsKey(deviceDescriptor.DeviceHandle)
-                && ConnectedDevices[deviceDescriptor.DeviceHandle].Count >= deviceDescriptor.DeviceInstance)
-            {
-                return ConnectedDevices[deviceDescriptor.DeviceHandle][deviceDescriptor.DeviceInstance];
-            }
-            throw new Exception($"Could not find device Handle {deviceDescriptor.DeviceHandle}, Instance {deviceDescriptor.DeviceInstance}");
-            //return Guid.Empty;
         }
 
         public ProviderReport GetInputList()
