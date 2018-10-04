@@ -17,7 +17,7 @@ namespace SharpDX_DirectInput
     [Export(typeof(IProvider))]
     public class SharpDX_DirectInput : IInputProvider, IBindModeProvider
     {
-        private readonly Dictionary<DeviceDescriptor, DiDevice> _activeDevices = new Dictionary<DeviceDescriptor, DiDevice>();
+        private readonly Dictionary<DeviceDescriptor, PollingDeviceHandler<JoystickUpdate, (BindingType, int)>> _activeDevices = new Dictionary<DeviceDescriptor, PollingDeviceHandler<JoystickUpdate, (BindingType, int)>>();
         private readonly IDeviceLibrary<Guid> _deviceLibrary = new DiDeviceLibrary();
         private Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
 
@@ -69,7 +69,7 @@ namespace SharpDX_DirectInput
         {
             if (!_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
-                deviceHandler = new DiDevice(subReq.DeviceDescriptor, _deviceLibrary.GetDevice(subReq.DeviceDescriptor), DeviceEmptyHandler, BindModeHandler);
+                deviceHandler = new DiDevice(subReq.DeviceDescriptor, _deviceLibrary.GetDevice(subReq.DeviceDescriptor)).Initialize(DeviceEmptyHandler, BindModeHandler);
                 _activeDevices.Add(subReq.DeviceDescriptor, deviceHandler);
             }
             deviceHandler.SubscribeInput(subReq);
@@ -89,7 +89,7 @@ namespace SharpDX_DirectInput
         {
             if (!_activeDevices.TryGetValue(deviceDescriptor, out var deviceHandler))
             {
-                deviceHandler = new DiDevice(deviceDescriptor, _deviceLibrary.GetDevice(deviceDescriptor), DeviceEmptyHandler, BindModeHandler);
+                deviceHandler = new DiDevice(deviceDescriptor, _deviceLibrary.GetDevice(deviceDescriptor)).Initialize(DeviceEmptyHandler, BindModeHandler);
                 _activeDevices.Add(deviceDescriptor, deviceHandler);
             }
 

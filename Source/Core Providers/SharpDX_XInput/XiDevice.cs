@@ -14,9 +14,11 @@ namespace SharpDX_XInput
 {
     public class XiDevice : PollingDeviceHandler<State, (BindingType, int)>
     {
-        public XiDevice(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler)
-            : base(deviceDescriptor, deviceEmptyHandler, bindModeHandler)
+        protected Controller _controller;
+
+        public XiDevice(DeviceDescriptor deviceDescriptor) : base(deviceDescriptor)
         {
+            _controller = new Controller((UserIndex)_deviceDescriptor.DeviceInstance);
         }
 
         protected override DeviceUpdateHandler<State, (BindingType, int)> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler,
@@ -27,12 +29,11 @@ namespace SharpDX_XInput
 
         protected override void PollThread()
         {
-            var controller = new Controller((UserIndex)_deviceDescriptor.DeviceInstance);
             while (true)
             {
-                if (!controller.IsConnected)
+                if (!_controller.IsConnected)
                     return;
-                _deviceUpdateHandler.ProcessUpdate(controller.GetState());
+                _deviceUpdateHandler.ProcessUpdate(_controller.GetState());
                 Thread.Sleep(10);
             }
         }

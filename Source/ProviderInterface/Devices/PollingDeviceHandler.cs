@@ -17,16 +17,20 @@ namespace HidWizards.IOWrapper.ProviderInterface.Devices
         protected SubscriptionHandler _subHandler;
         protected DeviceDescriptor _deviceDescriptor;
 
-        protected PollingDeviceHandler(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler)
+        protected PollingDeviceHandler(DeviceDescriptor deviceDescriptor)
         {
             _deviceDescriptor = deviceDescriptor;
-            _subHandler = new SubscriptionHandler(deviceDescriptor, deviceEmptyHandler);
+        }
 
-            InitializeUpdateHandler(deviceDescriptor, bindModeHandler);
+        public PollingDeviceHandler<TUpdate, TProcessorKey> Initialize(EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler)
+        {
+            _subHandler = new SubscriptionHandler(_deviceDescriptor, deviceEmptyHandler);
+            _deviceUpdateHandler = CreateUpdateHandler(_deviceDescriptor, _subHandler, bindModeHandler);
 
-            // ToDo: This should not be called in the base constructor, it should be called after the derived ctor finishes. Guid / controller ID set in ctor of derived class will not be set yet
             _pollThread = new Thread(PollThread);
             _pollThread.Start();
+
+            return this;
         }
 
         public bool IsEmpty()
@@ -47,12 +51,6 @@ namespace HidWizards.IOWrapper.ProviderInterface.Devices
         public void UnsubscribeInput(InputSubscriptionRequest subReq)
         {
             _subHandler.Unsubscribe(subReq);
-        }
-
-
-        private void InitializeUpdateHandler(DeviceDescriptor deviceDescriptor, EventHandler<BindModeUpdate> bindModeHandler)
-        {
-            _deviceUpdateHandler = CreateUpdateHandler(deviceDescriptor, _subHandler, bindModeHandler);
         }
 
         protected abstract DeviceUpdateHandler<TUpdate, TProcessorKey> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler, EventHandler<BindModeUpdate> bindModeHandler);
