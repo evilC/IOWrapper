@@ -56,7 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DiDevice.cs" />
+    <Compile Include="DiDeviceHandler.cs" />
     <Compile Include="DiDeviceLibrary.cs" />
     <Compile Include="DiDeviceUpdateHandler.cs" />
     <Compile Include="DiUpdatelProcessors.cs" />

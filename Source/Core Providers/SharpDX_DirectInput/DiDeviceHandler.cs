@@ -12,12 +12,12 @@ using SharpDX.DirectInput;
 
 namespace SharpDX_DirectInput
 {
-    public class DiDevice : PollingDeviceHandler<JoystickUpdate, (BindingType, int)>
+    public class DiDeviceHandler : PollingDeviceHandler<JoystickUpdate, (BindingType, int)>
     {
         public static DirectInput DiInstance { get; } = new DirectInput();
         private readonly Guid _instanceGuid;
 
-        public DiDevice(DeviceDescriptor deviceDescriptor, Guid guid) : base(deviceDescriptor)
+        public DiDeviceHandler(DeviceDescriptor deviceDescriptor, Guid guid) : base(deviceDescriptor)
         {
             _instanceGuid = guid;
         }
@@ -79,13 +79,6 @@ namespace SharpDX_DirectInput
                 }
             }
         }
-
-        //public void Dispose()
-        //{
-        //    _pollThread.Abort();
-        //    _pollThread.Join();
-        //    _pollThread = null;
-        //}
 
     }
 }

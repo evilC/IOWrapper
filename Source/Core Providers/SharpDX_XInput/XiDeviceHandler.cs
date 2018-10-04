@@ -12,11 +12,11 @@ using SharpDX.XInput;
 
 namespace SharpDX_XInput
 {
-    public class XiDevice : PollingDeviceHandler<State, (BindingType, int)>
+    public class XiDeviceHandler : PollingDeviceHandler<State, (BindingType, int)>
     {
         protected Controller _controller;
 
-        public XiDevice(DeviceDescriptor deviceDescriptor) : base(deviceDescriptor)
+        public XiDeviceHandler(DeviceDescriptor deviceDescriptor) : base(deviceDescriptor)
         {
             _controller = new Controller((UserIndex)_deviceDescriptor.DeviceInstance);
         }
