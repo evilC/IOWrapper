@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Subscriptions;
 using HidWizards.IOWrapper.ProviderInterface.Updates;
@@ -11,7 +12,8 @@ namespace SharpDX_XInput
     {
         private State _lastState;
 
-        public XiDeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler) : base(deviceDescriptor, subhandler)
+        public XiDeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler)
+            : base(deviceDescriptor, subhandler, bindModeHandler)
         {
             // All Buttons share one Update Processor
             UpdateProcessors.Add((BindingType.Button, 0), new XiButtonProcessor());

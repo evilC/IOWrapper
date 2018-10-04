@@ -17,16 +17,16 @@ namespace HidWizards.IOWrapper.ProviderInterface.Updates
         protected ISubscriptionHandler SubHandler;
         protected DetectionMode DetectionMode = DetectionMode.Subscription;
         protected Dictionary<TProcessorKey, IUpdateProcessor> UpdateProcessors = new Dictionary<TProcessorKey, IUpdateProcessor>();
-
-        public EventHandler<BindModeUpdate> BindModeUpdate;
+        private readonly EventHandler<BindModeUpdate> _bindModeHandler;
 
         /// <summary>
         /// Create a new DeviceUpdateHandler
         /// </summary>
         /// <param name="deviceDescriptor">The descriptor describing the device</param>
         /// <param name="subhandler">A <see cref="SubscriptionHandler"/> that holds a list of subscriptions</param>
-        protected DeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler)
+        protected DeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler)
         {
+            _bindModeHandler = bindModeHandler;
             _deviceDescriptor = deviceDescriptor;
             SubHandler = subhandler;
         }
@@ -46,7 +46,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Updates
         /// <param name="update"></param>
         protected void OnBindModeUpdate(BindingUpdate update)
         {
-            BindModeUpdate?.Invoke(this, new BindModeUpdate{Device = _deviceDescriptor, Binding = update.Binding, Value = update.Value});
+            _bindModeHandler?.Invoke(this, new BindModeUpdate{Device = _deviceDescriptor, Binding = update.Binding, Value = update.Value});
         }
 
         /// <summary>

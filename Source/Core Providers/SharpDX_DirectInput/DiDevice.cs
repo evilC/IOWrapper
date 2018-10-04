@@ -26,7 +26,7 @@ namespace SharpDX_DirectInput
             _deviceDescriptor = deviceDescriptor;
             _instanceGuid = guid;
             _subHandler = new SubscriptionHandler(deviceDescriptor, deviceEmptyHandler);
-            _deviceUpdateHandler = new DiDeviceUpdateHandler(deviceDescriptor, _subHandler) {BindModeUpdate = BindModeHandler};
+            _deviceUpdateHandler = new DiDeviceUpdateHandler(deviceDescriptor, _subHandler, BindModeHandler);
 
             _pollThread = new Thread(PollThread);
             _pollThread.Start();

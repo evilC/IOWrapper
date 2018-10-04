@@ -30,10 +30,10 @@ namespace TestApp
             //var xInputPad_1 = new XiTester(1);
             //Console.WriteLine("Press Enter for Bind Mode...");
             //Console.ReadLine();
-            //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, BindModeHandler);
+            IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, BindModeHandler);
             //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.XInput, Library.Devices.Console.Xb360_1, BindModeHandler);
-            var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
-            genericStick_1.Unsubscribe();
+            //var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
+            //genericStick_1.Unsubscribe();
             //Console.WriteLine("Press Enter to leave Bind Mode...");
             //Console.ReadLine();
             //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M);
@@ -58,7 +58,7 @@ namespace TestApp
 
         private static void BindModeHandler(ProviderDescriptor provider, DeviceDescriptor device, BindingDescriptor binding, int value)
         {
-            Console.WriteLine($"Provider: {provider.ProviderName} | Device: {device.DeviceHandle}/{device.DeviceInstance} | Binding: {binding.Type}/{binding.Index}/{binding.SubIndex} | Value: {value}");
+            Console.WriteLine($"BIND MODE: Provider: {provider.ProviderName} | Device: {device.DeviceHandle}/{device.DeviceInstance} | Binding: {binding.Type}/{binding.Index}/{binding.SubIndex} | Value: {value}");
         }
     }
 }

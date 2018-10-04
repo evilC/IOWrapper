@@ -1,4 +1,5 @@
-﻿using HidWizards.IOWrapper.DataTransferObjects;
+﻿using System;
+using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Subscriptions;
 using HidWizards.IOWrapper.ProviderInterface.Updates;
 using SharpDX.DirectInput;
@@ -8,7 +9,8 @@ namespace SharpDX_DirectInput
     // ToDo: Replace tuples with struct?
     public class DiDeviceUpdateHandler : DeviceUpdateHandler<JoystickUpdate, (BindingType, int)>
     {
-        public DiDeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler) : base(deviceDescriptor, subhandler)
+        public DiDeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler) 
+            : base(deviceDescriptor, subhandler, bindModeHandler)
         {
             // All Buttons share one Update Processor
             UpdateProcessors.Add((BindingType.Button, 0), new DiButtonProcessor());

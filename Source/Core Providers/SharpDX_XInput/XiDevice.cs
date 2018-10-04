@@ -24,7 +24,7 @@ namespace SharpDX_XInput
         {
             _deviceDescriptor = deviceDescriptor;
             _subHandler = new SubscriptionHandler(deviceDescriptor, deviceEmptyHandler);
-            _deviceUpdateHandler = new XiDeviceUpdateHandler(deviceDescriptor, _subHandler) {BindModeUpdate = BindModeHandler};
+            _deviceUpdateHandler = new XiDeviceUpdateHandler(deviceDescriptor, _subHandler, BindModeHandler);
             _controller = new Controller((UserIndex)deviceDescriptor.DeviceInstance);
 
             _pollThread = new Thread(PollThread);
