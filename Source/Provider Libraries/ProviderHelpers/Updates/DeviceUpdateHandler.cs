@@ -10,7 +10,7 @@ namespace ProviderHelpers.Updates
     /// Given a series of updates from a device, and a reference to a <see cref="SubscriptionHandler"/> containing subscriptions,
     /// will generate Subscription Events or Bind Mode events accordingly
     /// </summary>
-    /// <typeparam name="TProcessorKey">The type of update that this device generates</typeparam>
+    /// <typeparam name="TUpdate">The type of update that this device generates</typeparam>
     /// <typeparam name="TProcessorKey">The Key type used for the <see cref="SubscriptionHandler"/> dictionary</typeparam>
     public abstract class DeviceUpdateHandler<TUpdate, TProcessorKey> : IDeviceUpdateHandler<TUpdate>
     {
