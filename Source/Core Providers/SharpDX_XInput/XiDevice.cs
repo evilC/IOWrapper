@@ -19,6 +19,7 @@ namespace SharpDX_XInput
         private XiDeviceUpdateHandler _deviceUpdateHandler;
         private Thread _pollThread;
         private readonly Controller _controller;
+        public EventHandler<BindModeUpdate> BindModeUpdate;
         private EventHandler<DeviceDescriptor> _deviceEmptyHandler;
 
         public XiDevice(DeviceDescriptor deviceDescriptor, IDeviceLibrary<int> deviceLibrary, EventHandler<DeviceDescriptor> deviceEmptyHandler)
@@ -27,11 +28,17 @@ namespace SharpDX_XInput
             _deviceLibrary = deviceLibrary;
             _subHandler = new SubscriptionHandler(deviceDescriptor, DeviceEmptyHandler);
             _deviceUpdateHandler = new XiDeviceUpdateHandler(deviceDescriptor, _subHandler);
+            _deviceUpdateHandler.BindModeUpdate = BindModeHandler;
             _deviceEmptyHandler = deviceEmptyHandler;
             _controller = new Controller((UserIndex)deviceDescriptor.DeviceInstance);
 
             _pollThread = new Thread(PollThread);
             _pollThread.Start();
+        }
+
+        private void BindModeHandler(object sender, BindModeUpdate e)
+        {
+            BindModeUpdate?.Invoke(sender, e);
         }
 
         public void SubscribeInput(InputSubscriptionRequest subReq)
@@ -65,6 +72,16 @@ namespace SharpDX_XInput
             _pollThread.Abort();
             _pollThread.Join();
             _pollThread = null;
+        }
+
+        public bool IsEmpty()
+        {
+            return _subHandler.Count() == 0;
+        }
+
+        public void SetDetectionMode(DetectionMode detectionMode)
+        {
+            _deviceUpdateHandler.SetDetectionMode(detectionMode);
         }
     }
 }

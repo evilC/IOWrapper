@@ -17,6 +17,7 @@ namespace SharpDX_XInput
     {
         private readonly Dictionary<DeviceDescriptor, XiDevice> _activeDevices = new Dictionary<DeviceDescriptor, XiDevice>();
         private readonly IDeviceLibrary<int> _deviceLibrary = new XiDeviceLibrary();
+        private Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
 
         public bool IsLive { get { return isLive; } }
         private bool isLive = true;
@@ -82,18 +83,33 @@ namespace SharpDX_XInput
 
         public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
-            throw new NotImplementedException();
+            if (!_activeDevices.TryGetValue(deviceDescriptor, out var deviceHandler))
+            {
+                deviceHandler = new XiDevice(deviceDescriptor, _deviceLibrary, DeviceEmptyHandler);
+                _activeDevices.Add(deviceDescriptor, deviceHandler);
+            }
+
+            if (detectionMode == DetectionMode.Bind)
+            {
+                _bindModeCallback = callback;
+                deviceHandler.BindModeUpdate = BindModeHandler;
+            }
+
+            if (detectionMode == DetectionMode.Subscription && deviceHandler.IsEmpty())
+            {
+                deviceHandler.Dispose();
+                _activeDevices.Remove(deviceDescriptor);
+            }
+            else
+            {
+                deviceHandler.SetDetectionMode(detectionMode);
+            }
         }
 
-        //public void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)
-        //{
-        //    _subscriptionHandler.SetDetectionMode(DetectionMode.Bind, callback);
-        //}
-
-        //public void DisableBindMode()
-        //{
-        //    _subscriptionHandler.SetDetectionMode(DetectionMode.Subscription);
-        //}
+        private void BindModeHandler(object sender, BindModeUpdate e)
+        {
+            _bindModeCallback?.Invoke(new ProviderDescriptor { ProviderName = ProviderName }, e.Device, e.Binding, e.Value);
+        }
 
         public void RefreshLiveState()
         {
