@@ -76,12 +76,6 @@ namespace SharpDX_DirectInput
             return true;
         }
 
-        private void DeviceEmptyHandler(object sender, DeviceDescriptor e)
-        {
-            _activeDevices[e].Dispose();
-            _activeDevices.Remove(e);
-        }
-
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
             if (_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
@@ -114,6 +108,12 @@ namespace SharpDX_DirectInput
             {
                 deviceHandler.SetDetectionMode(detectionMode);
             }
+        }
+
+        private void DeviceEmptyHandler(object sender, DeviceDescriptor e)
+        {
+            _activeDevices[e].Dispose();
+            _activeDevices.Remove(e);
         }
 
         private void BindModeHandler(object sender, BindModeUpdate e)
