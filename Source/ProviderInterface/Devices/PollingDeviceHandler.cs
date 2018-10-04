@@ -13,19 +13,19 @@ namespace HidWizards.IOWrapper.ProviderInterface.Devices
     public abstract class PollingDeviceHandler<TUpdate, TProcessorKey> : IDisposable
     {
         private Thread _pollThread;
-        protected IDeviceUpdateHandler<TUpdate> _deviceUpdateHandler;
-        protected SubscriptionHandler _subHandler;
-        protected DeviceDescriptor _deviceDescriptor;
+        protected IDeviceUpdateHandler<TUpdate> DeviceUpdateHandler;
+        protected SubscriptionHandler SubHandler;
+        protected DeviceDescriptor DeviceDescriptor;
 
         protected PollingDeviceHandler(DeviceDescriptor deviceDescriptor)
         {
-            _deviceDescriptor = deviceDescriptor;
+            DeviceDescriptor = deviceDescriptor;
         }
 
         public PollingDeviceHandler<TUpdate, TProcessorKey> Initialize(EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler)
         {
-            _subHandler = new SubscriptionHandler(_deviceDescriptor, deviceEmptyHandler);
-            _deviceUpdateHandler = CreateUpdateHandler(_deviceDescriptor, _subHandler, bindModeHandler);
+            SubHandler = new SubscriptionHandler(DeviceDescriptor, deviceEmptyHandler);
+            DeviceUpdateHandler = CreateUpdateHandler(DeviceDescriptor, SubHandler, bindModeHandler);
 
             _pollThread = new Thread(PollThread);
             _pollThread.Start();
@@ -35,22 +35,22 @@ namespace HidWizards.IOWrapper.ProviderInterface.Devices
 
         public bool IsEmpty()
         {
-            return _subHandler.Count() == 0;
+            return SubHandler.Count() == 0;
         }
 
         public void SetDetectionMode(DetectionMode detectionMode)
         {
-            _deviceUpdateHandler.SetDetectionMode(detectionMode);
+            DeviceUpdateHandler.SetDetectionMode(detectionMode);
         }
 
         public void SubscribeInput(InputSubscriptionRequest subReq)
         {
-            _subHandler.Subscribe(subReq);
+            SubHandler.Subscribe(subReq);
         }
 
         public void UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            _subHandler.Unsubscribe(subReq);
+            SubHandler.Unsubscribe(subReq);
         }
 
         protected abstract IDeviceUpdateHandler<TUpdate> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler, EventHandler<BindModeUpdate> bindModeHandler);
