@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace ProviderHelpers.Utilities
+namespace ProviderLogger
 {
     public class Logger
     {

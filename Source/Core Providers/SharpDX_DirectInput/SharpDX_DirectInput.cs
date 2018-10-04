@@ -12,6 +12,7 @@ using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 using ProviderHelpers.Devices;
 using ProviderHelpers.Library;
 using ProviderHelpers.Utilities;
+using ProviderLogger;
 
 namespace SharpDX_DirectInput
 {

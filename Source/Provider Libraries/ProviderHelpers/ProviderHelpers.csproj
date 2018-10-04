@@ -42,7 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Devices\PollingDeviceHandler.cs" />
-    <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Utilities\POVHelper.cs" />
     <Compile Include="Library\IDeviceLibrary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -51,15 +50,15 @@
     <Compile Include="Updates\IUpdateProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataObjects\DTOs.csproj">
+    <ProjectReference Include="..\..\DataObjects\DTOs.csproj">
       <Project>{81851977-0421-4ebd-b066-0fe03f02589e}</Project>
       <Name>DTOs</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Provider Libraries\SubscriptionDictionaryWrapper\SubscriptionDictionaryWrapper.csproj">
+    <ProjectReference Include="..\SubscriptionDictionaryWrapper\SubscriptionDictionaryWrapper.csproj">
       <Project>{b63c6f07-3d10-4a2d-8e78-87a8bf43220b}</Project>
       <Name>SubscriptionDictionaryWrapper</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ProviderInterface\ProviderInterface.csproj">
+    <ProjectReference Include="..\..\ProviderInterface\ProviderInterface.csproj">
       <Project>{f6eaf2bc-f362-4ecd-94e5-617ca37a4210}</Project>
       <Name>ProviderInterface</Name>
     </ProjectReference>

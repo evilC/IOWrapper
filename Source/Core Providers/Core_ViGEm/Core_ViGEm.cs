@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
-using ProviderHelpers.Utilities;
+using ProviderLogger;
 
 namespace Core_ViGEm
 {

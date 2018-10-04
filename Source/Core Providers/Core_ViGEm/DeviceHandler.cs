@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using HidWizards.IOWrapper.DataTransferObjects;
-using ProviderHelpers.Utilities;
+using ProviderLogger;
 
 namespace Core_ViGEm
 {
