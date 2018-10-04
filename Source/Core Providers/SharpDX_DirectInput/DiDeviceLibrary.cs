@@ -21,6 +21,8 @@ namespace SharpDX_DirectInput
             RefreshConnectedDevices();
         }
 
+        #region IDeviceLibrary
+
         public Guid GetDeviceIdentifier(DeviceDescriptor deviceDescriptor)
         {
             if (_connectedDevices.TryGetValue(deviceDescriptor.DeviceHandle, out var instances) &&
@@ -31,23 +33,9 @@ namespace SharpDX_DirectInput
             throw new Exception($"Could not find device Handle {deviceDescriptor.DeviceHandle}, Instance {deviceDescriptor.DeviceInstance}");
         }
 
-        private void RefreshConnectedDevices()
-        {
-            _connectedDevices = new ConcurrentDictionary<string, List<Guid>>();
-            var diDeviceInstances = DiInstance.GetDevices();
-            foreach (var device in diDeviceInstances)
-            {
-                if (!Utilities.IsStickType(device))
-                    continue;
-                var joystick = new Joystick(DiInstance, device.InstanceGuid);
-                var handle = Utilities.JoystickToHandle(joystick);
-                if (!_connectedDevices.ContainsKey(handle))
-                {
-                    _connectedDevices[handle] = new List<Guid>();
-                }
-                _connectedDevices[handle].Add(device.InstanceGuid);
-            }
-        }
+        #endregion
+
+        #region IInputDeviceLibrary
 
         public ProviderReport GetInputList()
         {
@@ -69,6 +57,14 @@ namespace SharpDX_DirectInput
 
             return providerReport;
         }
+
+        public DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor)
+        {
+            return GetInputDeviceReport(deviceDescriptor, GetDeviceIdentifier(deviceDescriptor));
+        }
+        #endregion
+
+        #region Reporting
 
         public DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor, Guid deviceGuid)
         {
@@ -105,7 +101,7 @@ namespace SharpDX_DirectInput
                             BindingDescriptor = new BindingDescriptor
                             {
                                 //Index = i,
-                                Index = (int) offset,
+                                Index = (int)offset,
                                 //Name = axisNames[i],
                                 Type = BindingType.Axis
                             }
@@ -136,7 +132,7 @@ namespace SharpDX_DirectInput
                             BindingDescriptor = new BindingDescriptor
                             {
                                 //Index = btn,
-                                Index = (int) Utilities.OffsetsByType[BindingType.Button][btn],
+                                Index = (int)Utilities.OffsetsByType[BindingType.Button][btn],
                                 Type = BindingType.Button
                             }
                         });
@@ -170,6 +166,7 @@ namespace SharpDX_DirectInput
             return deviceReport;
         }
 
+
         private void BuildPovBindingInfos()
         {
             for (var povNum = 0; povNum < 4; povNum++)
@@ -191,10 +188,29 @@ namespace SharpDX_DirectInput
                 }
             }
         }
+        #endregion
 
-        public DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor)
+        #region Connected Devices
+
+        private void RefreshConnectedDevices()
         {
-            return GetInputDeviceReport(deviceDescriptor, GetDeviceIdentifier(deviceDescriptor));
+            _connectedDevices = new ConcurrentDictionary<string, List<Guid>>();
+            var diDeviceInstances = DiInstance.GetDevices();
+            foreach (var device in diDeviceInstances)
+            {
+                if (!Utilities.IsStickType(device))
+                    continue;
+                var joystick = new Joystick(DiInstance, device.InstanceGuid);
+                var handle = Utilities.JoystickToHandle(joystick);
+                if (!_connectedDevices.ContainsKey(handle))
+                {
+                    _connectedDevices[handle] = new List<Guid>();
+                }
+                _connectedDevices[handle].Add(device.InstanceGuid);
+            }
         }
+
+        #endregion
+
     }
 }
