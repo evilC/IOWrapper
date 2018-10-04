@@ -20,16 +20,13 @@ namespace SharpDX_DirectInput
         private readonly Guid _instanceGuid;
         private Thread _pollThread;
         public EventHandler<BindModeUpdate> BindModeUpdate;
-        private readonly EventHandler<DeviceDescriptor> _deviceEmptyHandler;
 
         public DiDevice(DeviceDescriptor deviceDescriptor, Guid guid, EventHandler<DeviceDescriptor> deviceEmptyHandler)
         {
             _deviceDescriptor = deviceDescriptor;
-            _deviceEmptyHandler = deviceEmptyHandler;
             _instanceGuid = guid;
-            _subHandler = new SubscriptionHandler(deviceDescriptor, DeviceEmptyHandler);
+            _subHandler = new SubscriptionHandler(deviceDescriptor, deviceEmptyHandler);
             _deviceUpdateHandler = new DiDeviceUpdateHandler(deviceDescriptor, _subHandler) {BindModeUpdate = BindModeHandler};
-            _deviceEmptyHandler = deviceEmptyHandler;
 
             _pollThread = new Thread(PollThread);
             _pollThread.Start();
@@ -38,11 +35,6 @@ namespace SharpDX_DirectInput
         private void BindModeHandler(object sender, BindModeUpdate e)
         {
             BindModeUpdate?.Invoke(sender, e);
-        }
-
-        private void DeviceEmptyHandler(object sender, DeviceDescriptor e)
-        {
-            _deviceEmptyHandler?.Invoke(sender, e);
         }
 
         public bool IsEmpty()

@@ -19,14 +19,12 @@ namespace SharpDX_XInput
         private Thread _pollThread;
         private readonly Controller _controller;
         public EventHandler<BindModeUpdate> BindModeUpdate;
-        private readonly EventHandler<DeviceDescriptor> _deviceEmptyHandler;
 
         public XiDevice(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler)
         {
             _deviceDescriptor = deviceDescriptor;
-            _subHandler = new SubscriptionHandler(deviceDescriptor, DeviceEmptyHandler);
+            _subHandler = new SubscriptionHandler(deviceDescriptor, deviceEmptyHandler);
             _deviceUpdateHandler = new XiDeviceUpdateHandler(deviceDescriptor, _subHandler) {BindModeUpdate = BindModeHandler};
-            _deviceEmptyHandler = deviceEmptyHandler;
             _controller = new Controller((UserIndex)deviceDescriptor.DeviceInstance);
 
             _pollThread = new Thread(PollThread);
@@ -46,11 +44,6 @@ namespace SharpDX_XInput
         public void UnsubscribeInput(InputSubscriptionRequest subReq)
         {
             _subHandler.Unsubscribe(subReq);
-        }
-
-        private void DeviceEmptyHandler(object sender, DeviceDescriptor e)
-        {
-            _deviceEmptyHandler?.Invoke(sender, e);
         }
 
         private void PollThread()
