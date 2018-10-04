@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core Providers", "Core Providers", "{0F3E0065-6DC2-4310-A7C4-E81283247A48}"
+	ProjectSection(SolutionItems) = preProject
+		Source\Core Providers\README.md = Source\Core Providers\README.md
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOs", "Source\DataObjects\DTOs.csproj", "{81851977-0421-4EBD-B066-0FE03F02589E}"
 EndProject
@@ -41,6 +44,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core_Tobii_Interaction", "Source\Core Providers\Core_Tobii_Interaction\Core_Tobii_Interaction.csproj", "{30781D26-C5B4-4F6F-B21D-F3357E43A192}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Provider Libraries", "Provider Libraries", "{465C44E5-C33F-4367-8CAD-D27771E2EA18}"
+	ProjectSection(SolutionItems) = preProject
+		Source\Provider Libraries\README.md = Source\Provider Libraries\README.md
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubscriptionDictionaryWrapper", "Source\Provider Libraries\SubscriptionDictionaryWrapper\SubscriptionDictionaryWrapper.csproj", "{B63C6F07-3D10-4A2D-8E78-87A8BF43220B}"
 EndProject

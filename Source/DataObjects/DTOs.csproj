@@ -48,5 +48,8 @@
     <Compile Include="SubscriptionRequests.cs" />
     <Compile Include="Updates.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

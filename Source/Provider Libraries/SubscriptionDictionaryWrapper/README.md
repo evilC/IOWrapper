@@ -1,0 +1,1 @@
+﻿A wrapper around `ConcurrentDictionary` for use when storing input subscriptions

@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="FodyWeavers.xml" />
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

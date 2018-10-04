@@ -1,0 +1,1 @@
+﻿Adds support for the [vJoy](http://vjoystick.sourceforge.net/site/) device driver API to enable emulation of virtual DirectInput devices
