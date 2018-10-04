@@ -17,7 +17,7 @@ namespace TestApp
         static void Main(string[] args)
         {
             Debug.WriteLine("DBGVIEWCLEAR");
-            //var inputList = IOW.Instance.GetInputList();
+            var inputList = IOW.Instance.GetInputList();
             //var outputList = IOW.Instance.GetOutputList();
 
             //var bindModeTester = new BindModeTester();

@@ -7,7 +7,7 @@ using SharpDX.DirectInput;
 
 namespace SharpDX_DirectInput
 {
-    public class DiDeviceLibrary : IDeviceLibrary<Guid>
+    public class DiDeviceLibrary : IInputDeviceLibrary<Guid>
     {
         private ConcurrentDictionary<string, List<Guid>> ConnectedDevices = new ConcurrentDictionary<string, List<Guid>>();
         public static DirectInput DiInstance = new DirectInput();
@@ -62,6 +62,14 @@ namespace SharpDX_DirectInput
             //return Guid.Empty;
         }
 
+        public ProviderReport GetInputList()
+        {
+            throw new NotImplementedException();
+        }
 
+        public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

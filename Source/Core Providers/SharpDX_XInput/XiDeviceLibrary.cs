@@ -8,7 +8,7 @@ using HidWizards.IOWrapper.ProviderInterface.Devices;
 
 namespace SharpDX_XInput
 {
-    class XiDeviceLibrary : IDeviceLibrary<int>
+    class XiDeviceLibrary : IInputDeviceLibrary<int>
     {
         public DeviceDescriptor GetDeviceDescriptor(int device)
         {
@@ -16,6 +16,16 @@ namespace SharpDX_XInput
         }
 
         public int GetDeviceIdentifier(DeviceDescriptor deviceDescriptor)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ProviderReport GetInputList()
+        {
+            throw new NotImplementedException();
+        }
+
+        public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
         {
             throw new NotImplementedException();
         }

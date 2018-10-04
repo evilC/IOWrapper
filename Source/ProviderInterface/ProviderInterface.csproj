@@ -43,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Devices\Interfaces.cs" />
+    <Compile Include="Devices\IDeviceLibrary.cs" />
     <Compile Include="Devices\PollingDeviceHandler.cs" />
     <Compile Include="Helpers\DeviceHelper.cs" />
     <Compile Include="Helpers\Logger.cs" />
