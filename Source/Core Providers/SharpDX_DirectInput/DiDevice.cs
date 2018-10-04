@@ -14,24 +14,21 @@ namespace SharpDX_DirectInput
     public class DiDevice : IDisposable
     {
         private DeviceDescriptor _deviceDescriptor;
-        private DiDeviceUpdateHandler _deviceUpdateHandler;
-        private SubscriptionHandler _subHandler;
+        private readonly DiDeviceUpdateHandler _deviceUpdateHandler;
+        private readonly SubscriptionHandler _subHandler;
         public static DirectInput DiInstance { get; } = new DirectInput();
-        private IDeviceLibrary<Guid> _deviceLibrary;
-        private Guid _instanceGuid = Guid.Empty;
+        private readonly Guid _instanceGuid;
         private Thread _pollThread;
         public EventHandler<BindModeUpdate> BindModeUpdate;
-        private EventHandler<DeviceDescriptor> _deviceEmptyHandler;
+        private readonly EventHandler<DeviceDescriptor> _deviceEmptyHandler;
 
-        public DiDevice(DeviceDescriptor deviceDescriptor, IDeviceLibrary<Guid> deviceLibrary, EventHandler<DeviceDescriptor> deviceEmptyHandler)
+        public DiDevice(DeviceDescriptor deviceDescriptor, Guid guid, EventHandler<DeviceDescriptor> deviceEmptyHandler)
         {
             _deviceDescriptor = deviceDescriptor;
-            _deviceLibrary = deviceLibrary;
             _deviceEmptyHandler = deviceEmptyHandler;
-            _instanceGuid = _deviceLibrary.GetDevice(_deviceDescriptor);
+            _instanceGuid = guid;
             _subHandler = new SubscriptionHandler(deviceDescriptor, DeviceEmptyHandler);
-            _deviceUpdateHandler = new DiDeviceUpdateHandler(deviceDescriptor, _subHandler);
-            _deviceUpdateHandler.BindModeUpdate = BindModeHandler;
+            _deviceUpdateHandler = new DiDeviceUpdateHandler(deviceDescriptor, _subHandler) {BindModeUpdate = BindModeHandler};
             _deviceEmptyHandler = deviceEmptyHandler;
 
             _pollThread = new Thread(PollThread);

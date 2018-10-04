@@ -14,21 +14,18 @@ namespace SharpDX_XInput
     public class XiDevice : IDisposable
     {
         private DeviceDescriptor _deviceDescriptor;
-        private IDeviceLibrary<int> _deviceLibrary;
-        private SubscriptionHandler _subHandler;
-        private XiDeviceUpdateHandler _deviceUpdateHandler;
+        private readonly SubscriptionHandler _subHandler;
+        private readonly XiDeviceUpdateHandler _deviceUpdateHandler;
         private Thread _pollThread;
         private readonly Controller _controller;
         public EventHandler<BindModeUpdate> BindModeUpdate;
-        private EventHandler<DeviceDescriptor> _deviceEmptyHandler;
+        private readonly EventHandler<DeviceDescriptor> _deviceEmptyHandler;
 
-        public XiDevice(DeviceDescriptor deviceDescriptor, IDeviceLibrary<int> deviceLibrary, EventHandler<DeviceDescriptor> deviceEmptyHandler)
+        public XiDevice(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler)
         {
             _deviceDescriptor = deviceDescriptor;
-            _deviceLibrary = deviceLibrary;
             _subHandler = new SubscriptionHandler(deviceDescriptor, DeviceEmptyHandler);
-            _deviceUpdateHandler = new XiDeviceUpdateHandler(deviceDescriptor, _subHandler);
-            _deviceUpdateHandler.BindModeUpdate = BindModeHandler;
+            _deviceUpdateHandler = new XiDeviceUpdateHandler(deviceDescriptor, _subHandler) {BindModeUpdate = BindModeHandler};
             _deviceEmptyHandler = deviceEmptyHandler;
             _controller = new Controller((UserIndex)deviceDescriptor.DeviceInstance);
 
