@@ -62,7 +62,7 @@ namespace SharpDX_DirectInput
 
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
         {
-            return _deviceLibrary.GetInputDeviceReport(subReq);
+            return _deviceLibrary.GetInputDeviceReport(subReq.DeviceDescriptor);
         }
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)

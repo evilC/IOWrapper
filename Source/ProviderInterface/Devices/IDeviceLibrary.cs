@@ -11,6 +11,6 @@ namespace HidWizards.IOWrapper.ProviderInterface.Devices
     public interface IInputDeviceLibrary<TDeviceIdentifier> : IDeviceLibrary<TDeviceIdentifier>
     {
         ProviderReport GetInputList();
-        DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq);
+        DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor);
     }
 }

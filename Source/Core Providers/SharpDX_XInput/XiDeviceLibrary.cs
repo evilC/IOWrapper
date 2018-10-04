@@ -25,7 +25,7 @@ namespace SharpDX_XInput
             throw new NotImplementedException();
         }
 
-        public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
+        public DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
             throw new NotImplementedException();
         }
