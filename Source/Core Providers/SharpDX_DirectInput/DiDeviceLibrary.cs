@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
-using ProviderHelpers.Library;
 using SharpDX.DirectInput;
 
 namespace SharpDX_DirectInput

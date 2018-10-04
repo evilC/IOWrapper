@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ProviderHelpers.Utilities
+namespace PovHelper
 {
     public static class PovHelper
     {

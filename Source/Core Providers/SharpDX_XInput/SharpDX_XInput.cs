@@ -8,7 +8,6 @@ using System.Diagnostics;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 using PollingDeviceHandlers.Devices;
-using ProviderHelpers.Utilities;
 using ProviderLogger;
 
 namespace SharpDX_XInput

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
-using ProviderHelpers.Library;
 using SharpDX.XInput;
 
 namespace SharpDX_XInput

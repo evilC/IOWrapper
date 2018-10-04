@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3D5AFCCE-CB28-401C-83B0-20C0BA5FD8F3}</ProjectGuid>
+    <ProjectGuid>{9E4C03D5-58D8-4369-A7FA-BB4C307AF905}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ProviderHelpers</RootNamespace>
-    <AssemblyName>ProviderHelpers</AssemblyName>
+    <RootNamespace>PovHelper</RootNamespace>
+    <AssemblyName>PovHelper</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -41,19 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Utilities\POVHelper.cs" />
-    <Compile Include="Library\IDeviceLibrary.cs" />
+    <Compile Include="POVHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\DataObjects\DTOs.csproj">
-      <Project>{81851977-0421-4ebd-b066-0fe03f02589e}</Project>
-      <Name>DTOs</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ProviderInterface\ProviderInterface.csproj">
-      <Project>{f6eaf2bc-f362-4ecd-94e5-617ca37a4210}</Project>
-      <Name>ProviderInterface</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
