@@ -52,7 +52,8 @@ namespace SharpDX_XInput
 
         public ProviderReport GetInputList()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            return null;
         }
 
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
