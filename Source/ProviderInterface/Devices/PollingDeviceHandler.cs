@@ -10,6 +10,12 @@ using HidWizards.IOWrapper.ProviderInterface.Updates;
 
 namespace HidWizards.IOWrapper.ProviderInterface.Devices
 {
+    /// <summary>
+    /// Acquires a device, polls it, and sends updates to it's <see cref="DeviceUpdateHandler"/>
+    /// Also routes subscription requests through to it's <see cref="SubscriptionHandler"/>
+    /// </summary>
+    /// <typeparam name="TUpdate"></typeparam>
+    /// <typeparam name="TProcessorKey"></typeparam>
     public abstract class PollingDeviceHandler<TUpdate, TProcessorKey> : IDisposable
     {
         private Thread _pollThread;
