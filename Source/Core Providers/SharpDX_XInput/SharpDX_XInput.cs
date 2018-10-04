@@ -15,7 +15,7 @@ namespace SharpDX_XInput
     [Export(typeof(IProvider))]
     public class SharpDX_XInput : IInputProvider, IBindModeProvider
     {
-        private readonly Dictionary<DeviceDescriptor, XiDevice> _subscribedDevices = new Dictionary<DeviceDescriptor, XiDevice>();
+        private readonly Dictionary<DeviceDescriptor, XiDevice> _activeDevices = new Dictionary<DeviceDescriptor, XiDevice>();
         private readonly IDeviceLibrary<int> _deviceLibrary = new XiDeviceLibrary();
 
         public bool IsLive { get { return isLive; } }
@@ -52,36 +52,37 @@ namespace SharpDX_XInput
 
         public ProviderReport GetInputList()
         {
-            return null;
+            throw new NotImplementedException();
         }
 
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
         {
-            return null;
+            throw new NotImplementedException();
         }
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            //return pollHandler.SubscribeInput(subReq);
-            if (!_subscribedDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
+            if (!_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
-                deviceHandler = new XiDevice(subReq.DeviceDescriptor, _deviceLibrary);
-                _subscribedDevices.Add(subReq.DeviceDescriptor, deviceHandler);
+                deviceHandler = new XiDevice(subReq.DeviceDescriptor, _deviceLibrary, DeviceEmptyHandler);
+                _activeDevices.Add(subReq.DeviceDescriptor, deviceHandler);
             }
             deviceHandler.SubscribeInput(subReq);
             return true;
-
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            //return pollHandler.UnsubscribeInput(subReq);
-            return false;
+            if (_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
+            {
+                deviceHandler.UnsubscribeInput(subReq);
+            }
+            return true;
         }
 
         public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
         {
-            
+            throw new NotImplementedException();
         }
 
         //public void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)
@@ -96,12 +97,18 @@ namespace SharpDX_XInput
 
         public void RefreshLiveState()
         {
-
+            throw new NotImplementedException();
         }
 
         public void RefreshDevices()
         {
+            throw new NotImplementedException();
+        }
 
+        private void DeviceEmptyHandler(object sender, DeviceDescriptor e)
+        {
+            _activeDevices[e].Dispose();
+            _activeDevices.Remove(e);
         }
         #endregion
     }
