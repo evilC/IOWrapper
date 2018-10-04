@@ -45,6 +45,11 @@ namespace SharpDX_DirectInput
             
         }
 
+        public bool IsEmpty()
+        {
+            return _subHandler.Count() == 0;
+        }
+
         public void SetDetectionMode(DetectionMode detectionMode)
         {
             _deviceUpdateHandler.SetDetectionMode(detectionMode);
