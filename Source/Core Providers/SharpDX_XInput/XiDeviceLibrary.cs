@@ -29,6 +29,11 @@ namespace SharpDX_XInput
             return deviceDescriptor.DeviceInstance;
         }
 
+        public void RefreshConnectedDevices()
+        {
+            // Do nothing for XI
+        }
+
         public ProviderReport GetInputList()
         {
             var providerReport = new ProviderReport

@@ -113,12 +113,12 @@ namespace SharpDX_XInput
 
         public void RefreshLiveState()
         {
-            throw new NotImplementedException();
+            // Built-in API, take no action
         }
 
         public void RefreshDevices()
         {
-            throw new NotImplementedException();
+            _deviceLibrary.RefreshConnectedDevices();
         }
 
         private void DeviceEmptyHandler(object sender, DeviceDescriptor e)

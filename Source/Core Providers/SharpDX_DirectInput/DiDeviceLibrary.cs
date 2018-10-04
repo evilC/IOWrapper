@@ -33,6 +33,25 @@ namespace SharpDX_DirectInput
             throw new Exception($"Could not find device Handle {deviceDescriptor.DeviceHandle}, Instance {deviceDescriptor.DeviceInstance}");
         }
 
+        public void RefreshConnectedDevices()
+        {
+            _connectedDevices = new ConcurrentDictionary<string, List<Guid>>();
+            var diDeviceInstances = DiInstance.GetDevices();
+            foreach (var device in diDeviceInstances)
+            {
+                if (!Utilities.IsStickType(device))
+                    continue;
+                var joystick = new Joystick(DiInstance, device.InstanceGuid);
+                var handle = Utilities.JoystickToHandle(joystick);
+                if (!_connectedDevices.ContainsKey(handle))
+                {
+                    _connectedDevices[handle] = new List<Guid>();
+                }
+                _connectedDevices[handle].Add(device.InstanceGuid);
+            }
+        }
+
+
         #endregion
 
         #region IInputDeviceLibrary
@@ -188,28 +207,6 @@ namespace SharpDX_DirectInput
                 }
             }
         }
-        #endregion
-
-        #region Connected Devices
-
-        private void RefreshConnectedDevices()
-        {
-            _connectedDevices = new ConcurrentDictionary<string, List<Guid>>();
-            var diDeviceInstances = DiInstance.GetDevices();
-            foreach (var device in diDeviceInstances)
-            {
-                if (!Utilities.IsStickType(device))
-                    continue;
-                var joystick = new Joystick(DiInstance, device.InstanceGuid);
-                var handle = Utilities.JoystickToHandle(joystick);
-                if (!_connectedDevices.ContainsKey(handle))
-                {
-                    _connectedDevices[handle] = new List<Guid>();
-                }
-                _connectedDevices[handle].Add(device.InstanceGuid);
-            }
-        }
-
         #endregion
 
     }

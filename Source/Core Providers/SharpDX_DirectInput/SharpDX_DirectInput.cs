@@ -17,8 +17,9 @@ namespace SharpDX_DirectInput
     [Export(typeof(IProvider))]
     public class SharpDX_DirectInput : IInputProvider, IBindModeProvider
     {
-        private readonly Dictionary<DeviceDescriptor, PollingDeviceHandler<JoystickUpdate, (BindingType, int)>> _activeDevices = new Dictionary<DeviceDescriptor, PollingDeviceHandler<JoystickUpdate, (BindingType, int)>>();
-        private readonly DiDeviceLibrary _deviceLibrary;
+        private readonly Dictionary<DeviceDescriptor, PollingDeviceHandler<JoystickUpdate, (BindingType, int)>> _activeDevices
+            = new Dictionary<DeviceDescriptor, PollingDeviceHandler<JoystickUpdate, (BindingType, int)>>();
+        private readonly IInputDeviceLibrary<Guid> _deviceLibrary;
         private Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
 
         public bool IsLive { get; } = true;
@@ -123,12 +124,12 @@ namespace SharpDX_DirectInput
 
         public void RefreshLiveState()
         {
-            throw new NotImplementedException();
+            // Built-in API, take no action
         }
 
         public void RefreshDevices()
         {
-            throw new NotImplementedException();
+            _deviceLibrary.RefreshConnectedDevices();
         }
         #endregion
     }
