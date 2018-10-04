@@ -7,7 +7,6 @@ using SharpDX.DirectInput;
 
 namespace SharpDX_DirectInput
 {
-    //ToDo: Rename. DeviceLibrary?
     public class DiDeviceLibrary : IDeviceLibrary<Guid>
     {
         private ConcurrentDictionary<string, List<Guid>> ConnectedDevices = new ConcurrentDictionary<string, List<Guid>>();
