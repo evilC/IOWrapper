@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Devices\Interfaces.cs" />
+    <Compile Include="Devices\PollingDeviceHandler.cs" />
     <Compile Include="Helpers\DeviceHelper.cs" />
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\POVHelper.cs" />

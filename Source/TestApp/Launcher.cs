@@ -25,14 +25,14 @@ namespace TestApp
             //var vigemDs4OutputTester = new VigemDs4OutputTester();
 
             #region DI
+            //var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
             //var vj1 = new VJoyTester(1, false);
             //var vj2 = new VJoyTester(2, false);
-            //var xInputPad_1 = new XiTester(1);
+            var xInputPad_1 = new XiTester(1);
             //Console.WriteLine("Press Enter for Bind Mode...");
             //Console.ReadLine();
-            IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, BindModeHandler);
+            //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, BindModeHandler);
             //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.XInput, Library.Devices.Console.Xb360_1, BindModeHandler);
-            //var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
             //genericStick_1.Unsubscribe();
             //Console.WriteLine("Press Enter to leave Bind Mode...");
             //Console.ReadLine();

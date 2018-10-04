@@ -7,51 +7,29 @@ using System.Threading.Tasks;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Devices;
 using HidWizards.IOWrapper.ProviderInterface.Subscriptions;
+using HidWizards.IOWrapper.ProviderInterface.Updates;
 using SharpDX.DirectInput;
 
 namespace SharpDX_DirectInput
 {
-    public class DiDevice : IDisposable
+    public class DiDevice : PollingDeviceHandler<JoystickUpdate, (BindingType, int)>
     {
-        private DeviceDescriptor _deviceDescriptor;
-        private readonly DiDeviceUpdateHandler _deviceUpdateHandler;
-        private readonly SubscriptionHandler _subHandler;
         public static DirectInput DiInstance { get; } = new DirectInput();
         private readonly Guid _instanceGuid;
-        private Thread _pollThread;
 
         public DiDevice(DeviceDescriptor deviceDescriptor, Guid guid, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler)
+            : base(deviceDescriptor, deviceEmptyHandler, bindModeHandler)
         {
-            _deviceDescriptor = deviceDescriptor;
             _instanceGuid = guid;
-            _subHandler = new SubscriptionHandler(deviceDescriptor, deviceEmptyHandler);
-            _deviceUpdateHandler = new DiDeviceUpdateHandler(deviceDescriptor, _subHandler, bindModeHandler);
-
-            _pollThread = new Thread(PollThread);
-            _pollThread.Start();
         }
 
-        public bool IsEmpty()
+        protected override DeviceUpdateHandler<JoystickUpdate, (BindingType, int)> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler,
+            EventHandler<BindModeUpdate> bindModeHandler)
         {
-            return _subHandler.Count() == 0;
+            return new DiDeviceUpdateHandler(deviceDescriptor, _subHandler, bindModeHandler);
         }
 
-        public void SetDetectionMode(DetectionMode detectionMode)
-        {
-            _deviceUpdateHandler.SetDetectionMode(detectionMode);
-        }
-
-        public void SubscribeInput(InputSubscriptionRequest subReq)
-        {
-            _subHandler.Subscribe(subReq);
-        }
-
-        public void UnsubscribeInput(InputSubscriptionRequest subReq)
-        {
-            _subHandler.Unsubscribe(subReq);
-        }
-
-        private void PollThread()
+        protected override void PollThread()
         {
             Joystick joystick = null;
             while (true)
@@ -91,11 +69,11 @@ namespace SharpDX_DirectInput
                 {
                     try
                     {
-                        joystick.Dispose();
+                        joystick?.Dispose();
                     }
                     catch
                     {
-
+                        // ignored
                     }
 
                     joystick = null;
@@ -103,12 +81,12 @@ namespace SharpDX_DirectInput
             }
         }
 
-        public void Dispose()
-        {
-            _pollThread.Abort();
-            _pollThread.Join();
-            _pollThread = null;
-        }
+        //public void Dispose()
+        //{
+        //    _pollThread.Abort();
+        //    _pollThread.Join();
+        //    _pollThread = null;
+        //}
 
     }
 }

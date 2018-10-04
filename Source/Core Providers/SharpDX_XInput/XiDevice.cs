@@ -7,65 +7,34 @@ using System.Threading.Tasks;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Devices;
 using HidWizards.IOWrapper.ProviderInterface.Subscriptions;
+using HidWizards.IOWrapper.ProviderInterface.Updates;
 using SharpDX.XInput;
 
 namespace SharpDX_XInput
 {
-    public class XiDevice : IDisposable
+    public class XiDevice : PollingDeviceHandler<State, (BindingType, int)>
     {
-        private DeviceDescriptor _deviceDescriptor;
-        private readonly SubscriptionHandler _subHandler;
-        private readonly XiDeviceUpdateHandler _deviceUpdateHandler;
-        private Thread _pollThread;
-        private readonly Controller _controller;
-
         public XiDevice(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler)
+            : base(deviceDescriptor, deviceEmptyHandler, bindModeHandler)
         {
-            _deviceDescriptor = deviceDescriptor;
-            _subHandler = new SubscriptionHandler(deviceDescriptor, deviceEmptyHandler);
-            _deviceUpdateHandler = new XiDeviceUpdateHandler(deviceDescriptor, _subHandler, bindModeHandler);
-            _controller = new Controller((UserIndex)deviceDescriptor.DeviceInstance);
-
-            _pollThread = new Thread(PollThread);
-            _pollThread.Start();
         }
 
-        public void SubscribeInput(InputSubscriptionRequest subReq)
+        protected override DeviceUpdateHandler<State, (BindingType, int)> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler,
+            EventHandler<BindModeUpdate> bindModeHandler)
         {
-            _subHandler.Subscribe(subReq);
+            return new XiDeviceUpdateHandler(deviceDescriptor, _subHandler, bindModeHandler);
         }
 
-        public void UnsubscribeInput(InputSubscriptionRequest subReq)
+        protected override void PollThread()
         {
-            _subHandler.Unsubscribe(subReq);
-        }
-
-        private void PollThread()
-        {
+            var controller = new Controller((UserIndex)_deviceDescriptor.DeviceInstance);
             while (true)
             {
-                if (!_controller.IsConnected)
+                if (!controller.IsConnected)
                     return;
-                _deviceUpdateHandler.ProcessUpdate(_controller.GetState());
+                _deviceUpdateHandler.ProcessUpdate(controller.GetState());
                 Thread.Sleep(10);
             }
-        }
-
-        public void Dispose()
-        {
-            _pollThread.Abort();
-            _pollThread.Join();
-            _pollThread = null;
-        }
-
-        public bool IsEmpty()
-        {
-            return _subHandler.Count() == 0;
-        }
-
-        public void SetDetectionMode(DetectionMode detectionMode)
-        {
-            _deviceUpdateHandler.SetDetectionMode(detectionMode);
         }
     }
 }
