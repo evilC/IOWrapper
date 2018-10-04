@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using HidWizards.IOWrapper.DataTransferObjects;
-using ProviderHelpers.Updates;
+using PollingDeviceHandlers.Updates;
 using ProviderHelpers.Utilities;
 using SharpDX.DirectInput;
 

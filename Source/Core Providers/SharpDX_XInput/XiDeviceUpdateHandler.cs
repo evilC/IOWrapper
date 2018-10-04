@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using HidWizards.IOWrapper.DataTransferObjects;
-using ProviderHelpers.Updates;
+using PollingDeviceHandlers.Updates;
 using SharpDX.XInput;
 using SubscriptionDictionaryWrapper;
 

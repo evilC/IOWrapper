@@ -1,6 +1,6 @@
 ﻿using HidWizards.IOWrapper.DataTransferObjects;
 
-namespace ProviderHelpers.Updates
+namespace PollingDeviceHandlers.Updates
 {
     public interface IDeviceUpdateHandler<TUpdate>
     {

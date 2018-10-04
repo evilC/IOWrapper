@@ -9,7 +9,7 @@ using System.Linq;
 using System.Diagnostics;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
-using ProviderHelpers.Devices;
+using PollingDeviceHandlers.Devices;
 using ProviderHelpers.Library;
 using ProviderHelpers.Utilities;
 using ProviderLogger;

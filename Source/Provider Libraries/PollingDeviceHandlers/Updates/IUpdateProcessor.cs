@@ -1,6 +1,6 @@
 ﻿using HidWizards.IOWrapper.DataTransferObjects;
 
-namespace ProviderHelpers.Updates
+namespace PollingDeviceHandlers.Updates
 {
     /// <summary>
     /// Interface for handling Button/Axis value normalization, POV physical to logical values etc

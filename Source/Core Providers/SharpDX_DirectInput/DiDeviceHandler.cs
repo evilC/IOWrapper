@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using HidWizards.IOWrapper.DataTransferObjects;
-using ProviderHelpers.Devices;
-using ProviderHelpers.Updates;
+using PollingDeviceHandlers.Devices;
+using PollingDeviceHandlers.Updates;
 using SharpDX.DirectInput;
 using SubscriptionDictionaryWrapper;
 

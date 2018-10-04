@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading;
 using HidWizards.IOWrapper.DataTransferObjects;
-using ProviderHelpers.Updates;
+using PollingDeviceHandlers.Updates;
 using SubscriptionDictionaryWrapper;
 
-namespace ProviderHelpers.Devices
+namespace PollingDeviceHandlers.Devices
 {
     /// <summary>
     /// Acquires a device, polls it, and sends updates to it's <see cref="DeviceUpdateHandler"/>

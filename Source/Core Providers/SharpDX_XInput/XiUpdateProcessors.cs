@@ -1,5 +1,5 @@
 ﻿using HidWizards.IOWrapper.DataTransferObjects;
-using ProviderHelpers.Updates;
+using PollingDeviceHandlers.Updates;
 
 namespace SharpDX_XInput
 {

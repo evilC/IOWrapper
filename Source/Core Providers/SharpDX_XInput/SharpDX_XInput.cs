@@ -7,7 +7,7 @@ using System.Threading;
 using System.Diagnostics;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
-using ProviderHelpers.Devices;
+using PollingDeviceHandlers.Devices;
 using ProviderHelpers.Utilities;
 using ProviderLogger;
 

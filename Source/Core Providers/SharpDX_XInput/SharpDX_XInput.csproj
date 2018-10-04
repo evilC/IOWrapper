@@ -67,6 +67,10 @@
       <Name>DTOs</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\Provider Libraries\PollingDeviceHandlers\PollingDeviceHandlers.csproj">
+      <Project>{04FA4D8A-D5D2-4477-8AED-021239CE95AE}</Project>
+      <Name>PollingDeviceHandlers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Provider Libraries\ProviderHelpers\ProviderHelpers.csproj">
       <Project>{3d5afcce-cb28-401c-83b0-20c0ba5fd8f3}</Project>
       <Name>ProviderHelpers</Name>
