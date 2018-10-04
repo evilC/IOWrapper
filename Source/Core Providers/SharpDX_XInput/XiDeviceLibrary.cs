@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HidWizards.IOWrapper.DataTransferObjects;
-using HidWizards.IOWrapper.ProviderInterface.Devices;
+using ProviderHelpers.Library;
 using SharpDX.XInput;
 
 namespace SharpDX_XInput

@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using HidWizards.IOWrapper.DataTransferObjects;
-using HidWizards.IOWrapper.ProviderInterface.Devices;
+using ProviderHelpers.Library;
 using SharpDX.DirectInput;
 
 namespace SharpDX_DirectInput

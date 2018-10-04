@@ -5,7 +5,6 @@ https://github.com/evilC/DS4WindowsApi
 
 using DS4Windows;
 using HidWizards.IOWrapper.ProviderInterface;
-using HidWizards.IOWrapper.ProviderInterface.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -20,7 +19,6 @@ namespace Core_DS4WindowsApi
     [Export(typeof(IProvider))]
     public class Core_DS4WindowsApi : IInputProvider
     {
-        private Logger logger;
         DS4ControllerHandler[] connectedControllers = new DS4ControllerHandler[4];
 
         private static List<string> axisNames = new List<string>

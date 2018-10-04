@@ -1,5 +1,4 @@
 ﻿using HidWizards.IOWrapper.ProviderInterface;
-using HidWizards.IOWrapper.ProviderInterface.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -16,6 +15,7 @@ using System.Xml;
 using Core_Interception.Helpers;
 using Core_Interception.Lib;
 using Core_Interception.Monitors;
+using HidDeviceHelper;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 using static System.String;

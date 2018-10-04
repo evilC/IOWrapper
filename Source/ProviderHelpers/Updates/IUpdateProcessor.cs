@@ -1,6 +1,6 @@
 ﻿using HidWizards.IOWrapper.DataTransferObjects;
 
-namespace HidWizards.IOWrapper.ProviderInterface.Updates
+namespace ProviderHelpers.Updates
 {
     /// <summary>
     /// Interface for handling Button/Axis value normalization, POV physical to logical values etc

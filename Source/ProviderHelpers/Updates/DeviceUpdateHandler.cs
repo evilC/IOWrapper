@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using HidWizards.IOWrapper.DataTransferObjects;
-using HidWizards.IOWrapper.ProviderInterface.Subscriptions;
+using ProviderHelpers.Subscriptions;
 
-namespace HidWizards.IOWrapper.ProviderInterface.Updates
+namespace ProviderHelpers.Updates
 {
     /// <summary>
     /// Handles processing of Updates for a device. 
     /// Given a series of updates from a device, and a reference to a <see cref="SubscriptionHandler"/> containing subscriptions,
     /// will generate Subscription Events or Bind Mode events accordingly
     /// </summary>
-    /// <typeparam name="TUpdate">The type of update that this device generates</typeparam>
+    /// <typeparam name="TProcessorKey">The type of update that this device generates</typeparam>
     /// <typeparam name="TProcessorKey">The Key type used for the <see cref="SubscriptionHandler"/> dictionary</typeparam>
     public abstract class DeviceUpdateHandler<TUpdate, TProcessorKey> : IDeviceUpdateHandler<TUpdate>
     {

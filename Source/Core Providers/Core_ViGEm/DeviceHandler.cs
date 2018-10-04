@@ -1,8 +1,8 @@
 ﻿using Nefarius.ViGEm.Client;
-using HidWizards.IOWrapper.ProviderInterface.Helpers;
 using System;
 using System.Collections.Generic;
 using HidWizards.IOWrapper.DataTransferObjects;
+using ProviderHelpers.Utilities;
 
 namespace Core_ViGEm
 {

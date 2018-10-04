@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using HidWizards.IOWrapper.DataTransferObjects;
-using HidWizards.IOWrapper.ProviderInterface.Subscriptions;
-using HidWizards.IOWrapper.ProviderInterface.Updates;
+using ProviderHelpers.Subscriptions;
+using ProviderHelpers.Updates;
 
-namespace HidWizards.IOWrapper.ProviderInterface.Devices
+namespace ProviderHelpers.Devices
 {
     /// <summary>
     /// Acquires a device, polls it, and sends updates to it's <see cref="DeviceUpdateHandler"/>

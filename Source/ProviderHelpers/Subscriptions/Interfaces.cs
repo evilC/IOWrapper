@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using HidWizards.IOWrapper.DataTransferObjects;
 
-namespace HidWizards.IOWrapper.ProviderInterface.Subscriptions
+namespace ProviderHelpers.Subscriptions
 {
     public interface ISubscriptionStore
     {

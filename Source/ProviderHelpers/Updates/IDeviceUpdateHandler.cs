@@ -1,6 +1,6 @@
 ﻿using HidWizards.IOWrapper.DataTransferObjects;
 
-namespace HidWizards.IOWrapper.ProviderInterface.Updates
+namespace ProviderHelpers.Updates
 {
     public interface IDeviceUpdateHandler<TUpdate>
     {

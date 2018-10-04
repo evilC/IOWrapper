@@ -1,7 +1,7 @@
 ﻿using System;
 using HidWizards.IOWrapper.DataTransferObjects;
 
-namespace HidWizards.IOWrapper.ProviderInterface.Subscriptions
+namespace ProviderHelpers.Subscriptions
 {
     public class SubscriptionProcessor : SubscriptionDictionary<Guid, InputSubscriptionRequest, BindingDescriptor>
     {

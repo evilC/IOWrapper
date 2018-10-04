@@ -72,6 +72,10 @@
       <Name>DTOs</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\ProviderHelpers\ProviderHelpers.csproj">
+      <Project>{3D5AFCCE-CB28-401C-83B0-20C0BA5FD8F3}</Project>
+      <Name>ProviderHelpers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ProviderInterface\ProviderInterface.csproj">
       <Project>{f6eaf2bc-f362-4ecd-94e5-617ca37a4210}</Project>
       <Name>ProviderInterface</Name>

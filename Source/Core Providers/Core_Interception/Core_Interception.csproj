@@ -55,6 +55,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\HidDeviceHelper\HidDeviceHelper.csproj">
+      <Project>{5C0547B8-FCA1-436B-B6DD-1061F04CAD36}</Project>
+      <Name>HidDeviceHelper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\DataObjects\DTOs.csproj">
       <Project>{81851977-0421-4ebd-b066-0fe03f02589e}</Project>
       <Name>DTOs</Name>

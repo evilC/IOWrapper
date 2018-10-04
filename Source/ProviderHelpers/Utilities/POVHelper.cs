@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace HidWizards.IOWrapper.ProviderInterface.Helpers
+namespace ProviderHelpers.Utilities
 {
-    public static class POVHelper
+    public static class PovHelper
     {
         public static List<int> PovDirections = new List<int> { 0, 9000, 18000, 27000 };
 

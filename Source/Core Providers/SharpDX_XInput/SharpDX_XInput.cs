@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using SharpDX.XInput;
 using System.Threading;
 using System.Diagnostics;
-using HidWizards.IOWrapper.ProviderInterface.Helpers;
 using HidWizards.IOWrapper.DataTransferObjects;
-using HidWizards.IOWrapper.ProviderInterface.Devices;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
+using ProviderHelpers.Devices;
+using ProviderHelpers.Utilities;
 
 namespace SharpDX_XInput
 {
