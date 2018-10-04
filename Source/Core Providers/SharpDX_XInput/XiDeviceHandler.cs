@@ -16,9 +16,9 @@ namespace SharpDX_XInput
     {
         protected Controller _controller;
 
-        public XiDeviceHandler(DeviceDescriptor deviceDescriptor) : base(deviceDescriptor)
+        public XiDeviceHandler(DeviceDescriptor deviceDescriptor, UserIndex userIndex) : base(deviceDescriptor)
         {
-            _controller = new Controller((UserIndex)DeviceDescriptor.DeviceInstance);
+            _controller = new Controller(userIndex);
         }
 
         protected override IDeviceUpdateHandler<State> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler,

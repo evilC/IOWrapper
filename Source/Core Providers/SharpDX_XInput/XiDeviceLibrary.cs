@@ -9,7 +9,7 @@ using SharpDX.XInput;
 
 namespace SharpDX_XInput
 {
-    class XiDeviceLibrary : IInputDeviceLibrary<int>
+    class XiDeviceLibrary : IInputDeviceLibrary<UserIndex>
     {
         private readonly ProviderDescriptor _providerDescriptor;
         private static DeviceReportNode _buttonInfo;
@@ -24,9 +24,9 @@ namespace SharpDX_XInput
             BuildDeviceList();
         }
 
-        public int GetDeviceIdentifier(DeviceDescriptor deviceDescriptor)
+        public UserIndex GetDeviceIdentifier(DeviceDescriptor deviceDescriptor)
         {
-            return deviceDescriptor.DeviceInstance;
+            return (UserIndex)deviceDescriptor.DeviceInstance;
         }
 
         public void RefreshConnectedDevices()
