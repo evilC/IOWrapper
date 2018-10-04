@@ -21,15 +21,18 @@ namespace SharpDX_DirectInput
         private Guid _instanceGuid = Guid.Empty;
         private Thread _pollThread;
         public EventHandler<BindModeUpdate> BindModeUpdate;
+        private EventHandler<DeviceDescriptor> _deviceEmptyHandler;
 
-        public DiDevice(DeviceDescriptor deviceDescriptor, IDeviceLibrary<Guid> deviceLibrary)
+        public DiDevice(DeviceDescriptor deviceDescriptor, IDeviceLibrary<Guid> deviceLibrary, EventHandler<DeviceDescriptor> deviceEmptyHandler)
         {
             _deviceDescriptor = deviceDescriptor;
             _deviceLibrary = deviceLibrary;
+            _deviceEmptyHandler = deviceEmptyHandler;
             _instanceGuid = _deviceLibrary.GetDevice(_deviceDescriptor);
             _subHandler = new SubscriptionHandler(deviceDescriptor, DeviceEmptyHandler);
             _deviceUpdateHandler = new DiDeviceUpdateHandler(deviceDescriptor, _subHandler);
             _deviceUpdateHandler.BindModeUpdate = BindModeHandler;
+            _deviceEmptyHandler = deviceEmptyHandler;
 
             _pollThread = new Thread(PollThread);
             _pollThread.Start();
@@ -42,7 +45,7 @@ namespace SharpDX_DirectInput
 
         private void DeviceEmptyHandler(object sender, DeviceDescriptor e)
         {
-            
+            _deviceEmptyHandler?.Invoke(sender, e);
         }
 
         public bool IsEmpty()
@@ -58,6 +61,11 @@ namespace SharpDX_DirectInput
         public void SubscribeInput(InputSubscriptionRequest subReq)
         {
             _subHandler.Subscribe(subReq);
+        }
+
+        public void UnsubscribeInput(InputSubscriptionRequest subReq)
+        {
+            _subHandler.Unsubscribe(subReq);
         }
 
         private void PollThread()
@@ -118,5 +126,6 @@ namespace SharpDX_DirectInput
             _pollThread.Join();
             _pollThread = null;
         }
+
     }
 }

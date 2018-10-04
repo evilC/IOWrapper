@@ -29,12 +29,12 @@ namespace TestApp
             //var vj2 = new VJoyTester(2, false);
             //Console.WriteLine("Press Enter for Bind Mode...");
             //Console.ReadLine();
-            IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, BindModeHandler);
+            //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, BindModeHandler);
             var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
-
+            genericStick_1.Unsubscribe();
             //Console.WriteLine("Press Enter to leave Bind Mode...");
             //Console.ReadLine();
-            IOW.Instance.SetDetectionMode(DetectionMode.Subscription, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M);
+            //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M);
             #endregion
 
             //var xInputPad_1 = new XiTester(1);

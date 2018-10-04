@@ -63,7 +63,7 @@ namespace TestApp.Plugins
         {
             if (!IOW.Instance.UnsubscribeInput(_input))
             {
-                throw new Exception("Could not subscribe to SubReq");
+                throw new Exception("Could not Unsubscribe SubReq");
             }
             return true;
         }
