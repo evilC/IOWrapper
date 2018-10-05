@@ -3,7 +3,7 @@ using NUnit.Framework;
 using SubscriptionHandlingTests.SubscriptionHandler.Helpers;
 using SubscriptionHandlingTests.SubscriptionHandler.Lookups;
 
-namespace UnitTests.SubscriptionHandlerTests.ContainsKey
+namespace SubscriptionHandlingTests.SubscriptionHandler.ContainsKey
 {
     /// <summary>
     /// Given I have a SubscriptionHandler

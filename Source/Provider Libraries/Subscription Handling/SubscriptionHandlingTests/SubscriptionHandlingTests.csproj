@@ -49,6 +49,8 @@
   <ItemGroup>
     <Compile Include="EmptyEventDictionary\EmptyEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SubscriptionHandler\Callbacks\MultiSubscriber.cs" />
+    <Compile Include="SubscriptionHandler\Callbacks\MultiSubscription.cs" />
     <Compile Include="SubscriptionHandler\ContainsKey\ContainsKeyIndex.cs" />
     <Compile Include="SubscriptionHandler\ContainsKey\ContainsKeyType.cs" />
     <Compile Include="SubscriptionHandler\Count\CountIndex.cs" />
