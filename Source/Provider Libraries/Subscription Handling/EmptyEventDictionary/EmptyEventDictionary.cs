@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace SubscriptionDictionaryWrapper
+namespace Hidwizards.IOWrapper.Libraries.EmptyEventDictionary
 {
     public class EmptyEventDictionary<TKey, TValue, TEmptyEventArgs>
     {

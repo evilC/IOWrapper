@@ -1,7 +1,9 @@
 ﻿using System;
+using Hidwizards.IOWrapper.Libraries.EmptyEventDictionary;
 using HidWizards.IOWrapper.DataTransferObjects;
+using SubscriptionDictionaryWrapper;
 
-namespace SubscriptionDictionaryWrapper
+namespace Hidwizards.IOWrapper.Libraries.SubscriptionHandler
 {
     public class SubscriptionProcessor : EmptyEventDictionary<Guid, InputSubscriptionRequest, BindingDescriptor>
     {

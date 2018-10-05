@@ -1,0 +1,1 @@
+﻿A wrapper around `ConcurrentDictionary` that fires an event handler when the dictionary is empty.

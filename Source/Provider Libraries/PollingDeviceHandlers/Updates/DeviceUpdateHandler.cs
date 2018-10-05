@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandler;
 using HidWizards.IOWrapper.DataTransferObjects;
 using SubscriptionDictionaryWrapper;
 

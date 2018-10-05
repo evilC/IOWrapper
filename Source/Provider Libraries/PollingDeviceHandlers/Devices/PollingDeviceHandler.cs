@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandler;
 using HidWizards.IOWrapper.DataTransferObjects;
 using PollingDeviceHandlers.Updates;
 using SubscriptionDictionaryWrapper;
