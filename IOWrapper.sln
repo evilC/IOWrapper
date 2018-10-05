@@ -53,12 +53,21 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubscriptionHandler", "Source\Provider Libraries\Subscription Handling\SubscriptionHandler\SubscriptionHandler.csproj", "{C9639380-2F3D-4BA2-907C-9EAC1C583EF9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Subscription Handling", "Subscription Handling", "{E9CB7CE2-548F-45DC-A0F7-FEC41DA973CA}"
+	ProjectSection(SolutionItems) = preProject
+		Source\Provider Libraries\Subscription Handling\README.md = Source\Provider Libraries\Subscription Handling\README.md
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmptyEventDictionary", "Source\Provider Libraries\Subscription Handling\EmptyEventDictionary\EmptyEventDictionary.csproj", "{36BB4AB9-0867-47F8-B813-D37537551111}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Device Update Handling", "Device Update Handling", "{2B04244D-69F7-4580-B2BC-6E49061FA5D0}"
+	ProjectSection(SolutionItems) = preProject
+		Source\Provider Libraries\Device Update Handling\README.md = Source\Provider Libraries\Device Update Handling\README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Device Querying", "Device Querying", "{E2F8AC3D-1396-4B33-A3D5-4BE8B06E2DD2}"
+	ProjectSection(SolutionItems) = preProject
+		Source\Provider Libraries\Device Querying\README.md = Source\Provider Libraries\Device Querying\README.md
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeviceLibrary", "Source\Provider Libraries\Device Querying\DeviceLibrary\DeviceLibrary.csproj", "{462785B6-CF57-4BA8-8AAB-D226E75E2C3C}"
 EndProject
