@@ -48,11 +48,11 @@
     <Compile Include="Updates\IUpdateProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\DataObjects\DTOs.csproj">
+    <ProjectReference Include="..\..\..\DataObjects\DTOs.csproj">
       <Project>{81851977-0421-4ebd-b066-0fe03f02589e}</Project>
       <Name>DTOs</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Subscription Handling\SubscriptionHandler\SubscriptionHandler.csproj">
+    <ProjectReference Include="..\..\Subscription Handling\SubscriptionHandler\SubscriptionHandler.csproj">
       <Project>{C9639380-2F3D-4BA2-907C-9EAC1C583EF9}</Project>
       <Name>SubscriptionHandler</Name>
     </ProjectReference>

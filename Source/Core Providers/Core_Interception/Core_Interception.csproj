@@ -60,8 +60,8 @@
       <Name>DTOs</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\Provider Libraries\HidDeviceHelper\HidDeviceHelper.csproj">
-      <Project>{5c0547b8-fca1-436b-b6dd-1061f04cad36}</Project>
+    <ProjectReference Include="..\..\Provider Libraries\Device Querying\HidDeviceHelper\HidDeviceHelper.csproj">
+      <Project>{5C0547B8-FCA1-436B-B6DD-1061F04CAD36}</Project>
       <Name>HidDeviceHelper</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Provider Libraries\ProviderLogger\ProviderLogger.csproj">
