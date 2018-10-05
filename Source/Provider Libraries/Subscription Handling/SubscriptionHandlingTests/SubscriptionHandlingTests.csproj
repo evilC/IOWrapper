@@ -49,16 +49,35 @@
   <ItemGroup>
     <Compile Include="EmptyEventDictionary\EmptyEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SubscriptionHandler\ContainsKey\ContainsKeyIndex.cs" />
+    <Compile Include="SubscriptionHandler\ContainsKey\ContainsKeyType.cs" />
+    <Compile Include="SubscriptionHandler\Count\CountIndex.cs" />
+    <Compile Include="SubscriptionHandler\Count\CountSubIndex.cs" />
+    <Compile Include="SubscriptionHandler\Count\CountType.cs" />
+    <Compile Include="SubscriptionHandler\EmptyHandler\EmptyHandler.cs" />
+    <Compile Include="SubscriptionHandler\Helpers\SubscriptionHelper.cs" />
+    <Compile Include="SubscriptionHandler\Lookups\DescriptorLookups.cs" />
+    <Compile Include="SubscriptionHandler\Lookups\Enums.cs" />
+    <Compile Include="SubscriptionHandler\ReSubscribe\ReSubscribe.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\DataObjects\DTOs.csproj">
+      <Project>{81851977-0421-4ebd-b066-0fe03f02589e}</Project>
+      <Name>DTOs</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EmptyEventDictionary\EmptyEventDictionary.csproj">
       <Project>{36BB4AB9-0867-47F8-B813-D37537551111}</Project>
       <Name>EmptyEventDictionary</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SubscriptionHandler\SubscriptionHandler.csproj">
+      <Project>{C9639380-2F3D-4BA2-907C-9EAC1C583EF9}</Project>
+      <Name>SubscriptionHandler</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
