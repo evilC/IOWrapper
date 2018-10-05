@@ -6,10 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Devices;
 using Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Updates;
-using Hidwizards.IOWrapper.Libraries.SubscriptionHandler;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerLibs;
 using HidWizards.IOWrapper.DataTransferObjects;
 using SharpDX.DirectInput;
-using SubscriptionDictionaryWrapper;
 
 namespace SharpDX_DirectInput
 {

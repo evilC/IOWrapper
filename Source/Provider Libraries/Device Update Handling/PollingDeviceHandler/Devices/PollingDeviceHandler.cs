@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Updates;
-using Hidwizards.IOWrapper.Libraries.SubscriptionHandler;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerLibs;
 using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Devices
@@ -16,7 +16,7 @@ namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Devices
     {
         private Thread _pollThread;
         protected IDeviceUpdateHandler<TUpdate> DeviceUpdateHandler;
-        protected SubscriptionHandler.SubscriptionHandler SubHandler;
+        protected SubscriptionHandler SubHandler;
         protected DeviceDescriptor DeviceDescriptor;
 
         protected PollingDeviceHandler(DeviceDescriptor deviceDescriptor)
@@ -26,7 +26,7 @@ namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Devices
 
         public PollingDeviceHandler<TUpdate, TProcessorKey> Initialize(EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler)
         {
-            SubHandler = new SubscriptionHandler.SubscriptionHandler(DeviceDescriptor, deviceEmptyHandler);
+            SubHandler = new SubscriptionHandler(DeviceDescriptor, deviceEmptyHandler);
             DeviceUpdateHandler = CreateUpdateHandler(DeviceDescriptor, SubHandler, bindModeHandler);
 
             _pollThread = new Thread(PollThread);
@@ -55,7 +55,7 @@ namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Devices
             SubHandler.Unsubscribe(subReq);
         }
 
-        protected abstract IDeviceUpdateHandler<TUpdate> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler.SubscriptionHandler subscriptionHandler, EventHandler<BindModeUpdate> bindModeHandler);
+        protected abstract IDeviceUpdateHandler<TUpdate> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler, EventHandler<BindModeUpdate> bindModeHandler);
 
         protected abstract void PollThread();
 

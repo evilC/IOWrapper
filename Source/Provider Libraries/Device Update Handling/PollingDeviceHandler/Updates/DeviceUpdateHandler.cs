@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hidwizards.IOWrapper.Libraries.SubscriptionHandler;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerLibs;
 using HidWizards.IOWrapper.DataTransferObjects;
-using SubscriptionDictionaryWrapper;
 
 namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Updates
 {

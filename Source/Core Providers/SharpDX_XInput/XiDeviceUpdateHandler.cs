@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Updates;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerLibs;
 using HidWizards.IOWrapper.DataTransferObjects;
 using SharpDX.XInput;
-using SubscriptionDictionaryWrapper;
 
 namespace SharpDX_XInput
 {

@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using Hidwizards.IOWrapper.Libraries.EmptyEventDictionary;
 using HidWizards.IOWrapper.DataTransferObjects;
-using SubscriptionDictionaryWrapper;
 
-namespace Hidwizards.IOWrapper.Libraries.SubscriptionHandler
+namespace Hidwizards.IOWrapper.Libraries.SubscriptionHandlerLibs
 {
     public class SubscriptionHandler : ISubscriptionHandler
     {
