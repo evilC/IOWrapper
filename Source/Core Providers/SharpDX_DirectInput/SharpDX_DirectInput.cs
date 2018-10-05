@@ -8,7 +8,7 @@ using Microsoft.Win32;
 using System.Linq;
 using System.Diagnostics;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
-using Hidwizards.IOWrapper.Libraries.PollingDeviceHandlers.Devices;
+using Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Devices;
 using Hidwizards.IOWrapper.Libraries.ProviderLogger;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;

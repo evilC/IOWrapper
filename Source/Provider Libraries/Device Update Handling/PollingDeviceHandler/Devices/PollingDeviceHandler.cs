@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading;
-using Hidwizards.IOWrapper.Libraries.PollingDeviceHandlers.Updates;
+using Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Updates;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandler;
 using HidWizards.IOWrapper.DataTransferObjects;
 
-namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandlers.Devices
+namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Devices
 {
     /// <summary>
     /// Acquires a device, polls it, and sends updates to it's <see cref="DeviceUpdateHandler"/>

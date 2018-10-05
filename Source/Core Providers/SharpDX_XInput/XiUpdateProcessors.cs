@@ -1,4 +1,4 @@
-﻿using Hidwizards.IOWrapper.Libraries.PollingDeviceHandlers.Updates;
+﻿using Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Updates;
 using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace SharpDX_XInput

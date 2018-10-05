@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Hidwizards.IOWrapper.Libraries.PollingDeviceHandlers.Updates;
+using Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Updates;
 using Hidwizards.IOWrapper.Libraries.PovHelper;
 using HidWizards.IOWrapper.DataTransferObjects;
 using SharpDX.DirectInput;
