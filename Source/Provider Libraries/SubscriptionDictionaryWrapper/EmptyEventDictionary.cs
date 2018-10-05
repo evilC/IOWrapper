@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SubscriptionDictionaryWrapper
 {
-    public class SubscriptionDictionary<TKey, TValue, TEmptyEventArgs>
+    public class EmptyEventDictionary<TKey, TValue, TEmptyEventArgs>
     {
         private event EventHandler<TEmptyEventArgs> Empty;
         private readonly TEmptyEventArgs _emptyEventArgs;
@@ -13,7 +13,7 @@ namespace SubscriptionDictionaryWrapper
 
         protected readonly ConcurrentDictionary<TKey, TValue> Dictionary = new ConcurrentDictionary<TKey, TValue>();
 
-        public SubscriptionDictionary(TEmptyEventArgs emptyEventArgs, EventHandler<TEmptyEventArgs> emptyHandler)
+        public EmptyEventDictionary(TEmptyEventArgs emptyEventArgs, EventHandler<TEmptyEventArgs> emptyHandler)
         {
             _emptyEventArgs = emptyEventArgs;
             Empty = emptyHandler;

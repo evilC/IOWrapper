@@ -6,15 +6,15 @@ namespace SubscriptionDictionaryWrapper
 {
     public class SubscriptionHandler : ISubscriptionHandler
     {
-        private readonly SubscriptionDictionary<BindingType,
-            SubscriptionDictionary<int, SubscriptionDictionary<int, SubscriptionProcessor, BindingDescriptor>, BindingDescriptor>,
+        private readonly EmptyEventDictionary<BindingType,
+            EmptyEventDictionary<int, EmptyEventDictionary<int, SubscriptionProcessor, BindingDescriptor>, BindingDescriptor>,
             DeviceDescriptor> _bindings;
 
         public SubscriptionHandler(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler)
         {
             _bindings =
-                new SubscriptionDictionary<BindingType,
-                    SubscriptionDictionary<int, SubscriptionDictionary<int, SubscriptionProcessor, BindingDescriptor>,
+                new EmptyEventDictionary<BindingType,
+                    EmptyEventDictionary<int, EmptyEventDictionary<int, SubscriptionProcessor, BindingDescriptor>,
                         BindingDescriptor>, DeviceDescriptor>(deviceDescriptor, deviceEmptyHandler);
         }
 
@@ -26,10 +26,10 @@ namespace SubscriptionDictionaryWrapper
         public void Subscribe(InputSubscriptionRequest subReq)
         {
             _bindings.GetOrAdd(subReq.BindingDescriptor.Type,
-                    new SubscriptionDictionary<int, SubscriptionDictionary<int, SubscriptionProcessor, BindingDescriptor>,
+                    new EmptyEventDictionary<int, EmptyEventDictionary<int, SubscriptionProcessor, BindingDescriptor>,
                         BindingDescriptor>(subReq.BindingDescriptor, BindingTypeEmptyHandler))
                 .GetOrAdd(subReq.BindingDescriptor.Index,
-                    new SubscriptionDictionary<int, SubscriptionProcessor, BindingDescriptor>(subReq.BindingDescriptor,
+                    new EmptyEventDictionary<int, SubscriptionProcessor, BindingDescriptor>(subReq.BindingDescriptor,
                         IndexEmptyHandler))
                 .GetOrAdd(subReq.BindingDescriptor.SubIndex,
                     new SubscriptionProcessor(subReq.BindingDescriptor, SubIndexEmptyHandler))

@@ -3,7 +3,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace SubscriptionDictionaryWrapper
 {
-    public class SubscriptionProcessor : SubscriptionDictionary<Guid, InputSubscriptionRequest, BindingDescriptor>
+    public class SubscriptionProcessor : EmptyEventDictionary<Guid, InputSubscriptionRequest, BindingDescriptor>
     {
         public SubscriptionProcessor(BindingDescriptor emptyEventArgs, EventHandler<BindingDescriptor> emptyHandler) : base(emptyEventArgs, emptyHandler)
         {
