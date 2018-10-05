@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Updates;
-using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerLibs;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
 using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Devices
