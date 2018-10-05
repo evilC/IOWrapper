@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using NUnit.Framework;
-using SubscriptionHandlingTests.SubscriptionHandler.Helpers;
-using SubscriptionHandlingTests.SubscriptionHandler.Lookups;
+using Tests.SubscriptionHandler.Helpers;
+using Tests.SubscriptionHandler.Lookups;
 
-namespace SubscriptionHandlingTests.SubscriptionHandler.Count
+namespace Tests.SubscriptionHandler.Count
 {
     /// <summary>
     /// Given I have a SubscriptionHandler

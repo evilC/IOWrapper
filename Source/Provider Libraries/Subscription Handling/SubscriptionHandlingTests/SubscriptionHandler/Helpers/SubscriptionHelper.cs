@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using HidWizards.IOWrapper.DataTransferObjects;
-using SubscriptionHandlingTests.SubscriptionHandler.Lookups;
+using Tests.SubscriptionHandler.Lookups;
 
-namespace SubscriptionHandlingTests.SubscriptionHandler.Helpers
+namespace Tests.SubscriptionHandler.Helpers
 {
     public class SubscriptionHelper
     {

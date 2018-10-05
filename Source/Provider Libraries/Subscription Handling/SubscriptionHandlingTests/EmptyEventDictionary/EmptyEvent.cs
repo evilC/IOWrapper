@@ -2,7 +2,7 @@
 using Hidwizards.IOWrapper.Libraries.EmptyEventDictionary;
 using NUnit.Framework;
 
-namespace SubscriptionHandlingTests.EmptyEventDictionary
+namespace Tests.EmptyEventDictionary
 {
     [TestFixture()]
     public class EmptyEvent

@@ -1,7 +1,7 @@
 ﻿using System;
 using HidWizards.IOWrapper.DataTransferObjects;
 
-namespace SubscriptionHandlingTests.SubscriptionHandler.Lookups
+namespace Tests.SubscriptionHandler.Lookups
 {
     public static class Devices
     {

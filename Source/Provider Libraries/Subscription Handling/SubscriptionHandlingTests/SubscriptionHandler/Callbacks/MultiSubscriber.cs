@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using NUnit.Framework;
-using SubscriptionHandlingTests.SubscriptionHandler.Helpers;
-using SubscriptionHandlingTests.SubscriptionHandler.Lookups;
+using Tests.SubscriptionHandler.Helpers;
+using Tests.SubscriptionHandler.Lookups;
 
-namespace SubscriptionHandlingTests.SubscriptionHandler.Callbacks
+namespace Tests.SubscriptionHandler.Callbacks
 {
     /// <summary>
     /// Given I make multiple subscription requests to the same input, for different subscribers

@@ -1,7 +1,8 @@
 ﻿using NUnit.Framework;
-using SubscriptionHandlingTests.SubscriptionHandler.Helpers;
+using Tests.SubscriptionHandler.Helpers;
+using Tests.SubscriptionHandler.Lookups;
 
-namespace SubscriptionHandlingTests.SubscriptionHandler.ReSubscribe
+namespace Tests.SubscriptionHandler.ReSubscribe
 {
     [TestFixture]
     class ReSubscribe
@@ -15,11 +16,11 @@ namespace SubscriptionHandlingTests.SubscriptionHandler.ReSubscribe
         public void ResubscribeTest()
         {
             var subHelper = new SubscriptionHelper();
-            subHelper.SubHandler.Subscribe(subHelper.BuildSubReq(Lookups.SubReqs.Button1));
+            subHelper.SubHandler.Subscribe(subHelper.BuildSubReq(SubReqs.Button1));
             Assert.That(subHelper.DeviceEmptyResults.Count, Is.EqualTo(0));
-            subHelper.SubHandler.Subscribe(subHelper.BuildSubReq(Lookups.SubReqs.Button1));
+            subHelper.SubHandler.Subscribe(subHelper.BuildSubReq(SubReqs.Button1));
             Assert.That(subHelper.DeviceEmptyResults.Count, Is.EqualTo(0));
-            subHelper.SubHandler.Unsubscribe(subHelper.BuildSubReq(Lookups.SubReqs.Button1));
+            subHelper.SubHandler.Unsubscribe(subHelper.BuildSubReq(SubReqs.Button1));
             Assert.That(subHelper.DeviceEmptyResults.Count, Is.EqualTo(1));
         }
     }

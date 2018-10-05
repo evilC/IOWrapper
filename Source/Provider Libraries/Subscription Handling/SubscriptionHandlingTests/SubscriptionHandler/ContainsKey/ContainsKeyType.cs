@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using NUnit.Framework;
-using SubscriptionHandlingTests.SubscriptionHandler.Helpers;
-using SubscriptionHandlingTests.SubscriptionHandler.Lookups;
+using Tests.SubscriptionHandler.Helpers;
+using Tests.SubscriptionHandler.Lookups;
 
-namespace SubscriptionHandlingTests.SubscriptionHandler.ContainsKey
+namespace Tests.SubscriptionHandler.ContainsKey
 {
     /// <summary>
     /// Given I have a SubscriptionHandler
