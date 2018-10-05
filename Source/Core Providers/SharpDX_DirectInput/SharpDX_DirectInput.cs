@@ -7,11 +7,11 @@ using System.Threading;
 using Microsoft.Win32;
 using System.Linq;
 using System.Diagnostics;
-using DeviceLibrary;
+using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
+using Hidwizards.IOWrapper.Libraries.PollingDeviceHandlers.Devices;
+using Hidwizards.IOWrapper.Libraries.ProviderLogger;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
-using PollingDeviceHandlers.Devices;
-using ProviderLogger;
 
 namespace SharpDX_DirectInput
 {

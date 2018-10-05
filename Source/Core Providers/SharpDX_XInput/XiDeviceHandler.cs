@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Hidwizards.IOWrapper.Libraries.PollingDeviceHandlers.Devices;
+using Hidwizards.IOWrapper.Libraries.PollingDeviceHandlers.Updates;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandler;
 using HidWizards.IOWrapper.DataTransferObjects;
-using PollingDeviceHandlers.Devices;
-using PollingDeviceHandlers.Updates;
 using SharpDX.XInput;
 using SubscriptionDictionaryWrapper;
 

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace ProviderLogger
+namespace Hidwizards.IOWrapper.Libraries.ProviderLogger
 {
     public class Logger
     {

@@ -1,6 +1,6 @@
 ﻿using HidSharp;
 
-namespace HidDeviceHelper
+namespace Hidwizards.IOWrapper.Libraries.HidDeviceHelper
 {
     public static class DeviceHelper
     {

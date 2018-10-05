@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading;
+using Hidwizards.IOWrapper.Libraries.PollingDeviceHandlers.Updates;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandler;
 using HidWizards.IOWrapper.DataTransferObjects;
-using PollingDeviceHandlers.Updates;
-using SubscriptionDictionaryWrapper;
 
-namespace PollingDeviceHandlers.Devices
+namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandlers.Devices
 {
     /// <summary>
     /// Acquires a device, polls it, and sends updates to it's <see cref="DeviceUpdateHandler"/>
@@ -17,7 +16,7 @@ namespace PollingDeviceHandlers.Devices
     {
         private Thread _pollThread;
         protected IDeviceUpdateHandler<TUpdate> DeviceUpdateHandler;
-        protected SubscriptionHandler SubHandler;
+        protected SubscriptionHandler.SubscriptionHandler SubHandler;
         protected DeviceDescriptor DeviceDescriptor;
 
         protected PollingDeviceHandler(DeviceDescriptor deviceDescriptor)
@@ -27,7 +26,7 @@ namespace PollingDeviceHandlers.Devices
 
         public PollingDeviceHandler<TUpdate, TProcessorKey> Initialize(EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler)
         {
-            SubHandler = new SubscriptionHandler(DeviceDescriptor, deviceEmptyHandler);
+            SubHandler = new SubscriptionHandler.SubscriptionHandler(DeviceDescriptor, deviceEmptyHandler);
             DeviceUpdateHandler = CreateUpdateHandler(DeviceDescriptor, SubHandler, bindModeHandler);
 
             _pollThread = new Thread(PollThread);
@@ -56,7 +55,7 @@ namespace PollingDeviceHandlers.Devices
             SubHandler.Unsubscribe(subReq);
         }
 
-        protected abstract IDeviceUpdateHandler<TUpdate> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler, EventHandler<BindModeUpdate> bindModeHandler);
+        protected abstract IDeviceUpdateHandler<TUpdate> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler.SubscriptionHandler subscriptionHandler, EventHandler<BindModeUpdate> bindModeHandler);
 
         protected abstract void PollThread();
 

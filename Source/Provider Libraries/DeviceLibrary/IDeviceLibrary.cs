@@ -1,6 +1,6 @@
 ﻿using HidWizards.IOWrapper.DataTransferObjects;
 
-namespace DeviceLibrary
+namespace Hidwizards.IOWrapper.Libraries.DeviceLibrary
 {
     public interface IDeviceLibrary<out TDeviceIdentifier>
     {

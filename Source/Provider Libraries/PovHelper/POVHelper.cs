@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PovHelper
+namespace Hidwizards.IOWrapper.Libraries.PovHelper
 {
     public static class PovHelper
     {

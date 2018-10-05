@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Hidwizards.IOWrapper.Libraries.PollingDeviceHandlers.Updates;
+using Hidwizards.IOWrapper.Libraries.PovHelper;
 using HidWizards.IOWrapper.DataTransferObjects;
-using PollingDeviceHandlers.Updates;
 using SharpDX.DirectInput;
 
 namespace SharpDX_DirectInput
@@ -40,7 +41,7 @@ namespace SharpDX_DirectInput
                 var currentDirectionState = _directionStates[i];
                 var newDirectionState =
                     newAngle == -1 ? 0
-                        : PovHelper.PovHelper.StateFromAngle(newAngle, i * 9000);
+                        : PovHelper.StateFromAngle(newAngle, i * 9000);
 
                 if (newDirectionState == currentDirectionState) continue;
 

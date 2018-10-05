@@ -7,8 +7,8 @@
     <ProjectGuid>{5C0547B8-FCA1-436B-B6DD-1061F04CAD36}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HidDeviceHelper</RootNamespace>
-    <AssemblyName>HidDeviceHelper</AssemblyName>
+    <RootNamespace>Hidwizards.IOWrapper.Libraries.HidDeviceHelper</RootNamespace>
+    <AssemblyName>IOWrapper.Libraries.HidDeviceHelper</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

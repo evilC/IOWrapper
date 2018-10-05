@@ -4,7 +4,7 @@ using Hidwizards.IOWrapper.Libraries.SubscriptionHandler;
 using HidWizards.IOWrapper.DataTransferObjects;
 using SubscriptionDictionaryWrapper;
 
-namespace PollingDeviceHandlers.Updates
+namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandlers.Updates
 {
     /// <summary>
     /// Handles processing of Updates for a device. 

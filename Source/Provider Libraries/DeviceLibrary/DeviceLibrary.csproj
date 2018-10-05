@@ -7,8 +7,8 @@
     <ProjectGuid>{462785B6-CF57-4BA8-8AAB-D226E75E2C3C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DeviceLibrary</RootNamespace>
-    <AssemblyName>DeviceLibrary</AssemblyName>
+    <RootNamespace>Hidwizards.IOWrapper.Libraries.DeviceLibrary</RootNamespace>
+    <AssemblyName>IOWrapper.Libraries.DeviceLibrary</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

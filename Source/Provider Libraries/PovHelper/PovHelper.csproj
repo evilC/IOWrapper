@@ -7,8 +7,8 @@
     <ProjectGuid>{9E4C03D5-58D8-4369-A7FA-BB4C307AF905}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PovHelper</RootNamespace>
-    <AssemblyName>PovHelper</AssemblyName>
+    <RootNamespace>Hidwizards.IOWrapper.Libraries.PovHelper</RootNamespace>
+    <AssemblyName>IOWrapper.Libraries.PovHelper</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

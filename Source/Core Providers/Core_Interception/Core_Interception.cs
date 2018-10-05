@@ -15,7 +15,7 @@ using System.Xml;
 using Core_Interception.Helpers;
 using Core_Interception.Lib;
 using Core_Interception.Monitors;
-using HidDeviceHelper;
+using Hidwizards.IOWrapper.Libraries.HidDeviceHelper;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 using static System.String;

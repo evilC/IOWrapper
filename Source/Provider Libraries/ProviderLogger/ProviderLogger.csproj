@@ -7,8 +7,8 @@
     <ProjectGuid>{996ECB47-004C-4216-BBDF-AE023DA3DF1F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ProviderLogger</RootNamespace>
-    <AssemblyName>ProviderLogger</AssemblyName>
+    <RootNamespace>Hidwizards.IOWrapper.Libraries.ProviderLogger</RootNamespace>
+    <AssemblyName>IOWrapper.Libraries.ProviderLogger</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

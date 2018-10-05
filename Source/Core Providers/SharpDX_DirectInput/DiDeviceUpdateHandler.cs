@@ -1,6 +1,6 @@
 ﻿using System;
+using Hidwizards.IOWrapper.Libraries.PollingDeviceHandlers.Updates;
 using HidWizards.IOWrapper.DataTransferObjects;
-using PollingDeviceHandlers.Updates;
 using SharpDX.DirectInput;
 using SubscriptionDictionaryWrapper;
 
