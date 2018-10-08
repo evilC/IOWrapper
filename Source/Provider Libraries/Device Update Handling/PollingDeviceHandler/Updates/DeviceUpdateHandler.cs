@@ -67,7 +67,7 @@ namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Updates
                 // Screen out any updates which are not needed
                 // If we are in Bind Mode, let all through, but in Subscription Mode, only let those through which have subscriptions
                 var isSubscribed = SubHandler.ContainsKey(preprocessedUpdate.Binding.Type, preprocessedUpdate.Binding.Index);
-                if (!(bindMode || isSubscribed)) return;
+                if (!(bindMode || isSubscribed)) continue;
 
                 // Convert from Pre-processed to procesed updates
                 // It is at this point that the state of Logical / Derived inputs are typically calculated (eg DirectInput POVs) ...

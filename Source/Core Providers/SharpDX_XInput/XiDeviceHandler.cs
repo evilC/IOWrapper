@@ -31,9 +31,10 @@ namespace SharpDX_XInput
         {
             while (true)
             {
-                if (!_controller.IsConnected)
-                    return;
-                DeviceUpdateHandler.ProcessUpdate(_controller.GetState());
+                if (_controller.IsConnected)
+                {
+                    DeviceUpdateHandler.ProcessUpdate(_controller.GetState());
+                }
                 Thread.Sleep(10);
             }
         }
