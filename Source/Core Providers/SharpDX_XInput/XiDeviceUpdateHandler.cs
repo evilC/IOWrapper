@@ -66,7 +66,7 @@ namespace SharpDX_XInput
 
         protected override (BindingType, int) GetUpdateProcessorKey(BindingDescriptor bindingDescriptor)
         {
-            var index = bindingDescriptor.Type == BindingType.Axis && bindingDescriptor.Index > 4 ? 1 : 0;
+            var index = bindingDescriptor.Type == BindingType.Axis && bindingDescriptor.Index > 3 ? 1 : 0;
             return (bindingDescriptor.Type, index);
         }
     }
