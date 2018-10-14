@@ -88,7 +88,10 @@ namespace Core_SpaceMouse
                 return null;
             }
 
-            return BitConverter.ToInt16(new[] { bytes[valueByteIndex], bytes[valueByteIndex + 1] }, 0);
+            int value = BitConverter.ToInt16(new[] { bytes[valueByteIndex], bytes[valueByteIndex + 1] }, 0);
+            value = (int) (value * 93.622857142857142857142857142857);
+            if (value > 32767) value = 32767;
+            return value;
         }
     }
 }
