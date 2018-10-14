@@ -14,26 +14,34 @@ namespace Core_SpaceMouse
     [Export(typeof(IProvider))]
     public class Core_SpaceMouse : IInputProvider
     {
-        private static HidDevice _device;
+        private readonly HidFastReadDevice _device;
         private readonly UpdateProcessor _updateProcessor = new UpdateProcessor();
         //private InputSubscriptionRequest _subReq;
         private readonly SubscriptionHandler _subHandler;
-        private ProviderDescriptor _providerDescriptor;
+        private readonly ProviderDescriptor _providerDescriptor;
 
-        private DeviceDescriptor _spaceMouseProDescriptor =
+        private readonly DeviceDescriptor _spaceMouseProDescriptor =
             new DeviceDescriptor {DeviceHandle = "VID_046D&PID_C62B", DeviceInstance = 0};
 
-
+        // HidFastReadDevice example: // https://github.com/mikeobrien/HidLibrary/issues/88
+        // ToDo: What was the point in the thread in that example?
         public Core_SpaceMouse()
         {
             _providerDescriptor = new ProviderDescriptor {ProviderName = ProviderName};
 
             _subHandler = new SubscriptionHandler(new DeviceDescriptor(), OnDeviceEmpty);
 
-            _device = HidDevices.Enumerate(0x046d, 0xc62b).FirstOrDefault();
+            var device = HidDevices.Enumerate(0x046d, 0xc62b).FirstOrDefault();
+            if (device == null)
+            {
+                return;
+            }
+            var path = device.DevicePath;
+            var enumerator = new HidFastReadEnumerator();
+            _device = (HidFastReadDevice) enumerator.GetDevice(path);
             _device.OpenDevice();
-            _device.MonitorDeviceEvents = true;
-            _device.ReadReport(OnReport);
+            _device.MonitorDeviceEvents = false;
+            _device.FastReadReport(OnReport);
         }
 
         private void OnDeviceEmpty(object sender, DeviceDescriptor e)
@@ -48,16 +56,16 @@ namespace Core_SpaceMouse
             {
                 if (_subHandler.ContainsKey(update.BindingType, update.Index))
                 {
-                    _subHandler.FireCallbacks(new BindingDescriptor{Type = update.BindingType, Index = update.Index}, update.Value);
+                    _subHandler.FireCallbacks(new BindingDescriptor { Type = update.BindingType, Index = update.Index }, update.Value);
                 }
                 //Console.WriteLine($"Type: {update.BindingType}, Index: {update.Index}, Value: {update.Value}");
             }
-            _device.ReadReport(OnReport);
+            _device.FastReadReport(OnReport);
         }
 
         public void Dispose()
         {
-            //throw new NotImplementedException();
+            _device.CloseDevice();
         }
 
         public string ProviderName { get; } = "Core_SpaceMouse";
