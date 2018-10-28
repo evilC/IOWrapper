@@ -19,6 +19,7 @@ namespace Core_SpaceMouse
         //private InputSubscriptionRequest _subReq;
         private readonly SubscriptionHandler _subHandler;
         private readonly ProviderDescriptor _providerDescriptor;
+        private readonly string[] _axisNames = {"X", "Y", "Z", "Rx", "Ry", "Rz"};
 
         private readonly DeviceDescriptor _spaceMouseProDescriptor =
             new DeviceDescriptor {DeviceHandle = "VID_046D&PID_C62B", DeviceInstance = 0};
@@ -122,7 +123,7 @@ namespace Core_SpaceMouse
             {
                 axisInfo.Bindings.Add(new BindingReport
                 {
-                    Title = $"Axis {i + 1}",
+                    Title = _axisNames[i],
                     Category = BindingCategory.Signed,
                     BindingDescriptor = new BindingDescriptor
                     {
