@@ -20,6 +20,11 @@ namespace Core_SpaceMouse
         private readonly SubscriptionHandler _subHandler;
         private readonly ProviderDescriptor _providerDescriptor;
         private readonly string[] _axisNames = {"X", "Y", "Z", "Rx", "Ry", "Rz"};
+        private readonly Dictionary<int, string> _buttonNames = new Dictionary<int, string>
+        {
+            {0, "Menu" }, {1, "FIT"}, {2, "[T]op"}, {4, "[R]ight"}, {8, "Roll +"}, {12, "1"}, {13, "2"}, {14, "3"}, {15, "4"},
+            {22, "ESC" }, {23, "ALT"}, {24, "SHIFT"}, {25, "CTRL"}, {26, "Rot Lock"}
+        };
 
         private readonly DeviceDescriptor _spaceMouseProDescriptor =
             new DeviceDescriptor {DeviceHandle = "VID_046D&PID_C62B", DeviceInstance = 0};
@@ -142,15 +147,16 @@ namespace Core_SpaceMouse
             {
                 Title = "Buttons"
             };
-            for (var btn = 0; btn < 32; btn++)
+
+            foreach (var button in _buttonNames)
             {
                 buttonInfo.Bindings.Add(new BindingReport
                 {
-                    Title = "Button " + (btn + 1),
+                    Title = button.Value,
                     Category = BindingCategory.Momentary,
                     BindingDescriptor = new BindingDescriptor
                     {
-                        Index = btn,
+                        Index = button.Key,
                         Type = BindingType.Button
                     }
                 });
