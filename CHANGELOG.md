@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Deprecated
 ### Removed
 ### Fixed
+- Provider DLL loading improved - PluginLoader no longer loads all DLLs in folder into Container
 
 ## [0.8.4] - 2018-10-14
 ### Changed
