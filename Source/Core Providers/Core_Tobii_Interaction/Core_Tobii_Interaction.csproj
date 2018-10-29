@@ -75,4 +75,12 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\..\packages\Tobii.Interaction.0.7.3\build\Tobii.Interaction.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Tobii.Interaction.0.7.3\build\Tobii.Interaction.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PreBuildEvent>IF EXIST "$(ProjectDir)Dependencies\*" xcopy /Y "$(ProjectDir)Dependencies\*" "$(TargetDir)"</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>if exist "$(SolutionDir)Artifacts\Providers\$(ProjectName)" rmdir "$(SolutionDir)Artifacts\Providers\$(ProjectName)" /s /q
+xcopy /Y /i "$(TargetDir)*.dll" "$(SolutionDir)Artifacts\Providers\$(ProjectName)"
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>
