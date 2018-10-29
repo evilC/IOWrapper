@@ -36,12 +36,13 @@ namespace HidWizards.IOWrapper.Core
         {
             var catalog = new AggregateCatalog();
 
-            foreach (var path in Directory.EnumerateDirectories(@".\" + basePath, "*", SearchOption.TopDirectoryOnly))
+            foreach (var path in Directory.EnumerateDirectories($@".\{basePath}", "*", SearchOption.TopDirectoryOnly))
             {
                 var folderName = path.Remove(0, path.LastIndexOf(Path.DirectorySeparatorChar) + 1);
-                if (File.Exists(Path.Combine(path, folderName + ".dll")))
+                var dllName = $"{folderName}.dll";
+                if (File.Exists(Path.Combine(path, dllName)))
                 {
-                    catalog.Catalogs.Add(new DirectoryCatalog(path));
+                    catalog.Catalogs.Add(new DirectoryCatalog(path, dllName));
                 }
             }
 
