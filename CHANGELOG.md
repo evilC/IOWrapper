@@ -5,10 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 ### Added
-- Added experimental SpaceMouse provider (Currently only supports SpaceMouse Pro)
 ### Changed 
 ### Deprecated
 ### Removed
+### Fixed
+
+## [0.8.5] - 2018-10-29
+### Added
+- Added experimental SpaceMouse provider (Currently only supports SpaceMouse Pro)
 ### Fixed
 - Provider DLL loading improved - PluginLoader no longer loads all DLLs in folder into Container
 - Tobii Eye Tracker Provider build events missing causing provider to be absent from builds
