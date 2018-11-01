@@ -24,7 +24,21 @@ namespace Core_Midi
 
         private void midiIn_MessageReceived(object sender, MidiInMessageEventArgs e)
         {
-            Console.WriteLine($"Channel: {e.MidiEvent.Channel}, Event: {e.MidiEvent}");
+            if (e.MidiEvent.Channel > 4) return;
+            var isNoteOn = MidiEvent.IsNoteOn(e.MidiEvent);
+            var isNoteOff = MidiEvent.IsNoteOff(e.MidiEvent);
+            var isNote = isNoteOn || isNoteOff;
+            if (!isNote) return;
+            var channel = e.MidiEvent.Channel - 1;
+            
+            var eventType = (int)e.MidiEvent.CommandCode;
+            
+            var note = (NoteEvent)e.MidiEvent;
+            var index = channel;
+            var subIndex = note.NoteNumber;
+            var value = isNoteOn ? note.Velocity : 0;
+            //Console.WriteLine($"Channel: {e.MidiEvent.Channel}, Event: {e.MidiEvent}");
+            Console.WriteLine($"Index: {index}, SubIndex: {subIndex}, Value: {value}");
         }
 
         public void Dispose()
