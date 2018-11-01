@@ -90,9 +90,11 @@ It is also generally desirable to stop any threads (eg poll threads) when there 
 The subscription request will contain a `BindingDescriptor`, which describes the input to be subscribed to, using the translation scheme you came up with in the previous step.
 The `Provider Libraries` project contains a useful `SubscriptionHandler` class which can store your subscription requests for you, and will also enable you to determine whether a given button or axis has any subscriptions. This class uses `ConcurrentDictionary` and so is thread-safe, so when your poll loop receives input, you can just look up in the dictionary to tell if that input has any subscriptions or not, and whether to fire the callback.
 
+By this point, you should be able to use the Test App to subscribe to your various inputs, and Unsubscribe.
+
 #### Reporting
 
-Now that you can subscribe to stuff, but if you integrated it into UCR right now, it would be useless, as the user would have no way of selecting the input to bind to.
+Now you can subscribe to stuff, but if you integrated it into UCR right now, it would be useless, as the user would have no way of selecting the input to bind to - the Device Group window would not contain anything, and even if it did, the Input selection control would not contain any axes or buttons for that device.
 This is handled via Reports - you need to implement `GetInputList` and `GetInputDeviceReport`. These basically populate the menus in the front end with text, and tell the front end what `BindingDescriptor` to pass to the back end when the user selects that input.
 
 #### Multiple Devices
@@ -105,3 +107,8 @@ If the device is identified by USB Vendor Id and Product Id (VID / PID), then it
 
 If you wish to support multiple identical devices, you need to use the `DeviceInstance ` property of the `DeviceDescriptor`.
 
+#### Tidying Up
+
+In order for the provider to play nice, it **must** properly implement `IDisposable`. When the provider is Disposed, **kill all threads**. If you do not do this, UCR may well hang on exit.
+
+Try to consider performance, especially if working with high frequency data (eg mouse movement).
