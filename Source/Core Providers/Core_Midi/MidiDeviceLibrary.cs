@@ -15,13 +15,14 @@ namespace Core_Midi
         private ConcurrentDictionary<string, List<int>> _connectedDevices = new ConcurrentDictionary<string, List<int>>();
         private readonly ProviderDescriptor _providerDescriptor;
         private ProviderReport _providerReport;
-        //private readonly MidiIn _midiIn;
         private static readonly string[] NoteNames = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+        private DeviceReportNode _deviceReportTemplate;
 
         public MidiDeviceLibrary(ProviderDescriptor providerDescriptor)
         {
             _providerDescriptor = providerDescriptor;
             RefreshConnectedDevices();
+            BuildDeviceReportTemplate();
             BuildDeviceList();
         }
 
@@ -65,7 +66,14 @@ namespace Core_Midi
                 DeviceDescriptor = deviceDescriptor,
                 DeviceName = infoIn.ProductName
             };
+            deviceReport.Nodes = _deviceReportTemplate.Nodes;
+          
+            return deviceReport;
+        }
 
+        private void BuildDeviceReportTemplate()
+        {
+            var node = new DeviceReportNode();
             for (var channel = 0; channel < 16; channel++)
             {
                 var channelInfo = new DeviceReportNode
@@ -95,10 +103,10 @@ namespace Core_Midi
                     notesInfo.Nodes.Add(octaveInfo);
                 }
                 channelInfo.Nodes.Add(notesInfo);
-                deviceReport.Nodes.Add(channelInfo);
+                node.Nodes.Add(channelInfo);
             }
-            
-            return deviceReport;
+
+            _deviceReportTemplate = node;
         }
 
         private BindingDescriptor BuildBindingDescriptor(int channel, int octave, int noteIndex)
