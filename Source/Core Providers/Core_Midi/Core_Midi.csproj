@@ -59,6 +59,10 @@
       <Project>{462785B6-CF57-4BA8-8AAB-D226E75E2C3C}</Project>
       <Name>DeviceLibrary</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Provider Libraries\Subscription Handling\SubscriptionHandler\SubscriptionHandler.csproj">
+      <Project>{C9639380-2F3D-4BA2-907C-9EAC1C583EF9}</Project>
+      <Name>SubscriptionHandler</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ProviderInterface\ProviderInterface.csproj">
       <Project>{f6eaf2bc-f362-4ecd-94e5-617ca37a4210}</Project>
       <Name>ProviderInterface</Name>

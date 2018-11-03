@@ -21,6 +21,7 @@ namespace TestApp.Testers
             _devName = devName;
             // DirectInput testers - Physical stick bindings, for when you want to test physical stick behavior
             _ioTesters.Add(new IOTester($"{_devName} Note C1 F#5", Library.Providers.Midi, _deviceDescriptor, Library.Bindings.Midi.Notes.C1FSharp5).Subscribe());
+            _ioTesters.Add(new IOTester($"{_devName} Note C2 F#5", Library.Providers.Midi, _deviceDescriptor, Library.Bindings.Midi.Notes.C2FSharp5).Subscribe());
 
             Console.WriteLine($"MIDI {devName} tester ready");
         }

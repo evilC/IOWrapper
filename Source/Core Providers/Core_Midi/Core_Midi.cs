@@ -33,12 +33,12 @@ namespace Core_Midi
         public bool IsLive { get; }
         public void RefreshLiveState()
         {
-            throw new NotImplementedException();
+            
         }
 
         public void RefreshDevices()
         {
-            throw new NotImplementedException();
+            
         }
 
         public ProviderReport GetInputList()
@@ -48,18 +48,23 @@ namespace Core_Midi
 
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
         {
-            throw new NotImplementedException();
+            return _deviceLibrary.GetInputDeviceReport(subReq.DeviceDescriptor);
         }
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            MidiDeviceHandler deviceHandler;
-            if (!_activeDevices.TryGetValue(subReq.DeviceDescriptor, out deviceHandler))
+            if (!_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
-                deviceHandler = new MidiDeviceHandler(subReq.DeviceDescriptor);
+                deviceHandler = new MidiDeviceHandler(subReq.DeviceDescriptor, DeviceEmptyHandler);
             }
             deviceHandler.SubscribeInput(subReq);
             return true;
+        }
+
+        private void DeviceEmptyHandler(object sender, DeviceDescriptor e)
+        {
+            _activeDevices[e].Dispose();
+            _activeDevices.TryRemove(e, out _);
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)

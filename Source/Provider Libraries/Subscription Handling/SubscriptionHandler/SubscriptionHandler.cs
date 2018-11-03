@@ -79,8 +79,7 @@ namespace Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs
             return _bindings.ContainsKey(bindingType) && _bindings[bindingType].ContainsKey(index);
         }
 
-        // Should not need to be externally visible
-        private bool ContainsKey(BindingType bindingType, int index, int subIndex)
+        public bool ContainsKey(BindingType bindingType, int index, int subIndex)
         {
             return ContainsKey(bindingType, index) && _bindings[bindingType][index].ContainsKey(subIndex);
         }

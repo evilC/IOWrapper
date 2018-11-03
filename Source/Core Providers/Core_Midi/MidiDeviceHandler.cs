@@ -3,27 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
 using HidWizards.IOWrapper.DataTransferObjects;
 using NAudio.Midi;
 
 namespace Core_Midi
 {
-    public class MidiDeviceHandler
+    public class MidiDeviceHandler : IDisposable
     {
         private readonly DeviceDescriptor _deviceDescriptor;
         private readonly MidiIn _midiIn;
+        protected SubscriptionHandler SubHandler;
 
-        public MidiDeviceHandler(DeviceDescriptor deviceDescriptor)
+        public MidiDeviceHandler(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler)
         {
             _deviceDescriptor = deviceDescriptor;
-            _midiIn = new MidiIn(0);
+            SubHandler = new SubscriptionHandler(_deviceDescriptor, deviceEmptyHandler);
+            _midiIn = new MidiIn(0);    // ToDo: Need DeviceDescriptor to Midi ID here
             _midiIn.MessageReceived += midiIn_MessageReceived;
             _midiIn.Start();
         }
 
         public void SubscribeInput(InputSubscriptionRequest subReq)
         {
-            //throw new NotImplementedException();
+            SubHandler.Subscribe(subReq);
         }
 
         private void midiIn_MessageReceived(object sender, MidiInMessageEventArgs e)
@@ -32,8 +35,10 @@ namespace Core_Midi
             if (_update == null) return;
             var update = (BindingUpdate) _update;
 
+            if (!SubHandler.ContainsKey(update.Binding.Type, update.Binding.Index, update.Binding.SubIndex)) return;
+            SubHandler.FireCallbacks(update.Binding, update.Value);
             //Console.WriteLine($"Channel: {e.MidiEvent.Channel}, Event: {e.MidiEvent}");
-            Console.WriteLine($"Index: {update.Binding.Index}, SubIndex: {update.Binding.SubIndex}, Value: {update.Value}");
+            //Console.WriteLine($"Index: {update.Binding.Index}, SubIndex: {update.Binding.SubIndex}, Value: {update.Value}");
         }
 
         public BindingUpdate? EventToBindingUpdate(MidiInMessageEventArgs e)
@@ -78,6 +83,11 @@ namespace Core_Midi
         private int ConvertPitch(int value)
         {
             return (int) (value * 4.000183116645303) - 32768; // ToDo: Center point seems to be 1.
+        }
+
+        public void Dispose()
+        {
+            _midiIn?.Dispose();
         }
     }
 }
