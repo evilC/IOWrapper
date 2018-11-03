@@ -6,12 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 
-- Add experimental MIDI provider
-
 ### Changed 
 ### Deprecated
 ### Removed
 ### Fixed
+
+## [0.8.6] - 2018-10-29
+
+### Added
+
+- Add experimental MIDI provider
 
 ## [0.8.5] - 2018-10-29
 ### Added
