@@ -46,12 +46,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core_Midi.cs" />
+    <Compile Include="MidiDeviceLibrary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\DataObjects\DTOs.csproj">
       <Project>{81851977-0421-4ebd-b066-0fe03f02589e}</Project>
       <Name>DTOs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Provider Libraries\Device Querying\DeviceLibrary\DeviceLibrary.csproj">
+      <Project>{462785B6-CF57-4BA8-8AAB-D226E75E2C3C}</Project>
+      <Name>DeviceLibrary</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ProviderInterface\ProviderInterface.csproj">
       <Project>{f6eaf2bc-f362-4ecd-94e5-617ca37a4210}</Project>

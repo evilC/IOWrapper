@@ -4,6 +4,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 using NAudio.Midi;
@@ -14,9 +15,11 @@ namespace Core_Midi
     public class Core_Midi : IInputProvider
     {
         private readonly MidiIn _midiIn;
+        private readonly IInputDeviceLibrary<string> _deviceLibrary;
 
         public Core_Midi()
         {
+            _deviceLibrary = new MidiDeviceLibrary(new ProviderDescriptor { ProviderName = ProviderName });
             _midiIn = new MidiIn(0);
             _midiIn.MessageReceived += midiIn_MessageReceived;
             _midiIn.Start();
@@ -95,7 +98,7 @@ namespace Core_Midi
 
         public ProviderReport GetInputList()
         {
-            return null;
+            return _deviceLibrary.GetInputList();
         }
 
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
