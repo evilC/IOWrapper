@@ -33,6 +33,11 @@ namespace Core_Midi
             SubHandler.Subscribe(subReq);
         }
 
+        public void UnsubscribeInput(InputSubscriptionRequest subReq)
+        {
+            SubHandler.Unsubscribe(subReq);
+        }
+
         private void midiIn_MessageReceived(object sender, MidiInMessageEventArgs e)
         {
             var _update = EventToBindingUpdate(e);

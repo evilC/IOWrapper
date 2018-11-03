@@ -70,7 +70,11 @@ namespace Core_Midi
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            throw new NotImplementedException();
+            if (_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
+            {
+                deviceHandler.UnsubscribeInput(subReq);
+            }
+            return true;
         }
     }
 }
