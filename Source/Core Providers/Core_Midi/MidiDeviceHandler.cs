@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
 using HidWizards.IOWrapper.DataTransferObjects;
 using NAudio.Midi;
@@ -12,14 +13,17 @@ namespace Core_Midi
     public class MidiDeviceHandler : IDisposable
     {
         private readonly DeviceDescriptor _deviceDescriptor;
+        private readonly IInputDeviceLibrary<int> _deviceLibrary;
         private readonly MidiIn _midiIn;
         protected SubscriptionHandler SubHandler;
 
-        public MidiDeviceHandler(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler)
+        public MidiDeviceHandler(DeviceDescriptor deviceDescriptor, IInputDeviceLibrary<int> deviceLibrary, EventHandler<DeviceDescriptor> deviceEmptyHandler)
         {
             _deviceDescriptor = deviceDescriptor;
+            _deviceLibrary = deviceLibrary;
             SubHandler = new SubscriptionHandler(_deviceDescriptor, deviceEmptyHandler);
-            _midiIn = new MidiIn(0);    // ToDo: Need DeviceDescriptor to Midi ID here
+            var deviceId = _deviceLibrary.GetDeviceIdentifier(deviceDescriptor);
+            _midiIn = new MidiIn(deviceId);
             _midiIn.MessageReceived += midiIn_MessageReceived;
             _midiIn.Start();
         }

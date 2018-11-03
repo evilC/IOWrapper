@@ -10,7 +10,7 @@ using NAudio.Midi;
 
 namespace Core_Midi
 {
-    public class MidiDeviceLibrary : IInputDeviceLibrary<string>
+    public class MidiDeviceLibrary : IInputDeviceLibrary<int>
     {
         private ConcurrentDictionary<string, List<int>> _connectedDevices = new ConcurrentDictionary<string, List<int>>();
         private readonly ProviderDescriptor _providerDescriptor;
@@ -25,9 +25,14 @@ namespace Core_Midi
             BuildDeviceList();
         }
 
-        public string GetDeviceIdentifier(DeviceDescriptor deviceDescriptor)
+        public int GetDeviceIdentifier(DeviceDescriptor deviceDescriptor)
         {
-            throw new NotImplementedException();
+            if (_connectedDevices.TryGetValue(deviceDescriptor.DeviceHandle, out var instances) &&
+                instances.Count >= deviceDescriptor.DeviceInstance)
+            {
+                return instances[deviceDescriptor.DeviceInstance];
+            }
+            throw new Exception($"Could not find device Handle {deviceDescriptor.DeviceHandle}, Instance {deviceDescriptor.DeviceInstance}");
         }
 
         public void RefreshConnectedDevices()

@@ -16,7 +16,7 @@ namespace Core_Midi
     public class Core_Midi : IInputProvider
     {
         private readonly MidiIn _midiIn;
-        private readonly IInputDeviceLibrary<string> _deviceLibrary;
+        private readonly IInputDeviceLibrary<int> _deviceLibrary;
         private readonly ConcurrentDictionary<DeviceDescriptor, MidiDeviceHandler> _activeDevices = new ConcurrentDictionary<DeviceDescriptor, MidiDeviceHandler>();
 
         public Core_Midi()
@@ -55,7 +55,8 @@ namespace Core_Midi
         {
             if (!_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
-                deviceHandler = new MidiDeviceHandler(subReq.DeviceDescriptor, DeviceEmptyHandler);
+                deviceHandler = new MidiDeviceHandler(subReq.DeviceDescriptor, _deviceLibrary, DeviceEmptyHandler);
+                _activeDevices.TryAdd(subReq.DeviceDescriptor, deviceHandler);
             }
             deviceHandler.SubscribeInput(subReq);
             return true;
