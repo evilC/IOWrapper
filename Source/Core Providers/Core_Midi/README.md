@@ -2,6 +2,84 @@
 
 # Research
 
+## Useful Links
+
+https://www.midi.org/specifications-old/category/reference-tables
+
+http://www.personal.kent.edu/~sbirch/Music_Production/MP-II/MIDI/midi_protocol.htm
+
+## Encoding Format
+
+### Representing MIDI messages as BindingDescriptors
+
+The challenge is to represent all the MIDI events we are interested in as a `BindingDescriptor`.
+
+```
+public class BindingDescriptor
+{
+    /// <summary>
+    /// The Type of the Binding - ie Button / Axis / POV
+    /// </summary>
+    public BindingType Type { get; set; }
+
+    /// <summary>
+    /// The Type-specific Index of the Binding
+    /// This is often a Sparse Index (it may often be a BitMask value) ...
+    /// ... as it is often refers to an enum value in a Device Report
+    /// </summary>
+    public int Index { get; set; } = 0;
+
+    /// <summary>
+    /// The Type-specific SubIndex of the Binding
+    /// This is typically unused, but if used generally represents a derived or optional value
+    /// For example:
+    ///     With each POV reporting natively as an Angle (Like an Axis)
+    ///     But in IOWrapper, bindings are to a *Direction* of a POV (As if it were a button)
+    ///     So we need to specify the angle of that direction in SubIndex...
+    ///     ... as well as the POV# in Index. Directinput supports 4 POVs
+    /// </summary>
+    public int SubIndex { get; set; } = 0;
+}
+```
+
+#### MIDI format
+
+Most data in MIDI is analog, so `Type` will always be `Axis`.
+
+This leaves us with `Index` and `SubIndex` (Two integers) to represent all the bindings we are interested in.
+
+In MIDI, for the items we are interested in, there are 3 pieces of data which identify a specific input:
+
+##### Channel
+
+Each MIDI device can send messages on a number of channels.
+
+Mask: 0xF (0..16)
+
+##### CommandCode
+
+Identifies the type of event that happened. 
+
+Mask: 0xF0 (128..255)
+
+##### Note / Controller Number etc
+
+For Notes, you get a Note Number, for ControlChange (eg faders), you get a controller number.
+
+In either case, this is a number in the range 0..127
+
+#### Mapping Strategy
+
+`Index` maps to a combination of Channel and CommandCode
+
+Note that CommandCodes NoteOn and NoteOff are two separate events, so we cannot use a direct mapping of command code to BindingDescriptor. Probably simplest is to use the `On` code to represent both on and off CommandCodes
+
+`SubIndex` maps to Note / Controller Number
+
+
+
+
+
 ## Sample Data
 
 ### Behringer Motor 49
