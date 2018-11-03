@@ -78,7 +78,7 @@ namespace Core_Midi
             {
                 var channelInfo = new DeviceReportNode
                 {
-                    Title = $"Channel {channel + 1}"
+                    Title = $"CH {channel + 1}"
                 };
                 var notesInfo = new DeviceReportNode
                 {
@@ -106,13 +106,13 @@ namespace Core_Midi
 
                 var controlChangeInfo = new DeviceReportNode
                 {
-                    Title = "Control Change"
+                    Title = "CtrlChange"
                 };
                 for (var controllerId = 0; controllerId < 128; controllerId++)
                 {
                     controlChangeInfo.Bindings.Add(new BindingReport
                     {
-                        Title = $"Controller {controllerId}",
+                        Title = $"ID {controllerId}",
                         Category = BindingCategory.Signed,
                         BindingDescriptor = BuildControlChangeDescriptor(channel, controllerId)
                     });
