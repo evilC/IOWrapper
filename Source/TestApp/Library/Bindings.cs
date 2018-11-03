@@ -118,7 +118,6 @@ namespace TestApp.Library
         }
         #endregion
 
-
         #region ViGEm
         public static class ViGEm
         {
@@ -156,6 +155,18 @@ namespace TestApp.Library
                 #endregion
             }
         }
+        #endregion
+
+        #region MIDI
+
+        public static class Midi
+        {
+            public static class Notes
+            {
+                public static BindingDescriptor C1FSharp5 = new BindingDescriptor { Index = 144, SubIndex = 66, Type = BindingType.Axis };
+            }
+        }
+
         #endregion
     }
 }

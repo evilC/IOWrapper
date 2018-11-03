@@ -24,7 +24,8 @@ namespace TestApp
 
             //var vigemDs4OutputTester = new VigemDs4OutputTester();
 
-            var spaceMouse = new SpaceMouseTester("SpaceMouse", new DeviceDescriptor());
+            //var spaceMouse = new SpaceMouseTester("SpaceMouse", new DeviceDescriptor());
+            var motör49Tester = new MidiTester("SpaceMouse", Library.Devices.Midi.Motör49Main);
 
             #region Bind Mode Testing
             //var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);

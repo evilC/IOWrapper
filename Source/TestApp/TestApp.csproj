@@ -57,6 +57,7 @@
     <Compile Include="Library\Profiles.cs" />
     <Compile Include="Plugins\IOTester.cs" />
     <Compile Include="Testers\BindModeTester.cs" />
+    <Compile Include="Testers\MidiTester.cs" />
     <Compile Include="Testers\SpaceMouseTester.cs" />
     <Compile Include="Testers\GenericDiTester.cs" />
     <Compile Include="Testers\InterceptionKeyboardInputTester.cs" />

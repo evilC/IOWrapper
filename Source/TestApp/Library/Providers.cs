@@ -22,6 +22,6 @@ namespace TestApp.Library
         public static ProviderDescriptor TitanOne = new ProviderDescriptor { ProviderName = "Core_TitanOne" };
         public static ProviderDescriptor DS4Windows = new ProviderDescriptor { ProviderName = "Core_DS4WindowsApi" };
         public static ProviderDescriptor SpaceMouse = new ProviderDescriptor { ProviderName = "Core_SpaceMouse" };
-
+        public static ProviderDescriptor Midi = new ProviderDescriptor { ProviderName = "Core_Midi" };
     }
 }

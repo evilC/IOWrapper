@@ -67,5 +67,10 @@ namespace TestApp.Library
             public static DeviceDescriptor vJoy_1 = new DeviceDescriptor { DeviceHandle = "0", DeviceInstance = 0 };
             public static DeviceDescriptor vJoy_2 = new DeviceDescriptor { DeviceHandle = "0", DeviceInstance = 1 };
         }
+
+        public static class Midi
+        {
+            public static DeviceDescriptor Motör49Main = new DeviceDescriptor { DeviceHandle = "MOTÖR49 Keyboard", DeviceInstance = 0};
+        }
     }
 }
