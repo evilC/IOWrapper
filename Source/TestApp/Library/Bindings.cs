@@ -166,6 +166,11 @@ namespace TestApp.Library
                 public static BindingDescriptor C1FSharp5 = new BindingDescriptor { Index = 144, SubIndex = 66, Type = BindingType.Axis };
                 public static BindingDescriptor C2FSharp5 = new BindingDescriptor { Index = 145, SubIndex = 66, Type = BindingType.Axis };
             }
+
+            public static class ControlChange
+            {
+                public static BindingDescriptor MotorSliderF1 = new BindingDescriptor { Index = 177, SubIndex = 21, Type = BindingType.Axis };
+            }
         }
 
         #endregion

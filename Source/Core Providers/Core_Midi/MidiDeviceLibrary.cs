@@ -97,25 +97,52 @@ namespace Core_Midi
                         {
                             Title = $"{noteName}",
                             Category = BindingCategory.Signed,
-                            BindingDescriptor = BuildBindingDescriptor(channel, octave, noteIndex)
+                            BindingDescriptor = BuildNoteDescriptor(channel, octave, noteIndex)
                         });
                     }
                     notesInfo.Nodes.Add(octaveInfo);
                 }
                 channelInfo.Nodes.Add(notesInfo);
+
+                var controlChangeInfo = new DeviceReportNode
+                {
+                    Title = "Control Change"
+                };
+                for (var controllerId = 0; controllerId < 128; controllerId++)
+                {
+                    controlChangeInfo.Bindings.Add(new BindingReport
+                    {
+                        Title = $"Controller {controllerId}",
+                        Category = BindingCategory.Signed,
+                        BindingDescriptor = BuildControlChangeDescriptor(channel, controllerId)
+                    });
+                }
+                channelInfo.Nodes.Add(controlChangeInfo);
+
                 node.Nodes.Add(channelInfo);
             }
 
             _deviceReportTemplate = node;
         }
 
-        private BindingDescriptor BuildBindingDescriptor(int channel, int octave, int noteIndex)
+        private BindingDescriptor BuildNoteDescriptor(int channel, int octave, int noteIndex)
         {
             var bindingDescriptor = new BindingDescriptor
             {
                 Type = BindingType.Axis,
                 Index = channel + (int)MidiCommandCode.NoteOn,
                 SubIndex = (octave * 12) + noteIndex
+            };
+            return bindingDescriptor;
+        }
+
+        private BindingDescriptor BuildControlChangeDescriptor(int channel, int controllerId)
+        {
+            var bindingDescriptor = new BindingDescriptor
+            {
+                Type = BindingType.Axis,
+                Index = channel + (int)MidiCommandCode.ControlChange,
+                SubIndex = controllerId
             };
             return bindingDescriptor;
         }

@@ -44,10 +44,11 @@ namespace Core_Midi
             if (_update == null) return;
             var update = (BindingUpdate) _update;
 
-            if (!SubHandler.ContainsKey(update.Binding.Type, update.Binding.Index, update.Binding.SubIndex)) return;
-            SubHandler.FireCallbacks(update.Binding, update.Value);
             //Console.WriteLine($"Channel: {e.MidiEvent.Channel}, Event: {e.MidiEvent}");
             //Console.WriteLine($"Index: {update.Binding.Index}, SubIndex: {update.Binding.SubIndex}, Value: {update.Value}");
+
+            if (!SubHandler.ContainsKey(update.Binding.Type, update.Binding.Index, update.Binding.SubIndex)) return;
+            SubHandler.FireCallbacks(update.Binding, update.Value);
         }
 
         public BindingUpdate? EventToBindingUpdate(MidiInMessageEventArgs e)
