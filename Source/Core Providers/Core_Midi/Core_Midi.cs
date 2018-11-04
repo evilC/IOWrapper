@@ -21,7 +21,7 @@ namespace Core_Midi
 
         public Core_Midi()
         {
-            _deviceLibrary = new MidiDeviceLibrary(new ProviderDescriptor { ProviderName = ProviderName });
+            _deviceLibrary = new DeviceLibraries.MidiDeviceLibrary(new ProviderDescriptor { ProviderName = ProviderName });
         }
 
         public void Dispose()

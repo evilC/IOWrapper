@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,25 +7,10 @@ using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
 using NAudio.Midi;
 
-namespace Core_Midi
+namespace Core_Midi.DeviceLibraries
 {
-    public class MidiDeviceLibrary : IInputOutputDeviceLibrary<int>
+    public partial class MidiDeviceLibrary : IInputOutputDeviceLibrary<int>
     {
-        private ConcurrentDictionary<string, List<int>> _connectedInputDevices = new ConcurrentDictionary<string, List<int>>();
-        private ConcurrentDictionary<string, List<int>> _connectedOutputDevices = new ConcurrentDictionary<string, List<int>>();
-        private readonly ProviderDescriptor _providerDescriptor;
-        private ProviderReport _providerReport;
-        private static readonly string[] NoteNames = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-        private DeviceReportNode _deviceReportTemplate;
-
-        public MidiDeviceLibrary(ProviderDescriptor providerDescriptor)
-        {
-            _providerDescriptor = providerDescriptor;
-            RefreshConnectedDevices();
-            BuildDeviceReportTemplate();
-            BuildDeviceList();
-        }
-
         public int GetInputDeviceIdentifier(DeviceDescriptor deviceDescriptor)
         {
             if (_connectedInputDevices.TryGetValue(deviceDescriptor.DeviceHandle, out var instances) &&
@@ -37,54 +21,9 @@ namespace Core_Midi
             throw new Exception($"Could not find input device Handle {deviceDescriptor.DeviceHandle}, Instance {deviceDescriptor.DeviceInstance}");
         }
 
-        public int GetOutputDeviceIdentifier(DeviceDescriptor deviceDescriptor)
-        {
-            if (_connectedOutputDevices.TryGetValue(deviceDescriptor.DeviceHandle, out var instances) &&
-                instances.Count >= deviceDescriptor.DeviceInstance)
-            {
-                return instances[deviceDescriptor.DeviceInstance];
-            }
-            throw new Exception($"Could not find output device Handle {deviceDescriptor.DeviceHandle}, Instance {deviceDescriptor.DeviceInstance}");
-        }
-
-        public ProviderReport GetOutputList()
-        {
-            throw new NotImplementedException();
-        }
-
-        public DeviceReport GetOutputDeviceReport(DeviceDescriptor deviceDescriptor)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RefreshConnectedDevices()
-        {
-            _connectedInputDevices = new ConcurrentDictionary<string, List<int>>();
-            for (var i = 0; i < MidiIn.NumberOfDevices; i++)
-            {
-                var infoIn = MidiIn.DeviceInfo(i);
-                if (!_connectedInputDevices.ContainsKey(infoIn.ProductName))
-                {
-                    _connectedInputDevices.TryAdd(infoIn.ProductName, new List<int>());
-                }
-                _connectedInputDevices[infoIn.ProductName].Add(i);
-            }
-
-            _connectedOutputDevices = new ConcurrentDictionary<string, List<int>>();
-            for (int i = 0; i < MidiOut.NumberOfDevices; i++)
-            {
-                var infoOut = MidiOut.DeviceInfo(i);
-                if (!_connectedOutputDevices.ContainsKey(infoOut.ProductName))
-                {
-                    _connectedOutputDevices.TryAdd(infoOut.ProductName, new List<int>());
-                }
-                _connectedOutputDevices[infoOut.ProductName].Add(i);
-            }
-        }
-
         public ProviderReport GetInputList()
         {
-            return _providerReport;
+            return _inputProviderReport;
         }
 
         public DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor)
@@ -98,12 +37,12 @@ namespace Core_Midi
                 DeviceDescriptor = deviceDescriptor,
                 DeviceName = infoIn.ProductName
             };
-            deviceReport.Nodes = _deviceReportTemplate.Nodes;
-          
+            deviceReport.Nodes = _inputDeviceReportTemplate.Nodes;
+
             return deviceReport;
         }
 
-        private void BuildDeviceReportTemplate()
+        private void BuildInputDeviceReportTemplate()
         {
             var node = new DeviceReportNode();
             for (var channel = 0; channel < 16; channel++)
@@ -154,32 +93,10 @@ namespace Core_Midi
                 node.Nodes.Add(channelInfo);
             }
 
-            _deviceReportTemplate = node;
+            _inputDeviceReportTemplate = node;
         }
 
-        private BindingDescriptor BuildNoteDescriptor(int channel, int octave, int noteIndex)
-        {
-            var bindingDescriptor = new BindingDescriptor
-            {
-                Type = BindingType.Axis,
-                Index = channel + (int)MidiCommandCode.NoteOn,
-                SubIndex = (octave * 12) + noteIndex
-            };
-            return bindingDescriptor;
-        }
-
-        private BindingDescriptor BuildControlChangeDescriptor(int channel, int controllerId)
-        {
-            var bindingDescriptor = new BindingDescriptor
-            {
-                Type = BindingType.Axis,
-                Index = channel + (int)MidiCommandCode.ControlChange,
-                SubIndex = controllerId
-            };
-            return bindingDescriptor;
-        }
-
-        private void BuildDeviceList()
+        private void BuildInputDeviceList()
         {
             var providerReport = new ProviderReport
             {
@@ -197,7 +114,8 @@ namespace Core_Midi
                 }
 
             }
-            _providerReport = providerReport;
+            _inputProviderReport = providerReport;
         }
+
     }
 }
