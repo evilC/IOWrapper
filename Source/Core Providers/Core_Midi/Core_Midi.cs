@@ -26,7 +26,15 @@ namespace Core_Midi
 
         public void Dispose()
         {
-            
+            foreach (var device in _activeInputDevices)
+            {
+                device.Value.Dispose();
+            }
+
+            foreach (var device in _activeOutputDevices)
+            {
+                device.Value.Dispose();
+            }
         }
 
         public string ProviderName { get; } = "Core_Midi";
@@ -38,7 +46,7 @@ namespace Core_Midi
 
         public void RefreshDevices()
         {
-            
+            _deviceLibrary.RefreshConnectedDevices();
         }
 
         #region IIinputProvider
@@ -88,7 +96,7 @@ namespace Core_Midi
 
         public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
         {
-            throw new NotImplementedException();
+            return _deviceLibrary.GetOutputDeviceReport(subReq.DeviceDescriptor);
         }
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)

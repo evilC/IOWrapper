@@ -20,11 +20,9 @@ namespace Core_Midi.DeviceLibraries
         public MidiDeviceLibrary(ProviderDescriptor providerDescriptor)
         {
             _providerDescriptor = providerDescriptor;
-            RefreshConnectedDevices();
             BuildInputDeviceReportTemplate();
             BuildOutputDeviceReportTemplate();
-            BuildInputDeviceList();
-            BuildOutputDeviceList();
+            RefreshConnectedDevices();
         }
 
         public void RefreshConnectedDevices()
@@ -50,6 +48,8 @@ namespace Core_Midi.DeviceLibraries
                 }
                 _connectedOutputDevices[infoOut.ProductName].Add(i);
             }
+            BuildInputDeviceList();
+            BuildOutputDeviceList();
         }
 
         private BindingDescriptor BuildNoteDescriptor(int channel, int octave, int noteIndex)
