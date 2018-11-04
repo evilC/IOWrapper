@@ -99,7 +99,7 @@ namespace Core_Midi
                 _activeOutputDevices.TryAdd(subReq.DeviceDescriptor, deviceHandler);
             }
 
-            //_activeInputDevices[subReq.DeviceDescriptor].SubscribeOutput(subReq);
+            _activeOutputDevices[subReq.DeviceDescriptor].SubscribeOutput(subReq);
             return true;
         }
 
@@ -111,7 +111,12 @@ namespace Core_Midi
 
         public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            throw new NotImplementedException();
+            if (_activeOutputDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
+            {
+                deviceHandler.UnsubscribeOutput(subReq);
+                return true;
+            }
+            return false;
         }
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
