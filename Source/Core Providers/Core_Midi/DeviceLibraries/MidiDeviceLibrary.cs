@@ -15,17 +15,16 @@ namespace Core_Midi.DeviceLibraries
         private ConcurrentDictionary<string, List<int>> _connectedInputDevices = new ConcurrentDictionary<string, List<int>>();
         private ConcurrentDictionary<string, List<int>> _connectedOutputDevices = new ConcurrentDictionary<string, List<int>>();
         private readonly ProviderDescriptor _providerDescriptor;
-        private ProviderReport _inputProviderReport;
-        private ProviderReport _outputProviderReport;
         private static readonly string[] NoteNames = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-        private DeviceReportNode _inputDeviceReportTemplate;
 
         public MidiDeviceLibrary(ProviderDescriptor providerDescriptor)
         {
             _providerDescriptor = providerDescriptor;
             RefreshConnectedDevices();
             BuildInputDeviceReportTemplate();
+            BuildOutputDeviceReportTemplate();
             BuildInputDeviceList();
+            BuildOutputDeviceList();
         }
 
         public void RefreshConnectedDevices()
@@ -52,7 +51,6 @@ namespace Core_Midi.DeviceLibraries
                 _connectedOutputDevices[infoOut.ProductName].Add(i);
             }
         }
-
 
         private BindingDescriptor BuildNoteDescriptor(int channel, int octave, int noteIndex)
         {

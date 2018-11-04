@@ -9,8 +9,11 @@ using NAudio.Midi;
 
 namespace Core_Midi.DeviceLibraries
 {
-    public partial class MidiDeviceLibrary : IInputOutputDeviceLibrary<int>
+    public partial class MidiDeviceLibrary
     {
+        private ProviderReport _inputProviderReport;
+        private DeviceReportNode _inputDeviceReportTemplate;
+
         public int GetInputDeviceIdentifier(DeviceDescriptor deviceDescriptor)
         {
             if (_connectedInputDevices.TryGetValue(deviceDescriptor.DeviceHandle, out var instances) &&
@@ -40,6 +43,27 @@ namespace Core_Midi.DeviceLibraries
             deviceReport.Nodes = _inputDeviceReportTemplate.Nodes;
 
             return deviceReport;
+        }
+
+        private void BuildInputDeviceList()
+        {
+            var providerReport = new ProviderReport
+            {
+                Title = "MIDI Input (Core)",
+                Description = "Provides support for MIDI devices",
+                API = "Midi",
+                ProviderDescriptor = _providerDescriptor
+            };
+            foreach (var deviceIdList in _connectedInputDevices)
+            {
+                for (var i = 0; i < deviceIdList.Value.Count; i++)
+                {
+                    var deviceDescriptor = new DeviceDescriptor { DeviceHandle = deviceIdList.Key, DeviceInstance = i };
+                    providerReport.Devices.Add(GetInputDeviceReport(deviceDescriptor));
+                }
+
+            }
+            _inputProviderReport = providerReport;
         }
 
         private void BuildInputDeviceReportTemplate()
@@ -94,27 +118,6 @@ namespace Core_Midi.DeviceLibraries
             }
 
             _inputDeviceReportTemplate = node;
-        }
-
-        private void BuildInputDeviceList()
-        {
-            var providerReport = new ProviderReport
-            {
-                Title = "MIDI (Core)",
-                Description = "Provides support for MIDI devices",
-                API = "Midi",
-                ProviderDescriptor = _providerDescriptor
-            };
-            foreach (var deviceIdList in _connectedInputDevices)
-            {
-                for (var i = 0; i < deviceIdList.Value.Count; i++)
-                {
-                    var deviceDescriptor = new DeviceDescriptor { DeviceHandle = deviceIdList.Key, DeviceInstance = i };
-                    providerReport.Devices.Add(GetInputDeviceReport(deviceDescriptor));
-                }
-
-            }
-            _inputProviderReport = providerReport;
         }
 
     }

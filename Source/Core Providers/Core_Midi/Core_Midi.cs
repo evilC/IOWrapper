@@ -83,7 +83,7 @@ namespace Core_Midi
 
         public ProviderReport GetOutputList()
         {
-            return null;
+            return _deviceLibrary.GetOutputList();
         }
 
         public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
