@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removed
 ### Fixed
 
+## [0.8.7] - 2018-10-29
+
+### Added
+
+- MIDI Provider "Unsigned" values now report as Positive only Signed. UCR currently does not support eg AxisToButton for unsigned, and resolution is only 7-bit, so we lose nothing and gain compatibility
+
 ## [0.8.6] - 2018-10-29
 
 ### Added
