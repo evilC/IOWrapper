@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 ### Added
-
+- MIDI Provider - Add support for Output (ControlChange only for now)
+- Provider Libraries - Split DeviceLibrary into Input/Output variants
 ### Changed 
 ### Deprecated
 ### Removed
