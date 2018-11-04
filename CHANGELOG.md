@@ -5,21 +5,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 ### Added
-- MIDI Provider - Add support for Output (ControlChange only for now)
-- Provider Libraries - Split DeviceLibrary into Input/Output variants
 ### Changed 
 ### Deprecated
 ### Removed
 ### Fixed
 
-## [0.8.7] - 2018-10-29
+## [0.8.8] - 2018-11-04
+### Added
+- MIDI Provider - Add support for Output (ControlChange only for now)
+- Provider Libraries - Split DeviceLibrary into Input/Output variants
 
+## [0.8.7] - 2018-11-04
 ### Added
 
 - MIDI Provider "Unsigned" values now report as Positive only Signed. UCR currently does not support eg AxisToButton for unsigned, and resolution is only 7-bit, so we lose nothing and gain compatibility
 
 ## [0.8.6] - 2018-10-29
-
 ### Added
 
 - Add experimental MIDI provider
