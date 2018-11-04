@@ -33,12 +33,8 @@ namespace TestApp
                 SubscriptionDescriptor = new SubscriptionDescriptor(),
             };
             IOW.Instance.SubscribeOutput(subReq);
-            IOW.Instance.SetOutputstate(subReq, new BindingDescriptor
-            {
-                Type = BindingType.Axis,
-                Index = 1,
-                SubIndex = 1
-            }, 127);
+            //IOW.Instance.SetOutputstate(subReq, Library.Bindings.Midi.Notes.C1FSharp5, 127);
+            IOW.Instance.SetOutputstate(subReq, Library.Bindings.Midi.ControlChange.MotorSliderF1, short.MaxValue);
 
             #region Bind Mode Testing
             //var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);

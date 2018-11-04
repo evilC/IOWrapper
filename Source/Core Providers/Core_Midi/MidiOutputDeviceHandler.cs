@@ -26,7 +26,19 @@ namespace Core_Midi
 
         public void SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
-            _midiOut.Send(new ControlChangeEvent(0, 2, (MidiController)21, 127).GetAsShortMessage());
+            var channel = (bindingDescriptor.Index & 0xf) + 1;
+            var commandCode = (MidiCommandCode)(bindingDescriptor.Index & 0xf0);
+            MidiEvent evt;
+            switch (commandCode)
+            {
+                case MidiCommandCode.ControlChange:
+                    var value = (int)((state + 32768) / 516.0236220472441);
+                    evt = new ControlChangeEvent(0, channel, (MidiController)bindingDescriptor.SubIndex, value);
+                    break;
+                default:
+                    return;
+            }
+            _midiOut.Send(evt.GetAsShortMessage());
         }
 
         public void Dispose()
