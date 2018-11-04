@@ -10,19 +10,19 @@ using NAudio.Midi;
 
 namespace Core_Midi
 {
-    public class MidiDeviceHandler : IDisposable
+    public class MidiInputDeviceHandler : IDisposable
     {
         private readonly DeviceDescriptor _deviceDescriptor;
-        private readonly IInputDeviceLibrary<int> _deviceLibrary;
+        //private readonly IInputDeviceLibrary<int> _deviceLibrary;
         private readonly MidiIn _midiIn;
         protected SubscriptionHandler SubHandler;
 
-        public MidiDeviceHandler(DeviceDescriptor deviceDescriptor, IInputDeviceLibrary<int> deviceLibrary, EventHandler<DeviceDescriptor> deviceEmptyHandler)
+        public MidiInputDeviceHandler(DeviceDescriptor deviceDescriptor, int deviceId, EventHandler<DeviceDescriptor> deviceEmptyHandler)
         {
             _deviceDescriptor = deviceDescriptor;
-            _deviceLibrary = deviceLibrary;
+            //_deviceLibrary = deviceLibrary;
             SubHandler = new SubscriptionHandler(_deviceDescriptor, deviceEmptyHandler);
-            var deviceId = _deviceLibrary.GetDeviceIdentifier(deviceDescriptor);
+            //var deviceId = _deviceLibrary.GetInputDeviceIdentifier(deviceDescriptor);
             _midiIn = new MidiIn(deviceId);
             _midiIn.MessageReceived += midiIn_MessageReceived;
             _midiIn.Start();

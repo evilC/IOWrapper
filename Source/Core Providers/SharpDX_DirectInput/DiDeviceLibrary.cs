@@ -23,7 +23,7 @@ namespace SharpDX_DirectInput
 
         #region IDeviceLibrary
 
-        public Guid GetDeviceIdentifier(DeviceDescriptor deviceDescriptor)
+        public Guid GetInputDeviceIdentifier(DeviceDescriptor deviceDescriptor)
         {
             if (_connectedDevices.TryGetValue(deviceDescriptor.DeviceHandle, out var instances) &&
                 instances.Count >= deviceDescriptor.DeviceInstance)
@@ -79,7 +79,7 @@ namespace SharpDX_DirectInput
 
         public DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
-            return GetInputDeviceReport(deviceDescriptor, GetDeviceIdentifier(deviceDescriptor));
+            return GetInputDeviceReport(deviceDescriptor, GetInputDeviceIdentifier(deviceDescriptor));
         }
         #endregion
 

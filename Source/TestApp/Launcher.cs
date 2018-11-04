@@ -26,6 +26,19 @@ namespace TestApp
 
             //var spaceMouse = new SpaceMouseTester("SpaceMouse", new DeviceDescriptor());
             var motör49Tester = new MidiTester("MIDI", Library.Devices.Midi.Motör49Main);
+            var subReq = new OutputSubscriptionRequest
+            {
+                ProviderDescriptor = Library.Providers.Midi,
+                DeviceDescriptor = Library.Devices.Midi.Motör49Main,
+                SubscriptionDescriptor = new SubscriptionDescriptor(),
+            };
+            IOW.Instance.SubscribeOutput(subReq);
+            IOW.Instance.SetOutputstate(subReq, new BindingDescriptor
+            {
+                Type = BindingType.Axis,
+                Index = 1,
+                SubIndex = 1
+            }, 127);
 
             #region Bind Mode Testing
             //var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);

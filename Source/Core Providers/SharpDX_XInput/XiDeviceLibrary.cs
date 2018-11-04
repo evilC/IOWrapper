@@ -24,7 +24,7 @@ namespace SharpDX_XInput
             BuildDeviceList();
         }
 
-        public UserIndex GetDeviceIdentifier(DeviceDescriptor deviceDescriptor)
+        public UserIndex GetInputDeviceIdentifier(DeviceDescriptor deviceDescriptor)
         {
             return (UserIndex)deviceDescriptor.DeviceInstance;
         }

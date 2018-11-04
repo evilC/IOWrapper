@@ -13,11 +13,11 @@ using NAudio.Midi;
 namespace Core_Midi
 {
     [Export(typeof(IProvider))]
-    public class Core_Midi : IInputProvider
+    public class Core_Midi : IInputProvider, IOutputProvider
     {
-        private readonly MidiIn _midiIn;
-        private readonly IInputDeviceLibrary<int> _deviceLibrary;
-        private readonly ConcurrentDictionary<DeviceDescriptor, MidiDeviceHandler> _activeDevices = new ConcurrentDictionary<DeviceDescriptor, MidiDeviceHandler>();
+        private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
+        private readonly ConcurrentDictionary<DeviceDescriptor, MidiInputDeviceHandler> _activeInputDevices = new ConcurrentDictionary<DeviceDescriptor, MidiInputDeviceHandler>();
+        private readonly ConcurrentDictionary<DeviceDescriptor, MidiOutputDeviceHandler> _activeOutputDevices = new ConcurrentDictionary<DeviceDescriptor, MidiOutputDeviceHandler>();
 
         public Core_Midi()
         {
@@ -41,6 +41,7 @@ namespace Core_Midi
             
         }
 
+        #region IIinputProvider
         public ProviderReport GetInputList()
         {
             return _deviceLibrary.GetInputList();
@@ -53,28 +54,76 @@ namespace Core_Midi
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            if (!_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
+            if (!_activeInputDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
-                deviceHandler = new MidiDeviceHandler(subReq.DeviceDescriptor, _deviceLibrary, DeviceEmptyHandler);
-                _activeDevices.TryAdd(subReq.DeviceDescriptor, deviceHandler);
+                deviceHandler = new MidiInputDeviceHandler(subReq.DeviceDescriptor, _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor), InputDeviceEmptyHandler);
+                _activeInputDevices.TryAdd(subReq.DeviceDescriptor, deviceHandler);
             }
             deviceHandler.SubscribeInput(subReq);
             return true;
         }
 
-        private void DeviceEmptyHandler(object sender, DeviceDescriptor e)
-        {
-            _activeDevices[e].Dispose();
-            _activeDevices.TryRemove(e, out _);
-        }
-
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            if (_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
+            if (_activeInputDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
                 deviceHandler.UnsubscribeInput(subReq);
             }
             return true;
         }
+
+        private void InputDeviceEmptyHandler(object sender, DeviceDescriptor e)
+        {
+            _activeInputDevices[e].Dispose();
+            _activeInputDevices.TryRemove(e, out _);
+        }
+        #endregion
+
+        #region IOutputProvider
+
+        public ProviderReport GetOutputList()
+        {
+            return null;
+        }
+
+        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        {
+            if (!_activeOutputDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
+            {
+                deviceHandler = new MidiOutputDeviceHandler(subReq.DeviceDescriptor, _deviceLibrary.GetOutputDeviceIdentifier(subReq.DeviceDescriptor), OutputDeviceEmptyHandler);
+                _activeOutputDevices.TryAdd(subReq.DeviceDescriptor, deviceHandler);
+            }
+
+            //_activeInputDevices[subReq.DeviceDescriptor].SubscribeOutput(subReq);
+            return true;
+        }
+
+        private void OutputDeviceEmptyHandler(object sender, DeviceDescriptor e)
+        {
+            _activeOutputDevices[e].Dispose();
+            _activeOutputDevices.TryRemove(e, out _);
+        }
+
+        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
+        {
+            if (_activeOutputDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
+            {
+                deviceHandler.SetOutputState(subReq, bindingDescriptor, state);
+                return true;
+            }
+            return false;
+        }
+
+        #endregion
     }
 }

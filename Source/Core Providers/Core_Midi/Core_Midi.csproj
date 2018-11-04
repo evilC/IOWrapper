@@ -46,8 +46,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core_Midi.cs" />
-    <Compile Include="MidiDeviceHandler.cs" />
+    <Compile Include="MidiInputDeviceHandler.cs" />
     <Compile Include="MidiDeviceLibrary.cs" />
+    <Compile Include="MidiOutputDeviceHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -66,7 +66,7 @@ namespace SharpDX_XInput
         {
             if (!_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
-                deviceHandler = new XiDeviceHandler( subReq.DeviceDescriptor, _deviceLibrary.GetDeviceIdentifier(subReq.DeviceDescriptor)).Initialize(DeviceEmptyHandler, BindModeHandler);
+                deviceHandler = new XiDeviceHandler( subReq.DeviceDescriptor, _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor)).Initialize(DeviceEmptyHandler, BindModeHandler);
                 _activeDevices.Add(subReq.DeviceDescriptor, deviceHandler);
             }
             deviceHandler.SubscribeInput(subReq);
@@ -86,7 +86,7 @@ namespace SharpDX_XInput
         {
             if (!_activeDevices.TryGetValue(deviceDescriptor, out var deviceHandler))
             {
-                deviceHandler = new XiDeviceHandler(deviceDescriptor, _deviceLibrary.GetDeviceIdentifier(deviceDescriptor)).Initialize(DeviceEmptyHandler, BindModeHandler);
+                deviceHandler = new XiDeviceHandler(deviceDescriptor, _deviceLibrary.GetInputDeviceIdentifier(deviceDescriptor)).Initialize(DeviceEmptyHandler, BindModeHandler);
                 _activeDevices.Add(deviceDescriptor, deviceHandler);
             }
 
