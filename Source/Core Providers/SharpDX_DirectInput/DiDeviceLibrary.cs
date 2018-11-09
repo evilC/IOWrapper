@@ -13,6 +13,7 @@ namespace SharpDX_DirectInput
         public static DirectInput DiInstance = new DirectInput();
         private static readonly List<BindingReport>[] PovBindingInfos = new List<BindingReport>[4];
         private readonly ProviderDescriptor _providerDescriptor;
+        private ProviderReport _providerReport;
 
         public DiDeviceLibrary(ProviderDescriptor providerDescriptor)
         {
@@ -49,16 +50,13 @@ namespace SharpDX_DirectInput
                 }
                 _connectedDevices[handle].Add(device.InstanceGuid);
             }
+
+            BuildProviderReport();
         }
 
-
-        #endregion
-
-        #region IInputDeviceLibrary
-
-        public ProviderReport GetInputList()
+        private void BuildProviderReport()
         {
-            var providerReport = new ProviderReport
+            _providerReport = new ProviderReport
             {
                 Title = "DirectInput (Core)",
                 Description = "Allows reading of generic (DirectInput) joysticks.",
@@ -69,18 +67,51 @@ namespace SharpDX_DirectInput
             {
                 for (var i = 0; i < guidList.Value.Count; i++)
                 {
-                    var deviceDescriptor = new DeviceDescriptor {DeviceHandle = guidList.Key, DeviceInstance = i};
-                    providerReport.Devices.Add(GetInputDeviceReport(deviceDescriptor));
+                    var deviceDescriptor = new DeviceDescriptor { DeviceHandle = guidList.Key, DeviceInstance = i };
+                    _providerReport.Devices.Add(GetInputDeviceReport(deviceDescriptor));
                 }
             }
+        }
 
-            return providerReport;
+        #endregion
+
+        #region IInputDeviceLibrary
+
+        public ProviderReport GetInputList()
+        {
+            return _providerReport;
         }
 
         public DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
             return GetInputDeviceReport(deviceDescriptor, GetInputDeviceIdentifier(deviceDescriptor));
         }
+
+        public BindingReport GetInputBindingReport(BindingDescriptor bindingDescriptor)
+        {
+            switch (bindingDescriptor.Type)
+            {
+                case BindingType.Axis:
+                    return new BindingReport
+                    {
+                        //Title = deviceInfo.Name,
+                        Title = ((JoystickOffset)bindingDescriptor.Index).ToString(),
+                        Category = BindingCategory.Signed,
+                        BindingDescriptor = bindingDescriptor
+                    };
+                case BindingType.Button:
+                    return new BindingReport
+                    {
+                        Title = (bindingDescriptor.Index + 1).ToString(),
+                        Category = BindingCategory.Momentary,
+                        BindingDescriptor = bindingDescriptor
+                    };
+                case BindingType.POV:
+                    return PovBindingInfos[bindingDescriptor.Index][bindingDescriptor.SubIndex];
+            }
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region Reporting
@@ -113,18 +144,13 @@ namespace SharpDX_DirectInput
                         var deviceInfo =
                             joystick.GetObjectInfoByName(offset   // this bit will throw if the stick does not have that axis
                                 .ToString());
-                        axisInfo.Bindings.Add(new BindingReport
+                        axisInfo.Bindings.Add(GetInputBindingReport(new BindingDescriptor
                         {
-                            Title = deviceInfo.Name,
-                            Category = BindingCategory.Signed,
-                            BindingDescriptor = new BindingDescriptor
-                            {
-                                //Index = i,
-                                Index = (int)offset,
-                                //Name = axisNames[i],
-                                Type = BindingType.Axis
-                            }
-                        });
+                            //Index = i,
+                            Index = (int)offset,
+                            //Name = axisNames[i],
+                            Type = BindingType.Axis
+                        }));
                     }
                     catch
                     {
@@ -144,17 +170,12 @@ namespace SharpDX_DirectInput
                     };
                     for (var btn = 0; btn < length; btn++)
                     {
-                        buttonInfo.Bindings.Add(new BindingReport
+                        buttonInfo.Bindings.Add(GetInputBindingReport(new BindingDescriptor
                         {
-                            Title = (btn + 1).ToString(),
-                            Category = BindingCategory.Momentary,
-                            BindingDescriptor = new BindingDescriptor
-                            {
-                                //Index = btn,
-                                Index = (int)Utilities.OffsetsByType[BindingType.Button][btn],
-                                Type = BindingType.Button
-                            }
-                        });
+                            //Index = btn,
+                            Index = (int)Utilities.OffsetsByType[BindingType.Button][btn],
+                            Type = BindingType.Button
+                        }));
                     }
 
                     deviceReport.Nodes.Add(buttonInfo);

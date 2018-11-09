@@ -66,7 +66,37 @@ namespace SharpDX_XInput
             };
         }
 
-        private static void BuildInputList()
+        public BindingReport GetInputBindingReport(BindingDescriptor bindingDescriptor)
+        {
+            switch (bindingDescriptor.Type)
+            {
+                case BindingType.Axis:
+                    return new BindingReport
+                    {
+                        Title = Utilities.axisNames[bindingDescriptor.Index],
+                        Category = (bindingDescriptor.Index < 4 ? BindingCategory.Signed : BindingCategory.Unsigned),
+                        BindingDescriptor = bindingDescriptor
+                    };
+                case BindingType.Button:
+                    return new BindingReport
+                    {
+                        Title = Utilities.buttonNames[bindingDescriptor.Index],
+                        Category = BindingCategory.Momentary,
+                        BindingDescriptor = bindingDescriptor
+                    };
+                case BindingType.POV:
+                    return new BindingReport
+                    {
+                        Title = Utilities.povNames[bindingDescriptor.SubIndex],
+                        Category = BindingCategory.Momentary,
+                        BindingDescriptor = bindingDescriptor
+                    };
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private void BuildInputList()
         {
             _buttonInfo = new DeviceReportNode
             {
@@ -74,16 +104,11 @@ namespace SharpDX_XInput
             };
             for (var b = 0; b < 10; b++)
             {
-                _buttonInfo.Bindings.Add(new BindingReport
+                _buttonInfo.Bindings.Add(GetInputBindingReport(new BindingDescriptor
                 {
-                    Title = Utilities.buttonNames[b],
-                    Category = BindingCategory.Momentary,
-                    BindingDescriptor = new BindingDescriptor
-                    {
-                        Index = b,
-                        Type = BindingType.Button
-                    }
-                });
+                    Index = b,
+                    Type = BindingType.Button
+                }));
             }
 
             _axisInfo = new DeviceReportNode
@@ -92,16 +117,11 @@ namespace SharpDX_XInput
             };
             for (var a = 0; a < 6; a++)
             {
-                _axisInfo.Bindings.Add(new BindingReport
+                _axisInfo.Bindings.Add(GetInputBindingReport(new BindingDescriptor
                 {
-                    Title = Utilities.axisNames[a],
-                    Category = (a < 4 ? BindingCategory.Signed : BindingCategory.Unsigned),
-                    BindingDescriptor = new BindingDescriptor
-                    {
-                        Index = a,
-                        Type = BindingType.Axis
-                    }
-                });
+                    Index = a,
+                    Type = BindingType.Axis
+                }));
             }
 
             _povInfo = new DeviceReportNode
@@ -110,17 +130,12 @@ namespace SharpDX_XInput
             };
             for (var d = 0; d < 4; d++)
             {
-                _povInfo.Bindings.Add(new BindingReport
+                _povInfo.Bindings.Add(GetInputBindingReport(new BindingDescriptor
                 {
-                    Title = Utilities.povNames[d],
-                    Category = BindingCategory.Momentary,
-                    BindingDescriptor = new BindingDescriptor
-                    {
-                        Index = 0,
-                        SubIndex = d,
-                        Type = BindingType.POV
-                    }
-                });
+                    Index = 0,
+                    SubIndex = d,
+                    Type = BindingType.POV
+                }));
             }
 
         }
