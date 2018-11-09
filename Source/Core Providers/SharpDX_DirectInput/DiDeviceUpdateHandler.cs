@@ -9,9 +9,12 @@ namespace SharpDX_DirectInput
     // ToDo: Replace tuples with struct?
     public class DiDeviceUpdateHandler : DeviceUpdateHandler<JoystickUpdate, (BindingType, int)>
     {
-        public DiDeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler) 
+        private readonly DiDeviceLibrary _deviceLibrary;
+
+        public DiDeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler, DiDeviceLibrary deviceLibrary) 
             : base(deviceDescriptor, subhandler, bindModeHandler)
         {
+            _deviceLibrary = deviceLibrary;
             // All Buttons share one Update Processor
             UpdateProcessors.Add((BindingType.Button, 0), new DiButtonProcessor());
             // All Axes share one Update Processor
@@ -21,6 +24,11 @@ namespace SharpDX_DirectInput
             UpdateProcessors.Add((BindingType.POV, 1), new DiPoVProcessor());
             UpdateProcessors.Add((BindingType.POV, 2), new DiPoVProcessor());
             UpdateProcessors.Add((BindingType.POV, 3), new DiPoVProcessor());
+        }
+
+        protected override void OnBindModeUpdate(BindingUpdate update)
+        {
+            _bindModeHandler?.Invoke(this, new BindModeUpdate { Device = _deviceDescriptor, Binding = _deviceLibrary.GetInputBindingReport(update.Binding), Value = update.Value });
         }
 
         protected override BindingUpdate[] PreProcessUpdate(JoystickUpdate update)

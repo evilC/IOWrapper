@@ -14,11 +14,11 @@ namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Updates
     /// <typeparam name="TProcessorKey">The Key type used for the <see cref="SubscriptionHandler"/> dictionary</typeparam>
     public abstract class DeviceUpdateHandler<TUpdate, TProcessorKey> : IDeviceUpdateHandler<TUpdate>
     {
-        private readonly DeviceDescriptor _deviceDescriptor;
+        protected readonly DeviceDescriptor _deviceDescriptor;
         protected ISubscriptionHandler SubHandler;
         protected DetectionMode DetectionMode = DetectionMode.Subscription;
         protected Dictionary<TProcessorKey, IUpdateProcessor> UpdateProcessors = new Dictionary<TProcessorKey, IUpdateProcessor>();
-        private readonly EventHandler<BindModeUpdate> _bindModeHandler;
+        protected readonly EventHandler<BindModeUpdate> _bindModeHandler;
 
         /// <summary>
         /// Create a new DeviceUpdateHandler
@@ -45,11 +45,14 @@ namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Updates
         /// Routes events for Bind Mode
         /// </summary>
         /// <param name="update"></param>
+        protected abstract void OnBindModeUpdate(BindingUpdate update);
+        /*
         protected void OnBindModeUpdate(BindingUpdate update)
         {
             //ToDo: Broken - BindingReport needs to be built from BindingDescriptor
             _bindModeHandler?.Invoke(this, new BindModeUpdate{Device = _deviceDescriptor, Binding = update.Binding, Value = update.Value});
         }
+        */
 
         /// <summary>
         /// Called by a device poller when the device reports new data

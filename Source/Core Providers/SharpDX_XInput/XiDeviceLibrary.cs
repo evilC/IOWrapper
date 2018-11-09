@@ -9,7 +9,7 @@ using SharpDX.XInput;
 
 namespace SharpDX_XInput
 {
-    class XiDeviceLibrary : IInputDeviceLibrary<UserIndex>
+    public class XiDeviceLibrary : IInputDeviceLibrary<UserIndex>
     {
         private readonly ProviderDescriptor _providerDescriptor;
         private static DeviceReportNode _buttonInfo;

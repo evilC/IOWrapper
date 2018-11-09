@@ -10,11 +10,13 @@ namespace SharpDX_XInput
     // ToDo: Replace tuples with struct?
     public class XiDeviceUpdateHandler : DeviceUpdateHandler<State, (BindingType, int)>
     {
+        private readonly XiDeviceLibrary _deviceLibrary;
         private State _lastState;
 
-        public XiDeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler)
+        public XiDeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler, XiDeviceLibrary deviceLibrary)
             : base(deviceDescriptor, subhandler, bindModeHandler)
         {
+            _deviceLibrary = deviceLibrary;
             // All Buttons share one Update Processor
             UpdateProcessors.Add((BindingType.Button, 0), new XiButtonProcessor());
             // LS and RS share one Update Processor
@@ -25,6 +27,11 @@ namespace SharpDX_XInput
             UpdateProcessors.Add((BindingType.POV, 0), new XiButtonProcessor());
         }
 
+
+        protected override void OnBindModeUpdate(BindingUpdate update)
+        {
+            _bindModeHandler?.Invoke(this, new BindModeUpdate { Device = _deviceDescriptor, Binding = _deviceLibrary.GetInputBindingReport(update.Binding), Value = update.Value });
+        }
 
         protected override BindingUpdate[] PreProcessUpdate(State update)
         {
