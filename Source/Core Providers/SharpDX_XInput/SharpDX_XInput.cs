@@ -16,7 +16,7 @@ namespace SharpDX_XInput
     public class SharpDX_XInput : IInputProvider, IBindModeProvider
     {
         private readonly Dictionary<DeviceDescriptor, PollingDeviceHandler<State, (BindingType, int)>> _activeDevices = new Dictionary<DeviceDescriptor, PollingDeviceHandler<State, (BindingType, int)>>();
-        private Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
+        private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
         private readonly XiDeviceLibrary _deviceLibrary;
 
         public bool IsLive { get { return isLive; } }
@@ -82,7 +82,7 @@ namespace SharpDX_XInput
             return true;
         }
 
-        public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
+        public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> callback = null)
         {
             if (!_activeDevices.TryGetValue(deviceDescriptor, out var deviceHandler))
             {

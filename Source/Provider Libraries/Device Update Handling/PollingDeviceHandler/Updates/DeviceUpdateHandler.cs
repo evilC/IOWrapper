@@ -47,6 +47,7 @@ namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Updates
         /// <param name="update"></param>
         protected void OnBindModeUpdate(BindingUpdate update)
         {
+            //ToDo: Broken - BindingReport needs to be built from BindingDescriptor
             _bindModeHandler?.Invoke(this, new BindModeUpdate{Device = _deviceDescriptor, Binding = update.Binding, Value = update.Value});
         }
 
