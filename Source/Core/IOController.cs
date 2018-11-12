@@ -141,7 +141,7 @@ namespace HidWizards.IOWrapper.Core
             return ret;
         }
 
-        public void SetDetectionMode(DetectionMode detectionMode, ProviderDescriptor providerDescriptor, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
+        public void SetDetectionMode(DetectionMode detectionMode, ProviderDescriptor providerDescriptor, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> callback = null)
         {
             var provider = GetProvider<IBindModeProvider>(providerDescriptor.ProviderName);
             provider.SetDetectionMode(detectionMode, deviceDescriptor, callback);
