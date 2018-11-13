@@ -25,43 +25,45 @@ namespace TestApp
             //var vigemDs4OutputTester = new VigemDs4OutputTester();
 
             //var spaceMouse = new SpaceMouseTester("SpaceMouse", new DeviceDescriptor());
-            var motör49Tester = new MidiTester("MIDI", Library.Devices.Midi.Motör49Main);
-            var subReq = new OutputSubscriptionRequest
-            {
-                ProviderDescriptor = Library.Providers.Midi,
-                DeviceDescriptor = Library.Devices.Midi.Motör49Main,
-                SubscriptionDescriptor = new SubscriptionDescriptor(),
-            };
-            IOW.Instance.SubscribeOutput(subReq);
+            //var motör49Tester = new MidiTester("MIDI", Library.Devices.Midi.Motör49Main);
+            //var subReq = new OutputSubscriptionRequest
+            //{
+            //    ProviderDescriptor = Library.Providers.Midi,
+            //    DeviceDescriptor = Library.Devices.Midi.Motör49Main,
+            //    SubscriptionDescriptor = new SubscriptionDescriptor(),
+            //};
+            //IOW.Instance.SubscribeOutput(subReq);
             //IOW.Instance.SetOutputstate(subReq, Library.Bindings.Midi.Notes.C1FSharp5, 127);
-            IOW.Instance.SetOutputstate(subReq, Library.Bindings.Midi.ControlChange.MotorSliderF1, short.MaxValue);
-
-            #region Bind Mode Testing
-            //var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
-            //var vj1 = new VJoyTester(1, false);
-            //var vj2 = new VJoyTester(2, false);
-            //var xInputPad_1 = new XiTester(1);
-            Console.WriteLine("Press Enter for Bind Mode...");
-            Console.ReadLine();
-            //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, BindModeHandler);
-            //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.XInput, Library.Devices.Console.Xb360_1, BindModeHandler);
-            //genericStick_1.Unsubscribe();
-            //Console.WriteLine("Press Enter to leave Bind Mode...");
-            Console.ReadLine();
-            //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M);
-            #endregion
-
-            //xInputPad_1.Unsubscribe();
+            //IOW.Instance.SetOutputstate(subReq, Library.Bindings.Midi.ControlChange.MotorSliderF1, short.MaxValue);
 
             #region Interception
 
-            //var interceptionKeyboardInputTester = new InterceptionKeyboardInputTester();
+            var interceptionKeyboardInputTester = new InterceptionKeyboardInputTester();
+            IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.Interception, Library.Devices.Interception.DellKeyboard1, BindModeHandler);
             //var interceptionMouseInputTester = new InterceptionMouseInputTester();
 
             //var interceptionMouseOutputTester = new InterceptionMouseOutputTester();
             //var interceptionKeyboardOutputTester = new InterceptionKeyboardOutputTester();
 
             #endregion
+
+
+            #region Bind Mode Testing
+            //var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
+            //var vj1 = new VJoyTester(1, false);
+            //var vj2 = new VJoyTester(2, false);
+            //var xInputPad_1 = new XiTester(1);
+            //Console.WriteLine("Press Enter for Bind Mode...");
+            //Console.ReadLine();
+            //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, BindModeHandler);
+            //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.XInput, Library.Devices.Console.Xb360_1, BindModeHandler);
+            //genericStick_1.Unsubscribe();
+            //Console.WriteLine("Press Enter to leave Bind Mode...");
+            //Console.ReadLine();
+            //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M);
+            #endregion
+
+            //xInputPad_1.Unsubscribe();
 
             Console.WriteLine("Press Enter to exit");
             Console.ReadLine();

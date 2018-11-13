@@ -23,8 +23,11 @@ using static System.String;
 namespace Core_Interception
 {
     [Export(typeof(IProvider))]
-    public class Core_Interception : IInputProvider, IOutputProvider
+    public class Core_Interception : IInputProvider, IOutputProvider, IBindModeProvider
     {
+        private Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
+        private ProviderDescriptor _providerDescriptor;
+
         public bool IsLive { get; } = false;
 
         private bool _disposed;
@@ -57,7 +60,8 @@ namespace Core_Interception
             }
         }
 
-        private readonly Dictionary<int, KeyboardMonitor> _monitoredKeyboards = new Dictionary<int, KeyboardMonitor>();
+        //private readonly Dictionary<int, KeyboardMonitor> _monitoredKeyboards = new Dictionary<int, KeyboardMonitor>();
+        private readonly Dictionary<int, IceptKeyboardHandler> _monitoredKeyboards = new Dictionary<int, IceptKeyboardHandler>();
         private readonly Dictionary<int, MouseMonitor> _monitoredMice = new Dictionary<int, MouseMonitor>();
         private Dictionary<string, List<int>> _deviceHandleToId;
 
@@ -94,6 +98,10 @@ namespace Core_Interception
 
         public Core_Interception()
         {
+            _providerDescriptor = new ProviderDescriptor
+            {
+                ProviderName = ProviderName
+            };
             var settingsFile = Path.Combine(AssemblyDirectory, "Settings.xml");
             _blockingEnabled = false;
             if (File.Exists(settingsFile))
@@ -221,10 +229,7 @@ namespace Core_Interception
                 Title = "Interception (Core)",
                 Description = "Supports per-device Keyboard and Mouse Input/Output, with blocking\nRequires custom driver from http://oblita.com/interception",
                 API = "Interception",
-                ProviderDescriptor = new ProviderDescriptor
-                {
-                    ProviderName = ProviderName
-                },
+                ProviderDescriptor = _providerDescriptor,
                 Devices = _deviceReports
             };
 
@@ -268,9 +273,14 @@ namespace Core_Interception
                 {
                     if (!_monitoredKeyboards.ContainsKey(devId))
                     {
-                        _monitoredKeyboards.Add(devId, new KeyboardMonitor());
+                        //_monitoredKeyboards.Add(devId, new KeyboardMonitor());
+                        var kbHandler = new IceptKeyboardHandler(subReq.DeviceDescriptor);
+                        kbHandler.Initialize(KeyboardEmptyHandler, BindModeHandler);
+                        _monitoredKeyboards.Add(devId, kbHandler);
                     }
-                    ret = _monitoredKeyboards[devId].Add(subReq);
+                    //ret = _monitoredKeyboards[devId].Add(subReq);
+                    _monitoredKeyboards[devId].SubscribeInput(subReq);
+                    ret = true;
                 }
                 else
                 {
@@ -291,6 +301,11 @@ namespace Core_Interception
             return ret;
         }
 
+        private void KeyboardEmptyHandler(object sender, DeviceDescriptor e)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
             var ret = false;
@@ -306,8 +321,10 @@ namespace Core_Interception
 
                     if (id < 10)
                     {
-                        ret = _monitoredKeyboards[devId].Remove(subReq);
-                        if (!_monitoredKeyboards[devId].HasSubscriptions())
+                        //ret = _monitoredKeyboards[devId].Remove(subReq);
+                        ret = true;
+                        _monitoredKeyboards[devId].UnsubscribeInput(subReq);
+                        if (_monitoredKeyboards[devId].IsEmpty())
                         {
                             _monitoredKeyboards.Remove(devId);
                         }
@@ -366,7 +383,7 @@ namespace Core_Interception
                     var mouse = new ManagedWrapper.MouseStroke
                     {
                         //ToDo: This only implements mouse relative mode - can we allow absolute mode too?
-                        flags = (ushort) ManagedWrapper.MouseFlag.MouseMoveRelative
+                        flags = (ushort)ManagedWrapper.MouseFlag.MouseMoveRelative
                     };
                     if (bindingDescriptor.Index != 0)
                         if (bindingDescriptor.Index == 1)
@@ -385,7 +402,7 @@ namespace Core_Interception
                 else if (bindingDescriptor.Type == BindingType.Button)
                 {
                     var btn = bindingDescriptor.Index;
-                    var flag = (int) ManagedWrapper.MouseButtonFlags[btn];
+                    var flag = (int)ManagedWrapper.MouseButtonFlags[btn];
                     if (btn < 5)
                     {
                         // Regular buttons
@@ -394,10 +411,10 @@ namespace Core_Interception
                     else
                     {
                         // Wheel
-                        stroke.mouse.rolling = (short) ((btn == 5 || btn == 8) ? 120 : -120);
+                        stroke.mouse.rolling = (short)((btn == 5 || btn == 8) ? 120 : -120);
                     }
 
-                    stroke.mouse.state = (ushort) flag;
+                    stroke.mouse.state = (ushort)flag;
                 }
                 else
                 {
@@ -417,6 +434,49 @@ namespace Core_Interception
         {
 
         }
+
+        public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
+        {
+            if (_pollThreadRunning)
+                SetPollThreadState(false);
+
+            var id = _deviceHandleToId[deviceDescriptor.DeviceHandle][deviceDescriptor.DeviceInstance];
+            var devId = id + 1;
+            if (id < 10)
+            {
+                if (detectionMode == DetectionMode.Bind)
+                {
+                    if (!_monitoredKeyboards.ContainsKey(devId))
+                    {
+                        var kbHandler = new IceptKeyboardHandler(deviceDescriptor);
+                        kbHandler.Initialize(KeyboardEmptyHandler, BindModeHandler);
+                        _monitoredKeyboards.Add(devId, kbHandler);
+                    }
+
+                    _bindModeCallback = callback;
+                }
+                else if (!_monitoredKeyboards.ContainsKey(devId))
+                {
+                    return;
+                }
+
+                _monitoredKeyboards[devId].SetDetectionMode(detectionMode);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            if (_pollThreadDesired)
+                SetPollThreadState(true);
+        }
+
+        private void BindModeHandler(object sender, BindModeUpdate e)
+        {
+            _bindModeCallback?.Invoke(_providerDescriptor, e.Device, e.Binding, e.Value);
+        }
+
+
         #endregion
 
         #region Device Querying
@@ -546,7 +606,7 @@ namespace Core_Interception
                     }
                 });
             }
-            
+
             for (var i = 5; i < 9; i++)
             {
                 _mouseButtonList.Bindings.Add(new BindingReport
@@ -560,7 +620,7 @@ namespace Core_Interception
                     }
                 });
             }
-            
+
         }
 
         private void UpdateKeyList()
@@ -574,7 +634,7 @@ namespace Core_Interception
 
             for (var i = 0; i < 256; i++)
             {
-                var lParam = (uint)(i+1) << 16;
+                var lParam = (uint)(i + 1) << 16;
                 if (ManagedWrapper.GetKeyNameTextW(lParam, sb, 260) == 0)
                 {
                     continue;
@@ -596,7 +656,7 @@ namespace Core_Interception
                 //buttonNames.Add(i, keyName);
 
                 // Check if this button has an extended (Right) variant
-                lParam = (0x100 | ((uint)i+1 & 0xff)) << 16;
+                lParam = (0x100 | ((uint)i + 1 & 0xff)) << 16;
                 if (ManagedWrapper.GetKeyNameTextW(lParam, sb, 260) == 0)
                 {
                     continue;
@@ -641,7 +701,9 @@ namespace Core_Interception
                         var block = false;
                         if (isMonitoredKeyboard)
                         {
-                            block = _monitoredKeyboards[i].Poll(stroke);
+                            //block = _monitoredKeyboards[i].Poll(stroke);
+                            _monitoredKeyboards[i].Poll(stroke);
+                            block = false;
                         }
                         if (!(blockingEnabled && block))
                         {

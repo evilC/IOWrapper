@@ -36,6 +36,9 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,6 +49,9 @@
   <ItemGroup>
     <Compile Include="Core_Interception.cs" />
     <Compile Include="Helpers\HelperFunctions.cs" />
+    <Compile Include="IceptKeyboardHandler.cs" />
+    <Compile Include="IceptKeyboardUpdateHandler.cs" />
+    <Compile Include="IceptUpdateProcessors.cs" />
     <Compile Include="Lib\ManagedWrapper.cs" />
     <Compile Include="Monitors\KeyboardKeyMonitor.cs" />
     <Compile Include="Monitors\KeyboardMonitor.cs" />
@@ -64,9 +70,17 @@
       <Project>{5C0547B8-FCA1-436B-B6DD-1061F04CAD36}</Project>
       <Name>HidDeviceHelper</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Provider Libraries\Device Update Handling\PollingDeviceHandler\PollingDeviceHandler.csproj">
+      <Project>{04FA4D8A-D5D2-4477-8AED-021239CE95AE}</Project>
+      <Name>PollingDeviceHandler</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Provider Libraries\ProviderLogger\ProviderLogger.csproj">
       <Project>{996ecb47-004c-4216-bbdf-ae023da3df1f}</Project>
       <Name>ProviderLogger</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Provider Libraries\Subscription Handling\SubscriptionHandler\SubscriptionHandler.csproj">
+      <Project>{C9639380-2F3D-4BA2-907C-9EAC1C583EF9}</Project>
+      <Name>SubscriptionHandler</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ProviderInterface\ProviderInterface.csproj">
       <Project>{f6eaf2bc-f362-4ecd-94e5-617ca37a4210}</Project>
@@ -78,6 +92,7 @@
     <Content Include="Settings.xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
