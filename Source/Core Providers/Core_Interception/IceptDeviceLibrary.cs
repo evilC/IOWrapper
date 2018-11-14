@@ -249,6 +249,35 @@ namespace Core_Interception
 
         }
 
+        public BindingReport GetKeyboardBindingReport(BindingDescriptor bindingDescriptor)
+        {
+            var i = bindingDescriptor.Index;
+            uint lParam;
+            if (i > 255)
+            {
+                i -= 256;
+                lParam = (0x100 | ((uint)i + 1 & 0xff)) << 16;
+            }
+            else
+            {
+                lParam = (uint)(i + 1) << 16;
+            }
+            
+            var sb = new StringBuilder(260);
+            if (ManagedWrapper.GetKeyNameTextW(lParam, sb, 260) == 0)
+            {
+                return null;
+            }
+            var keyName = sb.ToString().Trim();
+            if (keyName == "") return null;
+            return new BindingReport
+            {
+                Title = keyName,
+                Category = BindingCategory.Momentary,
+                BindingDescriptor = bindingDescriptor
+            };
+        }
+
         private void UpdateKeyList()
         {
             _keyboardList = new DeviceReportNode
@@ -256,10 +285,29 @@ namespace Core_Interception
                 Title = "Keys"
             };
             //buttonNames = new Dictionary<int, string>();
-            var sb = new StringBuilder(260);
+            //var sb = new StringBuilder(260);
 
             for (var i = 0; i < 256; i++)
             {
+                var report = GetKeyboardBindingReport(new BindingDescriptor
+                {
+                    Type = BindingType.Button,
+                    Index = i,
+                    SubIndex = 0
+                });
+                if (report == null) continue;
+                _keyboardList.Bindings.Add(report);
+
+                // Check if this button has an extended (Right) variant
+                var altReport = GetKeyboardBindingReport(new BindingDescriptor
+                {
+                    Type = BindingType.Button,
+                    Index = i + 256,
+                    SubIndex = 0
+                });
+                if (altReport == null) continue;
+                _keyboardList.Bindings.Add(altReport);
+                /*
                 var lParam = (uint)(i + 1) << 16;
                 if (ManagedWrapper.GetKeyNameTextW(lParam, sb, 260) == 0)
                 {
@@ -303,6 +351,7 @@ namespace Core_Interception
                 });
                 //Log("Button Index: {0}, name: '{1}'", i + 256, altKeyName);
                 //buttonNames.Add(i + 256, altKeyName);
+                */
             }
             _keyboardList.Bindings.Sort((x, y) => string.Compare(x.Title, y.Title, StringComparison.Ordinal));
         }

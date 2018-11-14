@@ -26,7 +26,7 @@ namespace Core_Interception
     [Export(typeof(IProvider))]
     public class Core_Interception : IInputProvider, IOutputProvider, IBindModeProvider
     {
-        private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
+        private readonly IceptDeviceLibrary _deviceLibrary;
         private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
         private readonly ProviderDescriptor _providerDescriptor;
 
@@ -217,7 +217,7 @@ namespace Core_Interception
                     if (!_monitoredKeyboards.ContainsKey(devId))
                     {
                         //_monitoredKeyboards.Add(devId, new KeyboardMonitor());
-                        var kbHandler = new IceptKeyboardHandler(subReq.DeviceDescriptor);
+                        var kbHandler = new IceptKeyboardHandler(subReq.DeviceDescriptor, _deviceLibrary);
                         kbHandler.Initialize(KeyboardEmptyHandler, BindModeHandler);
                         _monitoredKeyboards.Add(devId, kbHandler);
                     }
@@ -405,7 +405,7 @@ namespace Core_Interception
                 {
                     if (!_monitoredKeyboards.ContainsKey(devId))
                     {
-                        var kbHandler = new IceptKeyboardHandler(deviceDescriptor);
+                        var kbHandler = new IceptKeyboardHandler(deviceDescriptor, _deviceLibrary);
                         kbHandler.Initialize(KeyboardEmptyHandler, BindModeHandler);
                         _monitoredKeyboards.Add(devId, kbHandler);
                     }

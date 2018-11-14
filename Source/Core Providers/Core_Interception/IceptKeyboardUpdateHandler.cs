@@ -12,14 +12,18 @@ namespace Core_Interception
 {
     class IceptKeyboardUpdateHandler : DeviceUpdateHandler<ManagedWrapper.Stroke, (BindingType, int)>
     {
-        public IceptKeyboardUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler) : base(deviceDescriptor, subhandler, bindModeHandler)
+        private readonly IceptDeviceLibrary _deviceLibrary;
+
+        public IceptKeyboardUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler, IceptDeviceLibrary deviceLibrary)
+            : base(deviceDescriptor, subhandler, bindModeHandler)
         {
+            _deviceLibrary = deviceLibrary;
             UpdateProcessors.Add((BindingType.Button, 0), new IceptKeyboardKeyProcessor());
         }
 
         protected override void OnBindModeUpdate(BindingUpdate bindingUpdate)
         {
-            var report = new BindingReport { Title = "FixMe", Category = BindingCategory.Momentary, BindingDescriptor = bindingUpdate.Binding};
+            var report = _deviceLibrary.GetKeyboardBindingReport(bindingUpdate.Binding);
             var bindModeUpdate = new BindModeUpdate { Device = _deviceDescriptor, Binding = report, Value = bindingUpdate.Value};
             _bindModeHandler?.Invoke(this, bindModeUpdate);
         }

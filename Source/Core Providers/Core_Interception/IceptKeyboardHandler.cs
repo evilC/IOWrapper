@@ -13,14 +13,17 @@ namespace Core_Interception
 {
     public class IceptKeyboardHandler : PolledDeviceHandler<ManagedWrapper.Stroke, (BindingType, int)>
     {
-        public IceptKeyboardHandler(DeviceDescriptor deviceDescriptor) : base(deviceDescriptor)
+        private readonly IceptDeviceLibrary _deviceLibrary;
+
+        public IceptKeyboardHandler(DeviceDescriptor deviceDescriptor, IceptDeviceLibrary deviceLibrary) : base(deviceDescriptor)
         {
+            _deviceLibrary = deviceLibrary;
         }
 
         protected override IDeviceUpdateHandler<ManagedWrapper.Stroke> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler,
             EventHandler<BindModeUpdate> bindModeHandler)
         {
-            return new IceptKeyboardUpdateHandler(deviceDescriptor, SubHandler, bindModeHandler);
+            return new IceptKeyboardUpdateHandler(deviceDescriptor, SubHandler, bindModeHandler, _deviceLibrary);
         }
 
         public override void Poll(ManagedWrapper.Stroke update)

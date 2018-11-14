@@ -72,7 +72,7 @@ namespace TestApp
 
         private static void BindModeHandler(ProviderDescriptor provider, DeviceDescriptor device, BindingReport binding, int value)
         {
-            Console.WriteLine($"BIND MODE: Provider: {provider.ProviderName} | Device: {device.DeviceHandle}/{device.DeviceInstance} | Binding: {binding.BindingDescriptor.Type}/{binding.BindingDescriptor.Index}/{binding.BindingDescriptor.SubIndex} | Value: {value}");
+            Console.WriteLine($"BIND MODE: Provider: {provider.ProviderName} | Device: {device.DeviceHandle}/{device.DeviceInstance} | Binding: {binding.BindingDescriptor.Type}/{binding.BindingDescriptor.Index}/{binding.BindingDescriptor.SubIndex} | Title: {binding.Title} | Value: {value}");
         }
     }
 }
