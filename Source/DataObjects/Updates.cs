@@ -15,7 +15,7 @@ namespace HidWizards.IOWrapper.DataTransferObjects
     public struct BindModeUpdate
     {
         public DeviceDescriptor Device { get; set; }
-        public BindingDescriptor Binding { get; set; }
+        public BindingReport Binding { get; set; }
         public int Value { get; set; }
     }
 }

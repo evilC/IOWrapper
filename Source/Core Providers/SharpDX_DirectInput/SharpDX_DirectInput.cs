@@ -21,7 +21,7 @@ namespace SharpDX_DirectInput
         private readonly Dictionary<DeviceDescriptor, PollingDeviceHandler<JoystickUpdate, (BindingType, int)>> _activeDevices
             = new Dictionary<DeviceDescriptor, PollingDeviceHandler<JoystickUpdate, (BindingType, int)>>();
         private readonly IInputDeviceLibrary<Guid> _deviceLibrary;
-        private Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
+        private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
 
         public bool IsLive { get; } = true;
 
@@ -72,7 +72,7 @@ namespace SharpDX_DirectInput
         {
             if (!_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
-                deviceHandler = new DiDeviceHandler(subReq.DeviceDescriptor, _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor)).Initialize(DeviceEmptyHandler, BindModeHandler);
+                deviceHandler = new DiDeviceHandler(subReq.DeviceDescriptor, _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor), (DiDeviceLibrary) _deviceLibrary).Initialize(DeviceEmptyHandler, BindModeHandler);
                 _activeDevices.Add(subReq.DeviceDescriptor, deviceHandler);
             }
             deviceHandler.SubscribeInput(subReq);
@@ -88,11 +88,11 @@ namespace SharpDX_DirectInput
             return true;
         }
 
-        public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
+        public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> callback = null)
         {
             if (!_activeDevices.TryGetValue(deviceDescriptor, out var deviceHandler))
             {
-                deviceHandler = new DiDeviceHandler(deviceDescriptor, _deviceLibrary.GetInputDeviceIdentifier(deviceDescriptor)).Initialize(DeviceEmptyHandler, BindModeHandler);
+                deviceHandler = new DiDeviceHandler(deviceDescriptor, _deviceLibrary.GetInputDeviceIdentifier(deviceDescriptor), (DiDeviceLibrary) _deviceLibrary).Initialize(DeviceEmptyHandler, BindModeHandler);
                 _activeDevices.Add(deviceDescriptor, deviceHandler);
             }
 

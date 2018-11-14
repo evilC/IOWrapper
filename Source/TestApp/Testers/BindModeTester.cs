@@ -20,10 +20,10 @@ namespace TestApp.Testers
         }
 
         public static void ProcessBindMode(ProviderDescriptor providerDescriptor, DeviceDescriptor deviceDescriptor,
-            BindingDescriptor bindingDescriptor, int state)
+            BindingReport bindingDescriptor, int state)
         {
             Console.WriteLine($"IOWrapper| BindMode: Proivider: {providerDescriptor.ProviderName}, Handle {deviceDescriptor.DeviceHandle}/{deviceDescriptor.DeviceInstance}" +
-                              $", Type: {bindingDescriptor.Type}, Index: {bindingDescriptor.Index}/{bindingDescriptor.SubIndex}, State: {state}");
+                              $", Type: {bindingDescriptor.BindingDescriptor.Type}, Index: {bindingDescriptor.BindingDescriptor.Index}/{bindingDescriptor.BindingDescriptor.SubIndex}, State: {state}");
         }
 
     }

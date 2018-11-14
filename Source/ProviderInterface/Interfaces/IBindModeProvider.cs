@@ -9,6 +9,6 @@ namespace HidWizards.IOWrapper.ProviderInterface.Interfaces
     /// </summary>
     public interface IBindModeProvider : IProvider
     {
-        void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null);
+        void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> callback = null);
     }
 }

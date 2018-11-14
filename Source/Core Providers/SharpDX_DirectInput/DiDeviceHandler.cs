@@ -16,16 +16,18 @@ namespace SharpDX_DirectInput
     {
         public static DirectInput DiInstance { get; } = new DirectInput();
         private readonly Guid _instanceGuid;
+        private readonly DiDeviceLibrary _deviceLibrary;
 
-        public DiDeviceHandler(DeviceDescriptor deviceDescriptor, Guid guid) : base(deviceDescriptor)
+        public DiDeviceHandler(DeviceDescriptor deviceDescriptor, Guid guid, DiDeviceLibrary deviceLibrary) : base(deviceDescriptor)
         {
             _instanceGuid = guid;
+            _deviceLibrary = deviceLibrary;
         }
 
         protected override IDeviceUpdateHandler<JoystickUpdate> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler,
             EventHandler<BindModeUpdate> bindModeHandler)
         {
-            return new DiDeviceUpdateHandler(deviceDescriptor, SubHandler, bindModeHandler);
+            return new DiDeviceUpdateHandler(deviceDescriptor, SubHandler, bindModeHandler, _deviceLibrary);
         }
 
         protected override void PollThread()
