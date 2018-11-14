@@ -26,9 +26,9 @@ namespace Core_Interception
             return new IceptMouseUpdateHandler(deviceDescriptor, SubHandler, bindModeHandler, _deviceLibrary);
         }
 
-        public override void Poll(ManagedWrapper.Stroke update)
+        public override bool Poll(ManagedWrapper.Stroke update)
         {
-            DeviceUpdateHandler.ProcessUpdate(update);
+            return DeviceUpdateHandler.ProcessUpdate(update);
         }
     }
 }

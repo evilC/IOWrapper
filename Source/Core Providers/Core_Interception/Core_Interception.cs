@@ -486,9 +486,7 @@ namespace Core_Interception
                         var block = false;
                         if (isMonitoredKeyboard)
                         {
-                            // ToDo: Need to get boolean back from Poll to enable Blocking
-                            _monitoredKeyboards[i].Poll(stroke);
-                            block = false;
+                            block = _monitoredKeyboards[i].Poll(stroke);
                         }
                         if (!(blockingEnabled && block))
                         {
@@ -505,8 +503,7 @@ namespace Core_Interception
                         var block = false;
                         if (isMonitoredMouse)
                         {
-                            _monitoredMice[i].Poll(stroke);
-                            block = false;
+                            block = _monitoredMice[i].Poll(stroke);
                         }
                         if (!(blockingEnabled && block))
                         {

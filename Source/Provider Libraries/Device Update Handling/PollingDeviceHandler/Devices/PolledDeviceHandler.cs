@@ -11,6 +11,6 @@ namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Devices
         {
         }
 
-        public abstract void Poll(TUpdate update);
+        public abstract bool Poll(TUpdate update);
     }
 }

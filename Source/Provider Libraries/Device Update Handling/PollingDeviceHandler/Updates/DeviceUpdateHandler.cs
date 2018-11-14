@@ -58,7 +58,7 @@ namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Updates
         /// Called by a device poller when the device reports new data
         /// </summary>
         /// <param name="rawUpdate"></param>
-        public virtual void ProcessUpdate(TUpdate rawUpdate)
+        public virtual bool ProcessUpdate(TUpdate rawUpdate)
         {
             var bindMode = DetectionMode == DetectionMode.Bind;
 
@@ -87,16 +87,24 @@ namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Updates
                     {
                         OnBindModeUpdate(bindingUpdate);
                     }
+
+                    return true;    // Block in Bind Mode
                 }
                 else
                 {
                     // Subscription Mode - Ask SubscriptionHandler to Fire Callbacks
                     foreach (var bindingUpdate in bindingUpdates)
                     {
-                        SubHandler.FireCallbacks(bindingUpdate.Binding, bindingUpdate.Value);
+                        if (SubHandler.ContainsKey(bindingUpdate.Binding.Type, bindingUpdate.Binding.Index))
+                        {
+                            SubHandler.FireCallbacks(bindingUpdate.Binding, bindingUpdate.Value);
+                            return true;    // Block a bound input
+                        }
                     }
                 }
             }
+
+            return false;   // Do not block by default
         }
 
         /// <summary>
