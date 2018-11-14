@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Core_Interception.cs" />
     <Compile Include="Helpers\HelperFunctions.cs" />
+    <Compile Include="IceptDeviceLibrary.cs" />
     <Compile Include="IceptKeyboardHandler.cs" />
     <Compile Include="IceptKeyboardUpdateHandler.cs" />
     <Compile Include="IceptUpdateProcessors.cs" />
@@ -65,6 +66,10 @@
       <Project>{81851977-0421-4ebd-b066-0fe03f02589e}</Project>
       <Name>DTOs</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Provider Libraries\Device Querying\DeviceLibrary\DeviceLibrary.csproj">
+      <Project>{462785B6-CF57-4BA8-8AAB-D226E75E2C3C}</Project>
+      <Name>DeviceLibrary</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Provider Libraries\Device Querying\HidDeviceHelper\HidDeviceHelper.csproj">
       <Project>{5C0547B8-FCA1-436B-B6DD-1061F04CAD36}</Project>

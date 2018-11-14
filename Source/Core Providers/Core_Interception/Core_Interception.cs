@@ -15,6 +15,7 @@ using System.Xml;
 using Core_Interception.Helpers;
 using Core_Interception.Lib;
 using Core_Interception.Monitors;
+using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.HidDeviceHelper;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
@@ -25,8 +26,9 @@ namespace Core_Interception
     [Export(typeof(IProvider))]
     public class Core_Interception : IInputProvider, IOutputProvider, IBindModeProvider
     {
+        private readonly IInputDeviceLibrary<int> _deviceLibrary;
         private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
-        private ProviderDescriptor _providerDescriptor;
+        private readonly ProviderDescriptor _providerDescriptor;
 
         public bool IsLive { get; } = false;
 
@@ -95,6 +97,7 @@ namespace Core_Interception
             }
         };
         private static readonly List<string> MouseButtonNames = new List<string> { "Left Mouse", "Right Mouse", "Middle Mouse", "Side Button 1", "Side Button 2", "Wheel Up", "Wheel Down", "Wheel Left", "Wheel Right" };
+        private ProviderReport _providerReport;
 
         public Core_Interception()
         {
@@ -102,6 +105,16 @@ namespace Core_Interception
             {
                 ProviderName = ProviderName
             };
+            //_providerReport = new ProviderReport
+            //{
+            //    Title = "Interception (Core)",
+            //    Description = "Supports per-device Keyboard and Mouse Input/Output, with blocking\nRequires custom driver from http://oblita.com/interception",
+            //    API = "Interception",
+            //    ProviderDescriptor = _providerDescriptor,
+            //    Devices = _deviceReports
+            //};
+            _deviceLibrary = new IceptDeviceLibrary(_providerDescriptor);
+
             var settingsFile = Path.Combine(AssemblyDirectory, "Settings.xml");
             _blockingEnabled = false;
             if (File.Exists(settingsFile))
@@ -214,7 +227,8 @@ namespace Core_Interception
 
         public ProviderReport GetInputList()
         {
-            return GetIOList();
+            return _deviceLibrary.GetInputList();
+            //return GetIOList();
         }
 
         public ProviderReport GetOutputList()
@@ -224,7 +238,7 @@ namespace Core_Interception
 
         private ProviderReport GetIOList()
         {
-            var providerReport = new ProviderReport
+            _providerReport = new ProviderReport
             {
                 Title = "Interception (Core)",
                 Description = "Supports per-device Keyboard and Mouse Input/Output, with blocking\nRequires custom driver from http://oblita.com/interception",
@@ -233,7 +247,7 @@ namespace Core_Interception
                 Devices = _deviceReports
             };
 
-            return providerReport;
+            return _providerReport;
         }
 
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
