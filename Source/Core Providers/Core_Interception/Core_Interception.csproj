@@ -56,11 +56,6 @@
     <Compile Include="IceptMouseUpdateHandler.cs" />
     <Compile Include="IceptUpdateProcessors.cs" />
     <Compile Include="Lib\ManagedWrapper.cs" />
-    <Compile Include="Monitors\KeyboardKeyMonitor.cs" />
-    <Compile Include="Monitors\KeyboardMonitor.cs" />
-    <Compile Include="Monitors\MouseAxisMonitor.cs" />
-    <Compile Include="Monitors\MouseButtonMonitor.cs" />
-    <Compile Include="Monitors\MouseMonitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -101,6 +96,9 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Monitors\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
