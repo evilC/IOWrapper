@@ -437,7 +437,23 @@ namespace Core_Interception
             }
             else
             {
-                throw new NotImplementedException();
+                if (detectionMode == DetectionMode.Bind)
+                {
+                    if (!_monitoredMice.ContainsKey(devId))
+                    {
+                        var mHandler = new IceptMouseHandler(deviceDescriptor, _deviceLibrary);
+                        mHandler.Initialize(MouseEmptyHandler, BindModeHandler);
+                        _monitoredMice.Add(devId, mHandler);
+                    }
+
+                    _bindModeCallback = callback;
+                }
+                else if (!_monitoredMice.ContainsKey(devId))
+                {
+                    return;
+                }
+
+                _monitoredMice[devId].SetDetectionMode(detectionMode);
             }
 
             if (_pollThreadDesired)

@@ -19,32 +19,31 @@ namespace Core_Interception
         private List<DeviceReport> _deviceReports;
         private static DeviceReportNode _keyboardList;
         private static DeviceReportNode _mouseButtonList;
+        private static readonly BindingReport[] _mouseAxisBindingReports = { new BindingReport
+            {
+                Title = "X",
+                Category = BindingCategory.Delta,
+                BindingDescriptor =   new BindingDescriptor
+                {
+                    Index = 0,
+                    Type = BindingType.Axis
+                }
+            },
+            new BindingReport
+            {
+                Title = "Y",
+                Category = BindingCategory.Delta,
+                BindingDescriptor = new BindingDescriptor
+                {
+                    Index = 1,
+                    Type = BindingType.Axis
+                }
+            }};
+
         private static readonly DeviceReportNode MouseAxisList = new DeviceReportNode
         {
             Title = "Axes",
-            Bindings = new List<BindingReport>
-            {
-                new BindingReport
-                {
-                    Title = "X",
-                    Category = BindingCategory.Delta,
-                    BindingDescriptor =   new BindingDescriptor
-                    {
-                        Index = 0,
-                        Type = BindingType.Axis
-                    }
-                },
-                new BindingReport
-                {
-                    Title = "Y",
-                    Category = BindingCategory.Delta,
-                    BindingDescriptor = new BindingDescriptor
-                    {
-                        Index = 1,
-                        Type = BindingType.Axis
-                    }
-                }
-            }
+            Bindings = new List<BindingReport>{_mouseAxisBindingReports[0], _mouseAxisBindingReports[1]}
         };
         private static readonly List<string> MouseButtonNames = new List<string> { "Left Mouse", "Right Mouse", "Middle Mouse", "Side Button 1", "Side Button 2", "Wheel Up", "Wheel Down", "Wheel Left", "Wheel Right" };
         private ProviderReport _providerReport;
@@ -213,40 +212,40 @@ namespace Core_Interception
 
         }
 
-        private static void UpdateMouseButtonList()
+        private void UpdateMouseButtonList()
         {
             _mouseButtonList = new DeviceReportNode
             {
                 Title = "Buttons"
             };
-            for (var i = 0; i < 5; i++)
+            for (var i = 0; i < 9; i++)
             {
-                _mouseButtonList.Bindings.Add(new BindingReport
+                _mouseButtonList.Bindings.Add(GetMouseBindingReport(new BindingDescriptor
                 {
-                    Title = MouseButtonNames[i],
-                    Category = BindingCategory.Momentary,
-                    BindingDescriptor = new BindingDescriptor
-                    {
-                        Index = i,
-                        Type = BindingType.Button
-                    }
-                });
+                    Index = i,
+                    Type = BindingType.Button
+                }));
+            }
+        }
+
+        public BindingReport GetMouseBindingReport(BindingDescriptor bindingDescriptor)
+        {
+            if (bindingDescriptor.Type == BindingType.Axis)
+            {
+                return _mouseAxisBindingReports[bindingDescriptor.Index];
             }
 
-            for (var i = 5; i < 9; i++)
+            var i = bindingDescriptor.Index;
+            return new BindingReport
             {
-                _mouseButtonList.Bindings.Add(new BindingReport
+                Title = MouseButtonNames[i],
+                Category = i > 4 ? BindingCategory.Event : BindingCategory.Momentary,
+                BindingDescriptor = new BindingDescriptor
                 {
-                    Title = MouseButtonNames[i],
-                    Category = BindingCategory.Event,
-                    BindingDescriptor = new BindingDescriptor
-                    {
-                        Index = i,
-                        Type = BindingType.Button
-                    }
-                });
-            }
-
+                    Index = i,
+                    Type = BindingType.Button
+                }
+            };
         }
 
         public BindingReport GetKeyboardBindingReport(BindingDescriptor bindingDescriptor)
@@ -307,51 +306,6 @@ namespace Core_Interception
                 });
                 if (altReport == null) continue;
                 _keyboardList.Bindings.Add(altReport);
-                /*
-                var lParam = (uint)(i + 1) << 16;
-                if (ManagedWrapper.GetKeyNameTextW(lParam, sb, 260) == 0)
-                {
-                    continue;
-                }
-                var keyName = sb.ToString().Trim();
-                if (keyName == "")
-                    continue;
-                //Log("Button Index: {0}, name: '{1}'", i, keyName);
-                _keyboardList.Bindings.Add(new BindingReport
-                {
-                    Title = keyName,
-                    Category = BindingCategory.Momentary,
-                    BindingDescriptor = new BindingDescriptor
-                    {
-                        Index = i,
-                        Type = BindingType.Button
-                    }
-                });
-                //buttonNames.Add(i, keyName);
-
-                // Check if this button has an extended (Right) variant
-                lParam = (0x100 | ((uint)i + 1 & 0xff)) << 16;
-                if (ManagedWrapper.GetKeyNameTextW(lParam, sb, 260) == 0)
-                {
-                    continue;
-                }
-                var altKeyName = sb.ToString().Trim();
-                if (altKeyName == "" || altKeyName == keyName)
-                    continue;
-                //Log("ALT Button Index: {0}, name: '{1}'", i + 256, altKeyName);
-                _keyboardList.Bindings.Add(new BindingReport
-                {
-                    Title = altKeyName,
-                    Category = BindingCategory.Momentary,
-                    BindingDescriptor = new BindingDescriptor
-                    {
-                        Index = i + 256,
-                        Type = BindingType.Button
-                    }
-                });
-                //Log("Button Index: {0}, name: '{1}'", i + 256, altKeyName);
-                //buttonNames.Add(i + 256, altKeyName);
-                */
             }
             _keyboardList.Bindings.Sort((x, y) => string.Compare(x.Title, y.Title, StringComparison.Ordinal));
         }
