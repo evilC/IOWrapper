@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 ### Added
+- Interception Provider now supports Bind Mode
 ### Changed 
 - BindModeUpdate now contains a BindingReport instead of a BindingDescriptor
 ### Deprecated
