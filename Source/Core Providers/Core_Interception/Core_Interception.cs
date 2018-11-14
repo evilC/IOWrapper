@@ -25,7 +25,7 @@ namespace Core_Interception
     [Export(typeof(IProvider))]
     public class Core_Interception : IInputProvider, IOutputProvider, IBindModeProvider
     {
-        private Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> _bindModeCallback;
+        private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
         private ProviderDescriptor _providerDescriptor;
 
         public bool IsLive { get; } = false;
@@ -435,7 +435,7 @@ namespace Core_Interception
 
         }
 
-        public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback = null)
+        public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> callback = null)
         {
             if (_pollThreadRunning)
                 SetPollThreadState(false);

@@ -17,6 +17,13 @@ namespace Core_Interception
             UpdateProcessors.Add((BindingType.Button, 0), new IceptKeyboardKeyProcessor());
         }
 
+        protected override void OnBindModeUpdate(BindingUpdate bindingUpdate)
+        {
+            var report = new BindingReport { Title = "FixMe", Category = BindingCategory.Momentary, BindingDescriptor = bindingUpdate.Binding};
+            var bindModeUpdate = new BindModeUpdate { Device = _deviceDescriptor, Binding = report, Value = bindingUpdate.Value};
+            _bindModeHandler?.Invoke(this, bindModeUpdate);
+        }
+
         protected override BindingUpdate[] PreProcessUpdate(ManagedWrapper.Stroke update)
         {
             var code = update.key.code;
