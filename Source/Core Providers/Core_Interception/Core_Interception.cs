@@ -26,7 +26,7 @@ namespace Core_Interception
     [Export(typeof(IProvider))]
     public class Core_Interception : IInputProvider, IOutputProvider, IBindModeProvider
     {
-        private readonly IInputDeviceLibrary<int> _deviceLibrary;
+        private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
         private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
         private readonly ProviderDescriptor _providerDescriptor;
 
@@ -35,7 +35,6 @@ namespace Core_Interception
         private bool _disposed;
         private readonly IntPtr _deviceContext;
         //private ProviderReport providerReport;
-        private List<DeviceReport> _deviceReports;
 
         // The thread which handles input detection
         private Thread _pollThread;
@@ -65,39 +64,7 @@ namespace Core_Interception
         //private readonly Dictionary<int, KeyboardMonitor> _monitoredKeyboards = new Dictionary<int, KeyboardMonitor>();
         private readonly Dictionary<int, IceptKeyboardHandler> _monitoredKeyboards = new Dictionary<int, IceptKeyboardHandler>();
         private readonly Dictionary<int, MouseMonitor> _monitoredMice = new Dictionary<int, MouseMonitor>();
-        private Dictionary<string, List<int>> _deviceHandleToId;
-
-        private static DeviceReportNode _keyboardList;
-        private static DeviceReportNode _mouseButtonList;
-        private static readonly DeviceReportNode MouseAxisList = new DeviceReportNode
-        {
-            Title = "Axes",
-            Bindings = new List<BindingReport>
-            {
-                new BindingReport
-                {
-                    Title = "X",
-                    Category = BindingCategory.Delta,
-                    BindingDescriptor =   new BindingDescriptor
-                    {
-                        Index = 0,
-                        Type = BindingType.Axis
-                    }
-                },
-                new BindingReport
-                {
-                    Title = "Y",
-                    Category = BindingCategory.Delta,
-                    BindingDescriptor = new BindingDescriptor
-                    {
-                        Index = 1,
-                        Type = BindingType.Axis
-                    }
-                }
-            }
-        };
-        private static readonly List<string> MouseButtonNames = new List<string> { "Left Mouse", "Right Mouse", "Middle Mouse", "Side Button 1", "Side Button 2", "Wheel Up", "Wheel Down", "Wheel Left", "Wheel Right" };
-        private ProviderReport _providerReport;
+        //private Dictionary<string, List<int>> _deviceHandleToId;
 
         public Core_Interception()
         {
@@ -105,14 +72,6 @@ namespace Core_Interception
             {
                 ProviderName = ProviderName
             };
-            //_providerReport = new ProviderReport
-            //{
-            //    Title = "Interception (Core)",
-            //    Description = "Supports per-device Keyboard and Mouse Input/Output, with blocking\nRequires custom driver from http://oblita.com/interception",
-            //    API = "Interception",
-            //    ProviderDescriptor = _providerDescriptor,
-            //    Devices = _deviceReports
-            //};
             _deviceLibrary = new IceptDeviceLibrary(_providerDescriptor);
 
             var settingsFile = Path.Combine(AssemblyDirectory, "Settings.xml");
@@ -136,8 +95,6 @@ namespace Core_Interception
             HelperFunctions.Log("Blocking Enabled: {0}", _blockingEnabled);
 
             _deviceContext = ManagedWrapper.CreateContext();
-
-            QueryDevices();
 
             _pollThreadDesired = true;
         }
@@ -228,60 +185,32 @@ namespace Core_Interception
         public ProviderReport GetInputList()
         {
             return _deviceLibrary.GetInputList();
-            //return GetIOList();
         }
 
         public ProviderReport GetOutputList()
         {
-            return GetIOList();
-        }
-
-        private ProviderReport GetIOList()
-        {
-            _providerReport = new ProviderReport
-            {
-                Title = "Interception (Core)",
-                Description = "Supports per-device Keyboard and Mouse Input/Output, with blocking\nRequires custom driver from http://oblita.com/interception",
-                API = "Interception",
-                ProviderDescriptor = _providerDescriptor,
-                Devices = _deviceReports
-            };
-
-            return _providerReport;
+            return _deviceLibrary.GetOutputList();
         }
 
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
         {
-            return GetIODeviceReport(subReq);
+            return _deviceLibrary.GetInputDeviceReport(subReq.DeviceDescriptor);
         }
 
         public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
         {
-            return GetIODeviceReport(subReq);
-        }
-
-        private DeviceReport GetIODeviceReport(SubscriptionRequest subReq)
-        {
-            foreach (var deviceReport in _deviceReports)
-            {
-                if (deviceReport.DeviceDescriptor.DeviceHandle == subReq.DeviceDescriptor.DeviceHandle && deviceReport.DeviceDescriptor.DeviceInstance == subReq.DeviceDescriptor.DeviceInstance)
-                {
-                    return deviceReport;
-                }
-            }
-            return null;
+            return _deviceLibrary.GetOutputDeviceReport(subReq.DeviceDescriptor);
         }
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            if (!_deviceHandleToId.ContainsKey(subReq.DeviceDescriptor.DeviceHandle)) return false;
             var ret = false;
             try
             {
                 if (_pollThreadRunning)
                     SetPollThreadState(false);
 
-                var id = _deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle][subReq.DeviceDescriptor.DeviceInstance];
+                var id = _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor);
                 var devId = id + 1;
                 if (id < 10)
                 {
@@ -305,13 +234,13 @@ namespace Core_Interception
                     ret = _monitoredMice[devId].Add(subReq);
                 }
 
-                if (_pollThreadDesired)
-                    SetPollThreadState(true);
             }
             catch
             {
                 ret = false;
             }
+            if (_pollThreadDesired)
+                SetPollThreadState(true);
             return ret;
         }
 
@@ -326,35 +255,33 @@ namespace Core_Interception
 
             try
             {
-                if (_deviceHandleToId.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
+                var id = _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor);
+                var devId = id + 1;
+                if (_pollThreadRunning)
+                    SetPollThreadState(false);
+
+                if (id < 10)
                 {
-                    var id = _deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle][subReq.DeviceDescriptor.DeviceInstance];
-                    var devId = id + 1;
-                    if (_pollThreadRunning)
-                        SetPollThreadState(false);
-
-                    if (id < 10)
+                    //ret = _monitoredKeyboards[devId].Remove(subReq);
+                    ret = true;
+                    _monitoredKeyboards[devId].UnsubscribeInput(subReq);
+                    if (_monitoredKeyboards[devId].IsEmpty())
                     {
-                        //ret = _monitoredKeyboards[devId].Remove(subReq);
-                        ret = true;
-                        _monitoredKeyboards[devId].UnsubscribeInput(subReq);
-                        if (_monitoredKeyboards[devId].IsEmpty())
-                        {
-                            _monitoredKeyboards.Remove(devId);
-                        }
+                        _monitoredKeyboards.Remove(devId);
                     }
-                    else
-                    {
-                        ret = _monitoredMice[devId].Remove(subReq);
-                        if (!_monitoredMice[devId].HasSubscriptions())
-                        {
-                            _monitoredMice.Remove(devId);
-                        }
-                    }
-
-                    if (_pollThreadDesired)
-                        SetPollThreadState(true);
                 }
+                else
+                {
+                    ret = _monitoredMice[devId].Remove(subReq);
+                    if (!_monitoredMice[devId].HasSubscriptions())
+                    {
+                        _monitoredMice.Remove(devId);
+                    }
+                }
+
+                if (_pollThreadDesired)
+                    SetPollThreadState(true);
+
             }
             catch
             {
@@ -375,7 +302,15 @@ namespace Core_Interception
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
-            var devId = _deviceHandleToId[subReq.DeviceDescriptor.DeviceHandle][subReq.DeviceDescriptor.DeviceInstance] + 1;
+            int devId;
+            try
+            {
+                devId = _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor);
+            }
+            catch
+            {
+                return false;
+            }
             //Log("SetOutputState. Type: {0}, Index: {1}, State: {2}, Device: {3}", inputType, inputIndex, state, devId);
             var stroke = new ManagedWrapper.Stroke();
             if (devId < 11)
@@ -446,7 +381,7 @@ namespace Core_Interception
 
         public void RefreshDevices()
         {
-
+            _deviceLibrary.RefreshConnectedDevices();
         }
 
         public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> callback = null)
@@ -454,7 +389,15 @@ namespace Core_Interception
             if (_pollThreadRunning)
                 SetPollThreadState(false);
 
-            var id = _deviceHandleToId[deviceDescriptor.DeviceHandle][deviceDescriptor.DeviceInstance];
+            int id;
+            try
+            {
+                id = _deviceLibrary.GetInputDeviceIdentifier(deviceDescriptor);
+            }
+            catch
+            {
+                return;
+            }
             var devId = id + 1;
             if (id < 10)
             {
@@ -490,210 +433,6 @@ namespace Core_Interception
             _bindModeCallback?.Invoke(_providerDescriptor, e.Device, e.Binding, e.Value);
         }
 
-
-        #endregion
-
-        #region Device Querying
-        private void QueryDevices()
-        {
-            _deviceHandleToId = new Dictionary<string, List<int>>();
-            _deviceReports = new List<DeviceReport>();
-
-            UpdateKeyList();
-            UpdateMouseButtonList();
-            string handle;
-
-            for (var i = 1; i < 11; i++)
-            {
-                if (ManagedWrapper.IsKeyboard(i) != 1) continue;
-                handle = ManagedWrapper.GetHardwareStr(_deviceContext, i, 1000);
-                if (handle == "") continue;
-                int vid = 0, pid = 0;
-                GetVidPid(handle, ref vid, ref pid);
-                var name = "";
-                if (vid != 0 && pid != 0)
-                {
-                    name = DeviceHelper.GetDeviceName(vid, pid);
-                }
-
-                if (name == "")
-                {
-                    name = handle;
-                }
-
-                handle = $@"Keyboard\{handle}";
-
-                if (!_deviceHandleToId.ContainsKey(handle))
-                {
-                    _deviceHandleToId.Add(handle, new List<int>());
-                }
-
-                var instance = _deviceHandleToId[handle].Count;
-                _deviceHandleToId[handle].Add(i - 1);
-
-                name = $"K: {name}";
-                if (instance > 0) name += $" #{instance + 1}";
-
-                _deviceReports.Add(new DeviceReport
-                {
-                    DeviceName = name,
-                    DeviceDescriptor = new DeviceDescriptor
-                    {
-                        DeviceHandle = handle,
-                        DeviceInstance = instance
-                    },
-                    Nodes = new List<DeviceReportNode>
-                    {
-                        _keyboardList
-                    }
-                });
-                //Log(String.Format("{0} (Keyboard) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
-            }
-
-            for (var i = 11; i < 21; i++)
-            {
-                if (ManagedWrapper.IsMouse(i) != 1) continue;
-                handle = ManagedWrapper.GetHardwareStr(_deviceContext, i, 1000);
-                if (handle == "") continue;
-                int vid = 0, pid = 0;
-                GetVidPid(handle, ref vid, ref pid);
-                var name = "";
-                if (vid != 0 && pid != 0)
-                {
-                    name = DeviceHelper.GetDeviceName(vid, pid);
-                }
-
-                if (name == "")
-                {
-                    name = handle;
-                }
-
-                handle = $@"Mouse\{handle}";
-
-                if (!_deviceHandleToId.ContainsKey(handle))
-                {
-                    _deviceHandleToId.Add(handle, new List<int>());
-                }
-
-                var instance = _deviceHandleToId[handle].Count;
-                _deviceHandleToId[handle].Add(i - 1);
-
-                name = $"M: {name}";
-                if (instance > 0) name += $" #{instance + 1}";
-
-                _deviceReports.Add(new DeviceReport
-                {
-                    DeviceName = name,
-                    DeviceDescriptor = new DeviceDescriptor
-                    {
-                        DeviceHandle = handle,
-                        DeviceInstance = instance
-                    },
-                    Nodes = new List<DeviceReportNode>
-                    {
-                        _mouseButtonList,
-                        MouseAxisList
-                    }
-                });
-                //Log(String.Format("{0} (Mouse) = VID/PID: {1}", i, handle));
-                //Log(String.Format("{0} (Mouse) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
-            }
-
-        }
-
-        private static void UpdateMouseButtonList()
-        {
-            _mouseButtonList = new DeviceReportNode
-            {
-                Title = "Buttons"
-            };
-            for (var i = 0; i < 5; i++)
-            {
-                _mouseButtonList.Bindings.Add(new BindingReport
-                {
-                    Title = MouseButtonNames[i],
-                    Category = BindingCategory.Momentary,
-                    BindingDescriptor = new BindingDescriptor
-                    {
-                        Index = i,
-                        Type = BindingType.Button
-                    }
-                });
-            }
-
-            for (var i = 5; i < 9; i++)
-            {
-                _mouseButtonList.Bindings.Add(new BindingReport
-                {
-                    Title = MouseButtonNames[i],
-                    Category = BindingCategory.Event,
-                    BindingDescriptor = new BindingDescriptor
-                    {
-                        Index = i,
-                        Type = BindingType.Button
-                    }
-                });
-            }
-
-        }
-
-        private void UpdateKeyList()
-        {
-            _keyboardList = new DeviceReportNode
-            {
-                Title = "Keys"
-            };
-            //buttonNames = new Dictionary<int, string>();
-            var sb = new StringBuilder(260);
-
-            for (var i = 0; i < 256; i++)
-            {
-                var lParam = (uint)(i + 1) << 16;
-                if (ManagedWrapper.GetKeyNameTextW(lParam, sb, 260) == 0)
-                {
-                    continue;
-                }
-                var keyName = sb.ToString().Trim();
-                if (keyName == "")
-                    continue;
-                //Log("Button Index: {0}, name: '{1}'", i, keyName);
-                _keyboardList.Bindings.Add(new BindingReport
-                {
-                    Title = keyName,
-                    Category = BindingCategory.Momentary,
-                    BindingDescriptor = new BindingDescriptor
-                    {
-                        Index = i,
-                        Type = BindingType.Button
-                    }
-                });
-                //buttonNames.Add(i, keyName);
-
-                // Check if this button has an extended (Right) variant
-                lParam = (0x100 | ((uint)i + 1 & 0xff)) << 16;
-                if (ManagedWrapper.GetKeyNameTextW(lParam, sb, 260) == 0)
-                {
-                    continue;
-                }
-                var altKeyName = sb.ToString().Trim();
-                if (altKeyName == "" || altKeyName == keyName)
-                    continue;
-                //Log("ALT Button Index: {0}, name: '{1}'", i + 256, altKeyName);
-                _keyboardList.Bindings.Add(new BindingReport
-                {
-                    Title = altKeyName,
-                    Category = BindingCategory.Momentary,
-                    BindingDescriptor = new BindingDescriptor
-                    {
-                        Index = i + 256,
-                        Type = BindingType.Button
-                    }
-                });
-                //Log("Button Index: {0}, name: '{1}'", i + 256, altKeyName);
-                //buttonNames.Add(i + 256, altKeyName);
-            }
-            _keyboardList.Bindings.Sort((x, y) => Compare(x.Title, y.Title, StringComparison.Ordinal));
-        }
 
         #endregion
 
@@ -747,13 +486,5 @@ namespace Core_Interception
             _pollThreadRunning = false;
         }
         #endregion
-
-        private static void GetVidPid(string str, ref int vid, ref int pid)
-        {
-            var matches = Regex.Matches(str, @"VID_(\w{4})&PID_(\w{4})");
-            if ((matches.Count <= 0) || (matches[0].Groups.Count <= 1)) return;
-            vid = Convert.ToInt32(matches[0].Groups[1].Value, 16);
-            pid = Convert.ToInt32(matches[0].Groups[2].Value, 16);
-        }
     }
 }

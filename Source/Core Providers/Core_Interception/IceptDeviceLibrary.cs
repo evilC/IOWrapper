@@ -11,7 +11,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Core_Interception
 {
-    public class IceptDeviceLibrary : IInputDeviceLibrary<int>
+    public class IceptDeviceLibrary : IInputOutputDeviceLibrary<int>
     {
         private readonly ProviderDescriptor _providerDescriptor;
         private readonly IntPtr _deviceContext;
@@ -56,9 +56,22 @@ namespace Core_Interception
             RefreshConnectedDevices();
         }
 
+        private int GetDeviceIdentifier(DeviceDescriptor deviceDescriptor)
+        {
+            if (_deviceHandleToId.ContainsKey(deviceDescriptor.DeviceHandle))
+            {
+                if (_deviceHandleToId[deviceDescriptor.DeviceHandle].Count >= deviceDescriptor.DeviceInstance)
+                {
+                    return _deviceHandleToId[deviceDescriptor.DeviceHandle][deviceDescriptor.DeviceInstance];
+                }
+            }
+
+            throw new ArgumentOutOfRangeException($"Unknown Device: {deviceDescriptor}");
+        }
+
         public int GetInputDeviceIdentifier(DeviceDescriptor deviceDescriptor)
         {
-            throw new NotImplementedException();
+            return GetDeviceIdentifier(deviceDescriptor);
         }
 
         public ProviderReport GetInputList()
@@ -66,9 +79,21 @@ namespace Core_Interception
             return _providerReport;
         }
 
+        private DeviceReport GetDeviceReport(DeviceDescriptor deviceDescriptor)
+        {
+            foreach (var deviceReport in _deviceReports)
+            {
+                if (deviceReport.DeviceDescriptor.DeviceHandle == deviceDescriptor.DeviceHandle && deviceReport.DeviceDescriptor.DeviceInstance == deviceDescriptor.DeviceInstance)
+                {
+                    return deviceReport;
+                }
+            }
+            return null;
+        }
+
         public DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
-            throw new NotImplementedException();
+            return GetDeviceReport(deviceDescriptor);
         }
 
         public void RefreshConnectedDevices()
@@ -288,6 +313,21 @@ namespace Core_Interception
             if ((matches.Count <= 0) || (matches[0].Groups.Count <= 1)) return;
             vid = Convert.ToInt32(matches[0].Groups[1].Value, 16);
             pid = Convert.ToInt32(matches[0].Groups[2].Value, 16);
+        }
+
+        public int GetOutputDeviceIdentifier(DeviceDescriptor deviceDescriptor)
+        {
+            return GetDeviceIdentifier(deviceDescriptor);
+        }
+
+        public ProviderReport GetOutputList()
+        {
+            return _providerReport;
+        }
+
+        public DeviceReport GetOutputDeviceReport(DeviceDescriptor deviceDescriptor)
+        {
+            return GetDeviceReport(deviceDescriptor);
         }
     }
 }
