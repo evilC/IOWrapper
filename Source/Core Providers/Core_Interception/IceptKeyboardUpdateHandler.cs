@@ -14,7 +14,8 @@ namespace Core_Interception
     {
         private readonly IceptDeviceLibrary _deviceLibrary;
 
-        public IceptKeyboardUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler, IceptDeviceLibrary deviceLibrary)
+        public IceptKeyboardUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler, 
+            IceptDeviceLibrary deviceLibrary)
             : base(deviceDescriptor, subhandler, bindModeHandler)
         {
             _deviceLibrary = deviceLibrary;

@@ -63,7 +63,7 @@ namespace Core_Interception
 
         //private readonly Dictionary<int, KeyboardMonitor> _monitoredKeyboards = new Dictionary<int, KeyboardMonitor>();
         private readonly Dictionary<int, IceptKeyboardHandler> _monitoredKeyboards = new Dictionary<int, IceptKeyboardHandler>();
-        private readonly Dictionary<int, MouseMonitor> _monitoredMice = new Dictionary<int, MouseMonitor>();
+        private readonly Dictionary<int, IceptMouseHandler> _monitoredMice = new Dictionary<int, IceptMouseHandler>();
         //private Dictionary<string, List<int>> _deviceHandleToId;
 
         public Core_Interception()
@@ -229,9 +229,14 @@ namespace Core_Interception
                 {
                     if (!_monitoredMice.ContainsKey(devId))
                     {
-                        _monitoredMice.Add(devId, new MouseMonitor());
+                        //_monitoredMice.Add(devId, new MouseMonitor());
+                        var mHandler = new IceptMouseHandler(subReq.DeviceDescriptor, _deviceLibrary);
+                        mHandler.Initialize(MouseEmptyHandler, BindModeHandler);
+                        _monitoredMice.Add(devId, mHandler);
                     }
-                    ret = _monitoredMice[devId].Add(subReq);
+                    _monitoredMice[devId].SubscribeInput(subReq);
+                    //ret = _monitoredMice[devId].Add(subReq);
+                    ret = true;
                 }
 
             }
@@ -244,7 +249,17 @@ namespace Core_Interception
             return ret;
         }
 
+        private void MouseEmptyHandler(object sender, DeviceDescriptor e)
+        {
+            DeviceEmptyHandler(e);
+        }
+
         private void KeyboardEmptyHandler(object sender, DeviceDescriptor e)
+        {
+            DeviceEmptyHandler(e);
+        }
+
+        private void DeviceEmptyHandler(DeviceDescriptor e)
         {
             var id = _deviceLibrary.GetInputDeviceIdentifier(e);
             if (_pollThreadRunning)
@@ -270,18 +285,21 @@ namespace Core_Interception
                     //ret = _monitoredKeyboards[devId].Remove(subReq);
                     ret = true;
                     _monitoredKeyboards[devId].UnsubscribeInput(subReq);
-                    if (_monitoredKeyboards[devId].IsEmpty())
-                    {
-                        _monitoredKeyboards.Remove(devId);
-                    }
+                    //if (_monitoredKeyboards[devId].IsEmpty())
+                    //{
+                    //    _monitoredKeyboards.Remove(devId);
+                    //}
                 }
                 else
                 {
-                    ret = _monitoredMice[devId].Remove(subReq);
-                    if (!_monitoredMice[devId].HasSubscriptions())
-                    {
-                        _monitoredMice.Remove(devId);
-                    }
+                    ret = true;
+                    _monitoredMice[devId].UnsubscribeInput(subReq);
+
+                    //ret = _monitoredMice[devId].Remove(subReq);
+                    //if (!_monitoredMice[devId].HasSubscriptions())
+                    //{
+                    //    _monitoredMice.Remove(devId);
+                    //}
                 }
 
                 if (_pollThreadDesired)
@@ -478,7 +496,8 @@ namespace Core_Interception
                         var block = false;
                         if (isMonitoredMouse)
                         {
-                            block = _monitoredMice[i].Poll(stroke);
+                            _monitoredMice[i].Poll(stroke);
+                            block = false;
                         }
                         if (!(blockingEnabled && block))
                         {

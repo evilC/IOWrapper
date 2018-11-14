@@ -40,7 +40,7 @@ namespace TestApp
 
             var interceptionKeyboardInputTester = new InterceptionKeyboardInputTester();
             IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.Interception, Library.Devices.Interception.DellKeyboard1, BindModeHandler);
-            //var interceptionMouseInputTester = new InterceptionMouseInputTester();
+            var interceptionMouseInputTester = new InterceptionMouseInputTester();
 
             //var interceptionMouseOutputTester = new InterceptionMouseOutputTester();
             //var interceptionKeyboardOutputTester = new InterceptionKeyboardOutputTester();

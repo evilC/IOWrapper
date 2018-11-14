@@ -16,4 +16,13 @@ namespace Core_Interception
             return new[] { update };
         }
     }
+
+    public class IceptMouseButtonProcessor : IUpdateProcessor
+    {
+        public BindingUpdate[] Process(BindingUpdate update)
+        {
+            update.Value = 1 - update.Value;
+            return new[] { update };
+        }
+    }
 }

@@ -52,6 +52,8 @@
     <Compile Include="IceptDeviceLibrary.cs" />
     <Compile Include="IceptKeyboardHandler.cs" />
     <Compile Include="IceptKeyboardUpdateHandler.cs" />
+    <Compile Include="IceptMouseHandler.cs" />
+    <Compile Include="IceptMouseUpdateHandler.cs" />
     <Compile Include="IceptUpdateProcessors.cs" />
     <Compile Include="Lib\ManagedWrapper.cs" />
     <Compile Include="Monitors\KeyboardKeyMonitor.cs" />
