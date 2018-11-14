@@ -21,6 +21,7 @@ namespace Core_Interception
         {
             _deviceLibrary = deviceLibrary;
             UpdateProcessors.Add((BindingType.Button, 0), new IceptMouseButtonProcessor());
+            UpdateProcessors.Add((BindingType.Axis, 0), new IceptMouseAxisProcessor());
         }
 
         protected override void OnBindModeUpdate(BindingUpdate update)
@@ -35,7 +36,21 @@ namespace Core_Interception
                 var buttonAndState = HelperFunctions.StrokeToMouseButtonAndState(stroke);
                 return new[] { new BindingUpdate { Binding = new BindingDescriptor() { Type = BindingType.Button, Index = buttonAndState.Button }, Value = buttonAndState.State } };
             }
-            return new BindingUpdate[0];
+
+            try
+            {
+                var updates = new List<BindingUpdate>();
+                var xvalue = stroke.mouse.GetAxis(0);
+                if (xvalue != 0) updates.Add(new BindingUpdate{Binding = new BindingDescriptor{Type = BindingType.Axis, Index = 0, SubIndex = 0}, Value = xvalue});
+
+                var yvalue = stroke.mouse.GetAxis(1);
+                if (yvalue != 0) updates.Add(new BindingUpdate { Binding = new BindingDescriptor { Type = BindingType.Axis, Index = 1, SubIndex = 0 }, Value = yvalue });
+                return updates.ToArray();
+            }
+            catch
+            {
+                return new BindingUpdate[0];
+            }
         }
 
         protected override (BindingType, int) GetUpdateProcessorKey(BindingDescriptor bindingDescriptor)

@@ -25,4 +25,12 @@ namespace Core_Interception
             return new[] { update };
         }
     }
+
+    public class IceptMouseAxisProcessor : IUpdateProcessor
+    {
+        public BindingUpdate[] Process(BindingUpdate update)
+        {
+            return new[] { update };
+        }
+    }
 }
