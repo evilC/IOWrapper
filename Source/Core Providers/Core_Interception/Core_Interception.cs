@@ -246,7 +246,12 @@ namespace Core_Interception
 
         private void KeyboardEmptyHandler(object sender, DeviceDescriptor e)
         {
-            throw new NotImplementedException();
+            var id = _deviceLibrary.GetInputDeviceIdentifier(e);
+            if (_pollThreadRunning)
+                SetPollThreadState(false);
+            _monitoredKeyboards.Remove(id);
+            if (_pollThreadDesired)
+                SetPollThreadState(true);
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
