@@ -486,7 +486,7 @@ namespace Core_Interception
                         var block = false;
                         if (isMonitoredKeyboard)
                         {
-                            //block = _monitoredKeyboards[i].Poll(stroke);
+                            // ToDo: Need to get boolean back from Poll to enable Blocking
                             _monitoredKeyboards[i].Poll(stroke);
                             block = false;
                         }
