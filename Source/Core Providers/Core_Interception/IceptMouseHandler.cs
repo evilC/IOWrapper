@@ -15,7 +15,8 @@ namespace Core_Interception
     {
         private readonly IceptDeviceLibrary _deviceLibrary;
 
-        public IceptMouseHandler(DeviceDescriptor deviceDescriptor, IceptDeviceLibrary deviceLibrary) : base(deviceDescriptor)
+        public IceptMouseHandler(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler, IceptDeviceLibrary deviceLibrary)
+            : base(deviceDescriptor, deviceEmptyHandler, bindModeHandler)
         {
             _deviceLibrary = deviceLibrary;
         }

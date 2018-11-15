@@ -209,12 +209,8 @@ namespace Core_Interception
                 {
                     if (!_monitoredKeyboards.ContainsKey(devId))
                     {
-                        //_monitoredKeyboards.Add(devId, new KeyboardMonitor());
-                        var kbHandler = new IceptKeyboardHandler(subReq.DeviceDescriptor, _deviceLibrary);
-                        kbHandler.Initialize(KeyboardEmptyHandler, BindModeHandler);
-                        _monitoredKeyboards.Add(devId, kbHandler);
+                        _monitoredKeyboards.Add(devId, new IceptKeyboardHandler(subReq.DeviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
                     }
-                    //ret = _monitoredKeyboards[devId].Add(subReq);
                     _monitoredKeyboards[devId].SubscribeInput(subReq);
                     ret = true;
                 }
@@ -222,13 +218,9 @@ namespace Core_Interception
                 {
                     if (!_monitoredMice.ContainsKey(devId))
                     {
-                        //_monitoredMice.Add(devId, new MouseMonitor());
-                        var mHandler = new IceptMouseHandler(subReq.DeviceDescriptor, _deviceLibrary);
-                        mHandler.Initialize(MouseEmptyHandler, BindModeHandler);
-                        _monitoredMice.Add(devId, mHandler);
+                        _monitoredMice.Add(devId, new IceptMouseHandler(subReq.DeviceDescriptor, MouseEmptyHandler, BindModeHandler, _deviceLibrary));
                     }
                     _monitoredMice[devId].SubscribeInput(subReq);
-                    //ret = _monitoredMice[devId].Add(subReq);
                     ret = true;
                 }
 
@@ -421,9 +413,7 @@ namespace Core_Interception
                 {
                     if (!_monitoredKeyboards.ContainsKey(devId))
                     {
-                        var kbHandler = new IceptKeyboardHandler(deviceDescriptor, _deviceLibrary);
-                        kbHandler.Initialize(KeyboardEmptyHandler, BindModeHandler);
-                        _monitoredKeyboards.Add(devId, kbHandler);
+                        _monitoredKeyboards.Add(devId, new IceptKeyboardHandler(deviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
                     }
 
                     _bindModeCallback = callback;
@@ -441,9 +431,7 @@ namespace Core_Interception
                 {
                     if (!_monitoredMice.ContainsKey(devId))
                     {
-                        var mHandler = new IceptMouseHandler(deviceDescriptor, _deviceLibrary);
-                        mHandler.Initialize(MouseEmptyHandler, BindModeHandler);
-                        _monitoredMice.Add(devId, mHandler);
+                        _monitoredMice.Add(devId, new IceptMouseHandler(deviceDescriptor, MouseEmptyHandler, BindModeHandler, _deviceLibrary));
                     }
 
                     _bindModeCallback = callback;

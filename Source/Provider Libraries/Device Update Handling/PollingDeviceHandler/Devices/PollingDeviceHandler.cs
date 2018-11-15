@@ -16,17 +16,11 @@ namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Devices
     {
         private Thread _pollThread;
 
-        protected PollingDeviceHandler(DeviceDescriptor deviceDescriptor) : base(deviceDescriptor)
+        protected PollingDeviceHandler(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler)
+            : base(deviceDescriptor, deviceEmptyHandler, bindModeHandler)
         {
-        }
-
-        public new PollingDeviceHandler<TUpdate, TProcessorKey> Initialize(EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler)
-        {
-            base.Initialize(deviceEmptyHandler, bindModeHandler);
             _pollThread = new Thread(PollThread);
             _pollThread.Start();
-
-            return this;
         }
 
         protected abstract void PollThread();

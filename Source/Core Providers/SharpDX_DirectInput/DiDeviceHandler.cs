@@ -18,7 +18,8 @@ namespace SharpDX_DirectInput
         private readonly Guid _instanceGuid;
         private readonly DiDeviceLibrary _deviceLibrary;
 
-        public DiDeviceHandler(DeviceDescriptor deviceDescriptor, Guid guid, DiDeviceLibrary deviceLibrary) : base(deviceDescriptor)
+        public DiDeviceHandler(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler, Guid guid, DiDeviceLibrary deviceLibrary)
+            : base(deviceDescriptor, deviceEmptyHandler, bindModeHandler)
         {
             _instanceGuid = guid;
             _deviceLibrary = deviceLibrary;

@@ -15,17 +15,16 @@ namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Devices
         protected SubscriptionHandler SubHandler;
         protected DeviceDescriptor DeviceDescriptor;
 
-        protected DeviceHandlerBase(DeviceDescriptor deviceDescriptor)
+        protected DeviceHandlerBase(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler)
         {
             DeviceDescriptor = deviceDescriptor;
+            Initialize(deviceEmptyHandler, bindModeHandler);
         }
 
-        public DeviceHandlerBase<TUpdate, TProcessorKey> Initialize(EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler)
+        private void Initialize(EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler)
         {
             SubHandler = new SubscriptionHandler(DeviceDescriptor, deviceEmptyHandler);
             DeviceUpdateHandler = CreateUpdateHandler(DeviceDescriptor, SubHandler, bindModeHandler);
-
-            return this; // ToDo : Remove
         }
 
         public bool IsEmpty()

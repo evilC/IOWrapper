@@ -17,7 +17,8 @@ namespace SharpDX_XInput
         private readonly XiDeviceLibrary _deviceLibrary;
         protected Controller _controller;
 
-        public XiDeviceHandler(DeviceDescriptor deviceDescriptor, UserIndex userIndex, XiDeviceLibrary deviceLibrary) : base(deviceDescriptor)
+        public XiDeviceHandler(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler, UserIndex userIndex, XiDeviceLibrary deviceLibrary)
+            : base(deviceDescriptor, deviceEmptyHandler, bindModeHandler)
         {
             _deviceLibrary = deviceLibrary;
             _controller = new Controller(userIndex);
