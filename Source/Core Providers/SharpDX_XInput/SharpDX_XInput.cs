@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using SharpDX.XInput;
 using System.Threading;
 using System.Diagnostics;
-using Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Devices;
+using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.ProviderLogger;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;

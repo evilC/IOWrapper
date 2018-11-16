@@ -71,9 +71,9 @@
       <Project>{462785B6-CF57-4BA8-8AAB-D226E75E2C3C}</Project>
       <Name>DeviceLibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Provider Libraries\Device Update Handling\PollingDeviceHandler\PollingDeviceHandler.csproj">
-      <Project>{04FA4D8A-D5D2-4477-8AED-021239CE95AE}</Project>
-      <Name>PollingDeviceHandler</Name>
+    <ProjectReference Include="..\..\Provider Libraries\Device Update Handling\DeviceHandlers\DeviceHandlers.csproj">
+      <Project>{04fa4d8a-d5d2-4477-8aed-021239ce95ae}</Project>
+      <Name>DeviceHandlers</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Provider Libraries\Device Update Handling\PovHelper\PovHelper.csproj">
       <Project>{9E4C03D5-58D8-4369-A7FA-BB4C307AF905}</Project>

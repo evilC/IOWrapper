@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Updates;
+using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
 using HidWizards.IOWrapper.DataTransferObjects;
 
-namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Devices
+namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
 {
     public abstract class DeviceHandlerBase<TUpdate, TProcessorKey>
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Core_Interception.Lib;
-using Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Updates;
+using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
 using HidWizards.IOWrapper.DataTransferObjects;
 

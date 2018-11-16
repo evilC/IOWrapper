@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
 using HidWizards.IOWrapper.DataTransferObjects;
 
-namespace Hidwizards.IOWrapper.Libraries.PollingDeviceHandler.Updates
+namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates
 {
     /// <summary>
     /// Handles processing of Updates for a device. 
