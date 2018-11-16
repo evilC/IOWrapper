@@ -11,7 +11,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
     /// </summary>
     /// <typeparam name="TUpdate"></typeparam>
     /// <typeparam name="TProcessorKey"></typeparam>
-    public abstract class PollingDeviceHandler<TUpdate, TProcessorKey> : DeviceHandlerBase<TUpdate, TProcessorKey>, IDisposable
+    public abstract class PollingDeviceHandler<TUpdate> : DeviceHandlerBase<TUpdate>, IDisposable
     {
         private Thread _pollThread;
 

@@ -5,7 +5,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
 {
-    public abstract class DeviceHandlerBase<TUpdate, TProcessorKey>
+    public abstract class DeviceHandlerBase<TUpdate>
     {
         protected IDeviceUpdateHandler<TUpdate> DeviceUpdateHandler;
         protected SubscriptionHandler SubHandler;

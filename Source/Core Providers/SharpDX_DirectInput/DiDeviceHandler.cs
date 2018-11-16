@@ -12,7 +12,7 @@ using SharpDX.DirectInput;
 
 namespace SharpDX_DirectInput
 {
-    public class DiDeviceHandler : PollingDeviceHandler<JoystickUpdate, (BindingType, int)>
+    public class DiDeviceHandler : PollingDeviceHandler<JoystickUpdate>
     {
         public static DirectInput DiInstance { get; } = new DirectInput();
         private readonly Guid _instanceGuid;

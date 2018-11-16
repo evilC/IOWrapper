@@ -18,8 +18,8 @@ namespace SharpDX_DirectInput
     [Export(typeof(IProvider))]
     public class SharpDX_DirectInput : IInputProvider, IBindModeProvider
     {
-        private readonly Dictionary<DeviceDescriptor, PollingDeviceHandler<JoystickUpdate, (BindingType, int)>> _activeDevices
-            = new Dictionary<DeviceDescriptor, PollingDeviceHandler<JoystickUpdate, (BindingType, int)>>();
+        private readonly Dictionary<DeviceDescriptor, PollingDeviceHandler<JoystickUpdate>> _activeDevices
+            = new Dictionary<DeviceDescriptor, PollingDeviceHandler<JoystickUpdate>>();
         private readonly IInputDeviceLibrary<Guid> _deviceLibrary;
         private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
 

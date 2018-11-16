@@ -15,7 +15,7 @@ namespace SharpDX_XInput
     [Export(typeof(IProvider))]
     public class SharpDX_XInput : IInputProvider, IBindModeProvider
     {
-        private readonly Dictionary<DeviceDescriptor, PollingDeviceHandler<State, (BindingType, int)>> _activeDevices = new Dictionary<DeviceDescriptor, PollingDeviceHandler<State, (BindingType, int)>>();
+        private readonly Dictionary<DeviceDescriptor, PollingDeviceHandler<State>> _activeDevices = new Dictionary<DeviceDescriptor, PollingDeviceHandler<State>>();
         private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
         private readonly XiDeviceLibrary _deviceLibrary;
 
