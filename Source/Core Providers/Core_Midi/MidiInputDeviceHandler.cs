@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
-using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandlers;
 using HidWizards.IOWrapper.DataTransferObjects;
 using NAudio.Midi;
 

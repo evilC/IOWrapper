@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HidLibrary;
-using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandlers;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 

@@ -7,7 +7,7 @@ using Core_Interception.Helpers;
 using Core_Interception.Lib;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
-using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandlers;
 using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Core_Interception

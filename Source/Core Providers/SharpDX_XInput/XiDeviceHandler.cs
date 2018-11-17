@@ -4,7 +4,7 @@ using System.Threading;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
-using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandlers;
 using HidWizards.IOWrapper.DataTransferObjects;
 using SharpDX.XInput;
 

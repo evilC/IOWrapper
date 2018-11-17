@@ -7,8 +7,8 @@
     <ProjectGuid>{C9639380-2F3D-4BA2-907C-9EAC1C583EF9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs</RootNamespace>
-    <AssemblyName>IOWrapper.Libraries.SubscriptionHandler</AssemblyName>
+    <RootNamespace>Hidwizards.IOWrapper.Libraries.SubscriptionHandlers</RootNamespace>
+    <AssemblyName>IOWrapper.Libraries.SubscriptionHandlers</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

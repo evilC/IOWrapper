@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandlers;
 using HidWizards.IOWrapper.DataTransferObjects;
 using Tests.SubscriptionHandler.Lookups;
 
@@ -21,7 +21,7 @@ namespace Tests.SubscriptionHandler.Helpers
             }
 
             Device = (DeviceDescriptor)deviceDescriptor;
-            SubHandler = new Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs.SubscriptionHandler(Device, EmptyHandler);
+            SubHandler = new Hidwizards.IOWrapper.Libraries.SubscriptionHandlers.SubscriptionHandler(Device, EmptyHandler);
             CallbackResults = new Dictionary<string, CallbackResult>(StringComparer.OrdinalIgnoreCase);
             DeviceEmptyResults = new List<DeviceDescriptor>();
         }

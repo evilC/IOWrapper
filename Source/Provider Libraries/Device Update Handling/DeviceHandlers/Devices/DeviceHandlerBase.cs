@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates;
-using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandlers;
 using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices

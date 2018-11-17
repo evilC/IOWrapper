@@ -11,7 +11,7 @@ using System.Xml;
 using Core_Interception.Helpers;
 using Core_Interception.Lib;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
-using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandlers;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 using static System.String;
