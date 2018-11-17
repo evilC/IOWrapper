@@ -11,9 +11,9 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
     /// Given a series of updates from a device, and a reference to a <see cref="SubscriptionHandler"/> containing subscriptions,
     /// will generate Subscription Events or Bind Mode events accordingly
     /// </summary>
-    /// <typeparam name="TUpdate">The type of update that this device generates</typeparam>
+    /// <typeparam name="TRawUpdate">The type of update that this device generates</typeparam>
     /// <typeparam name="TProcessorKey">The Key type used for the <see cref="SubscriptionHandler"/> dictionary</typeparam>
-    public abstract class DeviceHandlerBase<TUpdate, TProcessorKey> : IDeviceHandler<TUpdate>, IDisposable
+    public abstract class DeviceHandlerBase<TRawUpdate, TProcessorKey> : IDeviceHandler<TRawUpdate>
     {
         protected readonly DeviceDescriptor DeviceDescriptor;
         protected ISubscriptionHandler SubHandler;
@@ -26,6 +26,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
         /// </summary>
         /// <param name="deviceDescriptor">The descriptor describing the device</param>
         /// <param name="subhandler">A <see cref="SubscriptionHandler"/> that holds a list of subscriptions</param>
+        /// <param name="bindModeHandler">The event handler to fire when there is a Bind Mode event</param>
         protected DeviceHandlerBase(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler)
         {
             BindModeUpdate = bindModeHandler;
@@ -51,11 +52,13 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
             BindModeUpdate?.Invoke(this, bindModeUpdate);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Called by a device poller when the device reports new data
         /// </summary>
-        /// <param name="rawUpdate"></param>
-        public virtual bool ProcessUpdate(TUpdate rawUpdate)
+        /// <param name="rawUpdate">The raw update that came from the device</param>
+        /// <returns>True if the update should be blocked, else false</returns>
+        public virtual bool ProcessUpdate(TRawUpdate rawUpdate)
         {
             var bindMode = DetectionMode == DetectionMode.Bind;
 
@@ -108,8 +111,8 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
         /// Factory method to convert the raw update into one or more <see cref="BindingUpdate"/>s
         /// </summary>
         /// <param name="update">The raw update</param>
-        /// <returns></returns>
-        protected abstract BindingUpdate[] PreProcessUpdate(TUpdate update);
+        /// <returns>The processed updates</returns>
+        protected abstract BindingUpdate[] PreProcessUpdate(TRawUpdate update);
 
         /// <summary>
         /// Allows routing of updates to whichever <see cref="IUpdateProcessor"/> is required
@@ -117,10 +120,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
         /// <param name="bindingDescriptor">Describes the input that changed</param>
         /// <returns>The key for the <see cref="UpdateProcessors"/> dictionary</returns>
         protected abstract TProcessorKey GetUpdateProcessorKey(BindingDescriptor bindingDescriptor);
-        //protected virtual (BindingType, int) GetUpdateProcessorKey(BindingDescriptor bindingDescriptor)
-        //{
-        //    return (bindingDescriptor.Type, bindingDescriptor.Index);
-        //}
+
         public void SubscribeInput(InputSubscriptionRequest subReq)
         {
             SubHandler.Subscribe(subReq);

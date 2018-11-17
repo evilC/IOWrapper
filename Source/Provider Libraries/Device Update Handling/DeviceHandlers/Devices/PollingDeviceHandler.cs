@@ -5,7 +5,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
 {
-    public abstract class PollingDeviceHandlerBase<TUpdate, TProcessorKey> : DeviceHandlerBase<TUpdate, TProcessorKey>
+    public abstract class PollingDeviceHandlerBase<TRawUpdate, TProcessorKey> : DeviceHandlerBase<TRawUpdate, TProcessorKey>
     {
         private Thread _pollThread;
 
