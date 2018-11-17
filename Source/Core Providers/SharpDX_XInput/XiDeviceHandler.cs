@@ -15,7 +15,7 @@ namespace SharpDX_XInput
     {
         private readonly IInputDeviceLibrary<UserIndex> _deviceLibrary;
         private State _lastState;
-        private Controller _controller;
+        private readonly Controller _controller;
 
         public XiDeviceHandlerBase(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler, IInputDeviceLibrary<UserIndex> deviceLibrary)
             : base(deviceDescriptor, subhandler, bindModeHandler)

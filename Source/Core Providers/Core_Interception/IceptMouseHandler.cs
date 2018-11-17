@@ -59,7 +59,6 @@ namespace Core_Interception
             return (bindingDescriptor.Type, 0);
         }
 
-
         public override void Dispose()
         {
             

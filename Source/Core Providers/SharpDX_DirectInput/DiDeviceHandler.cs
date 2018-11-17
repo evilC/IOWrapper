@@ -103,10 +103,5 @@ namespace SharpDX_DirectInput
                 }
             }
         }
-
-        public override void Dispose()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
