@@ -43,5 +43,15 @@ namespace Core_Interception.Helpers
             public ushort Button { get; set; }
             public int State { get; set; }
         }
+
+        public static bool IsKeyboard(int devId)
+        {
+            return devId < 11;
+        }
+
+        public static bool IsMouse(int devId)
+        {
+            return devId > 10;
+        }
     }
 }

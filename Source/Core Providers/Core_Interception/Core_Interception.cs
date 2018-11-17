@@ -75,33 +75,12 @@ namespace Core_Interception
             _pollThreadDesired = true;
         }
 
-        private void ProcessSettingsFile()
-        {
-            var settingsFile = Path.Combine(AssemblyDirectory, "Settings.xml");
-            _blockingEnabled = false;
-            if (File.Exists(settingsFile))
-            {
-                var doc = new XmlDocument();
-                doc.Load(settingsFile);
-
-                try
-                {
-                    _blockingEnabled = Convert.ToBoolean(doc.SelectSingleNode("/Settings/Setting[Name = \"BlockingEnabled\"]")
-                        ?.SelectSingleNode("Value")
-                        ?.InnerText);
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-            HelperFunctions.Log("Blocking Enabled: {0}", _blockingEnabled);
-        }
-
         ~Core_Interception()
         {
             Dispose();
         }
+
+        #region Poll Thread Management and Device Filtering
 
         public void Dispose()
         {
@@ -176,10 +155,9 @@ namespace Core_Interception
                 HelperFunctions.Log("Stopped PollThread for {0}", ProviderName);
             }
         }
+        #endregion
 
-        #region IProvider Members
-        // ToDo: Need better way to handle this. MEF meta-data?
-        public string ProviderName => typeof(Core_Interception).Namespace;
+        #region Querying
 
         public ProviderReport GetInputList()
         {
@@ -200,6 +178,10 @@ namespace Core_Interception
         {
             return _deviceLibrary.GetOutputDeviceReport(subReq.DeviceDescriptor);
         }
+
+        #endregion
+
+        #region Input Subscriptions
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
@@ -234,44 +216,6 @@ namespace Core_Interception
             return ret;
         }
 
-        private void EnsureMonitoredKeyboardExists(int devId, DeviceDescriptor deviceDescriptor)
-        {
-            if (!_monitoredKeyboards.ContainsKey(devId))
-            {
-                var subHandler = new SubscriptionHandler(deviceDescriptor, MouseEmptyHandler);
-                _monitoredKeyboards.Add(devId, new IceptKeyboardHandler(deviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
-            }
-        }
-
-        private void EnsureMonitoredMouseExists(int devId, DeviceDescriptor deviceDescriptor)
-        {
-            if (!_monitoredMice.ContainsKey(devId))
-            {
-                var subHandler = new SubscriptionHandler(deviceDescriptor, KeyboardEmptyHandler);
-                _monitoredMice.Add(devId, new IceptMouseHandler(deviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
-            }
-        }
-
-        private void MouseEmptyHandler(object sender, DeviceDescriptor e)
-        {
-            DeviceEmptyHandler(e);
-        }
-
-        private void KeyboardEmptyHandler(object sender, DeviceDescriptor e)
-        {
-            DeviceEmptyHandler(e);
-        }
-
-        private void DeviceEmptyHandler(DeviceDescriptor e)
-        {
-            var id = _deviceLibrary.GetInputDeviceIdentifier(e);
-            if (_pollThreadRunning)
-                SetPollThreadState(false);
-            _monitoredKeyboards.Remove(id);
-            if (_pollThreadDesired)
-                SetPollThreadState(true);
-        }
-
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
             var ret = false;
@@ -285,24 +229,13 @@ namespace Core_Interception
 
                 if (id < 10)
                 {
-                    //ret = _monitoredKeyboards[devId].Remove(subReq);
                     ret = true;
                     _monitoredKeyboards[devId].UnsubscribeInput(subReq);
-                    //if (_monitoredKeyboards[devId].IsEmpty())
-                    //{
-                    //    _monitoredKeyboards.Remove(devId);
-                    //}
                 }
                 else
                 {
                     ret = true;
                     _monitoredMice[devId].UnsubscribeInput(subReq);
-
-                    //ret = _monitoredMice[devId].Remove(subReq);
-                    //if (!_monitoredMice[devId].HasSubscriptions())
-                    //{
-                    //    _monitoredMice.Remove(devId);
-                    //}
                 }
 
                 if (_pollThreadDesired)
@@ -315,6 +248,10 @@ namespace Core_Interception
             }
             return ret;
         }
+
+        #endregion
+
+        #region Output Subscriptions
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
@@ -339,7 +276,7 @@ namespace Core_Interception
             }
             //Log("SetOutputState. Type: {0}, Index: {1}, State: {2}, Device: {3}", inputType, inputIndex, state, devId);
             var stroke = new ManagedWrapper.Stroke();
-            if (devId < 11)
+            if (HelperFunctions.IsKeyboard(devId))
             {
                 var st = (ushort)(1 - state);
                 var code = (ushort)(bindingDescriptor.Index + 1);
@@ -353,52 +290,89 @@ namespace Core_Interception
             }
             else
             {
-                if (bindingDescriptor.Type == BindingType.Axis)
+                switch (bindingDescriptor.Type)
                 {
-                    var mouse = new ManagedWrapper.MouseStroke
-                    {
-                        //ToDo: This only implements mouse relative mode - can we allow absolute mode too?
-                        flags = (ushort)ManagedWrapper.MouseFlag.MouseMoveRelative
-                    };
-                    if (bindingDescriptor.Index != 0)
-                        if (bindingDescriptor.Index == 1)
+                    case BindingType.Axis:
+                        var mouse = new ManagedWrapper.MouseStroke
                         {
-                            mouse.y = state;
+                            //ToDo: This only implements mouse relative mode - can we allow absolute mode too?
+                            flags = (ushort)ManagedWrapper.MouseFlag.MouseMoveRelative
+                        };
+                        if (bindingDescriptor.Index != 0)
+                            if (bindingDescriptor.Index == 1)
+                            {
+                                mouse.y = state;
+                            }
+                            else
+                            {
+                                throw new NotImplementedException();
+                            }
+                        else
+                            mouse.x = state;
+
+                        stroke.mouse = mouse;
+                        break;
+                    case BindingType.Button:
+                        var btn = bindingDescriptor.Index;
+                        var flag = (int)ManagedWrapper.MouseButtonFlags[btn];
+                        if (btn < 5)
+                        {
+                            // Regular buttons
+                            if (state == 0) flag *= 2;
                         }
                         else
                         {
-                            throw new NotImplementedException();
+                            // Wheel
+                            stroke.mouse.rolling = (short)((btn == 5 || btn == 8) ? 120 : -120);
                         }
-                    else
-                        mouse.x = state;
 
-                    stroke.mouse = mouse;
-                }
-                else if (bindingDescriptor.Type == BindingType.Button)
-                {
-                    var btn = bindingDescriptor.Index;
-                    var flag = (int)ManagedWrapper.MouseButtonFlags[btn];
-                    if (btn < 5)
-                    {
-                        // Regular buttons
-                        if (state == 0) flag *= 2;
-                    }
-                    else
-                    {
-                        // Wheel
-                        stroke.mouse.rolling = (short)((btn == 5 || btn == 8) ? 120 : -120);
-                    }
-
-                    stroke.mouse.state = (ushort)flag;
-                }
-                else
-                {
-                    throw new NotImplementedException();
+                        stroke.mouse.state = (ushort)flag;
+                        break;
+                    case BindingType.POV:
+                    default:
+                        throw new NotImplementedException();
                 }
             }
             ManagedWrapper.Send(_deviceContext, devId, ref stroke, 1);
             return true;
         }
+
+
+        #endregion
+
+        #region Event Handlers
+
+        private void BindModeHandler(object sender, BindModeUpdate e)
+        {
+            _bindModeCallback?.Invoke(_providerDescriptor, e.Device, e.Binding, e.Value);
+        }
+
+        private void MouseEmptyHandler(object sender, DeviceDescriptor e)
+        {
+            DeviceEmptyHandler(e);
+        }
+
+        private void KeyboardEmptyHandler(object sender, DeviceDescriptor e)
+        {
+            DeviceEmptyHandler(e);
+        }
+
+        private void DeviceEmptyHandler(DeviceDescriptor e)
+        {
+            var id = _deviceLibrary.GetInputDeviceIdentifier(e);
+            if (_pollThreadRunning)
+                SetPollThreadState(false);
+            _monitoredKeyboards.Remove(id);
+            if (_pollThreadDesired)
+                SetPollThreadState(true);
+        }
+
+        #endregion
+
+        #region Misc IProvider Members
+
+        // ToDo: Need better way to handle this. MEF meta-data?
+        public string ProviderName => typeof(Core_Interception).Namespace;
 
         public void RefreshLiveState()
         {
@@ -409,6 +383,10 @@ namespace Core_Interception
         {
             _deviceLibrary.RefreshConnectedDevices();
         }
+
+        #endregion
+
+        #region Bind Mode
 
         public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> callback = null)
         {
@@ -425,7 +403,7 @@ namespace Core_Interception
                 return;
             }
             var devId = id + 1;
-            if (id < 10)
+            if (HelperFunctions.IsKeyboard(devId))
             {
                 if (detectionMode == DetectionMode.Bind)
                 {
@@ -457,12 +435,6 @@ namespace Core_Interception
             if (_pollThreadDesired)
                 SetPollThreadState(true);
         }
-
-        private void BindModeHandler(object sender, BindModeUpdate e)
-        {
-            _bindModeCallback?.Invoke(_providerDescriptor, e.Device, e.Binding, e.Value);
-        }
-
 
         #endregion
 
@@ -513,6 +485,50 @@ namespace Core_Interception
                 Thread.Sleep(1);
             }
             _pollThreadRunning = false;
+        }
+        #endregion
+
+        #region Dictionary management
+
+        private void EnsureMonitoredKeyboardExists(int devId, DeviceDescriptor deviceDescriptor)
+        {
+            if (_monitoredKeyboards.ContainsKey(devId)) return;
+            var subHandler = new SubscriptionHandler(deviceDescriptor, MouseEmptyHandler);
+            _monitoredKeyboards.Add(devId, new IceptKeyboardHandler(deviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
+        }
+
+        private void EnsureMonitoredMouseExists(int devId, DeviceDescriptor deviceDescriptor)
+        {
+            if (_monitoredMice.ContainsKey(devId)) return;
+            var subHandler = new SubscriptionHandler(deviceDescriptor, KeyboardEmptyHandler);
+            _monitoredMice.Add(devId, new IceptMouseHandler(deviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
+        }
+
+
+        #endregion
+
+        #region XML Settings
+        private void ProcessSettingsFile()
+        {
+            var settingsFile = Path.Combine(AssemblyDirectory, "Settings.xml");
+            _blockingEnabled = false;
+            if (File.Exists(settingsFile))
+            {
+                var doc = new XmlDocument();
+                doc.Load(settingsFile);
+
+                try
+                {
+                    _blockingEnabled = Convert.ToBoolean(doc.SelectSingleNode("/Settings/Setting[Name = \"BlockingEnabled\"]")
+                        ?.SelectSingleNode("Value")
+                        ?.InnerText);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+            HelperFunctions.Log("Blocking Enabled: {0}", _blockingEnabled);
         }
         #endregion
     }
