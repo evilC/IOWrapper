@@ -38,10 +38,11 @@ namespace TestApp
 
             #region Interception
 
-            var interceptionKeyboardInputTester = new InterceptionKeyboardInputTester();
+            //var interceptionKeyboardInputTester = new InterceptionKeyboardInputTester();
             IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.Interception, Library.Devices.Interception.DellKeyboard1, BindModeHandler);
+            //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, Library.Providers.Interception, Library.Devices.Interception.DellKeyboard1);
             var interceptionMouseInputTester = new InterceptionMouseInputTester();
-            IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, BindModeHandler);
+            //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, BindModeHandler);
 
             //var interceptionMouseOutputTester = new InterceptionMouseOutputTester();
             //var interceptionKeyboardOutputTester = new InterceptionKeyboardOutputTester();

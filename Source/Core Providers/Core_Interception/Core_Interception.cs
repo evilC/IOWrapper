@@ -191,9 +191,8 @@ namespace Core_Interception
                 if (_pollThreadRunning)
                     SetPollThreadState(false);
 
-                var id = _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor);
-                var devId = id + 1;
-                if (id < 10)
+                var devId = _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor);
+                if (HelperFunctions.IsKeyboard(devId))
                 {
                     EnsureMonitoredKeyboardExists(devId, subReq.DeviceDescriptor);
                     _monitoredKeyboards[devId].SubscribeInput(subReq);
@@ -222,12 +221,11 @@ namespace Core_Interception
 
             try
             {
-                var id = _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor);
-                var devId = id + 1;
+                var devId = _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor);
                 if (_pollThreadRunning)
                     SetPollThreadState(false);
 
-                if (id < 10)
+                if (HelperFunctions.IsKeyboard(devId))
                 {
                     ret = true;
                     _monitoredKeyboards[devId].UnsubscribeInput(subReq);
@@ -349,24 +347,25 @@ namespace Core_Interception
 
         private void MouseEmptyHandler(object sender, DeviceDescriptor e)
         {
-            DeviceEmptyHandler(e);
-        }
-
-        private void KeyboardEmptyHandler(object sender, DeviceDescriptor e)
-        {
-            DeviceEmptyHandler(e);
-        }
-
-        private void DeviceEmptyHandler(DeviceDescriptor e)
-        {
             var id = _deviceLibrary.GetInputDeviceIdentifier(e);
             if (_pollThreadRunning)
                 SetPollThreadState(false);
-            _monitoredKeyboards.Remove(id);
+            _monitoredMice[id].Dispose();
+            _monitoredMice.Remove(id);
             if (_pollThreadDesired)
                 SetPollThreadState(true);
         }
 
+        private void KeyboardEmptyHandler(object sender, DeviceDescriptor e)
+        {
+            var id = _deviceLibrary.GetInputDeviceIdentifier(e);
+            if (_pollThreadRunning)
+                SetPollThreadState(false);
+            _monitoredKeyboards[id].Dispose();
+            _monitoredKeyboards.Remove(id);
+            if (_pollThreadDesired)
+                SetPollThreadState(true);
+        }
         #endregion
 
         #region Misc IProvider Members
@@ -393,16 +392,15 @@ namespace Core_Interception
             if (_pollThreadRunning)
                 SetPollThreadState(false);
 
-            int id;
+            int devId;
             try
             {
-                id = _deviceLibrary.GetInputDeviceIdentifier(deviceDescriptor);
+                devId = _deviceLibrary.GetInputDeviceIdentifier(deviceDescriptor);
             }
             catch
             {
                 return;
             }
-            var devId = id + 1;
             if (HelperFunctions.IsKeyboard(devId))
             {
                 if (detectionMode == DetectionMode.Bind)

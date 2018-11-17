@@ -102,16 +102,17 @@ namespace SharpDX_DirectInput
             {
                 _bindModeCallback = callback;
             }
-
-            if (detectionMode == DetectionMode.Subscription && deviceHandler.IsEmpty())
-            {
-                deviceHandler.Dispose();
-                _activeDevices.Remove(deviceDescriptor);
-            }
-            else
-            {
-                deviceHandler.SetDetectionMode(detectionMode);
-            }
+            deviceHandler.SetDetectionMode(detectionMode);
+            
+            //if (detectionMode == DetectionMode.Subscription && deviceHandler.IsEmpty())
+            //{
+            //    deviceHandler.Dispose();
+            //    _activeDevices.Remove(deviceDescriptor);
+            //}
+            //else
+            //{
+            //    deviceHandler.SetDetectionMode(detectionMode);
+            //}
         }
 
         private void DeviceEmptyHandler(object sender, DeviceDescriptor e)
