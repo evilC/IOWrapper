@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
 using SharpDX.XInput;

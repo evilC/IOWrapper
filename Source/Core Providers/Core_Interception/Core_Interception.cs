@@ -1,10 +1,7 @@
-﻿using HidWizards.IOWrapper.ProviderInterface;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Xml;
@@ -12,10 +9,8 @@ using Core_Interception.Helpers;
 using Core_Interception.Lib;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
-using Hidwizards.IOWrapper.Libraries.SubscriptionHandlers;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
-using static System.String;
 
 namespace Core_Interception
 {

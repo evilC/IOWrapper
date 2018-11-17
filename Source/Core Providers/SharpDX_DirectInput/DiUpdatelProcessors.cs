@@ -2,7 +2,6 @@
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates;
 using Hidwizards.IOWrapper.Libraries.PovHelper;
 using HidWizards.IOWrapper.DataTransferObjects;
-using SharpDX.DirectInput;
 
 namespace SharpDX_DirectInput
 {

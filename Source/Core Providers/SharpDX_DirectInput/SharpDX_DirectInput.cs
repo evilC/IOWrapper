@@ -1,17 +1,10 @@
 ﻿using SharpDX.DirectInput;
 using System.ComponentModel.Composition;
-using HidWizards.IOWrapper.ProviderInterface;
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using Microsoft.Win32;
-using System.Linq;
-using System.Diagnostics;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
-using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.ProviderLogger;
-using Hidwizards.IOWrapper.Libraries.SubscriptionHandlers;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 
@@ -103,16 +96,6 @@ namespace SharpDX_DirectInput
                 _bindModeCallback = callback;
             }
             deviceHandler.SetDetectionMode(detectionMode);
-            
-            //if (detectionMode == DetectionMode.Subscription && deviceHandler.IsEmpty())
-            //{
-            //    deviceHandler.Dispose();
-            //    _activeDevices.Remove(deviceDescriptor);
-            //}
-            //else
-            //{
-            //    deviceHandler.SetDetectionMode(detectionMode);
-            //}
         }
 
         private void DeviceEmptyHandler(object sender, DeviceDescriptor e)
