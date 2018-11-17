@@ -36,7 +36,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
             SubHandler = new SubscriptionHandler(deviceDescriptor, OnDeviceEmpty);
         }
 
-        private void OnDeviceEmpty(object sender, DeviceDescriptor e)
+        protected void OnDeviceEmpty(object sender, DeviceDescriptor e)
         {
             _deviceEmptyHandler(sender, e);
         }
