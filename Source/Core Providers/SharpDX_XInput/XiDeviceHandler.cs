@@ -13,6 +13,7 @@ using SharpDX.XInput;
 
 namespace SharpDX_XInput
 {
+    /*
     public class XiDeviceHandler : PollingDeviceHandler<State>
     {
         private readonly IInputDeviceLibrary<UserIndex> _deviceLibrary;
@@ -52,4 +53,5 @@ namespace SharpDX_XInput
             }
         }
     }
+    */
 }

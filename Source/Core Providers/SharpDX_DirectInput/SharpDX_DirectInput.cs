@@ -8,8 +8,10 @@ using Microsoft.Win32;
 using System.Linq;
 using System.Diagnostics;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
+using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.ProviderLogger;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 
@@ -18,8 +20,8 @@ namespace SharpDX_DirectInput
     [Export(typeof(IProvider))]
     public class SharpDX_DirectInput : IInputProvider, IBindModeProvider
     {
-        private readonly Dictionary<DeviceDescriptor, PollingDeviceHandler<JoystickUpdate>> _activeDevices
-            = new Dictionary<DeviceDescriptor, PollingDeviceHandler<JoystickUpdate>>();
+        private readonly Dictionary<DeviceDescriptor, DeviceUpdateHandler<JoystickUpdate, (BindingType, int)>> _activeDevices
+            = new Dictionary<DeviceDescriptor, DeviceUpdateHandler<JoystickUpdate, (BindingType, int)>>();
         private readonly IInputDeviceLibrary<Guid> _deviceLibrary;
         private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
 
@@ -72,7 +74,8 @@ namespace SharpDX_DirectInput
         {
             if (!_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
-                deviceHandler = new DiDeviceHandler(subReq.DeviceDescriptor, DeviceEmptyHandler, BindModeHandler, _deviceLibrary);
+                var subHandler = new SubscriptionHandler(subReq.DeviceDescriptor, DeviceEmptyHandler);
+                deviceHandler = new DiDeviceUpdateHandler(subReq.DeviceDescriptor, subHandler, BindModeHandler, _deviceLibrary);
                 _activeDevices.Add(subReq.DeviceDescriptor, deviceHandler);
             }
             deviceHandler.SubscribeInput(subReq);
@@ -92,7 +95,8 @@ namespace SharpDX_DirectInput
         {
             if (!_activeDevices.TryGetValue(deviceDescriptor, out var deviceHandler))
             {
-                deviceHandler = new DiDeviceHandler(deviceDescriptor, DeviceEmptyHandler, BindModeHandler, _deviceLibrary);
+                var subHandler = new SubscriptionHandler(deviceDescriptor, DeviceEmptyHandler);
+                deviceHandler = new DiDeviceUpdateHandler(deviceDescriptor, subHandler, BindModeHandler, _deviceLibrary);
                 _activeDevices.Add(deviceDescriptor, deviceHandler);
             }
 

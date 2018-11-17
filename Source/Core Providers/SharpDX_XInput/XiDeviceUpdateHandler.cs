@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
@@ -9,15 +11,17 @@ using SharpDX.XInput;
 namespace SharpDX_XInput
 {
     // ToDo: Replace tuples with struct?
-    public class XiDeviceUpdateHandler : DeviceUpdateHandler<State, (BindingType, int)>
+    public class XiDeviceUpdateHandler : PollingDeviceHandler<State, (BindingType, int)>
     {
         private readonly IInputDeviceLibrary<UserIndex> _deviceLibrary;
         private State _lastState;
+        private Controller _controller;
 
         public XiDeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler, IInputDeviceLibrary<UserIndex> deviceLibrary)
             : base(deviceDescriptor, subhandler, bindModeHandler)
         {
             _deviceLibrary = deviceLibrary;
+            _controller = new Controller(_deviceLibrary.GetInputDeviceIdentifier(deviceDescriptor));
             // All Buttons share one Update Processor
             UpdateProcessors.Add((BindingType.Button, 0), new XiButtonProcessor());
             // LS and RS share one Update Processor
@@ -76,6 +80,18 @@ namespace SharpDX_XInput
         {
             var index = bindingDescriptor.Type == BindingType.Axis && bindingDescriptor.Index > 3 ? 1 : 0;
             return (bindingDescriptor.Type, index);
+        }
+
+        protected override void PollThread()
+        {
+            while (true)
+            {
+                if (_controller.IsConnected)
+                {
+                    ProcessUpdate(_controller.GetState());
+                }
+                Thread.Sleep(10);
+            }
         }
     }
 }

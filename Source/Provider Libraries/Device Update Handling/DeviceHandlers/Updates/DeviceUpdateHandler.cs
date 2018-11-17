@@ -12,7 +12,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates
     /// </summary>
     /// <typeparam name="TUpdate">The type of update that this device generates</typeparam>
     /// <typeparam name="TProcessorKey">The Key type used for the <see cref="SubscriptionHandler"/> dictionary</typeparam>
-    public abstract class DeviceUpdateHandler<TUpdate, TProcessorKey> : IDeviceUpdateHandler<TUpdate>
+    public abstract class DeviceUpdateHandler<TUpdate, TProcessorKey> : IDeviceUpdateHandler<TUpdate>, IDisposable
     {
         protected readonly DeviceDescriptor DeviceDescriptor;
         protected ISubscriptionHandler SubHandler;
@@ -124,5 +124,21 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates
         //{
         //    return (bindingDescriptor.Type, bindingDescriptor.Index);
         //}
+        public void SubscribeInput(InputSubscriptionRequest subReq)
+        {
+            SubHandler.Subscribe(subReq);
+        }
+
+        public void UnsubscribeInput(InputSubscriptionRequest subReq)
+        {
+            SubHandler.Unsubscribe(subReq);
+        }
+
+        public bool IsEmpty()
+        {
+            return SubHandler.Count() == 0;
+        }
+
+        public abstract void Dispose();
     }
 }

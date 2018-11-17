@@ -86,5 +86,10 @@ namespace Core_Interception
         {
             SubHandler.Unsubscribe(subReq);
         }
+
+        public override void Dispose()
+        {
+            
+        }
     }
 }

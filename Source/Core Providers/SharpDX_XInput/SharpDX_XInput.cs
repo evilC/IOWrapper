@@ -8,6 +8,7 @@ using System.Diagnostics;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.ProviderLogger;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 
@@ -16,7 +17,8 @@ namespace SharpDX_XInput
     [Export(typeof(IProvider))]
     public class SharpDX_XInput : IInputProvider, IBindModeProvider
     {
-        private readonly Dictionary<DeviceDescriptor, PollingDeviceHandler<State>> _activeDevices = new Dictionary<DeviceDescriptor, PollingDeviceHandler<State>>();
+        private readonly Dictionary<DeviceDescriptor, PollingDeviceHandler<State, (BindingType, int)>> _activeDevices
+            = new Dictionary<DeviceDescriptor, PollingDeviceHandler<State, (BindingType, int)>>();
         private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
         private readonly IInputDeviceLibrary<UserIndex> _deviceLibrary;
 
@@ -67,7 +69,8 @@ namespace SharpDX_XInput
         {
             if (!_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
-                deviceHandler = new XiDeviceHandler( subReq.DeviceDescriptor, DeviceEmptyHandler, BindModeHandler, _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor), _deviceLibrary);
+                var subHandler = new SubscriptionHandler(subReq.DeviceDescriptor, DeviceEmptyHandler);
+                deviceHandler = new XiDeviceUpdateHandler(subReq.DeviceDescriptor, subHandler, BindModeHandler, _deviceLibrary);
                 _activeDevices.Add(subReq.DeviceDescriptor, deviceHandler);
             }
             deviceHandler.SubscribeInput(subReq);
@@ -87,7 +90,8 @@ namespace SharpDX_XInput
         {
             if (!_activeDevices.TryGetValue(deviceDescriptor, out var deviceHandler))
             {
-                deviceHandler = new XiDeviceHandler(deviceDescriptor, DeviceEmptyHandler, BindModeHandler, _deviceLibrary.GetInputDeviceIdentifier(deviceDescriptor), _deviceLibrary);
+                var subHandler = new SubscriptionHandler(deviceDescriptor, DeviceEmptyHandler);
+                deviceHandler = new XiDeviceUpdateHandler(deviceDescriptor, subHandler, BindModeHandler, _deviceLibrary);
                 _activeDevices.Add(deviceDescriptor, deviceHandler);
             }
 

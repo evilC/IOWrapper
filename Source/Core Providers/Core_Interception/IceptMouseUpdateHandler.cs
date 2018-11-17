@@ -62,16 +62,9 @@ namespace Core_Interception
         }
 
 
-
-
-        public void SubscribeInput(InputSubscriptionRequest subReq)
+        public override void Dispose()
         {
-            SubHandler.Subscribe(subReq);
-        }
-
-        public void UnsubscribeInput(InputSubscriptionRequest subReq)
-        {
-            SubHandler.Unsubscribe(subReq);
+            
         }
     }
 }

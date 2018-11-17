@@ -5,6 +5,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
 {
+    /*
     public abstract class DeviceHandlerBase<TUpdate>
     {
         protected IDeviceUpdateHandler<TUpdate> DeviceUpdateHandler;
@@ -46,4 +47,5 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
         protected abstract IDeviceUpdateHandler<TUpdate> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subscriptionHandler, EventHandler<BindModeUpdate> bindModeHandler);
         public abstract bool Poll(TUpdate update);
     }
+    */
 }
