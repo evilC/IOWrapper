@@ -25,11 +25,9 @@ namespace Core_Interception
             UpdateProcessors.Add((BindingType.Axis, 0), new IceptMouseAxisProcessor());
         }
 
-        protected override void OnBindModeUpdate(BindingUpdate bindingUpdate)
+        protected override BindingReport BuildBindingReport(BindingUpdate bindingUpdate)
         {
-            var report = _deviceLibrary.GetInputBindingReport(DeviceDescriptor, bindingUpdate.Binding);
-            var bindModeUpdate = new BindModeUpdate { Device = DeviceDescriptor, Binding = report, Value = bindingUpdate.Value };
-            BindModeHandler?.Invoke(this, bindModeUpdate);
+            return _deviceLibrary.GetInputBindingReport(DeviceDescriptor, bindingUpdate.Binding);
         }
 
         protected override BindingUpdate[] PreProcessUpdate(ManagedWrapper.Stroke stroke)

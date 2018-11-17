@@ -1,4 +1,5 @@
-﻿using HidWizards.IOWrapper.DataTransferObjects;
+﻿using System;
+using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates
 {
@@ -12,6 +13,8 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates
         bool ProcessUpdate(TUpdate rawUpdate);
 
         void SetDetectionMode(DetectionMode mode);
+
+        event EventHandler<BindModeUpdate> BindModeHandler;
 
         bool IsEmpty();
         void SubscribeInput(InputSubscriptionRequest subReq);

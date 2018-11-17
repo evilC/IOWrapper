@@ -32,9 +32,9 @@ namespace SharpDX_DirectInput
             UpdateProcessors.Add((BindingType.POV, 3), new DiPoVProcessor());
         }
 
-        protected override void OnBindModeUpdate(BindingUpdate update)
+        protected override BindingReport BuildBindingReport(BindingUpdate bindingUpdate)
         {
-            BindModeHandler?.Invoke(this, new BindModeUpdate { Device = DeviceDescriptor, Binding = _deviceLibrary.GetInputBindingReport(DeviceDescriptor, update.Binding), Value = update.Value });
+            return _deviceLibrary.GetInputBindingReport(DeviceDescriptor, bindingUpdate.Binding);
         }
 
         protected override BindingUpdate[] PreProcessUpdate(JoystickUpdate update)

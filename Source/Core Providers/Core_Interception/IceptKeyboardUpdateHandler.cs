@@ -23,11 +23,9 @@ namespace Core_Interception
             UpdateProcessors.Add((BindingType.Button, 0), new IceptButtonProcessor());
         }
 
-        protected override void OnBindModeUpdate(BindingUpdate bindingUpdate)
+        protected override BindingReport BuildBindingReport(BindingUpdate bindingUpdate)
         {
-            var report = _deviceLibrary.GetInputBindingReport(DeviceDescriptor, bindingUpdate.Binding);
-            var bindModeUpdate = new BindModeUpdate { Device = DeviceDescriptor, Binding = report, Value = bindingUpdate.Value};
-            BindModeHandler?.Invoke(this, bindModeUpdate);
+            return _deviceLibrary.GetInputBindingReport(DeviceDescriptor, bindingUpdate.Binding);
         }
 
         protected override BindingUpdate[] PreProcessUpdate(ManagedWrapper.Stroke update)

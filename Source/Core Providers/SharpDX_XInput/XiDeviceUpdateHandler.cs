@@ -32,10 +32,9 @@ namespace SharpDX_XInput
             UpdateProcessors.Add((BindingType.POV, 0), new XiButtonProcessor());
         }
 
-
-        protected override void OnBindModeUpdate(BindingUpdate update)
+        protected override BindingReport BuildBindingReport(BindingUpdate bindingUpdate)
         {
-            BindModeHandler?.Invoke(this, new BindModeUpdate { Device = DeviceDescriptor, Binding = _deviceLibrary.GetInputBindingReport(DeviceDescriptor, update.Binding), Value = update.Value });
+            return _deviceLibrary.GetInputBindingReport(DeviceDescriptor, bindingUpdate.Binding);
         }
 
         protected override BindingUpdate[] PreProcessUpdate(State update)
