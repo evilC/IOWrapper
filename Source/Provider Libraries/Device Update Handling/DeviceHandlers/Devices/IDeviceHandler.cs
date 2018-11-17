@@ -3,7 +3,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
 {
-    public interface IDeviceHandler<TUpdate>
+    public interface IDeviceHandler<TUpdate> : IDisposable
     {
         /// <summary>
         /// Process an update from a device

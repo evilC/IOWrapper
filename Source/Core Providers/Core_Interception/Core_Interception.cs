@@ -10,6 +10,7 @@ using System.Threading;
 using System.Xml;
 using Core_Interception.Helpers;
 using Core_Interception.Lib;
+using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandlers;
 using HidWizards.IOWrapper.DataTransferObjects;
@@ -57,8 +58,8 @@ namespace Core_Interception
         }
 
         //private readonly Dictionary<int, KeyboardMonitor> _monitoredKeyboards = new Dictionary<int, KeyboardMonitor>();
-        private readonly Dictionary<int, IceptKeyboardHandler> _monitoredKeyboards = new Dictionary<int, IceptKeyboardHandler>();
-        private readonly Dictionary<int, IceptMouseHandler> _monitoredMice = new Dictionary<int, IceptMouseHandler>();
+        private readonly Dictionary<int, IDeviceHandler<ManagedWrapper.Stroke>> _monitoredKeyboards = new Dictionary<int, IDeviceHandler<ManagedWrapper.Stroke>>();
+        private readonly Dictionary<int, IDeviceHandler<ManagedWrapper.Stroke>> _monitoredMice = new Dictionary<int, IDeviceHandler<ManagedWrapper.Stroke>>();
         //private Dictionary<string, List<int>> _deviceHandleToId;
 
         public Core_Interception()
