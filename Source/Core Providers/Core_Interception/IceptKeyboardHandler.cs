@@ -15,9 +15,9 @@ namespace Core_Interception
     {
         private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
 
-        public IceptKeyboardHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler,
+        public IceptKeyboardHandler(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler,
             IInputOutputDeviceLibrary<int> deviceLibrary)
-            : base(deviceDescriptor, subhandler, bindModeHandler)
+            : base(deviceDescriptor, deviceEmptyHandler, bindModeHandler)
         {
             _deviceLibrary = deviceLibrary;
             UpdateProcessors.Add((BindingType.Button, 0), new IceptButtonProcessor());

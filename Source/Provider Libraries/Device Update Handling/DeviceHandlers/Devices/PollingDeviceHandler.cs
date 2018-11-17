@@ -9,8 +9,8 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
     {
         private Thread _pollThread;
 
-        protected PollingDeviceHandlerBase(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subHandler, EventHandler<BindModeUpdate> bindModeHandler)
-            : base(deviceDescriptor, subHandler, bindModeHandler)
+        protected PollingDeviceHandlerBase(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler)
+            : base(deviceDescriptor, deviceEmptyHandler, bindModeHandler)
         {
             _pollThread = new Thread(PollThread);
             _pollThread.Start();

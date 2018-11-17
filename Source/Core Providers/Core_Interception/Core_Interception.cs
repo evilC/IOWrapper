@@ -493,15 +493,13 @@ namespace Core_Interception
         private void EnsureMonitoredKeyboardExists(int devId, DeviceDescriptor deviceDescriptor)
         {
             if (_monitoredKeyboards.ContainsKey(devId)) return;
-            var subHandler = new SubscriptionHandler(deviceDescriptor, MouseEmptyHandler);
-            _monitoredKeyboards.Add(devId, new IceptKeyboardHandler(deviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
+            _monitoredKeyboards.Add(devId, new IceptKeyboardHandler(deviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
         }
 
         private void EnsureMonitoredMouseExists(int devId, DeviceDescriptor deviceDescriptor)
         {
             if (_monitoredMice.ContainsKey(devId)) return;
-            var subHandler = new SubscriptionHandler(deviceDescriptor, KeyboardEmptyHandler);
-            _monitoredMice.Add(devId, new IceptMouseHandler(deviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
+            _monitoredMice.Add(devId, new IceptMouseHandler(deviceDescriptor, MouseEmptyHandler, BindModeHandler, _deviceLibrary));
         }
 
 

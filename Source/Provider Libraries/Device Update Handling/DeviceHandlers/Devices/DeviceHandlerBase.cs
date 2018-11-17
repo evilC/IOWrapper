@@ -16,6 +16,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
     public abstract class DeviceHandlerBase<TRawUpdate, TProcessorKey> : IDeviceHandler<TRawUpdate>
     {
         protected readonly DeviceDescriptor DeviceDescriptor;
+        private readonly EventHandler<DeviceDescriptor> _deviceEmptyHandler;
         protected ISubscriptionHandler SubHandler;
         protected DetectionMode DetectionMode = DetectionMode.Subscription;
         protected Dictionary<TProcessorKey, IUpdateProcessor> UpdateProcessors = new Dictionary<TProcessorKey, IUpdateProcessor>();
@@ -25,13 +26,19 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
         /// Create a new DeviceHandlerBase
         /// </summary>
         /// <param name="deviceDescriptor">The descriptor describing the device</param>
-        /// <param name="subhandler">A <see cref="SubscriptionHandler"/> that holds a list of subscriptions</param>
+        /// <param name="deviceEmptyHandler">An eventhandler to fire when the device can be removed</param>
         /// <param name="bindModeHandler">The event handler to fire when there is a Bind Mode event</param>
-        protected DeviceHandlerBase(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler)
+        protected DeviceHandlerBase(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler)
         {
             BindModeUpdate = bindModeHandler;
             DeviceDescriptor = deviceDescriptor;
-            SubHandler = subhandler;
+            _deviceEmptyHandler = deviceEmptyHandler;
+            SubHandler = new SubscriptionHandler(deviceDescriptor, OnDeviceEmpty);
+        }
+
+        private void OnDeviceEmpty(object sender, DeviceDescriptor e)
+        {
+            _deviceEmptyHandler(sender, e);
         }
 
         /// <summary>
@@ -41,6 +48,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
         public void SetDetectionMode(DetectionMode mode)
         {
             DetectionMode = mode;
+            if (mode == DetectionMode.Subscription && SubHandler.Count() == 0) OnDeviceEmpty(this, DeviceDescriptor);
         }
 
         //protected abstract BindModeUpdate BuildBindModeUpdate(BindingUpdate bindingUpdate);

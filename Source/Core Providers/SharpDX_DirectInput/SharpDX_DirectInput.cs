@@ -74,8 +74,7 @@ namespace SharpDX_DirectInput
         {
             if (!_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
-                var subHandler = new SubscriptionHandler(subReq.DeviceDescriptor, DeviceEmptyHandler);
-                deviceHandler = new DiDeviceHandlerBase(subReq.DeviceDescriptor, subHandler, BindModeHandler, _deviceLibrary);
+                deviceHandler = new DiDeviceHandlerBase(subReq.DeviceDescriptor, DeviceEmptyHandler, BindModeHandler, _deviceLibrary);
                 _activeDevices.Add(subReq.DeviceDescriptor, deviceHandler);
             }
             deviceHandler.SubscribeInput(subReq);
@@ -95,8 +94,7 @@ namespace SharpDX_DirectInput
         {
             if (!_activeDevices.TryGetValue(deviceDescriptor, out var deviceHandler))
             {
-                var subHandler = new SubscriptionHandler(deviceDescriptor, DeviceEmptyHandler);
-                deviceHandler = new DiDeviceHandlerBase(deviceDescriptor, subHandler, BindModeHandler, _deviceLibrary);
+                deviceHandler = new DiDeviceHandlerBase(deviceDescriptor, DeviceEmptyHandler, BindModeHandler, _deviceLibrary);
                 _activeDevices.Add(deviceDescriptor, deviceHandler);
             }
 
