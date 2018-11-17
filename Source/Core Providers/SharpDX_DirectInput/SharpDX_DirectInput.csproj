@@ -54,7 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DiDeviceLibrary.cs" />
-    <Compile Include="DiDeviceUpdateHandler.cs" />
+    <Compile Include="DiDeviceHandler.cs" />
     <Compile Include="DiUpdatelProcessors.cs" />
     <Compile Include="SharpDX_DirectInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

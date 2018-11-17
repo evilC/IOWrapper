@@ -57,7 +57,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="XiDeviceLibrary.cs" />
-    <Compile Include="XiDeviceUpdateHandler.cs" />
+    <Compile Include="XiDeviceHandler.cs" />
     <Compile Include="XiUpdateProcessors.cs" />
   </ItemGroup>
   <ItemGroup>

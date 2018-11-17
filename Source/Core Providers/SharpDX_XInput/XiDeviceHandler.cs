@@ -11,13 +11,13 @@ using SharpDX.XInput;
 namespace SharpDX_XInput
 {
     // ToDo: Replace tuples with struct?
-    public class XiDeviceUpdateHandler : PollingDeviceHandler<State, (BindingType, int)>
+    public class XiDeviceHandler : PollingDeviceHandler<State, (BindingType, int)>
     {
         private readonly IInputDeviceLibrary<UserIndex> _deviceLibrary;
         private State _lastState;
         private Controller _controller;
 
-        public XiDeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler, IInputDeviceLibrary<UserIndex> deviceLibrary)
+        public XiDeviceHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler, IInputDeviceLibrary<UserIndex> deviceLibrary)
             : base(deviceDescriptor, subhandler, bindModeHandler)
         {
             _deviceLibrary = deviceLibrary;

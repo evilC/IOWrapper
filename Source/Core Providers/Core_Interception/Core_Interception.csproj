@@ -50,8 +50,8 @@
     <Compile Include="Core_Interception.cs" />
     <Compile Include="Helpers\HelperFunctions.cs" />
     <Compile Include="IceptDeviceLibrary.cs" />
-    <Compile Include="IceptKeyboardUpdateHandler.cs" />
-    <Compile Include="IceptMouseUpdateHandler.cs" />
+    <Compile Include="IceptKeyboardHandler.cs" />
+    <Compile Include="IceptMouseHandler.cs" />
     <Compile Include="IceptUpdateProcessors.cs" />
     <Compile Include="Lib\ManagedWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

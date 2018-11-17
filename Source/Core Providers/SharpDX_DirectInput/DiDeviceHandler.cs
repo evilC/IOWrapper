@@ -10,13 +10,13 @@ using SharpDX.DirectInput;
 namespace SharpDX_DirectInput
 {
     // ToDo: Replace tuples with struct?
-    public class DiDeviceUpdateHandler : PollingDeviceHandler<JoystickUpdate, (BindingType, int)>
+    public class DiDeviceHandler : PollingDeviceHandler<JoystickUpdate, (BindingType, int)>
     {
         private readonly IInputDeviceLibrary<Guid> _deviceLibrary;
         public static DirectInput DiInstance { get; } = new DirectInput();
         private readonly Guid _instanceGuid;
 
-        public DiDeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler, IInputDeviceLibrary<Guid> deviceLibrary) 
+        public DiDeviceHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler, IInputDeviceLibrary<Guid> deviceLibrary) 
             : base(deviceDescriptor, subhandler, bindModeHandler)
         {
             _deviceLibrary = deviceLibrary;
