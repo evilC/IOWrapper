@@ -14,6 +14,7 @@ namespace Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs
     {
         bool ContainsKey(BindingType bindingType);
         bool ContainsKey(BindingType bindingType, int index);
+        bool ContainsKey(BindingType bindingType, int index, int subindex);
         int Count();
         int Count(BindingType bindingType);
         int Count(BindingType bindingType, int index);
