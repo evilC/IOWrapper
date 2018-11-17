@@ -14,11 +14,11 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates
     /// <typeparam name="TProcessorKey">The Key type used for the <see cref="SubscriptionHandler"/> dictionary</typeparam>
     public abstract class DeviceUpdateHandler<TUpdate, TProcessorKey> : IDeviceUpdateHandler<TUpdate>
     {
-        protected readonly DeviceDescriptor _deviceDescriptor;
+        protected readonly DeviceDescriptor DeviceDescriptor;
         protected ISubscriptionHandler SubHandler;
         protected DetectionMode DetectionMode = DetectionMode.Subscription;
         protected Dictionary<TProcessorKey, IUpdateProcessor> UpdateProcessors = new Dictionary<TProcessorKey, IUpdateProcessor>();
-        protected readonly EventHandler<BindModeUpdate> _bindModeHandler;
+        protected readonly EventHandler<BindModeUpdate> BindModeHandler;
 
         /// <summary>
         /// Create a new DeviceUpdateHandler
@@ -27,8 +27,8 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates
         /// <param name="subhandler">A <see cref="SubscriptionHandler"/> that holds a list of subscriptions</param>
         protected DeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler)
         {
-            _bindModeHandler = bindModeHandler;
-            _deviceDescriptor = deviceDescriptor;
+            BindModeHandler = bindModeHandler;
+            DeviceDescriptor = deviceDescriptor;
             SubHandler = subhandler;
         }
 

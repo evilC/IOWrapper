@@ -10,7 +10,6 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
     /// Also routes subscription requests through to it's <see cref="SubscriptionHandler"/>
     /// </summary>
     /// <typeparam name="TUpdate"></typeparam>
-    /// <typeparam name="TProcessorKey"></typeparam>
     public abstract class PollingDeviceHandler<TUpdate> : DeviceHandlerBase<TUpdate>, IDisposable
     {
         private Thread _pollThread;

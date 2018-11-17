@@ -29,7 +29,7 @@ namespace SharpDX_DirectInput
 
         protected override void OnBindModeUpdate(BindingUpdate update)
         {
-            _bindModeHandler?.Invoke(this, new BindModeUpdate { Device = _deviceDescriptor, Binding = _deviceLibrary.GetInputBindingReport(_deviceDescriptor, update.Binding), Value = update.Value });
+            BindModeHandler?.Invoke(this, new BindModeUpdate { Device = DeviceDescriptor, Binding = _deviceLibrary.GetInputBindingReport(DeviceDescriptor, update.Binding), Value = update.Value });
         }
 
         protected override BindingUpdate[] PreProcessUpdate(JoystickUpdate update)

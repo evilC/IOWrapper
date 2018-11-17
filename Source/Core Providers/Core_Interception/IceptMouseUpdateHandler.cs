@@ -27,9 +27,9 @@ namespace Core_Interception
 
         protected override void OnBindModeUpdate(BindingUpdate bindingUpdate)
         {
-            var report = _deviceLibrary.GetInputBindingReport(_deviceDescriptor, bindingUpdate.Binding);
-            var bindModeUpdate = new BindModeUpdate { Device = _deviceDescriptor, Binding = report, Value = bindingUpdate.Value };
-            _bindModeHandler?.Invoke(this, bindModeUpdate);
+            var report = _deviceLibrary.GetInputBindingReport(DeviceDescriptor, bindingUpdate.Binding);
+            var bindModeUpdate = new BindModeUpdate { Device = DeviceDescriptor, Binding = report, Value = bindingUpdate.Value };
+            BindModeHandler?.Invoke(this, bindModeUpdate);
         }
 
         protected override BindingUpdate[] PreProcessUpdate(ManagedWrapper.Stroke stroke)
