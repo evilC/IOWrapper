@@ -1,7 +1,7 @@
 ﻿using System;
 using HidWizards.IOWrapper.DataTransferObjects;
 
-namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates
+namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
 {
     public interface IDeviceHandler<TUpdate>
     {

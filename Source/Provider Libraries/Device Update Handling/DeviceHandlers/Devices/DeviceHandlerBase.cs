@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
 using HidWizards.IOWrapper.DataTransferObjects;
 
-namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates
+namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
 {
     /// <summary>
     /// Handles processing of Updates for a device. 
