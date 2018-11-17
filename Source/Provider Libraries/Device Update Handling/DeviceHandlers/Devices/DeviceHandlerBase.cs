@@ -8,7 +8,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
     public abstract class DeviceHandlerBase<TUpdate>
     {
         protected IDeviceUpdateHandler<TUpdate> DeviceUpdateHandler;
-        protected SubscriptionHandler SubHandler;
+        protected ISubscriptionHandler SubHandler;
         protected DeviceDescriptor DeviceDescriptor;
 
         protected DeviceHandlerBase(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler)
@@ -43,7 +43,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
             SubHandler.Unsubscribe(subReq);
         }
 
-        protected abstract IDeviceUpdateHandler<TUpdate> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler, EventHandler<BindModeUpdate> bindModeHandler);
+        protected abstract IDeviceUpdateHandler<TUpdate> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subscriptionHandler, EventHandler<BindModeUpdate> bindModeHandler);
         public abstract bool Poll(TUpdate update);
     }
 }

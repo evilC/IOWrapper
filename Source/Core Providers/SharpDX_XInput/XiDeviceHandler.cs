@@ -29,7 +29,7 @@ namespace SharpDX_XInput
             _controller = new Controller(userIndex);
         }
 
-        protected override IDeviceUpdateHandler<State> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler,
+        protected override IDeviceUpdateHandler<State> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subscriptionHandler,
             EventHandler<BindModeUpdate> bindModeHandler)
         {
             return new XiDeviceUpdateHandler(deviceDescriptor, SubHandler, bindModeHandler, _deviceLibrary);

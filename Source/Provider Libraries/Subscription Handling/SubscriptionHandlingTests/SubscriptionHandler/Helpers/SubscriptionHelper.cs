@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
 using HidWizards.IOWrapper.DataTransferObjects;
 using Tests.SubscriptionHandler.Lookups;
 
@@ -8,7 +9,7 @@ namespace Tests.SubscriptionHandler.Helpers
     public class SubscriptionHelper
     {
         public DeviceDescriptor Device;
-        public Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs.SubscriptionHandler SubHandler;
+        public ISubscriptionHandler SubHandler;
         public Dictionary<string, CallbackResult> CallbackResults { get; private set; }
         public List<DeviceDescriptor> DeviceEmptyResults { get; private set; }
 

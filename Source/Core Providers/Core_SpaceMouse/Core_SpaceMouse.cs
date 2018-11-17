@@ -17,7 +17,7 @@ namespace Core_SpaceMouse
         private readonly HidFastReadDevice _device;
         private readonly UpdateProcessor _updateProcessor = new UpdateProcessor();
         //private InputSubscriptionRequest _subReq;
-        private readonly SubscriptionHandler _subHandler;
+        private readonly ISubscriptionHandler _subHandler;
         private readonly ProviderDescriptor _providerDescriptor;
         private readonly string[] _axisNames = {"X", "Y", "Z", "Rx", "Ry", "Rz"};
         private readonly Dictionary<int, string> _buttonNames = new Dictionary<int, string>

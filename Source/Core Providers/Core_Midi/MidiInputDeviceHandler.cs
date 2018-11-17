@@ -15,7 +15,7 @@ namespace Core_Midi
         private readonly DeviceDescriptor _deviceDescriptor;
         //private readonly IInputDeviceLibrary<int> _deviceLibrary;
         private readonly MidiIn _midiIn;
-        protected SubscriptionHandler SubHandler;
+        protected ISubscriptionHandler SubHandler;
 
         public MidiInputDeviceHandler(DeviceDescriptor deviceDescriptor, int deviceId, EventHandler<DeviceDescriptor> deviceEmptyHandler)
         {

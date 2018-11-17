@@ -26,7 +26,7 @@ namespace SharpDX_DirectInput
             _instanceGuid = _deviceLibrary.GetInputDeviceIdentifier(deviceDescriptor);
         }
 
-        protected override IDeviceUpdateHandler<JoystickUpdate> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler,
+        protected override IDeviceUpdateHandler<JoystickUpdate> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subscriptionHandler,
             EventHandler<BindModeUpdate> bindModeHandler)
         {
             return new DiDeviceUpdateHandler(deviceDescriptor, SubHandler, bindModeHandler, _deviceLibrary);

@@ -22,7 +22,7 @@ namespace Core_Interception
             _deviceLibrary = deviceLibrary;
         }
 
-        protected override IDeviceUpdateHandler<ManagedWrapper.Stroke> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler,
+        protected override IDeviceUpdateHandler<ManagedWrapper.Stroke> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subscriptionHandler,
             EventHandler<BindModeUpdate> bindModeHandler)
         {
             return new IceptMouseUpdateHandler(deviceDescriptor, SubHandler, bindModeHandler, _deviceLibrary);
