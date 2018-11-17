@@ -213,7 +213,7 @@ namespace Core_Interception
                     {
                         var subHandler = new SubscriptionHandler(subReq.DeviceDescriptor, KeyboardEmptyHandler);
                         _monitoredKeyboards.Add(devId, new IceptKeyboardHandlerBase(subReq.DeviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
-                        //_monitoredKeyboards.Add(devId, new IceptKeyboardHandlerBase(subReq.DeviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
+                        //_monitoredKeyboards.Add(devId, new IceptKeyboardHandlerBase(subReq.DeviceDescriptor, KeyboardEmptyHandler, BindModeUpdate, _deviceLibrary));
                     }
                     _monitoredKeyboards[devId].SubscribeInput(subReq);
                     ret = true;
@@ -418,7 +418,7 @@ namespace Core_Interception
                 {
                     if (!_monitoredKeyboards.ContainsKey(devId))
                     {
-                        //_monitoredKeyboards.Add(devId, new IceptKeyboardHandlerBase(deviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
+                        //_monitoredKeyboards.Add(devId, new IceptKeyboardHandlerBase(deviceDescriptor, KeyboardEmptyHandler, BindModeUpdate, _deviceLibrary));
                         var subHandler = new SubscriptionHandler(deviceDescriptor, KeyboardEmptyHandler);
                         _monitoredKeyboards.Add(devId, new IceptKeyboardHandlerBase(deviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
                     }

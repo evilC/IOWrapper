@@ -14,7 +14,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates
 
         void SetDetectionMode(DetectionMode mode);
 
-        event EventHandler<BindModeUpdate> BindModeHandler;
+        event EventHandler<BindModeUpdate> BindModeUpdate;
 
         bool IsEmpty();
         void SubscribeInput(InputSubscriptionRequest subReq);
