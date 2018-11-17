@@ -66,7 +66,7 @@ namespace SharpDX_XInput
             };
         }
 
-        public BindingReport GetInputBindingReport(BindingDescriptor bindingDescriptor)
+        public BindingReport GetInputBindingReport(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor)
         {
             switch (bindingDescriptor.Type)
             {
@@ -102,9 +102,10 @@ namespace SharpDX_XInput
             {
                 Title = "Buttons"
             };
+            var dd = new DeviceDescriptor();
             for (var b = 0; b < 10; b++)
             {
-                _buttonInfo.Bindings.Add(GetInputBindingReport(new BindingDescriptor
+                _buttonInfo.Bindings.Add(GetInputBindingReport(dd, new BindingDescriptor
                 {
                     Index = b,
                     Type = BindingType.Button
@@ -117,7 +118,7 @@ namespace SharpDX_XInput
             };
             for (var a = 0; a < 6; a++)
             {
-                _axisInfo.Bindings.Add(GetInputBindingReport(new BindingDescriptor
+                _axisInfo.Bindings.Add(GetInputBindingReport(dd, new BindingDescriptor
                 {
                     Index = a,
                     Type = BindingType.Axis
@@ -130,7 +131,7 @@ namespace SharpDX_XInput
             };
             for (var d = 0; d < 4; d++)
             {
-                _povInfo.Bindings.Add(GetInputBindingReport(new BindingDescriptor
+                _povInfo.Bindings.Add(GetInputBindingReport(dd, new BindingDescriptor
                 {
                     Index = 0,
                     SubIndex = d,

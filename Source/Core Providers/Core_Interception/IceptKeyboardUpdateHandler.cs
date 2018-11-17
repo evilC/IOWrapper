@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Core_Interception.Lib;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates;
+using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
 using HidWizards.IOWrapper.DataTransferObjects;
 
@@ -12,10 +13,10 @@ namespace Core_Interception
 {
     class IceptKeyboardUpdateHandler : DeviceUpdateHandler<ManagedWrapper.Stroke, (BindingType, int)>
     {
-        private readonly IceptDeviceLibrary _deviceLibrary;
+        private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
 
-        public IceptKeyboardUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler, 
-            IceptDeviceLibrary deviceLibrary)
+        public IceptKeyboardUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler,
+            IInputOutputDeviceLibrary<int> deviceLibrary)
             : base(deviceDescriptor, subhandler, bindModeHandler)
         {
             _deviceLibrary = deviceLibrary;
@@ -24,7 +25,7 @@ namespace Core_Interception
 
         protected override void OnBindModeUpdate(BindingUpdate bindingUpdate)
         {
-            var report = _deviceLibrary.GetKeyboardBindingReport(bindingUpdate.Binding);
+            var report = _deviceLibrary.GetInputBindingReport(_deviceDescriptor, bindingUpdate.Binding);
             var bindModeUpdate = new BindModeUpdate { Device = _deviceDescriptor, Binding = report, Value = bindingUpdate.Value};
             _bindModeHandler?.Invoke(this, bindModeUpdate);
         }

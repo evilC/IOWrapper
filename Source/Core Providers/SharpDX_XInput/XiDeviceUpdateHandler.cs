@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates;
+using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
 using HidWizards.IOWrapper.DataTransferObjects;
 using SharpDX.XInput;
@@ -10,10 +11,10 @@ namespace SharpDX_XInput
     // ToDo: Replace tuples with struct?
     public class XiDeviceUpdateHandler : DeviceUpdateHandler<State, (BindingType, int)>
     {
-        private readonly XiDeviceLibrary _deviceLibrary;
+        private readonly IInputDeviceLibrary<UserIndex> _deviceLibrary;
         private State _lastState;
 
-        public XiDeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler, XiDeviceLibrary deviceLibrary)
+        public XiDeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler, IInputDeviceLibrary<UserIndex> deviceLibrary)
             : base(deviceDescriptor, subhandler, bindModeHandler)
         {
             _deviceLibrary = deviceLibrary;
@@ -30,7 +31,7 @@ namespace SharpDX_XInput
 
         protected override void OnBindModeUpdate(BindingUpdate update)
         {
-            _bindModeHandler?.Invoke(this, new BindModeUpdate { Device = _deviceDescriptor, Binding = _deviceLibrary.GetInputBindingReport(update.Binding), Value = update.Value });
+            _bindModeHandler?.Invoke(this, new BindModeUpdate { Device = _deviceDescriptor, Binding = _deviceLibrary.GetInputBindingReport(_deviceDescriptor, update.Binding), Value = update.Value });
         }
 
         protected override BindingUpdate[] PreProcessUpdate(State update)

@@ -73,5 +73,10 @@ namespace Core_Midi.DeviceLibraries
             };
             return bindingDescriptor;
         }
+
+        public BindingReport GetInputBindingReport(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

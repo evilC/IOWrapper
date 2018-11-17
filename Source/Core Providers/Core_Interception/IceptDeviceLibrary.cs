@@ -228,6 +228,19 @@ namespace Core_Interception
             }
         }
 
+        public BindingReport GetInputBindingReport(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor)
+        {
+            var id = GetDeviceIdentifier(deviceDescriptor);
+            if (id > 9)
+            {
+                return GetMouseBindingReport(bindingDescriptor);
+            }
+            else
+            {
+                return GetKeyboardBindingReport(bindingDescriptor);
+            }
+        }
+
         public BindingReport GetMouseBindingReport(BindingDescriptor bindingDescriptor)
         {
             if (bindingDescriptor.Type == BindingType.Axis)

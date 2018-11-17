@@ -1,5 +1,6 @@
 ﻿using System;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates;
+using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
 using HidWizards.IOWrapper.DataTransferObjects;
 using SharpDX.DirectInput;
@@ -9,9 +10,9 @@ namespace SharpDX_DirectInput
     // ToDo: Replace tuples with struct?
     public class DiDeviceUpdateHandler : DeviceUpdateHandler<JoystickUpdate, (BindingType, int)>
     {
-        private readonly DiDeviceLibrary _deviceLibrary;
+        private readonly IInputDeviceLibrary<Guid> _deviceLibrary;
 
-        public DiDeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler, DiDeviceLibrary deviceLibrary) 
+        public DiDeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler, IInputDeviceLibrary<Guid> deviceLibrary) 
             : base(deviceDescriptor, subhandler, bindModeHandler)
         {
             _deviceLibrary = deviceLibrary;
@@ -28,7 +29,7 @@ namespace SharpDX_DirectInput
 
         protected override void OnBindModeUpdate(BindingUpdate update)
         {
-            _bindModeHandler?.Invoke(this, new BindModeUpdate { Device = _deviceDescriptor, Binding = _deviceLibrary.GetInputBindingReport(update.Binding), Value = update.Value });
+            _bindModeHandler?.Invoke(this, new BindModeUpdate { Device = _deviceDescriptor, Binding = _deviceLibrary.GetInputBindingReport(_deviceDescriptor, update.Binding), Value = update.Value });
         }
 
         protected override BindingUpdate[] PreProcessUpdate(JoystickUpdate update)

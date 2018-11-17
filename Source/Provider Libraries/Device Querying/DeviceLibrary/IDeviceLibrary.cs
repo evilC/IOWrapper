@@ -18,6 +18,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceLibrary
 
         ProviderReport GetInputList();
         DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor);
+        BindingReport GetInputBindingReport(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor);
     }
 
     public interface IOutputDeviceLibrary<out TDeviceIdentifier> : IDeviceLibrary<TDeviceIdentifier>

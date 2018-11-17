@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates;
+using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
 using HidWizards.IOWrapper.DataTransferObjects;
 using SharpDX.DirectInput;
@@ -16,9 +17,9 @@ namespace SharpDX_DirectInput
     {
         public static DirectInput DiInstance { get; } = new DirectInput();
         private readonly Guid _instanceGuid;
-        private readonly DiDeviceLibrary _deviceLibrary;
+        private readonly IInputDeviceLibrary<Guid> _deviceLibrary;
 
-        public DiDeviceHandler(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler, Guid guid, DiDeviceLibrary deviceLibrary)
+        public DiDeviceHandler(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler, Guid guid, IInputDeviceLibrary<Guid> deviceLibrary)
             : base(deviceDescriptor, deviceEmptyHandler, bindModeHandler)
         {
             _instanceGuid = guid;

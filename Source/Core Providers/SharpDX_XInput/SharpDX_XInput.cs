@@ -6,6 +6,7 @@ using SharpDX.XInput;
 using System.Threading;
 using System.Diagnostics;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
+using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.ProviderLogger;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
@@ -17,7 +18,7 @@ namespace SharpDX_XInput
     {
         private readonly Dictionary<DeviceDescriptor, PollingDeviceHandler<State>> _activeDevices = new Dictionary<DeviceDescriptor, PollingDeviceHandler<State>>();
         private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
-        private readonly XiDeviceLibrary _deviceLibrary;
+        private readonly IInputDeviceLibrary<UserIndex> _deviceLibrary;
 
         public bool IsLive { get { return isLive; } }
         private bool isLive = true;

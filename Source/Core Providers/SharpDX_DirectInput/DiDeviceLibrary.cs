@@ -87,7 +87,7 @@ namespace SharpDX_DirectInput
             return GetInputDeviceReport(deviceDescriptor, GetInputDeviceIdentifier(deviceDescriptor));
         }
 
-        public BindingReport GetInputBindingReport(BindingDescriptor bindingDescriptor)
+        public BindingReport GetInputBindingReport(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor)
         {
             switch (bindingDescriptor.Type)
             {
@@ -144,7 +144,7 @@ namespace SharpDX_DirectInput
                         var deviceInfo =
                             joystick.GetObjectInfoByName(offset   // this bit will throw if the stick does not have that axis
                                 .ToString());
-                        axisInfo.Bindings.Add(GetInputBindingReport(new BindingDescriptor
+                        axisInfo.Bindings.Add(GetInputBindingReport(deviceDescriptor, new BindingDescriptor
                         {
                             //Index = i,
                             Index = (int)offset,
@@ -170,7 +170,7 @@ namespace SharpDX_DirectInput
                     };
                     for (var btn = 0; btn < length; btn++)
                     {
-                        buttonInfo.Bindings.Add(GetInputBindingReport(new BindingDescriptor
+                        buttonInfo.Bindings.Add(GetInputBindingReport(deviceDescriptor, new BindingDescriptor
                         {
                             //Index = btn,
                             Index = (int)Utilities.OffsetsByType[BindingType.Button][btn],

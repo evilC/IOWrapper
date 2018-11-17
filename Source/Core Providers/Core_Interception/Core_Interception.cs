@@ -10,6 +10,7 @@ using System.Threading;
 using System.Xml;
 using Core_Interception.Helpers;
 using Core_Interception.Lib;
+using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 using static System.String;
@@ -19,7 +20,7 @@ namespace Core_Interception
     [Export(typeof(IProvider))]
     public class Core_Interception : IInputProvider, IOutputProvider, IBindModeProvider
     {
-        private readonly IceptDeviceLibrary _deviceLibrary;
+        private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
         private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
         private readonly ProviderDescriptor _providerDescriptor;
 

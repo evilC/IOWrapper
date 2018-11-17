@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Core_Interception.Lib;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates;
+using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
 using HidWizards.IOWrapper.DataTransferObjects;
 
@@ -13,9 +14,9 @@ namespace Core_Interception
 {
     public class IceptMouseHandler : DeviceHandlerBase<ManagedWrapper.Stroke>
     {
-        private readonly IceptDeviceLibrary _deviceLibrary;
+        private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
 
-        public IceptMouseHandler(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler, IceptDeviceLibrary deviceLibrary)
+        public IceptMouseHandler(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler, IInputOutputDeviceLibrary<int> deviceLibrary)
             : base(deviceDescriptor, deviceEmptyHandler, bindModeHandler)
         {
             _deviceLibrary = deviceLibrary;

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Core_Interception.Helpers;
 using Core_Interception.Lib;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates;
+using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
 using HidWizards.IOWrapper.DataTransferObjects;
 
@@ -13,10 +14,10 @@ namespace Core_Interception
 {
     public class IceptMouseUpdateHandler : DeviceUpdateHandler<ManagedWrapper.Stroke, (BindingType, int)>
     {
-        private readonly IceptDeviceLibrary _deviceLibrary;
+        private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
 
         public IceptMouseUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler,
-            IceptDeviceLibrary deviceLibrary) 
+            IInputOutputDeviceLibrary<int> deviceLibrary) 
             : base(deviceDescriptor, subhandler, bindModeHandler)
         {
             _deviceLibrary = deviceLibrary;
@@ -26,7 +27,7 @@ namespace Core_Interception
 
         protected override void OnBindModeUpdate(BindingUpdate bindingUpdate)
         {
-            var report = _deviceLibrary.GetMouseBindingReport(bindingUpdate.Binding);
+            var report = _deviceLibrary.GetInputBindingReport(_deviceDescriptor, bindingUpdate.Binding);
             var bindModeUpdate = new BindModeUpdate { Device = _deviceDescriptor, Binding = report, Value = bindingUpdate.Value };
             _bindModeHandler?.Invoke(this, bindModeUpdate);
         }
