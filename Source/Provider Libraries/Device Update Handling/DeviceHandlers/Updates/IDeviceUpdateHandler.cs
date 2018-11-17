@@ -12,5 +12,9 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates
         bool ProcessUpdate(TUpdate rawUpdate);
 
         void SetDetectionMode(DetectionMode mode);
+
+        bool IsEmpty();
+        void SubscribeInput(InputSubscriptionRequest subReq);
+        void UnsubscribeInput(InputSubscriptionRequest subReq);
     }
 }
