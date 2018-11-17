@@ -17,8 +17,8 @@ namespace SharpDX_XInput
     [Export(typeof(IProvider))]
     public class SharpDX_XInput : IInputProvider, IBindModeProvider
     {
-        private readonly Dictionary<DeviceDescriptor, PollingDeviceHandler<State, (BindingType, int)>> _activeDevices
-            = new Dictionary<DeviceDescriptor, PollingDeviceHandler<State, (BindingType, int)>>();
+        private readonly Dictionary<DeviceDescriptor, PollingDeviceHandlerBase<State, (BindingType, int)>> _activeDevices
+            = new Dictionary<DeviceDescriptor, PollingDeviceHandlerBase<State, (BindingType, int)>>();
         private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
         private readonly IInputDeviceLibrary<UserIndex> _deviceLibrary;
 
@@ -70,7 +70,7 @@ namespace SharpDX_XInput
             if (!_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
                 var subHandler = new SubscriptionHandler(subReq.DeviceDescriptor, DeviceEmptyHandler);
-                deviceHandler = new XiDeviceHandler(subReq.DeviceDescriptor, subHandler, BindModeHandler, _deviceLibrary);
+                deviceHandler = new XiDeviceHandlerBase(subReq.DeviceDescriptor, subHandler, BindModeHandler, _deviceLibrary);
                 _activeDevices.Add(subReq.DeviceDescriptor, deviceHandler);
             }
             deviceHandler.SubscribeInput(subReq);
@@ -91,7 +91,7 @@ namespace SharpDX_XInput
             if (!_activeDevices.TryGetValue(deviceDescriptor, out var deviceHandler))
             {
                 var subHandler = new SubscriptionHandler(deviceDescriptor, DeviceEmptyHandler);
-                deviceHandler = new XiDeviceHandler(deviceDescriptor, subHandler, BindModeHandler, _deviceLibrary);
+                deviceHandler = new XiDeviceHandlerBase(deviceDescriptor, subHandler, BindModeHandler, _deviceLibrary);
                 _activeDevices.Add(deviceDescriptor, deviceHandler);
             }
 

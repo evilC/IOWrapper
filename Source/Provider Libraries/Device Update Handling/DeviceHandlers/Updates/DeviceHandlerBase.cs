@@ -12,7 +12,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates
     /// </summary>
     /// <typeparam name="TUpdate">The type of update that this device generates</typeparam>
     /// <typeparam name="TProcessorKey">The Key type used for the <see cref="SubscriptionHandler"/> dictionary</typeparam>
-    public abstract class DeviceUpdateHandler<TUpdate, TProcessorKey> : IDeviceUpdateHandler<TUpdate>, IDisposable
+    public abstract class DeviceHandlerBase<TUpdate, TProcessorKey> : IDeviceHandler<TUpdate>, IDisposable
     {
         protected readonly DeviceDescriptor DeviceDescriptor;
         protected ISubscriptionHandler SubHandler;
@@ -21,11 +21,11 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates
         public event EventHandler<BindModeUpdate> BindModeHandler;
 
         /// <summary>
-        /// Create a new DeviceUpdateHandler
+        /// Create a new DeviceHandlerBase
         /// </summary>
         /// <param name="deviceDescriptor">The descriptor describing the device</param>
         /// <param name="subhandler">A <see cref="SubscriptionHandler"/> that holds a list of subscriptions</param>
-        protected DeviceUpdateHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler)
+        protected DeviceHandlerBase(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler)
         {
             BindModeHandler = bindModeHandler;
             DeviceDescriptor = deviceDescriptor;

@@ -57,8 +57,8 @@ namespace Core_Interception
         }
 
         //private readonly Dictionary<int, KeyboardMonitor> _monitoredKeyboards = new Dictionary<int, KeyboardMonitor>();
-        private readonly Dictionary<int, IceptKeyboardHandler> _monitoredKeyboards = new Dictionary<int, IceptKeyboardHandler>();
-        private readonly Dictionary<int, IceptMouseHandler> _monitoredMice = new Dictionary<int, IceptMouseHandler>();
+        private readonly Dictionary<int, IceptKeyboardHandlerBase> _monitoredKeyboards = new Dictionary<int, IceptKeyboardHandlerBase>();
+        private readonly Dictionary<int, IceptMouseHandlerBase> _monitoredMice = new Dictionary<int, IceptMouseHandlerBase>();
         //private Dictionary<string, List<int>> _deviceHandleToId;
 
         public Core_Interception()
@@ -212,8 +212,8 @@ namespace Core_Interception
                     if (!_monitoredKeyboards.ContainsKey(devId))
                     {
                         var subHandler = new SubscriptionHandler(subReq.DeviceDescriptor, KeyboardEmptyHandler);
-                        _monitoredKeyboards.Add(devId, new IceptKeyboardHandler(subReq.DeviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
-                        //_monitoredKeyboards.Add(devId, new IceptKeyboardHandler(subReq.DeviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
+                        _monitoredKeyboards.Add(devId, new IceptKeyboardHandlerBase(subReq.DeviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
+                        //_monitoredKeyboards.Add(devId, new IceptKeyboardHandlerBase(subReq.DeviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
                     }
                     _monitoredKeyboards[devId].SubscribeInput(subReq);
                     ret = true;
@@ -223,7 +223,7 @@ namespace Core_Interception
                     if (!_monitoredMice.ContainsKey(devId))
                     {
                         var subHandler = new SubscriptionHandler(subReq.DeviceDescriptor, KeyboardEmptyHandler);
-                        _monitoredMice.Add(devId, new IceptMouseHandler(subReq.DeviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
+                        _monitoredMice.Add(devId, new IceptMouseHandlerBase(subReq.DeviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
                     }
                     _monitoredMice[devId].SubscribeInput(subReq);
                     ret = true;
@@ -418,9 +418,9 @@ namespace Core_Interception
                 {
                     if (!_monitoredKeyboards.ContainsKey(devId))
                     {
-                        //_monitoredKeyboards.Add(devId, new IceptKeyboardHandler(deviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
+                        //_monitoredKeyboards.Add(devId, new IceptKeyboardHandlerBase(deviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
                         var subHandler = new SubscriptionHandler(deviceDescriptor, KeyboardEmptyHandler);
-                        _monitoredKeyboards.Add(devId, new IceptKeyboardHandler(deviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
+                        _monitoredKeyboards.Add(devId, new IceptKeyboardHandlerBase(deviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
                     }
 
                     _bindModeCallback = callback;
@@ -439,7 +439,7 @@ namespace Core_Interception
                     if (!_monitoredMice.ContainsKey(devId))
                     {
                         var subHandler = new SubscriptionHandler(deviceDescriptor, KeyboardEmptyHandler);
-                        _monitoredMice.Add(devId, new IceptMouseHandler(deviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
+                        _monitoredMice.Add(devId, new IceptMouseHandlerBase(deviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
                     }
 
                     _bindModeCallback = callback;

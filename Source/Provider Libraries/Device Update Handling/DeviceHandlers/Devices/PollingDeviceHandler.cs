@@ -6,11 +6,11 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
 {
-    public abstract class PollingDeviceHandler<TUpdate, TProcessorKey> : DeviceUpdateHandler<TUpdate, TProcessorKey>
+    public abstract class PollingDeviceHandlerBase<TUpdate, TProcessorKey> : DeviceHandlerBase<TUpdate, TProcessorKey>
     {
         private Thread _pollThread;
 
-        protected PollingDeviceHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subHandler, EventHandler<BindModeUpdate> bindModeHandler)
+        protected PollingDeviceHandlerBase(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subHandler, EventHandler<BindModeUpdate> bindModeHandler)
             : base(deviceDescriptor, subHandler, bindModeHandler)
         {
             _pollThread = new Thread(PollThread);
