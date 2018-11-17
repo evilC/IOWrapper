@@ -12,11 +12,11 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Core_Interception
 {
-    public class IceptMouseHandlerBase : DeviceHandlerBase<ManagedWrapper.Stroke, (BindingType, int)>
+    public class IceptMouseHandler : DeviceHandlerBase<ManagedWrapper.Stroke, (BindingType, int)>
     {
         private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
 
-        public IceptMouseHandlerBase(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler,
+        public IceptMouseHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler,
             IInputOutputDeviceLibrary<int> deviceLibrary) 
             : base(deviceDescriptor, subhandler, bindModeHandler)
         {

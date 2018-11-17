@@ -11,11 +11,11 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Core_Interception
 {
-    class IceptKeyboardHandlerBase : DeviceHandlerBase<ManagedWrapper.Stroke, (BindingType, int)>
+    class IceptKeyboardHandler : DeviceHandlerBase<ManagedWrapper.Stroke, (BindingType, int)>
     {
         private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
 
-        public IceptKeyboardHandlerBase(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler,
+        public IceptKeyboardHandler(DeviceDescriptor deviceDescriptor, ISubscriptionHandler subhandler, EventHandler<BindModeUpdate> bindModeHandler,
             IInputOutputDeviceLibrary<int> deviceLibrary)
             : base(deviceDescriptor, subhandler, bindModeHandler)
         {
