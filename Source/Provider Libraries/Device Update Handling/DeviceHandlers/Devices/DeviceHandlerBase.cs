@@ -41,6 +41,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
             _deviceEmptyHandler(sender, e);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Enables or disables Bind Mode
         /// </summary>
