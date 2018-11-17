@@ -31,6 +31,11 @@ namespace SharpDX_DirectInput
             return new DiDeviceUpdateHandler(deviceDescriptor, SubHandler, bindModeHandler, _deviceLibrary);
         }
 
+        public override bool Poll(JoystickUpdate update)
+        {
+            return DeviceUpdateHandler.ProcessUpdate(update);
+        }
+
         protected override void PollThread()
         {
             Joystick joystick = null;
@@ -59,7 +64,7 @@ namespace SharpDX_DirectInput
                             var data = joystick.GetBufferedData();
                             foreach (var state in data)
                             {
-                                DeviceUpdateHandler.ProcessUpdate(state);
+                                Poll(state);
                             }
 
                             Thread.Sleep(10);

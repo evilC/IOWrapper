@@ -11,7 +11,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Core_Interception
 {
-    public class IceptKeyboardHandler : PolledDeviceHandler<ManagedWrapper.Stroke>
+    public class IceptKeyboardHandler : DeviceHandlerBase<ManagedWrapper.Stroke>
     {
         private readonly IceptDeviceLibrary _deviceLibrary;
 

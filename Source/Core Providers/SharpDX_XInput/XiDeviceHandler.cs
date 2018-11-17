@@ -30,13 +30,18 @@ namespace SharpDX_XInput
             return new XiDeviceUpdateHandler(deviceDescriptor, SubHandler, bindModeHandler, _deviceLibrary);
         }
 
+        public override bool Poll(State update)
+        {
+            return DeviceUpdateHandler.ProcessUpdate(update);
+        }
+
         protected override void PollThread()
         {
             while (true)
             {
                 if (_controller.IsConnected)
                 {
-                    DeviceUpdateHandler.ProcessUpdate(_controller.GetState());
+                    Poll(_controller.GetState());
                 }
                 Thread.Sleep(10);
             }

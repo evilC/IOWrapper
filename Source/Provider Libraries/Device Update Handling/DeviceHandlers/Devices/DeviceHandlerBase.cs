@@ -44,6 +44,6 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
         }
 
         protected abstract IDeviceUpdateHandler<TUpdate> CreateUpdateHandler(DeviceDescriptor deviceDescriptor, SubscriptionHandler subscriptionHandler, EventHandler<BindModeUpdate> bindModeHandler);
-
+        public abstract bool Poll(TUpdate update);
     }
 }

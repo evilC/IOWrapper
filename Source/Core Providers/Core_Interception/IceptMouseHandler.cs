@@ -11,7 +11,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Core_Interception
 {
-    public class IceptMouseHandler : PolledDeviceHandler<ManagedWrapper.Stroke>
+    public class IceptMouseHandler : DeviceHandlerBase<ManagedWrapper.Stroke>
     {
         private readonly IceptDeviceLibrary _deviceLibrary;
 
