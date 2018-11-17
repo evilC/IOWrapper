@@ -60,5 +60,18 @@ namespace Core_Interception
         {
             return (bindingDescriptor.Type, 0);
         }
+
+
+
+
+        public void SubscribeInput(InputSubscriptionRequest subReq)
+        {
+            SubHandler.Subscribe(subReq);
+        }
+
+        public void UnsubscribeInput(InputSubscriptionRequest subReq)
+        {
+            SubHandler.Unsubscribe(subReq);
+        }
     }
 }

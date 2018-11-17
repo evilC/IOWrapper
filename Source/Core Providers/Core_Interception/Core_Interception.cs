@@ -11,6 +11,7 @@ using System.Xml;
 using Core_Interception.Helpers;
 using Core_Interception.Lib;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandlerNs;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 using static System.String;
@@ -56,8 +57,8 @@ namespace Core_Interception
         }
 
         //private readonly Dictionary<int, KeyboardMonitor> _monitoredKeyboards = new Dictionary<int, KeyboardMonitor>();
-        private readonly Dictionary<int, IceptKeyboardHandler> _monitoredKeyboards = new Dictionary<int, IceptKeyboardHandler>();
-        private readonly Dictionary<int, IceptMouseHandler> _monitoredMice = new Dictionary<int, IceptMouseHandler>();
+        private readonly Dictionary<int, IceptKeyboardUpdateHandler> _monitoredKeyboards = new Dictionary<int, IceptKeyboardUpdateHandler>();
+        private readonly Dictionary<int, IceptMouseUpdateHandler> _monitoredMice = new Dictionary<int, IceptMouseUpdateHandler>();
         //private Dictionary<string, List<int>> _deviceHandleToId;
 
         public Core_Interception()
@@ -210,7 +211,9 @@ namespace Core_Interception
                 {
                     if (!_monitoredKeyboards.ContainsKey(devId))
                     {
-                        _monitoredKeyboards.Add(devId, new IceptKeyboardHandler(subReq.DeviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
+                        var subHandler = new SubscriptionHandler(subReq.DeviceDescriptor, KeyboardEmptyHandler);
+                        _monitoredKeyboards.Add(devId, new IceptKeyboardUpdateHandler(subReq.DeviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
+                        //_monitoredKeyboards.Add(devId, new IceptKeyboardHandler(subReq.DeviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
                     }
                     _monitoredKeyboards[devId].SubscribeInput(subReq);
                     ret = true;
@@ -219,7 +222,8 @@ namespace Core_Interception
                 {
                     if (!_monitoredMice.ContainsKey(devId))
                     {
-                        _monitoredMice.Add(devId, new IceptMouseHandler(subReq.DeviceDescriptor, MouseEmptyHandler, BindModeHandler, _deviceLibrary));
+                        var subHandler = new SubscriptionHandler(subReq.DeviceDescriptor, KeyboardEmptyHandler);
+                        _monitoredMice.Add(devId, new IceptMouseUpdateHandler(subReq.DeviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
                     }
                     _monitoredMice[devId].SubscribeInput(subReq);
                     ret = true;
@@ -414,7 +418,9 @@ namespace Core_Interception
                 {
                     if (!_monitoredKeyboards.ContainsKey(devId))
                     {
-                        _monitoredKeyboards.Add(devId, new IceptKeyboardHandler(deviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
+                        //_monitoredKeyboards.Add(devId, new IceptKeyboardHandler(deviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
+                        var subHandler = new SubscriptionHandler(deviceDescriptor, KeyboardEmptyHandler);
+                        _monitoredKeyboards.Add(devId, new IceptKeyboardUpdateHandler(deviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
                     }
 
                     _bindModeCallback = callback;
@@ -432,7 +438,8 @@ namespace Core_Interception
                 {
                     if (!_monitoredMice.ContainsKey(devId))
                     {
-                        _monitoredMice.Add(devId, new IceptMouseHandler(deviceDescriptor, MouseEmptyHandler, BindModeHandler, _deviceLibrary));
+                        var subHandler = new SubscriptionHandler(deviceDescriptor, KeyboardEmptyHandler);
+                        _monitoredMice.Add(devId, new IceptMouseUpdateHandler(deviceDescriptor, subHandler, BindModeHandler, _deviceLibrary));
                     }
 
                     _bindModeCallback = callback;
@@ -475,7 +482,8 @@ namespace Core_Interception
                         var block = false;
                         if (isMonitoredKeyboard)
                         {
-                            block = _monitoredKeyboards[i].Poll(stroke);
+                            //block = _monitoredKeyboards[i].Poll(stroke);
+                            block = _monitoredKeyboards[i].ProcessUpdate(stroke);
                         }
                         if (!(blockingEnabled && block))
                         {
@@ -492,7 +500,7 @@ namespace Core_Interception
                         var block = false;
                         if (isMonitoredMouse)
                         {
-                            block = _monitoredMice[i].Poll(stroke);
+                            block = _monitoredMice[i].ProcessUpdate(stroke);
                         }
                         if (!(blockingEnabled && block))
                         {

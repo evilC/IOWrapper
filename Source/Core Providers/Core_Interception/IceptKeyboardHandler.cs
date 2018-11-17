@@ -12,6 +12,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Core_Interception
 {
+    /*
     public class IceptKeyboardHandler : DeviceHandlerBase<ManagedWrapper.Stroke>
     {
         private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
@@ -33,4 +34,5 @@ namespace Core_Interception
             return DeviceUpdateHandler.ProcessUpdate(update);
         }
     }
+    */
 }
