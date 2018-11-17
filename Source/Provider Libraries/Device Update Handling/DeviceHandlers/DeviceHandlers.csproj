@@ -43,7 +43,6 @@
   <ItemGroup>
     <Compile Include="Devices\DeviceHandlerBase.cs" />
     <Compile Include="Devices\PollingDeviceHandler.cs" />
-    <Compile Include="Devices\PolledDeviceHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Updates\DeviceUpdateHandler.cs" />
     <Compile Include="Updates\IDeviceUpdateHandler.cs" />

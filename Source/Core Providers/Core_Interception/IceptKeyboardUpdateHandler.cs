@@ -19,7 +19,7 @@ namespace Core_Interception
             : base(deviceDescriptor, subhandler, bindModeHandler)
         {
             _deviceLibrary = deviceLibrary;
-            UpdateProcessors.Add((BindingType.Button, 0), new IceptKeyboardKeyProcessor());
+            UpdateProcessors.Add((BindingType.Button, 0), new IceptButtonProcessor());
         }
 
         protected override void OnBindModeUpdate(BindingUpdate bindingUpdate)

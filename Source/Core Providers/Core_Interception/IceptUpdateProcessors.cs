@@ -8,16 +8,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Core_Interception
 {
-    public class IceptKeyboardKeyProcessor : IUpdateProcessor
-    {
-        public BindingUpdate[] Process(BindingUpdate update)
-        {
-            update.Value = 1 - update.Value;
-            return new[] { update };
-        }
-    }
-
-    public class IceptMouseButtonProcessor : IUpdateProcessor
+    public class IceptButtonProcessor : IUpdateProcessor
     {
         public BindingUpdate[] Process(BindingUpdate update)
         {
