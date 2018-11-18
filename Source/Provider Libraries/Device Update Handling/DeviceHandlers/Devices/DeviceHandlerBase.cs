@@ -22,6 +22,9 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
         protected Dictionary<TProcessorKey, IUpdateProcessor> UpdateProcessors = new Dictionary<TProcessorKey, IUpdateProcessor>();
         public event EventHandler<BindModeUpdate> BindModeUpdate;
 
+        protected delegate bool ProcessUpdates(BindingUpdate[] bindingUpdates);
+        private ProcessUpdates _processUpdates;
+
         /// <summary>
         /// Create a new DeviceHandlerBase
         /// </summary>
@@ -30,6 +33,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
         /// <param name="bindModeHandler">The event handler to fire when there is a Bind Mode event</param>
         protected DeviceHandlerBase(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler)
         {
+            _processUpdates = ProcessSubscriptionModeUpdates;
             BindModeUpdate = bindModeHandler;
             DeviceDescriptor = deviceDescriptor;
             _deviceEmptyHandler = deviceEmptyHandler;
@@ -57,6 +61,14 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
         public void SetDetectionMode(DetectionMode mode)
         {
             DetectionMode = mode;
+            if (mode == DetectionMode.Bind)
+            {
+                _processUpdates = ProcessBindModeUpdates;
+            }
+            else
+            {
+                _processUpdates = ProcessSubscriptionModeUpdates;
+            }
             if (mode == DetectionMode.Subscription && SubHandler.Count() == 0) OnDeviceEmpty(this, DeviceDescriptor);
         }
 
@@ -108,32 +120,35 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
                 var bindingUpdates = UpdateProcessors[GetUpdateProcessorKey(preprocessedUpdate.Binding)].Process(preprocessedUpdate);
 
                 // Route the processed updates to the appropriate place
-                // ToDo: Best to make this check, or swap out delegates depending on mode?
-                if (bindMode)
-                {
-                    // Bind Mode - Fire Event Handler
-                    foreach (var bindingUpdate in bindingUpdates)
-                    {
-                        OnBindModeUpdate(bindingUpdate);
-                    }
-
-                    return true;    // Block in Bind Mode
-                }
-                else
-                {
-                    // Subscription Mode - Ask SubscriptionHandler to Fire Callbacks
-                    foreach (var bindingUpdate in bindingUpdates)
-                    {
-                        if (SubHandler.ContainsKey(bindingUpdate.Binding.Type, bindingUpdate.Binding.Index))
-                        {
-                            SubHandler.FireCallbacks(bindingUpdate.Binding, bindingUpdate.Value);
-                            return true;    // Block a bound input
-                        }
-                    }
-                }
+                _processUpdates(bindingUpdates);
             }
 
             return false;   // Do not block by default
+        }
+
+        private bool ProcessBindModeUpdates(BindingUpdate[] bindingUpdates)
+        {
+            // Bind Mode - Fire Event Handler
+            foreach (var bindingUpdate in bindingUpdates)
+            {
+                OnBindModeUpdate(bindingUpdate);
+            }
+
+            return true;    // Block in Bind Mode
+        }
+
+        private bool ProcessSubscriptionModeUpdates(BindingUpdate[] bindingUpdates)
+        {
+            var block = false;
+            // Subscription Mode - Ask SubscriptionHandler to Fire Callbacks
+            foreach (var bindingUpdate in bindingUpdates)
+            {
+                if (!SubHandler.ContainsKey(bindingUpdate.Binding.Type, bindingUpdate.Binding.Index)) continue;
+                SubHandler.FireCallbacks(bindingUpdate.Binding, bindingUpdate.Value);
+                block = true;    // Block a bound input
+            }
+
+            return block;
         }
 
         /// <summary>
