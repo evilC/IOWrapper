@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 ### Added
+### Changed 
+### Deprecated
+### Removed
+### Fixed
+
+## [0.9.3] - 2018-11-18
+### Added
 - Interception Provider now supports Bind Mode
 - BindingReport now has a "Path" property that can be used to get the fully qualified name of the input
 ### Changed 
@@ -14,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Deprecated
 ### Removed
 ### Fixed
+- SpaceMouse provider crash fix
 
 ## [0.8.8] - 2018-11-04
 ### Added
