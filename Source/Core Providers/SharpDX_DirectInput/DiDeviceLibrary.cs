@@ -102,7 +102,7 @@ namespace SharpDX_DirectInput
                 case BindingType.Button:
                     return new BindingReport
                     {
-                        Title = (bindingDescriptor.Index + 1).ToString(),
+                        Title = ((int)JoystickOffset.Buttons0 - bindingDescriptor.Index + 1).ToString(),
                         Category = BindingCategory.Momentary,
                         BindingDescriptor = bindingDescriptor
                     };

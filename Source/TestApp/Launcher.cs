@@ -57,7 +57,7 @@ namespace TestApp
             //var xInputPad_1 = new XiTester(1);
             //Console.WriteLine("Press Enter for Bind Mode...");
             //Console.ReadLine();
-            //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, BindModeHandler);
+            IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, BindModeHandler);
             //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.XInput, Library.Devices.Console.Xb360_1, BindModeHandler);
             //genericStick_1.Unsubscribe();
             //Console.WriteLine("Press Enter to leave Bind Mode...");
