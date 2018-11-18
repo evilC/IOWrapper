@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
@@ -13,6 +14,7 @@ namespace SharpDX_XInput.DeviceLibrary
         private static DeviceReportNode _axisInfo;
         private static DeviceReportNode _povInfo;
         private static List<DeviceReport> _deviceReports;
+        private ConcurrentDictionary<BindingDescriptor, BindingReport> _bindingReports;
 
         public XiDeviceLibrary(ProviderDescriptor providerDescriptor)
         {
@@ -65,32 +67,7 @@ namespace SharpDX_XInput.DeviceLibrary
 
         public BindingReport GetInputBindingReport(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor)
         {
-            switch (bindingDescriptor.Type)
-            {
-                case BindingType.Axis:
-                    return new BindingReport
-                    {
-                        Title = Utilities.axisNames[bindingDescriptor.Index],
-                        Category = (bindingDescriptor.Index < 4 ? BindingCategory.Signed : BindingCategory.Unsigned),
-                        BindingDescriptor = bindingDescriptor
-                    };
-                case BindingType.Button:
-                    return new BindingReport
-                    {
-                        Title = Utilities.buttonNames[bindingDescriptor.Index],
-                        Category = BindingCategory.Momentary,
-                        BindingDescriptor = bindingDescriptor
-                    };
-                case BindingType.POV:
-                    return new BindingReport
-                    {
-                        Title = Utilities.povNames[bindingDescriptor.SubIndex],
-                        Category = BindingCategory.Momentary,
-                        BindingDescriptor = bindingDescriptor
-                    };
-                default:
-                    throw new NotImplementedException();
-            }
+            return _bindingReports[bindingDescriptor];
         }
 
         private void BuildInputList()
@@ -99,14 +76,24 @@ namespace SharpDX_XInput.DeviceLibrary
             {
                 Title = "Buttons"
             };
-            var dd = new DeviceDescriptor();
+            _bindingReports = new ConcurrentDictionary<BindingDescriptor, BindingReport>();
             for (var b = 0; b < 10; b++)
             {
-                _buttonInfo.Bindings.Add(GetInputBindingReport(dd, new BindingDescriptor
+                var bd = new BindingDescriptor
                 {
                     Index = b,
                     Type = BindingType.Button
-                }));
+                };
+                var name = Utilities.buttonNames[bd.Index];
+                var br = new BindingReport
+                {
+                    Title = name,
+                    Path = $"Button: {name}",
+                    Category = BindingCategory.Momentary,
+                    BindingDescriptor = bd
+                };
+                _bindingReports.TryAdd(bd, br);
+                _buttonInfo.Bindings.Add(br);
             }
 
             _axisInfo = new DeviceReportNode
@@ -115,11 +102,21 @@ namespace SharpDX_XInput.DeviceLibrary
             };
             for (var a = 0; a < 6; a++)
             {
-                _axisInfo.Bindings.Add(GetInputBindingReport(dd, new BindingDescriptor
+                var bd = new BindingDescriptor
                 {
                     Index = a,
                     Type = BindingType.Axis
-                }));
+                };
+                var name = Utilities.axisNames[bd.Index];
+                var br = new BindingReport
+                {
+                    Title = name,
+                    Path = $"Axis: {name}",
+                    Category = (bd.Index < 4 ? BindingCategory.Signed : BindingCategory.Unsigned),
+                    BindingDescriptor = bd
+                };
+                _bindingReports.TryAdd(bd, br);
+                _axisInfo.Bindings.Add(br);
             }
 
             _povInfo = new DeviceReportNode
@@ -128,12 +125,22 @@ namespace SharpDX_XInput.DeviceLibrary
             };
             for (var d = 0; d < 4; d++)
             {
-                _povInfo.Bindings.Add(GetInputBindingReport(dd, new BindingDescriptor
+                var bd = new BindingDescriptor
                 {
                     Index = 0,
                     SubIndex = d,
                     Type = BindingType.POV
-                }));
+                };
+                var name = Utilities.povNames[bd.SubIndex];
+                var br = new BindingReport
+                {
+                    Title = name,
+                    Path = $"DPad: {name}",
+                    Category = BindingCategory.Momentary,
+                    BindingDescriptor = bd
+                };
+                _bindingReports.TryAdd(bd, br);
+                _povInfo.Bindings.Add(br);
             }
 
         }
