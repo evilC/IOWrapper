@@ -6,10 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 ### Changed 
-- Bind Mode updates now fired on a thread
 ### Deprecated
 ### Removed
 ### Fixed
+
+## [0.9.5] - 2018-11-18
+### Fixed
+- Bind Mode updates now fired on a thread
 
 ## [0.9.3] - 2018-11-18
 ### Added
