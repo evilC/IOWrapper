@@ -114,7 +114,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
                 var isSubscribed = SubHandler.ContainsKey(preprocessedUpdate.Binding.Type, preprocessedUpdate.Binding.Index);
                 if (!(bindMode || isSubscribed)) continue;
 
-                // Convert from Pre-processed to procesed updates
+                // Convert from Pre-processed (Physical only) to fully processed (Physical and Locgical) updates
                 // It is at this point that the state of Logical / Derived inputs are typically calculated (eg DirectInput POVs) ...
                 // ... so this may result in one update splitting into many
                 var bindingUpdates = UpdateProcessors[GetUpdateProcessorKey(preprocessedUpdate.Binding)].Process(preprocessedUpdate);
