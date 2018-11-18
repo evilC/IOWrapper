@@ -9,7 +9,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace TestApp.Plugins
 {
-    public class IOTester
+    public class IOTester : IDisposable
     {
         private readonly InputSubscription _input;
         private OutputSubscription _output;
@@ -66,6 +66,11 @@ namespace TestApp.Plugins
                 throw new Exception("Could not Unsubscribe SubReq");
             }
             return true;
+        }
+
+        public void Dispose()
+        {
+            Unsubscribe();
         }
     }
 }
