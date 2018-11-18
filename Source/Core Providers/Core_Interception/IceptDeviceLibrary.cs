@@ -315,7 +315,7 @@ namespace Core_Interception
                     Index = i + 256,
                     SubIndex = 0
                 });
-                if (altReport == null) continue;
+                if (altReport == null || report.Title == altReport.Title) continue;
                 _keyboardList.Bindings.Add(altReport);
             }
             _keyboardList.Bindings.Sort((x, y) => string.Compare(x.Title, y.Title, StringComparison.Ordinal));
