@@ -30,7 +30,7 @@ namespace SharpDX_XInput
             UpdateProcessors.Add((BindingType.POV, 0), new XiButtonProcessor());
         }
 
-        protected override BindingReport BuildBindingReport(BindingUpdate bindingUpdate)
+        protected override BindingReport GetInputBindingReport(BindingUpdate bindingUpdate)
         {
             return _deviceLibrary.GetInputBindingReport(DeviceDescriptor, bindingUpdate.Binding);
         }

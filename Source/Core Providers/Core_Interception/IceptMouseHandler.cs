@@ -21,7 +21,7 @@ namespace Core_Interception
             UpdateProcessors.Add((BindingType.Axis, 0), new IceptMouseAxisProcessor());
         }
 
-        protected override BindingReport BuildBindingReport(BindingUpdate bindingUpdate)
+        protected override BindingReport GetInputBindingReport(BindingUpdate bindingUpdate)
         {
             return _deviceLibrary.GetInputBindingReport(DeviceDescriptor, bindingUpdate.Binding);
         }

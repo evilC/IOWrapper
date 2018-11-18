@@ -18,7 +18,7 @@ namespace Core_Interception
             UpdateProcessors.Add((BindingType.Button, 0), new IceptButtonProcessor());
         }
 
-        protected override BindingReport BuildBindingReport(BindingUpdate bindingUpdate)
+        protected override BindingReport GetInputBindingReport(BindingUpdate bindingUpdate)
         {
             return _deviceLibrary.GetInputBindingReport(DeviceDescriptor, bindingUpdate.Binding);
         }

@@ -30,7 +30,7 @@ namespace SharpDX_DirectInput
             UpdateProcessors.Add((BindingType.POV, 3), new DiPoVProcessor());
         }
 
-        protected override BindingReport BuildBindingReport(BindingUpdate bindingUpdate)
+        protected override BindingReport GetInputBindingReport(BindingUpdate bindingUpdate)
         {
             return _deviceLibrary.GetInputBindingReport(DeviceDescriptor, bindingUpdate.Binding);
         }

@@ -76,12 +76,12 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
         /// An update occurred in Bind Mode.
         /// We are passed a <see cref="BindingUpdate"/>, which only contains Index, SubIndex etc...
         /// ... however, the front end will need a <see cref="BindingReport"/>, so it can display the new binding to the user (ie it needs the Title)
-        /// <see cref="BuildBindingReport"/> is expected to perform this translation
+        /// <see cref="GetInputBindingReport"/> is expected to perform this translation
         /// </summary>
         /// <param name="update"></param>
         private void OnBindModeUpdate(BindingUpdate update)
         {
-            var bindModeUpdate = new BindModeUpdate { Device = DeviceDescriptor, Binding = BuildBindingReport(update), Value = update.Value };
+            var bindModeUpdate = new BindModeUpdate { Device = DeviceDescriptor, Binding = GetInputBindingReport(update), Value = update.Value };
             BindModeUpdate?.Invoke(this, bindModeUpdate);
         }
 
@@ -90,7 +90,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
         /// </summary>
         /// <param name="bindingUpdate"></param>
         /// <returns></returns>
-        protected abstract BindingReport BuildBindingReport(BindingUpdate bindingUpdate);
+        protected abstract BindingReport GetInputBindingReport(BindingUpdate bindingUpdate);
 
 
         /// <inheritdoc />
