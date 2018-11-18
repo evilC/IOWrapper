@@ -14,12 +14,62 @@ namespace SharpDX_DirectInput.DeviceLibrary
         private static readonly List<BindingReport>[] PovBindingInfos = new List<BindingReport>[4];
         private readonly ProviderDescriptor _providerDescriptor;
         private ProviderReport _providerReport;
+        private ConcurrentDictionary<BindingDescriptor, BindingReport> _bindingReports;
 
         public DiDeviceLibrary(ProviderDescriptor providerDescriptor)
         {
             _providerDescriptor = providerDescriptor;
             BuildPovBindingInfos();
+            BuildBindingReports();
             RefreshConnectedDevices();
+        }
+
+        private void BuildBindingReports()
+        {
+            _bindingReports = new ConcurrentDictionary<BindingDescriptor, BindingReport>();
+            for (var i = 0; i < 269; i += 4)
+            {
+                var bindingType = Utilities.OffsetToType((JoystickOffset)i);
+                var bindingDescriptor = new BindingDescriptor
+                {
+                    Index = i,
+                    SubIndex = 0,
+                    Type = bindingType
+                };
+                var category = bindingType == BindingType.Axis ? BindingCategory.Signed : BindingCategory.Momentary;
+                string name;
+                switch (bindingType)
+                {
+                    case BindingType.Axis:
+                        name = ((JoystickOffset)i).ToString();
+                        break;
+                    case BindingType.Button:
+                        name = ((int)JoystickOffset.Buttons0 - i + 1).ToString();
+                        break;
+                    case BindingType.POV:
+                        for (var j = 0; j < 4; j++)
+                        {
+                            // POV reports are added here
+                            var povNum = (i - (int)JoystickOffset.PointOfViewControllers0) / 4;
+                            //bindingDescriptor.Index = povNum;
+                            bindingDescriptor.SubIndex = j;
+                            _bindingReports.TryAdd(bindingDescriptor, PovBindingInfos[povNum][j]);
+                        }
+                        continue;
+                    default:
+                        continue;
+                }
+                var prefix = bindingType.ToString();
+                var br = new BindingReport
+                {
+                    Title = name,
+                    Path = $"{prefix}: {name}",
+                    Category = category,
+                    BindingDescriptor = bindingDescriptor
+                };
+                // Button and Axis reports are added here
+                _bindingReports.TryAdd(bindingDescriptor, br);
+            }
         }
 
         #region IDeviceLibrary
