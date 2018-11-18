@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Interception Provider now supports Bind Mode
 ### Changed 
 - BindModeUpdate now contains a BindingReport instead of a BindingDescriptor
+- Refactored DeviceHandlers in Provider Libraries
 ### Deprecated
 ### Removed
 ### Fixed
