@@ -38,7 +38,7 @@ namespace TestApp
 
             #region Interception
 
-            //var interceptionKeyboardInputTester = new InterceptionKeyboardInputTester();
+            var interceptionKeyboardInputTester = new InterceptionKeyboardInputTester();
             IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.Interception, Library.Devices.Interception.DellKeyboard1, BindModeHandler);
             //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, Library.Providers.Interception, Library.Devices.Interception.DellKeyboard1);
             var interceptionMouseInputTester = new InterceptionMouseInputTester();
@@ -51,7 +51,7 @@ namespace TestApp
 
 
             #region Bind Mode Testing
-            //var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
+            var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
             //var vj1 = new VJoyTester(1, false);
             //var vj2 = new VJoyTester(2, false);
             //var xInputPad_1 = new XiTester(1);
