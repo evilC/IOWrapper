@@ -27,8 +27,9 @@ namespace SharpDX_DirectInput.DeviceLibrary
         private void BuildBindingReports()
         {
             _bindingReports = new ConcurrentDictionary<BindingDescriptor, BindingReport>();
-            for (var i = 0; i < 269; i += 4)
+            for (var i = 0; i < 269; i ++)
             {
+                if (!Enum.IsDefined(typeof(JoystickOffset), i)) continue;
                 var bindingType = Utilities.OffsetToType((JoystickOffset)i);
                 var bindingDescriptor = new BindingDescriptor
                 {
@@ -139,6 +140,9 @@ namespace SharpDX_DirectInput.DeviceLibrary
 
         public BindingReport GetInputBindingReport(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor)
         {
+            if (_bindingReports.ContainsKey(bindingDescriptor)) return _bindingReports[bindingDescriptor];
+            return null;
+            /*
             switch (bindingDescriptor.Type)
             {
                 case BindingType.Axis:
@@ -160,6 +164,7 @@ namespace SharpDX_DirectInput.DeviceLibrary
                     return PovBindingInfos[bindingDescriptor.Index][bindingDescriptor.SubIndex];
             }
             throw new NotImplementedException();
+            */
         }
 
         #endregion
