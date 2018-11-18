@@ -26,7 +26,10 @@ namespace TestApp.Plugins
                 Callback = new Action<int>(value =>
                 {
                     Console.WriteLine("{0} State: {1}", name, value);
-                    IOW.Instance.SetOutputstate(_output, _bindingDescriptor, value);
+                    if (_output != null)
+                    {
+                        IOW.Instance.SetOutputstate(_output, _bindingDescriptor, value);
+                    }
                 })
 
             };
