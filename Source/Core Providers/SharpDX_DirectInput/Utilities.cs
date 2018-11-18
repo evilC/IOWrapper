@@ -11,7 +11,8 @@ namespace SharpDX_DirectInput
             int index = (int)offset;
             if (index <= (int)JoystickOffset.Sliders1) return BindingType.Axis;
             if (index <= (int)JoystickOffset.PointOfViewControllers3) return BindingType.POV;
-            return BindingType.Button;
+            if (index <= (int)JoystickOffset.Buttons127) return BindingType.Button;
+            return BindingType.Axis;
         }
 
         public static string JoystickToHandle(Joystick joystick)
