@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 - Interception Provider now supports Bind Mode
+- BindingReport now has a "Path" property that can be used to get the fully qualified name of the input
 ### Changed 
 - BindModeUpdate now contains a BindingReport instead of a BindingDescriptor
 - Refactored DeviceHandlers in Provider Libraries
