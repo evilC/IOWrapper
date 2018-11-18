@@ -54,24 +54,34 @@ namespace Core_Midi
         public BindingUpdate? EventToBindingUpdate(MidiInMessageEventArgs e)
         {
             var update = new BindingUpdate {Binding = new BindingDescriptor()};
+            BindingDescriptor bd;
             switch (e.MidiEvent.CommandCode)
             {
                 case MidiCommandCode.NoteOn:
                 case MidiCommandCode.NoteOff:
                     var note = (NoteEvent) e.MidiEvent;
-                    update.Binding.SubIndex = note.NoteNumber;
+                    bd = new BindingDescriptor
+                    {
+                        SubIndex = note.NoteNumber
+                    };
                     update.Value = e.MidiEvent.CommandCode == MidiCommandCode.NoteOn ? note.Velocity : 0;
                     update.Value = ConvertAxis127(update.Value);
                     break;
                 case MidiCommandCode.ControlChange:
                     var cc = (ControlChangeEvent) e.MidiEvent;
-                    update.Binding.SubIndex = (int) cc.Controller;
+                    bd = new BindingDescriptor
+                    {
+                        SubIndex = (int)cc.Controller
+                    };
                     update.Value = cc.ControllerValue;
                     update.Value = ConvertAxis127(update.Value);
                     break;
                 case MidiCommandCode.PitchWheelChange:
+                    bd = new BindingDescriptor
+                    {
+                        SubIndex = 0
+                    };
                     var pw = (PitchWheelChangeEvent) e.MidiEvent;
-                    update.Binding.SubIndex = 0;
                     update.Value = ConvertPitch(pw.Pitch);
                     break;
                 default:
@@ -80,7 +90,8 @@ namespace Core_Midi
 
             var index = e.RawMessage & 0xff;
             if (e.MidiEvent.CommandCode == MidiCommandCode.NoteOff) index += 16; // Convert NoteOff to NoteOn
-            update.Binding.Index = index;
+            bd.Index = index;
+            update.Binding = bd;
             return update;
         }
 

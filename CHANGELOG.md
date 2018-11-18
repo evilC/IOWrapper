@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed 
 - BindModeUpdate now contains a BindingReport instead of a BindingDescriptor
 - Refactored DeviceHandlers in Provider Libraries
+- BindingDescriptor is now a Struct instead of a Class
 ### Deprecated
 ### Removed
 ### Fixed
