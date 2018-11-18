@@ -185,7 +185,7 @@ namespace Core_Interception
                 }
 
                 var instance = _deviceHandleToId[handle].Count;
-                _deviceHandleToId[handle].Add(i - 1);
+                _deviceHandleToId[handle].Add(i);
 
                 name = $"M: {name}";
                 if (instance > 0) name += $" #{instance + 1}";
