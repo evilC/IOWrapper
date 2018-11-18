@@ -1,6 +1,7 @@
 ﻿using SharpDX.DirectInput;
 using System.ComponentModel.Composition;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
@@ -13,8 +14,8 @@ namespace SharpDX_DirectInput
     [Export(typeof(IProvider))]
     public class SharpDX_DirectInput : IInputProvider, IBindModeProvider
     {
-        private readonly Dictionary<DeviceDescriptor, IDeviceHandler<JoystickUpdate>> _activeDevices
-            = new Dictionary<DeviceDescriptor, IDeviceHandler<JoystickUpdate>>();
+        private readonly ConcurrentDictionary<DeviceDescriptor, IDeviceHandler<JoystickUpdate>> _activeDevices
+            = new ConcurrentDictionary<DeviceDescriptor, IDeviceHandler<JoystickUpdate>>();
         private readonly IInputDeviceLibrary<Guid> _deviceLibrary;
         private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
 
@@ -68,7 +69,7 @@ namespace SharpDX_DirectInput
             if (!_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
                 deviceHandler = new DiDeviceHandlerBase(subReq.DeviceDescriptor, DeviceEmptyHandler, BindModeHandler, _deviceLibrary);
-                _activeDevices.Add(subReq.DeviceDescriptor, deviceHandler);
+                _activeDevices.TryAdd(subReq.DeviceDescriptor, deviceHandler);
             }
             deviceHandler.SubscribeInput(subReq);
             return true;
@@ -88,7 +89,7 @@ namespace SharpDX_DirectInput
             if (!_activeDevices.TryGetValue(deviceDescriptor, out var deviceHandler))
             {
                 deviceHandler = new DiDeviceHandlerBase(deviceDescriptor, DeviceEmptyHandler, BindModeHandler, _deviceLibrary);
-                _activeDevices.Add(deviceDescriptor, deviceHandler);
+                _activeDevices.TryAdd(deviceDescriptor, deviceHandler);
             }
 
             if (detectionMode == DetectionMode.Bind)
@@ -101,7 +102,7 @@ namespace SharpDX_DirectInput
         private void DeviceEmptyHandler(object sender, DeviceDescriptor e)
         {
             _activeDevices[e].Dispose();
-            _activeDevices.Remove(e);
+            _activeDevices.TryRemove(e, out _);
         }
 
         private void BindModeHandler(object sender, BindModeUpdate e)

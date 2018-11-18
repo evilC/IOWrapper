@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.ComponentModel.Composition;
 using HidWizards.IOWrapper.ProviderInterface;
 using System.Collections.Generic;
@@ -17,8 +18,8 @@ namespace SharpDX_XInput
     [Export(typeof(IProvider))]
     public class SharpDX_XInput : IInputProvider, IBindModeProvider
     {
-        private readonly Dictionary<DeviceDescriptor, IDeviceHandler<State>> _activeDevices
-            = new Dictionary<DeviceDescriptor, IDeviceHandler<State>>();
+        private readonly ConcurrentDictionary<DeviceDescriptor, IDeviceHandler<State>> _activeDevices
+            = new ConcurrentDictionary<DeviceDescriptor, IDeviceHandler<State>>();
         private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
         private readonly IInputDeviceLibrary<UserIndex> _deviceLibrary;
 
@@ -70,7 +71,7 @@ namespace SharpDX_XInput
             if (!_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
                 deviceHandler = new XiDeviceHandlerBase(subReq.DeviceDescriptor, DeviceEmptyHandler, BindModeHandler, _deviceLibrary);
-                _activeDevices.Add(subReq.DeviceDescriptor, deviceHandler);
+                _activeDevices.TryAdd(subReq.DeviceDescriptor, deviceHandler);
             }
             deviceHandler.SubscribeInput(subReq);
             return true;
@@ -90,7 +91,7 @@ namespace SharpDX_XInput
             if (!_activeDevices.TryGetValue(deviceDescriptor, out var deviceHandler))
             {
                 deviceHandler = new XiDeviceHandlerBase(deviceDescriptor, DeviceEmptyHandler, BindModeHandler, _deviceLibrary);
-                _activeDevices.Add(deviceDescriptor, deviceHandler);
+                _activeDevices.TryAdd(deviceDescriptor, deviceHandler);
             }
 
             if (detectionMode == DetectionMode.Bind)
@@ -101,7 +102,7 @@ namespace SharpDX_XInput
             if (detectionMode == DetectionMode.Subscription && deviceHandler.IsEmpty())
             {
                 deviceHandler.Dispose();
-                _activeDevices.Remove(deviceDescriptor);
+                _activeDevices.TryRemove(deviceDescriptor, out _);
             }
             else
             {
@@ -127,7 +128,7 @@ namespace SharpDX_XInput
         private void DeviceEmptyHandler(object sender, DeviceDescriptor e)
         {
             _activeDevices[e].Dispose();
-            _activeDevices.Remove(e);
+            _activeDevices.TryRemove(e, out _);
         }
         #endregion
     }

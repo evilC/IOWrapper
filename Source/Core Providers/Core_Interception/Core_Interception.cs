@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
@@ -52,8 +53,8 @@ namespace Core_Interception
             }
         }
 
-        private readonly Dictionary<int, IDeviceHandler<ManagedWrapper.Stroke>> _monitoredKeyboards = new Dictionary<int, IDeviceHandler<ManagedWrapper.Stroke>>();
-        private readonly Dictionary<int, IDeviceHandler<ManagedWrapper.Stroke>> _monitoredMice = new Dictionary<int, IDeviceHandler<ManagedWrapper.Stroke>>();
+        private readonly ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>> _monitoredKeyboards = new ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>>();
+        private readonly ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>> _monitoredMice = new ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>>();
 
         public Core_Interception()
         {
@@ -346,7 +347,7 @@ namespace Core_Interception
             if (_pollThreadRunning)
                 SetPollThreadState(false);
             _monitoredMice[id].Dispose();
-            _monitoredMice.Remove(id);
+            _monitoredMice.TryRemove(id, out _);
             if (_pollThreadDesired)
                 SetPollThreadState(true);
         }
@@ -357,7 +358,7 @@ namespace Core_Interception
             if (_pollThreadRunning)
                 SetPollThreadState(false);
             _monitoredKeyboards[id].Dispose();
-            _monitoredKeyboards.Remove(id);
+            _monitoredKeyboards.TryRemove(id, out _);
             if (_pollThreadDesired)
                 SetPollThreadState(true);
         }
@@ -486,13 +487,13 @@ namespace Core_Interception
         private void EnsureMonitoredKeyboardExists(int devId, DeviceDescriptor deviceDescriptor)
         {
             if (_monitoredKeyboards.ContainsKey(devId)) return;
-            _monitoredKeyboards.Add(devId, new IceptKeyboardHandler(deviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
+            _monitoredKeyboards.TryAdd(devId, new IceptKeyboardHandler(deviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
         }
 
         private void EnsureMonitoredMouseExists(int devId, DeviceDescriptor deviceDescriptor)
         {
             if (_monitoredMice.ContainsKey(devId)) return;
-            _monitoredMice.Add(devId, new IceptMouseHandler(deviceDescriptor, MouseEmptyHandler, BindModeHandler, _deviceLibrary));
+            _monitoredMice.TryAdd(devId, new IceptMouseHandler(deviceDescriptor, MouseEmptyHandler, BindModeHandler, _deviceLibrary));
         }
 
 
