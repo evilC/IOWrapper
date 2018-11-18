@@ -3,6 +3,11 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
 {
+    /// <inheritdoc />
+    /// <summary>
+    /// Describes a class which a provider can use to handle all functions related to a specific device
+    /// </summary>
+    /// <typeparam name="TRawUpdate">The format that Raw Updates come in from the device</typeparam>
     public interface IDeviceHandler<TRawUpdate> : IDisposable
     {
         /// <summary>

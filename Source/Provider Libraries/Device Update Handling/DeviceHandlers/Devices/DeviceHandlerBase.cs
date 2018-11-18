@@ -7,9 +7,9 @@ using HidWizards.IOWrapper.DataTransferObjects;
 namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
 {
     /// <summary>
-    /// Handles processing of Updates for a device. 
-    /// Given a series of updates from a device, and a reference to a <see cref="SubscriptionHandler"/> containing subscriptions,
-    /// will generate Subscription Events or Bind Mode events accordingly
+    /// Handles processing of input data from a device, and deciding what to do with it
+    /// Will fire subscriptions via a <see cref="ISubscriptionHandler"/>, and raise <see cref="BindModeUpdate"/> when an update occurs in Bind Mode
+    /// Handles transition to/from Bind Mode.
     /// </summary>
     /// <typeparam name="TRawUpdate">The type of update that this device generates</typeparam>
     /// <typeparam name="TProcessorKey">The Key type used for the <see cref="SubscriptionHandler"/> dictionary</typeparam>
