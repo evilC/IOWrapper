@@ -8,6 +8,7 @@ using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.ProviderLogger;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
+using SharpDX_DirectInput.DeviceLibrary;
 
 namespace SharpDX_DirectInput
 {

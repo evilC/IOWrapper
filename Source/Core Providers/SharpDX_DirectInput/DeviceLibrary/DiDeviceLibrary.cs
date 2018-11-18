@@ -5,7 +5,7 @@ using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
 using SharpDX.DirectInput;
 
-namespace SharpDX_DirectInput
+namespace SharpDX_DirectInput.DeviceLibrary
 {
     public class DiDeviceLibrary : IInputDeviceLibrary<Guid>
     {

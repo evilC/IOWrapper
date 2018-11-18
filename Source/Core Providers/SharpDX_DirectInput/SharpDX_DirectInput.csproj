@@ -53,7 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DiDeviceLibrary.cs" />
+    <Compile Include="DeviceLibrary\DiDeviceLibrary.cs" />
     <Compile Include="DiDeviceHandler.cs" />
     <Compile Include="DiUpdatelProcessors.cs" />
     <Compile Include="SharpDX_DirectInput.cs" />
@@ -96,6 +96,7 @@
     <None Include="packages.config" />
     <None Include="README.md" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if exist "$(SolutionDir)Artifacts\Providers\$(ProjectName)" rmdir "$(SolutionDir)Artifacts\Providers\$(ProjectName)" /s /q
