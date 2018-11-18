@@ -52,7 +52,7 @@ namespace SharpDX_DirectInput.DeviceLibrary
                         {
                             // POV reports are added here
                             var povNum = (i - (int)JoystickOffset.PointOfViewControllers0) / 4;
-                            //bindingDescriptor.Index = povNum;
+                            bindingDescriptor.Index = povNum;
                             bindingDescriptor.SubIndex = j;
                             _bindingReports.TryAdd(bindingDescriptor, PovBindingInfos[povNum][j]);
                         }
