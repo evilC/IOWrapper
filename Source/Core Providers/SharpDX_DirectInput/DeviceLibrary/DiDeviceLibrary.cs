@@ -45,7 +45,7 @@ namespace SharpDX_DirectInput.DeviceLibrary
                         name = ((JoystickOffset)i).ToString();
                         break;
                     case BindingType.Button:
-                        name = ((int)JoystickOffset.Buttons0 - i + 1).ToString();
+                        name = (i - (int)JoystickOffset.Buttons0 + 1).ToString();
                         break;
                     case BindingType.POV:
                         for (var j = 0; j < 4; j++)
