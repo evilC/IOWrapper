@@ -44,10 +44,17 @@ namespace Core_SpaceMouse
             }
             var path = device.DevicePath;
             var enumerator = new HidFastReadEnumerator();
-            _device = (HidFastReadDevice) enumerator.GetDevice(path);
-            _device.OpenDevice();
-            _device.MonitorDeviceEvents = false;
-            _device.FastReadReport(OnReport);
+            try
+            {
+                _device = (HidFastReadDevice) enumerator.GetDevice(path);
+                _device.OpenDevice();
+                _device.MonitorDeviceEvents = false;
+                _device.FastReadReport(OnReport);
+            }
+            catch
+            {
+                _device = null;
+            }
         }
 
         private void OnDeviceEmpty(object sender, DeviceDescriptor e)
@@ -71,7 +78,7 @@ namespace Core_SpaceMouse
 
         public void Dispose()
         {
-            _device.CloseDevice();
+            _device?.CloseDevice();
         }
 
         public string ProviderName { get; } = "Core_SpaceMouse";
