@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandlers;
 using HidWizards.IOWrapper.DataTransferObjects;
@@ -82,7 +83,10 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
         private void OnBindModeUpdate(BindingUpdate update)
         {
             var bindModeUpdate = new BindModeUpdate { Device = DeviceDescriptor, Binding = GetInputBindingReport(update), Value = update.Value };
-            BindModeUpdate?.Invoke(this, bindModeUpdate);
+            if (BindModeUpdate != null)
+            {
+                ThreadPool.QueueUserWorkItem(cb => BindModeUpdate(this, bindModeUpdate));
+            }
         }
 
         /// <summary>
