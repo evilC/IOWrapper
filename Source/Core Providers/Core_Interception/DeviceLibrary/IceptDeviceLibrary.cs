@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -19,6 +20,8 @@ namespace Core_Interception.DeviceLibrary
         private List<DeviceReport> _deviceReports;
         private static DeviceReportNode _keyboardList;
         private static DeviceReportNode _mouseButtonList;
+        private ConcurrentDictionary<BindingDescriptor, BindingReport> _keyboardReports;
+        private ConcurrentDictionary<BindingDescriptor, BindingReport> _mouseReports;
 
 
         public IceptDeviceLibrary(ProviderDescriptor providerDescriptor)
@@ -73,8 +76,8 @@ namespace Core_Interception.DeviceLibrary
             _deviceHandleToId = new Dictionary<string, List<int>>();
             _deviceReports = new List<DeviceReport>();
 
-            UpdateKeyList();
-            UpdateMouseButtonList();
+            BuildKeyList();
+            BuildMouseButtonList();
             string handle;
 
             for (var i = 1; i < 11; i++)
@@ -185,15 +188,16 @@ namespace Core_Interception.DeviceLibrary
 
         }
 
-        private void UpdateMouseButtonList()
+        private void BuildMouseButtonList()
         {
+            _mouseReports = new ConcurrentDictionary<BindingDescriptor, BindingReport>();
             _mouseButtonList = new DeviceReportNode
             {
                 Title = "Buttons"
             };
             for (var i = 0; i < 9; i++)
             {
-                _mouseButtonList.Bindings.Add(GetMouseBindingReport(new BindingDescriptor
+                _mouseButtonList.Bindings.Add(BuildMouseBindingReport(new BindingDescriptor
                 {
                     Index = i,
                     Type = BindingType.Button
@@ -204,17 +208,12 @@ namespace Core_Interception.DeviceLibrary
         public BindingReport GetInputBindingReport(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor)
         {
             var id = GetDeviceIdentifier(deviceDescriptor);
-            if (id > 9)
-            {
-                return GetMouseBindingReport(bindingDescriptor);
-            }
-            else
-            {
-                return GetKeyboardBindingReport(bindingDescriptor);
-            }
+            return HelperFunctions.IsKeyboard(id)
+                ? _keyboardReports[bindingDescriptor]
+                : _mouseReports[bindingDescriptor];
         }
 
-        public BindingReport GetMouseBindingReport(BindingDescriptor bindingDescriptor)
+        public BindingReport BuildMouseBindingReport(BindingDescriptor bindingDescriptor)
         {
             if (bindingDescriptor.Type == BindingType.Axis)
             {
@@ -222,10 +221,14 @@ namespace Core_Interception.DeviceLibrary
             }
 
             var i = bindingDescriptor.Index;
+            var category = i > 4 ? BindingCategory.Event : BindingCategory.Momentary;
+            var name = StaticData.MouseButtonNames[i];
+            var path = category == BindingCategory.Event ? $"Button: {name}" : $"Event: {name}";
             return new BindingReport
             {
-                Title = StaticData.MouseButtonNames[i],
-                Category = i > 4 ? BindingCategory.Event : BindingCategory.Momentary,
+                Title = name,
+                Path = path,
+                Category = category,
                 BindingDescriptor = new BindingDescriptor
                 {
                     Index = i,
@@ -234,7 +237,7 @@ namespace Core_Interception.DeviceLibrary
             };
         }
 
-        public BindingReport GetKeyboardBindingReport(BindingDescriptor bindingDescriptor)
+        public BindingReport BuildKeyboardBindingReport(BindingDescriptor bindingDescriptor)
         {
             var i = bindingDescriptor.Index;
             uint lParam;
@@ -258,40 +261,44 @@ namespace Core_Interception.DeviceLibrary
             return new BindingReport
             {
                 Title = keyName,
+                Path = $"Key: {keyName}",
                 Category = BindingCategory.Momentary,
                 BindingDescriptor = bindingDescriptor
             };
         }
 
-        private void UpdateKeyList()
+        private void BuildKeyList()
         {
+            _keyboardReports = new ConcurrentDictionary<BindingDescriptor, BindingReport>();
             _keyboardList = new DeviceReportNode
             {
                 Title = "Keys"
             };
-            //buttonNames = new Dictionary<int, string>();
-            //var sb = new StringBuilder(260);
 
             for (var i = 0; i < 256; i++)
             {
-                var report = GetKeyboardBindingReport(new BindingDescriptor
+                var bd = new BindingDescriptor
                 {
                     Type = BindingType.Button,
                     Index = i,
                     SubIndex = 0
-                });
+                };
+                var report = BuildKeyboardBindingReport(bd);
                 if (report == null) continue;
                 _keyboardList.Bindings.Add(report);
+                _keyboardReports.TryAdd(bd, report);
 
                 // Check if this button has an extended (Right) variant
-                var altReport = GetKeyboardBindingReport(new BindingDescriptor
+                var altBd = new BindingDescriptor
                 {
                     Type = BindingType.Button,
                     Index = i + 256,
                     SubIndex = 0
-                });
+                };
+                var altReport = BuildKeyboardBindingReport(altBd);
                 if (altReport == null || report.Title == altReport.Title) continue;
                 _keyboardList.Bindings.Add(altReport);
+                _keyboardReports.TryAdd(altBd, altReport);
             }
             _keyboardList.Bindings.Sort((x, y) => string.Compare(x.Title, y.Title, StringComparison.Ordinal));
         }

@@ -10,6 +10,7 @@ namespace Core_Interception.DeviceLibrary
         public static readonly BindingReport[] MouseAxisBindingReports = { new BindingReport
             {
                 Title = "X",
+                Path = "Delta Axis: X",
                 Category = BindingCategory.Delta,
                 BindingDescriptor =   new BindingDescriptor
                 {
@@ -20,6 +21,7 @@ namespace Core_Interception.DeviceLibrary
             new BindingReport
             {
                 Title = "Y",
+                Path = "Delta Axis: Y",
                 Category = BindingCategory.Delta,
                 BindingDescriptor = new BindingDescriptor
                 {
