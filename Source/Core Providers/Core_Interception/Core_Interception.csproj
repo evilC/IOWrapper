@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Core_Interception.cs" />
     <Compile Include="Helpers\HelperFunctions.cs" />
+    <Compile Include="Helpers\StaticData.cs" />
     <Compile Include="IceptDeviceLibrary.cs" />
     <Compile Include="IceptKeyboardHandler.cs" />
     <Compile Include="IceptMouseHandler.cs" />

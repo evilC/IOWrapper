@@ -78,9 +78,16 @@ namespace HidWizards.IOWrapper.DataTransferObjects
     public class BindingReport
     {
         /// <summary>
-        /// Meta-Data for the front-end to display a Human-Readable name for the Binding
+        /// Used by the front-end to build the menu entry for this button
+        /// eg "Up"
         /// </summary>
         public string Title { get; set; }
+
+        /// <summary>
+        /// Used by the front-end to display a full name for the binding
+        /// eg "POVs > POV1 > Up"
+        /// </summary>
+        public string Path { get; set; }
 
         /// <summary>
         /// Meta-Data to allow the front-end to interpret the Binding

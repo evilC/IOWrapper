@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using Core_Interception.Helpers;
 using Core_Interception.Lib;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.HidDeviceHelper;
@@ -11,40 +12,14 @@ namespace Core_Interception
 {
     public class IceptDeviceLibrary : IInputOutputDeviceLibrary<int>
     {
+        private ProviderReport _providerReport;
         private readonly ProviderDescriptor _providerDescriptor;
         private readonly IntPtr _deviceContext;
         private Dictionary<string, List<int>> _deviceHandleToId;
         private List<DeviceReport> _deviceReports;
         private static DeviceReportNode _keyboardList;
         private static DeviceReportNode _mouseButtonList;
-        private static readonly BindingReport[] _mouseAxisBindingReports = { new BindingReport
-            {
-                Title = "X",
-                Category = BindingCategory.Delta,
-                BindingDescriptor =   new BindingDescriptor
-                {
-                    Index = 0,
-                    Type = BindingType.Axis
-                }
-            },
-            new BindingReport
-            {
-                Title = "Y",
-                Category = BindingCategory.Delta,
-                BindingDescriptor = new BindingDescriptor
-                {
-                    Index = 1,
-                    Type = BindingType.Axis
-                }
-            }};
 
-        private static readonly DeviceReportNode MouseAxisList = new DeviceReportNode
-        {
-            Title = "Axes",
-            Bindings = new List<BindingReport>{_mouseAxisBindingReports[0], _mouseAxisBindingReports[1]}
-        };
-        private static readonly List<string> MouseButtonNames = new List<string> { "Left Mouse", "Right Mouse", "Middle Mouse", "Side Button 1", "Side Button 2", "Wheel Up", "Wheel Down", "Wheel Left", "Wheel Right" };
-        private ProviderReport _providerReport;
 
         public IceptDeviceLibrary(ProviderDescriptor providerDescriptor)
         {
@@ -201,7 +176,7 @@ namespace Core_Interception
                     Nodes = new List<DeviceReportNode>
                     {
                         _mouseButtonList,
-                        MouseAxisList
+                        StaticData.MouseAxisList
                     }
                 });
                 //Log(String.Format("{0} (Mouse) = VID/PID: {1}", i, handle));
@@ -243,13 +218,13 @@ namespace Core_Interception
         {
             if (bindingDescriptor.Type == BindingType.Axis)
             {
-                return _mouseAxisBindingReports[bindingDescriptor.Index];
+                return StaticData.MouseAxisBindingReports[bindingDescriptor.Index];
             }
 
             var i = bindingDescriptor.Index;
             return new BindingReport
             {
-                Title = MouseButtonNames[i],
+                Title = StaticData.MouseButtonNames[i],
                 Category = i > 4 ? BindingCategory.Event : BindingCategory.Momentary,
                 BindingDescriptor = new BindingDescriptor
                 {
