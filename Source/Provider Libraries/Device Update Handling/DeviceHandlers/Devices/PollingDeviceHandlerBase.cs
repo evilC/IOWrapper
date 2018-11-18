@@ -5,7 +5,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
 {
     /// <summary>
-    /// Derives from <see cref="DeviceHandlerBase"/>, and handles scheduled calling of the ProcessUpdate method
+    /// Handles scheduled calling of the ProcessUpdate method
     /// </summary>
     /// <typeparam name="TRawUpdate"></typeparam>
     /// <typeparam name="TProcessorKey"></typeparam>
