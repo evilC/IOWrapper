@@ -12,6 +12,7 @@ using Hidwizards.IOWrapper.Libraries.ProviderLogger;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandlers;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
+using SharpDX_XInput.DeviceLibrary;
 
 namespace SharpDX_XInput
 {

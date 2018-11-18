@@ -140,31 +140,7 @@ namespace SharpDX_DirectInput.DeviceLibrary
 
         public BindingReport GetInputBindingReport(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor)
         {
-            if (_bindingReports.ContainsKey(bindingDescriptor)) return _bindingReports[bindingDescriptor];
-            return null;
-            /*
-            switch (bindingDescriptor.Type)
-            {
-                case BindingType.Axis:
-                    return new BindingReport
-                    {
-                        //Title = deviceInfo.Name,
-                        Title = ((JoystickOffset)bindingDescriptor.Index).ToString(),
-                        Category = BindingCategory.Signed,
-                        BindingDescriptor = bindingDescriptor
-                    };
-                case BindingType.Button:
-                    return new BindingReport
-                    {
-                        Title = ((int)JoystickOffset.Buttons0 - bindingDescriptor.Index + 1).ToString(),
-                        Category = BindingCategory.Momentary,
-                        BindingDescriptor = bindingDescriptor
-                    };
-                case BindingType.POV:
-                    return PovBindingInfos[bindingDescriptor.Index][bindingDescriptor.SubIndex];
-            }
-            throw new NotImplementedException();
-            */
+            return _bindingReports[bindingDescriptor];
         }
 
         #endregion

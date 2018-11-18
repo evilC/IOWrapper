@@ -4,7 +4,7 @@ using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
 using SharpDX.XInput;
 
-namespace SharpDX_XInput
+namespace SharpDX_XInput.DeviceLibrary
 {
     public class XiDeviceLibrary : IInputDeviceLibrary<UserIndex>
     {
