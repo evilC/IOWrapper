@@ -41,7 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Devices\PollingDeviceHandler.cs" />
+    <Compile Include="Devices\PollingDeviceHandlerBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Devices\DeviceHandlerBase.cs" />
     <Compile Include="Devices\IDeviceHandler.cs" />
