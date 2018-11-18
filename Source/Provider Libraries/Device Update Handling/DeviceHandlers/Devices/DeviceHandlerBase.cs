@@ -36,6 +36,14 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
             SubHandler = new SubscriptionHandler(deviceDescriptor, OnDeviceEmpty);
         }
 
+        /// <summary>
+        /// Fired when the SubHandler is empty and one of the following occurs:
+        /// 1) We unsubscribe the last binding (SubHandler calls here)
+        /// 2) We change from Bind Mode to Subscribe Mode (Internal call here)
+        /// Firing this method will typically result in this instance being Disposed
+        /// </summary>
+        /// <param name="sender">Not used</param>
+        /// <param name="e">The Device that is no longer empty</param>
         protected void OnDeviceEmpty(object sender, DeviceDescriptor e)
         {
             _deviceEmptyHandler(sender, e);
@@ -52,14 +60,26 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
             if (mode == DetectionMode.Subscription && SubHandler.Count() == 0) OnDeviceEmpty(this, DeviceDescriptor);
         }
 
-        //protected abstract BindModeUpdate BuildBindModeUpdate(BindingUpdate bindingUpdate);
-        protected abstract BindingReport BuildBindingReport(BindingUpdate bindingUpdate);
-
+        /// <summary>
+        /// An update occurred in Bind Mode.
+        /// We are passed a <see cref="BindingUpdate"/>, which only contains Index, SubIndex etc...
+        /// ... however, the front end will need a <see cref="BindingReport"/>, so it can display the new binding to the user (ie it needs the Title)
+        /// <see cref="BuildBindingReport"/> is expected to perform this translation
+        /// </summary>
+        /// <param name="update"></param>
         private void OnBindModeUpdate(BindingUpdate update)
         {
             var bindModeUpdate = new BindModeUpdate { Device = DeviceDescriptor, Binding = BuildBindingReport(update), Value = update.Value };
             BindModeUpdate?.Invoke(this, bindModeUpdate);
         }
+
+        /// <summary>
+        /// Assists in the <see cref="BindingUpdate"/> to <see cref="BindingReport"/> conversion performed by <see cref="OnBindModeUpdate"/>
+        /// </summary>
+        /// <param name="bindingUpdate"></param>
+        /// <returns></returns>
+        protected abstract BindingReport BuildBindingReport(BindingUpdate bindingUpdate);
+
 
         /// <inheritdoc />
         /// <summary>
