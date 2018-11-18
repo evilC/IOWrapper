@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Xml;
+using Core_Interception.DeviceLibrary;
 using Core_Interception.Helpers;
 using Core_Interception.Lib;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;

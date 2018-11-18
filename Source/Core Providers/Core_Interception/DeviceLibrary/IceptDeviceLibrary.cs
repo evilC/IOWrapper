@@ -8,7 +8,7 @@ using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.HidDeviceHelper;
 using HidWizards.IOWrapper.DataTransferObjects;
 
-namespace Core_Interception
+namespace Core_Interception.DeviceLibrary
 {
     public class IceptDeviceLibrary : IInputOutputDeviceLibrary<int>
     {
