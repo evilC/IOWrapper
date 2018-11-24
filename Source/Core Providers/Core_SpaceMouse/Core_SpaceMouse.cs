@@ -106,18 +106,7 @@ namespace Core_SpaceMouse
 
         public ProviderReport GetInputList()
         {
-            return null;
-            //var providerReport = new ProviderReport
-            //{
-            //    Title = "SpaceMouse (Core)",
-            //    Description = "Allows reading of SpaceMouse devices.",
-            //    API = "HidLibrary",
-            //    ProviderDescriptor = _providerDescriptor
-            //};
-            ////var deviceDescriptor = new DeviceDescriptor { DeviceHandle = guidList.Key, DeviceInstance = i };
-            //providerReport.Devices.Add(GetInputDeviceReport(_spaceMouseProDescriptor));
-
-            //return providerReport;
+            return _deviceLibrary.GetInputList();
         }
 
         public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
@@ -128,7 +117,7 @@ namespace Core_SpaceMouse
         
         public DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
-            return null;
+            return _deviceLibrary.GetInputDeviceReport(deviceDescriptor);
 
             //var deviceReport = new DeviceReport
             //{
