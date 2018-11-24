@@ -24,9 +24,10 @@ namespace TestApp
 
             //var vigemDs4OutputTester = new VigemDs4OutputTester();
 
-            var spaceMouse = new SpaceMouseTester("SpaceMouse", Library.Devices.SpaceMouse.Pro);
-            IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.SpaceMouse, Library.Devices.SpaceMouse.Pro, BindModeHandler);
-            //var motör49Tester = new MidiTester("MIDI", Library.Devices.Midi.Motör49Main);
+            //var spaceMouse = new SpaceMouseTester("SpaceMouse", Library.Devices.SpaceMouse.Pro);
+            //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.SpaceMouse, Library.Devices.SpaceMouse.Pro, BindModeHandler);
+            var motör49Tester = new MidiTester("MIDI", Library.Devices.Midi.Motör49Main);
+            IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.Midi, Library.Devices.Midi.Motör49Main, BindModeHandler);
             //var subReq = new OutputSubscriptionRequest
             //{
             //    ProviderDescriptor = Library.Providers.Midi,
@@ -78,7 +79,7 @@ namespace TestApp
 
         private static void BindModeHandler(ProviderDescriptor provider, DeviceDescriptor device, BindingReport binding, int value)
         {
-            Console.WriteLine($"BIND MODE: Provider: {provider.ProviderName} | Device: {device.DeviceHandle}/{device.DeviceInstance} | Binding: {binding.BindingDescriptor.Type}/{binding.BindingDescriptor.Index}/{binding.BindingDescriptor.SubIndex} | Title: {binding.Title} | Value: {value}");
+            Console.WriteLine($"BIND MODE: Provider: {provider.ProviderName} | Device: {device.DeviceHandle}/{device.DeviceInstance} | Binding: {binding.BindingDescriptor.Type}/{binding.BindingDescriptor.Index}/{binding.BindingDescriptor.SubIndex} | Title: {binding.Title} | Path: {binding.Path} | Value: {value}");
         }
     }
 }

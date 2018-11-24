@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -68,6 +69,7 @@ namespace Core_Midi.DeviceLibraries
 
         private void BuildInputDeviceReportTemplate()
         {
+            _bindingReports = new ConcurrentDictionary<BindingDescriptor, BindingReport>();
             var node = new DeviceReportNode();
             for (var channel = 0; channel < 16; channel++)
             {
@@ -88,12 +90,16 @@ namespace Core_Midi.DeviceLibraries
                     for (var noteIndex = 0; noteIndex < NoteNames.Length; noteIndex++)
                     {
                         var noteName = NoteNames[noteIndex];
-                        octaveInfo.Bindings.Add(new BindingReport
+                        var bd = BuildNoteDescriptor(channel, octave, noteIndex);
+                        var br = new BindingReport
                         {
                             Title = $"{noteName}",
+                            Path = $"CH:{channel}, Note:{noteName}{octave}",
                             Category = BindingCategory.Signed,
-                            BindingDescriptor = BuildNoteDescriptor(channel, octave, noteIndex)
-                        });
+                            BindingDescriptor = bd
+                        };
+                        _bindingReports.TryAdd(bd, br);
+                        octaveInfo.Bindings.Add(br);
                     }
                     notesInfo.Nodes.Add(octaveInfo);
                 }
@@ -105,12 +111,16 @@ namespace Core_Midi.DeviceLibraries
                 };
                 for (var controllerId = 0; controllerId < 128; controllerId++)
                 {
-                    controlChangeInfo.Bindings.Add(new BindingReport
+                    var bd = BuildControlChangeDescriptor(channel, controllerId);
+                    var br = new BindingReport
                     {
                         Title = $"ID {controllerId}",
+                        Path = $"CH:{channel}, CC:{controllerId}",
                         Category = BindingCategory.Signed,
-                        BindingDescriptor = BuildControlChangeDescriptor(channel, controllerId)
-                    });
+                        BindingDescriptor = bd
+                    };
+                    _bindingReports.TryAdd(bd, br);
+                    controlChangeInfo.Bindings.Add(br);
                 }
                 channelInfo.Nodes.Add(controlChangeInfo);
 

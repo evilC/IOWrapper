@@ -105,6 +105,7 @@ namespace Core_Midi.DeviceLibraries
                     {
                         Title = $"ID {controllerId}",
                         Category = BindingCategory.Signed,
+                        Path = $"CH:{channel}, CC:{controllerId}",
                         BindingDescriptor = BuildControlChangeDescriptor(channel, controllerId)
                     });
                 }

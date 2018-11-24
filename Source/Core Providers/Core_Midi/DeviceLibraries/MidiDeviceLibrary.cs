@@ -15,6 +15,7 @@ namespace Core_Midi.DeviceLibraries
         private ConcurrentDictionary<string, List<int>> _connectedInputDevices = new ConcurrentDictionary<string, List<int>>();
         private ConcurrentDictionary<string, List<int>> _connectedOutputDevices = new ConcurrentDictionary<string, List<int>>();
         private readonly ProviderDescriptor _providerDescriptor;
+        private ConcurrentDictionary<BindingDescriptor, BindingReport> _bindingReports;
         private static readonly string[] NoteNames = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
         public MidiDeviceLibrary(ProviderDescriptor providerDescriptor)
@@ -76,7 +77,7 @@ namespace Core_Midi.DeviceLibraries
 
         public BindingReport GetInputBindingReport(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor)
         {
-            throw new NotImplementedException();
+            return _bindingReports[bindingDescriptor];
         }
     }
 }

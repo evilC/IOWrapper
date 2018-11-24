@@ -37,6 +37,9 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -51,6 +54,7 @@
     <Compile Include="DeviceLibraries\MidiInputDeviceLibrary.cs" />
     <Compile Include="MidiOutputDeviceHandler.cs" />
     <Compile Include="DeviceLibraries\MidiOutputDeviceLibrary.cs" />
+    <Compile Include="MidiUpdateProcessors.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +65,10 @@
     <ProjectReference Include="..\..\Provider Libraries\Device Querying\DeviceLibrary\DeviceLibrary.csproj">
       <Project>{462785B6-CF57-4BA8-8AAB-D226E75E2C3C}</Project>
       <Name>DeviceLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Provider Libraries\Device Update Handling\DeviceHandlers\DeviceHandlers.csproj">
+      <Project>{04fa4d8a-d5d2-4477-8aed-021239ce95ae}</Project>
+      <Name>DeviceHandlers</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Provider Libraries\Subscription Handling\SubscriptionHandler\SubscriptionHandler.csproj">
       <Project>{C9639380-2F3D-4BA2-907C-9EAC1C583EF9}</Project>

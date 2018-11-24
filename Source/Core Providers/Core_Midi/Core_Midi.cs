@@ -13,11 +13,12 @@ using NAudio.Midi;
 namespace Core_Midi
 {
     [Export(typeof(IProvider))]
-    public class Core_Midi : IInputProvider, IOutputProvider
+    public class Core_Midi : IInputProvider, IOutputProvider, IBindModeProvider
     {
         private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
         private readonly ConcurrentDictionary<DeviceDescriptor, MidiInputDeviceHandler> _activeInputDevices = new ConcurrentDictionary<DeviceDescriptor, MidiInputDeviceHandler>();
         private readonly ConcurrentDictionary<DeviceDescriptor, MidiOutputDeviceHandler> _activeOutputDevices = new ConcurrentDictionary<DeviceDescriptor, MidiOutputDeviceHandler>();
+        private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
 
         public Core_Midi()
         {
@@ -49,6 +50,22 @@ namespace Core_Midi
             _deviceLibrary.RefreshConnectedDevices();
         }
 
+        public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> callback = null)
+        {
+            if (!_activeInputDevices.TryGetValue(deviceDescriptor, out var deviceHandler))
+            {
+                deviceHandler = new MidiInputDeviceHandler(deviceDescriptor, InputDeviceEmptyHandler, BindModeHandler, _deviceLibrary);
+                _activeInputDevices.TryAdd(deviceDescriptor, deviceHandler);
+            }
+
+            if (detectionMode == DetectionMode.Bind)
+            {
+                _bindModeCallback = callback;
+            }
+            deviceHandler.SetDetectionMode(detectionMode);
+
+        }
+
         #region IIinputProvider
         public ProviderReport GetInputList()
         {
@@ -64,11 +81,16 @@ namespace Core_Midi
         {
             if (!_activeInputDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
-                deviceHandler = new MidiInputDeviceHandler(subReq.DeviceDescriptor, _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor), InputDeviceEmptyHandler);
+                deviceHandler = new MidiInputDeviceHandler(subReq.DeviceDescriptor, InputDeviceEmptyHandler, BindModeHandler, _deviceLibrary);
                 _activeInputDevices.TryAdd(subReq.DeviceDescriptor, deviceHandler);
             }
             deviceHandler.SubscribeInput(subReq);
             return true;
+        }
+
+        private void BindModeHandler(object sender, BindModeUpdate e)
+        {
+            _bindModeCallback?.Invoke(new ProviderDescriptor { ProviderName = ProviderName }, e.Device, e.Binding, e.Value);
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
