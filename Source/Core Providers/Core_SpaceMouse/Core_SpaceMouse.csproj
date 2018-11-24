@@ -50,11 +50,9 @@
   <ItemGroup>
     <Compile Include="Core_SpaceMouse.cs" />
     <Compile Include="DeviceLibrary\SmDeviceLibrary.cs" />
-    <Compile Include="DTOs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SmDeviceHandler.cs" />
     <Compile Include="SmUpdateProcessors.cs" />
-    <Compile Include="UpdateProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\DataObjects\DTOs.csproj">

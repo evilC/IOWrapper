@@ -22,7 +22,7 @@ namespace Core_SpaceMouse
             : base(deviceDescriptor, deviceEmptyHandler, bindModeHandler)
         {
             _deviceLibrary = deviceLibrary;
-            UpdateProcessors.Add((BindingType.Button, 0), new SmButtonProcessor());
+            UpdateProcessors.Add((BindingType.Button, 0), new SmUpdateProcessor());
             InitButtonStates();
 
             var device = HidDevices.Enumerate(0x046d, 0xc62b).FirstOrDefault(); // ToDo: Extract real VID/PID
