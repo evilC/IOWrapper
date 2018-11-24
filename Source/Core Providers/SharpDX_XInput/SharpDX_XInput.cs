@@ -48,7 +48,10 @@ namespace SharpDX_XInput
                 return;
             if (disposing)
             {
-                //pollHandler.Dispose();
+                foreach (var device in _activeDevices.Values)
+                {
+                    device.Dispose();
+                }
             }
             disposed = true;
             logger.Log("Disposed");

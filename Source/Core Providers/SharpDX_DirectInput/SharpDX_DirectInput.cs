@@ -45,7 +45,10 @@ namespace SharpDX_DirectInput
                 return;
             if (disposing)
             {
-                //_subscriptionHandler.Dispose();
+                foreach (var device in _activeDevices.Values)
+                {
+                    device.Dispose();
+                }
             }
             _disposed = true;
         }
