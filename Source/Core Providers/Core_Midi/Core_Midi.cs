@@ -5,6 +5,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
@@ -16,8 +17,10 @@ namespace Core_Midi
     public class Core_Midi : IInputProvider, IOutputProvider, IBindModeProvider
     {
         private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
-        private readonly ConcurrentDictionary<DeviceDescriptor, MidiInputDeviceHandler> _activeInputDevices = new ConcurrentDictionary<DeviceDescriptor, MidiInputDeviceHandler>();
-        private readonly ConcurrentDictionary<DeviceDescriptor, MidiOutputDeviceHandler> _activeOutputDevices = new ConcurrentDictionary<DeviceDescriptor, MidiOutputDeviceHandler>();
+        private readonly ConcurrentDictionary<DeviceDescriptor, IDeviceHandler<MidiInMessageEventArgs>> _activeInputDevices
+            = new ConcurrentDictionary<DeviceDescriptor, IDeviceHandler<MidiInMessageEventArgs>>();
+        private readonly ConcurrentDictionary<DeviceDescriptor, MidiOutputDeviceHandler> _activeOutputDevices
+            = new ConcurrentDictionary<DeviceDescriptor, MidiOutputDeviceHandler>();
         private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
 
         public Core_Midi()
