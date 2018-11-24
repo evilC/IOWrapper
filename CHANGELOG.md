@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [0.9.6] - 2018-11-24
 ### Added
 - SpaceMouse and MIDI Providers now support Bind Mode
+- Dispose fixes for DI and XI Providers
 
 ## [0.9.5] - 2018-11-18
 ### Fixed
