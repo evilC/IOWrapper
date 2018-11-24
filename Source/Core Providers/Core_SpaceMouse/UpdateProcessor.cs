@@ -8,6 +8,7 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Core_SpaceMouse
 {
+    /*
     public class UpdateProcessor
     {
         private readonly byte[][] _previousStates = new byte[4][];
@@ -94,4 +95,5 @@ namespace Core_SpaceMouse
             return value;
         }
     }
+    */
 }

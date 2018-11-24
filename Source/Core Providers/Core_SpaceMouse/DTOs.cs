@@ -7,10 +7,10 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Core_SpaceMouse
 {
-    public struct SpaceMouseUpdate
-    {
-        public BindingType BindingType { get; set; }
-        public int Index { get; set; }
-        public int Value { get; set; }
-    }
+    //public struct SpaceMouseUpdate
+    //{
+    //    public BindingType BindingType { get; set; }
+    //    public int Index { get; set; }
+    //    public int Value { get; set; }
+    //}
 }

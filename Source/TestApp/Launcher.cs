@@ -24,7 +24,7 @@ namespace TestApp
 
             //var vigemDs4OutputTester = new VigemDs4OutputTester();
 
-            //var spaceMouse = new SpaceMouseTester("SpaceMouse", new DeviceDescriptor());
+            var spaceMouse = new SpaceMouseTester("SpaceMouse", new DeviceDescriptor());
             //var motör49Tester = new MidiTester("MIDI", Library.Devices.Midi.Motör49Main);
             //var subReq = new OutputSubscriptionRequest
             //{
@@ -40,10 +40,10 @@ namespace TestApp
 
             //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.Interception, Library.Devices.Interception.DellKeyboard1, BindModeHandler);
             //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, Library.Providers.Interception, Library.Devices.Interception.DellKeyboard1);
-            var interceptionKeyboardInputTester = new InterceptionKeyboardInputTester();
+            //var interceptionKeyboardInputTester = new InterceptionKeyboardInputTester();
             //interceptionKeyboardInputTester.Dispose();
             //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, Library.Providers.Interception, Library.Devices.Interception.DellKeyboard1);
-            var interceptionMouseInputTester = new InterceptionMouseInputTester();
+            //var interceptionMouseInputTester = new InterceptionMouseInputTester();
             //interceptionMouseInputTester.Dispose();
             //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, BindModeHandler);
 
@@ -54,13 +54,13 @@ namespace TestApp
 
 
             #region Bind Mode Testing
-            var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
+            //var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
             //var vj1 = new VJoyTester(1, false);
             //var vj2 = new VJoyTester(2, false);
             //var xInputPad_1 = new XiTester(1);
             //Console.WriteLine("Press Enter for Bind Mode...");
             //Console.ReadLine();
-            IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, BindModeHandler);
+            //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, BindModeHandler);
             //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.XInput, Library.Devices.Console.Xb360_1, BindModeHandler);
             //genericStick_1.Unsubscribe();
             //Console.WriteLine("Press Enter to leave Bind Mode...");

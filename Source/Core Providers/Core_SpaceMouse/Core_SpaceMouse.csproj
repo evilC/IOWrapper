@@ -37,6 +37,9 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,14 +49,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core_SpaceMouse.cs" />
+    <Compile Include="DeviceLibrary\SmDeviceLibrary.cs" />
     <Compile Include="DTOs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SmDeviceHandler.cs" />
+    <Compile Include="SmUpdateProcessors.cs" />
     <Compile Include="UpdateProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\DataObjects\DTOs.csproj">
       <Project>{81851977-0421-4ebd-b066-0fe03f02589e}</Project>
       <Name>DTOs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Provider Libraries\Device Querying\DeviceLibrary\DeviceLibrary.csproj">
+      <Project>{462785B6-CF57-4BA8-8AAB-D226E75E2C3C}</Project>
+      <Name>DeviceLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Provider Libraries\Device Update Handling\DeviceHandlers\DeviceHandlers.csproj">
+      <Project>{04FA4D8A-D5D2-4477-8AED-021239CE95AE}</Project>
+      <Name>DeviceHandlers</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Provider Libraries\Subscription Handling\SubscriptionHandler\SubscriptionHandler.csproj">
       <Project>{c9639380-2f3d-4ba2-907c-9eac1c583ef9}</Project>
