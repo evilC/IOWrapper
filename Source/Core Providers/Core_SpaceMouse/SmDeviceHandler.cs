@@ -34,6 +34,8 @@ namespace Core_SpaceMouse
             var enumerator = new HidFastReadEnumerator();
             try
             {
+                // HidFastReadDevice example: // https://github.com/mikeobrien/HidLibrary/issues/88
+                // ToDo: What was the point in the thread in that example?
                 _device = (HidFastReadDevice)enumerator.GetDevice(path);
                 _device.OpenDevice();
                 _device.MonitorDeviceEvents = false;
