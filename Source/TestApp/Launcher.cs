@@ -24,7 +24,8 @@ namespace TestApp
 
             //var vigemDs4OutputTester = new VigemDs4OutputTester();
 
-            var spaceMouse = new SpaceMouseTester("SpaceMouse", new DeviceDescriptor());
+            var spaceMouse = new SpaceMouseTester("SpaceMouse", Library.Devices.SpaceMouse.Pro);
+            IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.SpaceMouse, Library.Devices.SpaceMouse.Pro, BindModeHandler);
             //var motör49Tester = new MidiTester("MIDI", Library.Devices.Midi.Motör49Main);
             //var subReq = new OutputSubscriptionRequest
             //{

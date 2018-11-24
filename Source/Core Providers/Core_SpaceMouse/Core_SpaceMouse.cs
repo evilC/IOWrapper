@@ -16,11 +16,12 @@ using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 namespace Core_SpaceMouse
 {
     [Export(typeof(IProvider))]
-    public class Core_SpaceMouse : IInputProvider
+    public class Core_SpaceMouse : IInputProvider, IBindModeProvider
     {
         private readonly ConcurrentDictionary<DeviceDescriptor, IDeviceHandler<HidReport>> _activeDevices
             = new ConcurrentDictionary<DeviceDescriptor, IDeviceHandler<HidReport>>();
         private readonly IInputDeviceLibrary<string> _deviceLibrary;
+        private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
         //private readonly HidFastReadDevice _device;
         //private readonly UpdateProcessor _updateProcessor = new UpdateProcessor();
         //private InputSubscriptionRequest _subReq;
@@ -102,6 +103,21 @@ namespace Core_SpaceMouse
         public void RefreshDevices()
         {
             //throw new NotImplementedException();
+        }
+
+        public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> callback = null)
+        {
+            if (!_activeDevices.TryGetValue(deviceDescriptor, out var deviceHandler))
+            {
+                deviceHandler = new SmDeviceHandler(deviceDescriptor, DeviceEmptyHandler, BindModeHandler, _deviceLibrary);
+                _activeDevices.TryAdd(deviceDescriptor, deviceHandler);
+            }
+
+            if (detectionMode == DetectionMode.Bind)
+            {
+                _bindModeCallback = callback;
+            }
+            deviceHandler.SetDetectionMode(detectionMode);
         }
 
         public ProviderReport GetInputList()
@@ -197,12 +213,13 @@ namespace Core_SpaceMouse
 
         private void BindModeHandler(object sender, BindModeUpdate e)
         {
-            throw new NotImplementedException();
+            _bindModeCallback?.Invoke(_providerDescriptor, e.Device, e.Binding, e.Value);
         }
 
         private void DeviceEmptyHandler(object sender, DeviceDescriptor e)
         {
-            throw new NotImplementedException();
+            _activeDevices[e].Dispose();
+            _activeDevices.TryRemove(e, out _);
         }
 
     }

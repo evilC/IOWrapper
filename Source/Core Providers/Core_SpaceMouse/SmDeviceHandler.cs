@@ -63,7 +63,7 @@ namespace Core_SpaceMouse
 
         protected override BindingReport GetInputBindingReport(BindingUpdate bindingUpdate)
         {
-            throw new NotImplementedException();
+            return _deviceLibrary.GetInputBindingReport(DeviceDescriptor, bindingUpdate.Binding);
         }
 
         protected override BindingUpdate[] PreProcessUpdate(HidReport report)
@@ -95,12 +95,6 @@ namespace Core_SpaceMouse
                             },
                             Value = newState ? 1 : 0
                         });
-                        //updates.Add(new SpaceMouseUpdate
-                        //{
-                        //    BindingType = BindingType.Button,
-                        //    Index = i,
-                        //    Value = newState ? 1 : 0
-                        //});
                         _buttonStates[i] = newState;
                     }
                 }
@@ -128,12 +122,6 @@ namespace Core_SpaceMouse
                         },
                         Value = (int)value
                     });
-                    //updates.Add(new SpaceMouseUpdate
-                    //{
-                    //    BindingType = BindingType.Axis,
-                    //    Index = offset + i,
-                    //    Value = (int)value
-                    //});
                 }
             }
 

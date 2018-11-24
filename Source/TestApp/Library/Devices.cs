@@ -73,5 +73,11 @@ namespace TestApp.Library
             public static DeviceDescriptor Motör49Main = new DeviceDescriptor { DeviceHandle = "MOTÖR49 Keyboard", DeviceInstance = 0};
             public static DeviceDescriptor Motör49Out = new DeviceDescriptor { DeviceHandle = "MIDIOUT2 (MOTÖR49 Keyboard)", DeviceInstance = 0};
         }
+
+        // SpaceMouse
+        public static class SpaceMouse
+        {
+            public static DeviceDescriptor Pro = new DeviceDescriptor { DeviceHandle = "VID_046D&PID_C62B" };
+        }
     }
 }
