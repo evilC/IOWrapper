@@ -26,8 +26,8 @@ namespace TestApp
 
             //var spaceMouse = new SpaceMouseTester("SpaceMouse", Library.Devices.SpaceMouse.Pro);
             //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.SpaceMouse, Library.Devices.SpaceMouse.Pro, BindModeHandler);
-            var motör49Tester = new MidiTester("MIDI", Library.Devices.Midi.Motör49Main);
-            IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.Midi, Library.Devices.Midi.Motör49Main, BindModeHandler);
+            //var motör49Tester = new MidiTester("MIDI", Library.Devices.Midi.Motör49Main);
+            //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.Midi, Library.Devices.Midi.Motör49Main, BindModeHandler);
             //var subReq = new OutputSubscriptionRequest
             //{
             //    ProviderDescriptor = Library.Providers.Midi,
@@ -62,7 +62,7 @@ namespace TestApp
             //var xInputPad_1 = new XiTester(1);
             //Console.WriteLine("Press Enter for Bind Mode...");
             //Console.ReadLine();
-            //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, BindModeHandler);
+            IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.DirectInput, Library.Devices.DirectInput.T16000M, BindModeHandler);
             //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.XInput, Library.Devices.Console.Xb360_1, BindModeHandler);
             //genericStick_1.Unsubscribe();
             //Console.WriteLine("Press Enter to leave Bind Mode...");
