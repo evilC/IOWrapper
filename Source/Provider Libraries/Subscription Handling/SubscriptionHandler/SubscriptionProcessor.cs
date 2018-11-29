@@ -15,7 +15,11 @@ namespace Hidwizards.IOWrapper.Libraries.SubscriptionHandlers
         {
             foreach (var inputSubscriptionRequest in Dictionary.Values)
             {
-                ThreadPool.QueueUserWorkItem( cb => inputSubscriptionRequest.Callback(value));
+                inputSubscriptionRequest.Callback(value);
+
+                // Disabled, as seems to break some IOWrapper tests. Also may affect processing in UCR
+                //ThreadPool.QueueUserWorkItem( cb => inputSubscriptionRequest.Callback(value));
+
                 // Disabled, as does not seem to work while SubReq's Callback property is dynamic
                 // Switching it to Action<int> breaks loads of stuff in UCR, so for now, just keep using ThreadPool
                 //Task.Factory.StartNew(() => inputSubscriptionRequest.Callback(value));

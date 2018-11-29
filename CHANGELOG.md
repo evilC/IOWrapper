@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removed
 ### Fixed
 
+## [0.9.9] - 2018-11-29
+### Removed
+- Subscription Mode callbacks are no longer fired on their own thread. Doing so breaks some tests and alters behavior.  
+Difference between v0.9.9 and v0.9.6 is solely the "Fix Interception Bind Mode reporting for axes" item.
+
 ## [0.9.8] - 2018-11-29
 ### Removed
 - Tasks implementation from v0.9.7 removed due to conflicts with UCR. Subscription Mode callbacks are still fired on their own thread
