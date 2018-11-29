@@ -20,7 +20,6 @@ namespace Core_Interception.DeviceLibrary
         private List<DeviceReport> _deviceReports;
         private static DeviceReportNode _keyboardList;
         private static DeviceReportNode _mouseButtonList;
-        //private static DeviceReportNode _mouseAxisList;
         private ConcurrentDictionary<BindingDescriptor, BindingReport> _keyboardReports;
         private ConcurrentDictionary<BindingDescriptor, BindingReport> _mouseReports;
 
