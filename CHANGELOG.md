@@ -6,13 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 ### Changed 
+### Deprecated
+### Removed
+### Fixed
+
+## [0.9.7] - 2018-11-29
+### Changed 
 - Fix Interception Bind Mode reporting for axes
 - Bind Mode now uses Tasks instead of Threadpool
 - Subscription callbacks are now fired on their own thread, using Tasks
 - InputSubscriptionRequest's Callback is now an Action<int> instead of dynamic
-### Deprecated
-### Removed
-### Fixed
 
 ## [0.9.6] - 2018-11-24
 ### Added
