@@ -20,6 +20,7 @@ namespace Core_Interception.DeviceLibrary
         private List<DeviceReport> _deviceReports;
         private static DeviceReportNode _keyboardList;
         private static DeviceReportNode _mouseButtonList;
+        //private static DeviceReportNode _mouseAxisList;
         private ConcurrentDictionary<BindingDescriptor, BindingReport> _keyboardReports;
         private ConcurrentDictionary<BindingDescriptor, BindingReport> _mouseReports;
 
@@ -28,6 +29,10 @@ namespace Core_Interception.DeviceLibrary
         {
             _providerDescriptor = providerDescriptor;
             _deviceContext = ManagedWrapper.CreateContext();
+
+            InitKeyReports();
+            InitMouseReports();
+
             RefreshConnectedDevices();
         }
 
@@ -76,8 +81,6 @@ namespace Core_Interception.DeviceLibrary
             _deviceHandleToId = new Dictionary<string, List<int>>();
             _deviceReports = new List<DeviceReport>();
 
-            BuildKeyList();
-            BuildMouseButtonList();
             string handle;
 
             for (var i = 1; i < 11; i++)
@@ -188,7 +191,7 @@ namespace Core_Interception.DeviceLibrary
 
         }
 
-        private void BuildMouseButtonList()
+        private void InitMouseReports()
         {
             _mouseReports = new ConcurrentDictionary<BindingDescriptor, BindingReport>();
             _mouseButtonList = new DeviceReportNode
@@ -197,11 +200,20 @@ namespace Core_Interception.DeviceLibrary
             };
             for (var i = 0; i < 9; i++)
             {
-                _mouseButtonList.Bindings.Add(BuildMouseBindingReport(new BindingDescriptor
+                var bd = new BindingDescriptor
                 {
                     Index = i,
                     Type = BindingType.Button
-                }));
+                };
+                var report = BuildMouseBindingReport(bd);
+                _mouseReports.TryAdd(bd, report);
+                _mouseButtonList.Bindings.Add(report);
+            }
+
+            for (var i = 0; i < 2; i++)
+            {
+                _mouseReports.TryAdd(StaticData.MouseAxisBindingReports[i].BindingDescriptor,
+                    StaticData.MouseAxisBindingReports[i]);
             }
         }
 
@@ -267,7 +279,7 @@ namespace Core_Interception.DeviceLibrary
             };
         }
 
-        private void BuildKeyList()
+        private void InitKeyReports()
         {
             _keyboardReports = new ConcurrentDictionary<BindingDescriptor, BindingReport>();
             _keyboardList = new DeviceReportNode
