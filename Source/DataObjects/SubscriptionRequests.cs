@@ -43,7 +43,7 @@ namespace HidWizards.IOWrapper.DataTransferObjects
         /// <summary>
         /// Callback to be fired when this Input changes state
         /// </summary>
-        public dynamic Callback { get; set; }
+        public Action<int> Callback { get; set; }
 
         public InputSubscriptionRequest Clone()
         {

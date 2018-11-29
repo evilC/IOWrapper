@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Hidwizards.IOWrapper.Libraries.EmptyEventDictionary;
 using HidWizards.IOWrapper.DataTransferObjects;
 
@@ -14,7 +15,7 @@ namespace Hidwizards.IOWrapper.Libraries.SubscriptionHandlers
         {
             foreach (var inputSubscriptionRequest in Dictionary.Values)
             {
-                inputSubscriptionRequest.Callback(value);
+                Task.Factory.StartNew(() => inputSubscriptionRequest.Callback(value));
             }
         }
     }

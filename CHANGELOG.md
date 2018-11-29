@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 ### Changed 
+- Bind Mode now uses Tasks instead of Threadpool
+- Subscription callbacks are now fired on their own thread, using Tasks
+- InputSubscriptionRequest's Callback is now an Action<int> instead of dynamic
 ### Deprecated
 ### Removed
 ### Fixed
