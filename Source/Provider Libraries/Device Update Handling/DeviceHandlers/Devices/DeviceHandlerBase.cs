@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Threading;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Updates;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandlers;
 using HidWizards.IOWrapper.DataTransferObjects;
@@ -85,7 +85,10 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
             var bindModeUpdate = new BindModeUpdate { Device = DeviceDescriptor, Binding = GetInputBindingReport(update), Value = update.Value };
             if (BindModeUpdate != null)
             {
-                Task.Factory.StartNew(() => BindModeUpdate(this, bindModeUpdate));
+                ThreadPool.QueueUserWorkItem(cb => BindModeUpdate(this, bindModeUpdate));
+                // Disabled, as does not seem to work while SubReq's Callback property is dynamic
+                // Switching it to Action<int> breaks loads of stuff in UCR, so for now, just keep using ThreadPool
+                //Task.Factory.StartNew(() => BindModeUpdate(this, bindModeUpdate));
             }
         }
 

@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removed
 ### Fixed
 
+## [0.9.8] - 2018-11-29
+- Tasks implementation from v0.9.7 removed due to conflicts with UCR. Subscription Mode callbacks are still fired on their own thread
+
 ## [0.9.7] - 2018-11-29
 ### Changed 
 - Fix Interception Bind Mode reporting for axes
