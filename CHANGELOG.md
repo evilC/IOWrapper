@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 ## [0.9.8] - 2018-11-29
+### Removed
 - Tasks implementation from v0.9.7 removed due to conflicts with UCR. Subscription Mode callbacks are still fired on their own thread
 
 ## [0.9.7] - 2018-11-29
@@ -18,7 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fix Interception Bind Mode reporting for axes
 - Bind Mode now uses Tasks instead of Threadpool
 - Subscription callbacks are now fired on their own thread, using Tasks
-- InputSubscriptionRequest's Callback is now an Action<int> instead of dynamic
+- InputSubscriptionRequest's Callback is now an `Action<int>` instead of dynamic
 
 ## [0.9.6] - 2018-11-24
 ### Added
