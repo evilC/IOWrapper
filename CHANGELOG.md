@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Deprecated
 ### Removed
 ### Fixed
+
+#0.9.10 - 2018-12-02
+### Fixed
 - Fix inverted Interception mouse button values
 
 ## [0.9.9] - 2018-11-29
