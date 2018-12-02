@@ -29,7 +29,7 @@ namespace Core_ViGEm
 
             public bool SubscribeOutput(OutputSubscriptionRequest subReq)
             {
-                if (HasHandler(subReq))
+                if (HasHandler(subReq.DeviceDescriptor))
                 {
                     return deviceHandlers[subReq.DeviceDescriptor.DeviceHandle][subReq.DeviceDescriptor.DeviceInstance].AddSubscription(subReq);
                 }
@@ -38,7 +38,7 @@ namespace Core_ViGEm
 
             public bool UnsubscribeOutput(OutputSubscriptionRequest subReq)
             {
-                if (HasHandler(subReq))
+                if (HasHandler(subReq.DeviceDescriptor))
                 {
                     return deviceHandlers[subReq.DeviceDescriptor.DeviceHandle][subReq.DeviceDescriptor.DeviceInstance].RemoveSubscription(subReq);
                 }
@@ -47,7 +47,7 @@ namespace Core_ViGEm
 
             public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
             {
-                var handler = GetHandler(subReq);
+                var handler = GetHandler(subReq.DeviceDescriptor);
                 if (handler != null)
                 {
                     return handler.SetOutputState(subReq, bindingDescriptor, state);
@@ -69,19 +69,19 @@ namespace Core_ViGEm
                 return report;
             }
 
-            public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
+            public DeviceReport GetOutputDeviceReport(DeviceDescriptor deviceDescriptor)
             {
-                if (HasHandler(subReq))
+                if (HasHandler(deviceDescriptor))
                 {
-                    var handler = GetHandler(subReq);
+                    var handler = GetHandler(deviceDescriptor);
                     return handler.GetDeviceReport();
                 }
                 return null;
             }
 
-            private bool HasHandler(OutputSubscriptionRequest subReq)
+            private bool HasHandler(DeviceDescriptor deviceDescriptor)
             {
-                return deviceHandlers.ContainsKey(subReq.DeviceDescriptor.DeviceHandle);
+                return deviceHandlers.ContainsKey(deviceDescriptor.DeviceHandle);
             }
 
             private bool HasHandler(string deviceHandler)
@@ -89,11 +89,11 @@ namespace Core_ViGEm
                 return deviceHandlers.ContainsKey(deviceHandler);
             }
 
-            private DeviceHandler GetHandler(OutputSubscriptionRequest subReq)
+            private DeviceHandler GetHandler(DeviceDescriptor deviceDescriptor)
             {
-                if (HasHandler(subReq))
+                if (HasHandler(deviceDescriptor))
                 {
-                    return deviceHandlers[subReq.DeviceDescriptor.DeviceHandle][subReq.DeviceDescriptor.DeviceInstance];
+                    return deviceHandlers[deviceDescriptor.DeviceHandle][deviceDescriptor.DeviceInstance];
                 }
                 return null;
             }

@@ -75,9 +75,9 @@ namespace Core_Midi
             return _deviceLibrary.GetInputList();
         }
 
-        public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
+        public DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
-            return _deviceLibrary.GetInputDeviceReport(subReq.DeviceDescriptor);
+            return _deviceLibrary.GetInputDeviceReport(deviceDescriptor);
         }
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
@@ -119,9 +119,9 @@ namespace Core_Midi
             return _deviceLibrary.GetOutputList();
         }
 
-        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
+        public DeviceReport GetOutputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
-            return _deviceLibrary.GetOutputDeviceReport(subReq.DeviceDescriptor);
+            return _deviceLibrary.GetOutputDeviceReport(deviceDescriptor);
         }
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)

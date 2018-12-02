@@ -68,9 +68,9 @@ namespace Core_ViGEm
             return providerReport;
         }
 
-        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
+        public DeviceReport GetOutputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
-            return devicesHandler.GetOutputDeviceReport(subReq);
+            return devicesHandler.GetOutputDeviceReport(deviceDescriptor);
         }
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)

@@ -9,7 +9,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Interfaces
     public interface IOutputProvider : IProvider
     {
         ProviderReport GetOutputList();
-        DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq);
+        DeviceReport GetOutputDeviceReport(DeviceDescriptor deviceDescriptor);
         bool SubscribeOutputDevice(OutputSubscriptionRequest subReq);
         bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq);
         bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state);

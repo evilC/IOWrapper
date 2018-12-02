@@ -52,11 +52,11 @@ namespace Core_Tobii_Interaction
             return providerReport;
         }
 
-        public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
+        public DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
             foreach (var deviceReport in deviceReports)
             {
-                if (deviceReport.DeviceDescriptor.DeviceHandle == subReq.DeviceDescriptor.DeviceHandle && deviceReport.DeviceDescriptor.DeviceInstance == subReq.DeviceDescriptor.DeviceInstance)
+                if (deviceReport.DeviceDescriptor.DeviceHandle == deviceDescriptor.DeviceHandle && deviceReport.DeviceDescriptor.DeviceInstance == deviceDescriptor.DeviceInstance)
                 {
                     return deviceReport;
                 }

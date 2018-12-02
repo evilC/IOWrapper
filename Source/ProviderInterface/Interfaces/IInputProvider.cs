@@ -9,7 +9,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Interfaces
     public interface IInputProvider : IProvider
     {
         ProviderReport GetInputList();
-        DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq);
+        DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor);
         bool SubscribeInput(InputSubscriptionRequest subReq);
         bool UnsubscribeInput(InputSubscriptionRequest subReq);
     }

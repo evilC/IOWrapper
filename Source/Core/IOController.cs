@@ -91,13 +91,24 @@ namespace HidWizards.IOWrapper.Core
             return list;
         }
 
-        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
+        public DeviceReport GetInputDeviceReport(ProviderDescriptor providerDescriptor, DeviceDescriptor deviceDescriptor)
         {
-            var provider = GetProvider(subReq.ProviderDescriptor.ProviderName);
+            var provider = GetProvider(providerDescriptor.ProviderName);
+            if (provider != null)
+            {
+                if (!(provider is IInputProvider prov)) return null;
+                return prov.GetInputDeviceReport(deviceDescriptor);
+            }
+            return null;
+        }
+
+        public DeviceReport GetOutputDeviceReport(ProviderDescriptor providerDescriptor, DeviceDescriptor deviceDescriptor)
+        {
+            var provider = GetProvider(providerDescriptor.ProviderName);
             if (provider != null)
             {
                 if (!(provider is IOutputProvider prov)) return null;
-                return prov.GetOutputDeviceReport(subReq);
+                return prov.GetOutputDeviceReport(deviceDescriptor);
             }
             return null;
         }

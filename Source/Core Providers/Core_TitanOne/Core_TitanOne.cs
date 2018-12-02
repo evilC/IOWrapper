@@ -50,7 +50,7 @@ namespace Core_TitanOne
 
         public string ProviderName { get { return typeof(Core_TitanOne).Namespace; } }
 
-        public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
+        public DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
             return null;
         }
@@ -80,9 +80,9 @@ namespace Core_TitanOne
             return providerReport;
         }
 
-        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
+        public DeviceReport GetOutputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
-            return outputHandlers[subReq.DeviceDescriptor.DeviceHandle].GetOutputReport();
+            return outputHandlers[deviceDescriptor.DeviceHandle].GetOutputReport();
         }
 
         public void RefreshLiveState()

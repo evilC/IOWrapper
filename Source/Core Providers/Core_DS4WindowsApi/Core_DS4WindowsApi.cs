@@ -502,9 +502,10 @@ namespace Core_DS4WindowsApi
             return null;
         }
 
-        public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
+        public DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
-            return GetInputDeviceReport(subReq.BindingDescriptor.Index);
+            //return GetInputDeviceReport(subReq.BindingDescriptor.Index);
+            return null;
         }
 
         private DeviceReport GetInputDeviceReport(int id)

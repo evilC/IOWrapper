@@ -166,14 +166,14 @@ namespace Core_Interception
             return _deviceLibrary.GetOutputList();
         }
 
-        public DeviceReport GetInputDeviceReport(InputSubscriptionRequest subReq)
+        public DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
-            return _deviceLibrary.GetInputDeviceReport(subReq.DeviceDescriptor);
+            return _deviceLibrary.GetInputDeviceReport(deviceDescriptor);
         }
 
-        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
+        public DeviceReport GetOutputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
-            return _deviceLibrary.GetOutputDeviceReport(subReq.DeviceDescriptor);
+            return _deviceLibrary.GetOutputDeviceReport(deviceDescriptor);
         }
 
         #endregion

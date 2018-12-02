@@ -105,11 +105,11 @@ namespace Core_vJoyInterfaceWrap
             return pr;
         }
 
-        public DeviceReport GetOutputDeviceReport(OutputSubscriptionRequest subReq)
+        public DeviceReport GetOutputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
             foreach (var deviceReport in deviceReports)
             {
-                if (deviceReport.DeviceDescriptor.DeviceHandle == subReq.DeviceDescriptor.DeviceHandle && deviceReport.DeviceDescriptor.DeviceInstance == subReq.DeviceDescriptor.DeviceInstance)
+                if (deviceReport.DeviceDescriptor.DeviceHandle == deviceDescriptor.DeviceHandle && deviceReport.DeviceDescriptor.DeviceInstance == deviceDescriptor.DeviceInstance)
                 {
                     return deviceReport;
                 }
