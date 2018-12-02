@@ -58,6 +58,12 @@ namespace HidWizards.IOWrapper.DataTransferObjects
         public string DeviceName { get; set; }
 
         /// <summary>
+        /// If set, this is a HID device, and this string uniquely identifies the device, even among duplicate devices.
+        /// If port order of devices change, or system reboots etc, may change, unlike the DeviceDescriptor, which should remain constant
+        /// </summary>
+        public string HidPath { get; set; }
+
+        /// <summary>
         /// Contains information needed to subscribe to this Device via the Provider
         /// </summary>
         public DeviceDescriptor DeviceDescriptor { get; set; }

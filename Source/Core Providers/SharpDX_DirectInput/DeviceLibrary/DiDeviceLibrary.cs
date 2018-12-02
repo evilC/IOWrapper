@@ -155,7 +155,8 @@ namespace SharpDX_DirectInput.DeviceLibrary
             var deviceReport = new DeviceReport
             {
                 DeviceDescriptor = deviceDescriptor,
-                DeviceName = joystick.Information.ProductName
+                DeviceName = joystick.Information.ProductName,
+                HidPath = joystick.Properties.InterfacePath
             };
 
             // ----- Axes -----
