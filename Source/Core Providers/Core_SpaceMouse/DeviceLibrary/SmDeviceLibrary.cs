@@ -19,7 +19,7 @@ namespace Core_SpaceMouse.DeviceLibrary
         private readonly string[] _axisNames = { "X", "Y", "Z", "Rx", "Ry", "Rz" };
         private readonly Dictionary<int, string> _buttonNames = new Dictionary<int, string>
         {
-            {0, "Menu" }, {1, "FIT"}, {2, "[T]op"}, {4, "[R]ight"}, {8, "Roll +"}, {12, "1"}, {13, "2"}, {14, "3"}, {15, "4"},
+            {0, "Menu" }, {1, "FIT"}, {2, "[T]op"}, {4, "[R]ight"}, {5, "[F]ront"}, {8, "Roll +"}, {12, "1"}, {13, "2"}, {14, "3"}, {15, "4"},
             {22, "ESC" }, {23, "ALT"}, {24, "SHIFT"}, {25, "CTRL"}, {26, "Rot Lock"}
         };
         private readonly DeviceDescriptor _spaceMouseProDescriptor =
