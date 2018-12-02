@@ -17,8 +17,8 @@ namespace Core_Interception
             : base(deviceDescriptor, deviceEmptyHandler, bindModeHandler)
         {
             _deviceLibrary = deviceLibrary;
-            UpdateProcessors.Add((BindingType.Button, 0), new IceptButtonProcessor());
-            UpdateProcessors.Add((BindingType.Axis, 0), new IceptMouseAxisProcessor());
+            UpdateProcessors.Add((BindingType.Button, 0), new IceptUpdateProcessor());
+            UpdateProcessors.Add((BindingType.Axis, 0), new IceptUpdateProcessor());
         }
 
         protected override BindingReport GetInputBindingReport(BindingUpdate bindingUpdate)
