@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removed
 ### Fixed
 
-#0.9.10 - 2018-12-02
+## 0.9.10 - 2018-12-02
 ### Fixed
 - Fix inverted Interception mouse button values
 
