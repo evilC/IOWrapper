@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Deprecated
 ### Removed
 ### Fixed
+- Fixed XInput additional attempt to dispose empty device
+- Made SetDetectionMode and Subscribe / Unsubscribe calls thread-safe
 
 ## 0.9.10 - 2018-12-02
 ### Added
