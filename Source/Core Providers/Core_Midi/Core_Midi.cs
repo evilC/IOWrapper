@@ -22,6 +22,7 @@ namespace Core_Midi
         private readonly ConcurrentDictionary<DeviceDescriptor, MidiOutputDeviceHandler> _activeOutputDevices
             = new ConcurrentDictionary<DeviceDescriptor, MidiOutputDeviceHandler>();
         private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
+        private readonly object _lockObj = new object();  // When changing mode (Bind / Sub) or adding / removing devices, lock this object
 
         public Core_Midi()
         {
@@ -55,18 +56,28 @@ namespace Core_Midi
 
         public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> callback = null)
         {
-            if (!_activeInputDevices.TryGetValue(deviceDescriptor, out var deviceHandler))
+            lock (_lockObj)
             {
-                deviceHandler = new MidiInputDeviceHandler(deviceDescriptor, InputDeviceEmptyHandler, BindModeHandler, _deviceLibrary);
-                _activeInputDevices.TryAdd(deviceDescriptor, deviceHandler);
-            }
+                var deviceExists = _activeInputDevices.TryGetValue(deviceDescriptor, out var deviceHandler);
+                if (detectionMode == DetectionMode.Subscription)
+                {
+                    // Subscription Mode
+                    if (!deviceExists) return;
+                    deviceHandler.SetDetectionMode(DetectionMode.Subscription);
+                }
+                else
+                {
+                    // Bind Mode
+                    if (!deviceExists)
+                    {
+                        deviceHandler = new MidiInputDeviceHandler(deviceDescriptor, InputDeviceEmptyHandler, BindModeHandler, _deviceLibrary);
+                        _activeInputDevices.TryAdd(deviceDescriptor, deviceHandler);
+                    }
 
-            if (detectionMode == DetectionMode.Bind)
-            {
-                _bindModeCallback = callback;
+                    _bindModeCallback = callback;
+                    deviceHandler.SetDetectionMode(DetectionMode.Bind);
+                }
             }
-            deviceHandler.SetDetectionMode(detectionMode);
-
         }
 
         #region IIinputProvider
@@ -82,13 +93,16 @@ namespace Core_Midi
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            if (!_activeInputDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
+            lock (_lockObj)
             {
-                deviceHandler = new MidiInputDeviceHandler(subReq.DeviceDescriptor, InputDeviceEmptyHandler, BindModeHandler, _deviceLibrary);
-                _activeInputDevices.TryAdd(subReq.DeviceDescriptor, deviceHandler);
+                if (!_activeInputDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
+                {
+                    deviceHandler = new MidiInputDeviceHandler(subReq.DeviceDescriptor, InputDeviceEmptyHandler, BindModeHandler, _deviceLibrary);
+                    _activeInputDevices.TryAdd(subReq.DeviceDescriptor, deviceHandler);
+                }
+                deviceHandler.SubscribeInput(subReq);
+                return true;
             }
-            deviceHandler.SubscribeInput(subReq);
-            return true;
         }
 
         private void BindModeHandler(object sender, BindModeUpdate e)
@@ -98,11 +112,14 @@ namespace Core_Midi
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            if (_activeInputDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
+            lock (_lockObj)
             {
-                deviceHandler.UnsubscribeInput(subReq);
+                if (_activeInputDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
+                {
+                    deviceHandler.UnsubscribeInput(subReq);
+                }
+                return true;
             }
-            return true;
         }
 
         private void InputDeviceEmptyHandler(object sender, DeviceDescriptor e)

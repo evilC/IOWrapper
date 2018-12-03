@@ -23,6 +23,7 @@ namespace SharpDX_XInput
             = new ConcurrentDictionary<DeviceDescriptor, IDeviceHandler<State>>();
         private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
         private readonly IInputDeviceLibrary<UserIndex> _deviceLibrary;
+        private readonly object _lockObj = new object();  // When changing mode (Bind / Sub) or adding / removing devices, lock this object
 
         public bool IsLive { get { return isLive; } }
         private bool isLive = true;
@@ -72,45 +73,53 @@ namespace SharpDX_XInput
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            if (!_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
+            lock (_lockObj)
             {
-                deviceHandler = new XiDeviceHandlerBase(subReq.DeviceDescriptor, DeviceEmptyHandler, BindModeHandler, _deviceLibrary);
-                _activeDevices.TryAdd(subReq.DeviceDescriptor, deviceHandler);
+                if (!_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
+                {
+                    deviceHandler = new XiDeviceHandlerBase(subReq.DeviceDescriptor, DeviceEmptyHandler, BindModeHandler, _deviceLibrary);
+                    _activeDevices.TryAdd(subReq.DeviceDescriptor, deviceHandler);
+                }
+                deviceHandler.SubscribeInput(subReq);
+                return true;
             }
-            deviceHandler.SubscribeInput(subReq);
-            return true;
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            if (_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
+            lock (_lockObj)
             {
-                deviceHandler.UnsubscribeInput(subReq);
+                if (_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
+                {
+                    deviceHandler.UnsubscribeInput(subReq);
+                }
+                return true;
             }
-            return true;
         }
 
         public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> callback = null)
         {
-            if (!_activeDevices.TryGetValue(deviceDescriptor, out var deviceHandler))
+            lock (_lockObj)
             {
-                deviceHandler = new XiDeviceHandlerBase(deviceDescriptor, DeviceEmptyHandler, BindModeHandler, _deviceLibrary);
-                _activeDevices.TryAdd(deviceDescriptor, deviceHandler);
-            }
+                var deviceExists = _activeDevices.TryGetValue(deviceDescriptor, out var deviceHandler);
+                if (detectionMode == DetectionMode.Subscription)
+                {
+                    // Subscription Mode
+                    if (!deviceExists) return;
+                    deviceHandler.SetDetectionMode(DetectionMode.Subscription);
+                }
+                else
+                {
+                    // Bind Mode
+                    if (!deviceExists)
+                    {
+                        deviceHandler = new XiDeviceHandlerBase(deviceDescriptor, DeviceEmptyHandler, BindModeHandler, _deviceLibrary);
+                        _activeDevices.TryAdd(deviceDescriptor, deviceHandler);
+                    }
 
-            if (detectionMode == DetectionMode.Bind)
-            {
-                _bindModeCallback = callback;
-            }
-
-            if (detectionMode == DetectionMode.Subscription && deviceHandler.IsEmpty())
-            {
-                deviceHandler.Dispose();
-                _activeDevices.TryRemove(deviceDescriptor, out _);
-            }
-            else
-            {
-                deviceHandler.SetDetectionMode(detectionMode);
+                    _bindModeCallback = callback;
+                    deviceHandler.SetDetectionMode(DetectionMode.Bind);
+                }
             }
         }
 
