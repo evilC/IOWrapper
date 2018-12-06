@@ -41,6 +41,12 @@ namespace HidWizards.IOWrapper.DataTransferObjects
         public BindingDescriptor BindingDescriptor { get; set; }
 
         /// <summary>
+        /// Whether or not to request that this input it Blocked (Hidden from system)
+        /// Not all providers will support this
+        /// </summary>
+        public bool Block { get; set; }
+
+        /// <summary>
         /// Callback to be fired when this Input changes state
         /// </summary>
         public dynamic Callback { get; set; }

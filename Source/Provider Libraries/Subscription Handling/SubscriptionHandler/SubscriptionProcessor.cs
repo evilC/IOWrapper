@@ -11,12 +11,13 @@ namespace Hidwizards.IOWrapper.Libraries.SubscriptionHandlers
         {
         }
 
-        public void FireCallbacks(BindingDescriptor bindingDescriptor, int value)
+        public bool FireCallbacks(BindingDescriptor bindingDescriptor, int value)
         {
+            var block = false;
             foreach (var inputSubscriptionRequest in Dictionary.Values)
             {
                 inputSubscriptionRequest.Callback(value);
-
+                if (inputSubscriptionRequest.Block) block = true;
                 // Disabled, as seems to break some IOWrapper tests. Also may affect processing in UCR
                 //ThreadPool.QueueUserWorkItem( cb => inputSubscriptionRequest.Callback(value));
 
@@ -24,6 +25,8 @@ namespace Hidwizards.IOWrapper.Libraries.SubscriptionHandlers
                 // Switching it to Action<int> breaks loads of stuff in UCR, so for now, just keep using ThreadPool
                 //Task.Factory.StartNew(() => inputSubscriptionRequest.Callback(value));
             }
+
+            return block;
         }
     }
 }

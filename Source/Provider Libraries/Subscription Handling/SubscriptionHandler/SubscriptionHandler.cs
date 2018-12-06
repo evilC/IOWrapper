@@ -54,12 +54,14 @@ namespace Hidwizards.IOWrapper.Libraries.SubscriptionHandlers
         /// </summary>
         /// <param name="bindingDescriptor">A Binding describing the binding</param>
         /// <param name="value">The new value for the input</param>
-        public void FireCallbacks(BindingDescriptor bindingDescriptor, int value)
+        public bool FireCallbacks(BindingDescriptor bindingDescriptor, int value)
         {
             if (ContainsKey(bindingDescriptor.Type, bindingDescriptor.Index, bindingDescriptor.SubIndex))
             {
-                _bindings[bindingDescriptor.Type][bindingDescriptor.Index][bindingDescriptor.SubIndex].FireCallbacks(bindingDescriptor, value);
+                return _bindings[bindingDescriptor.Type][bindingDescriptor.Index][bindingDescriptor.SubIndex].FireCallbacks(bindingDescriptor, value);
             }
+
+            return false;
         }
         #endregion
 

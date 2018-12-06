@@ -7,7 +7,7 @@ namespace Hidwizards.IOWrapper.Libraries.SubscriptionHandlers
     {
         void Subscribe(InputSubscriptionRequest subReq);
         void Unsubscribe(InputSubscriptionRequest subReq);
-        void FireCallbacks(BindingDescriptor bindingDescriptor, int value);
+        bool FireCallbacks(BindingDescriptor bindingDescriptor, int value);
     }
 
     public interface ISubscriptionInfo

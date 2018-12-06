@@ -13,10 +13,15 @@ namespace TestApp.Testers
 
         public InterceptionKeyboardInputTester()
         {
-            //_testers.Add(new Plugins.IOTester("Interception Keyboard 1", Library.Providers.Interception, Library.Devices.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.Up).Subscribe());
-            //_testers.Add(new Plugins.IOTester("Interception Keyboard 2", Library.Providers.Interception, Library.Devices.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.NumUp).Subscribe();
-            _testers.Add(new Plugins.IOTester("Interception Dupe Test 1", Library.Providers.Interception, Library.Devices.Interception.DellKeyboard1, Library.Bindings.Interception.Keyboard.One).Subscribe());
-            //_testers.Add(new Plugins.IOTester("Interception Dupe Test 2", Library.Providers.Interception, Library.Devices.Interception.DellKeyboard2, Library.Bindings.Interception.Keyboard.Two).Subscribe());
+            //_testers.Add(new Plugins.IOTester("Interception KB1 Up", Library.Providers.Interception, Library.Devices.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.Up).Subscribe());
+            //_testers.Add(new Plugins.IOTester("Interception KB2 Up", Library.Providers.Interception, Library.Devices.Interception.ChiconyKeyboard, Library.Bindings.Interception.Keyboard.NumUp).Subscribe();
+            _testers.Add(new Plugins.IOTester("Interception KB1 key 1", Library.Providers.Interception, Library.Devices.Interception.DellKeyboard1, Library.Bindings.Interception.Keyboard.One)
+                .SetBlock(true)
+                .Subscribe());
+            _testers.Add(new Plugins.IOTester("Interception KB1 key 2", Library.Providers.Interception, Library.Devices.Interception.DellKeyboard1, Library.Bindings.Interception.Keyboard.One)
+                .SetBlock(false)
+                .Subscribe());
+            //_testers.Add(new Plugins.IOTester("Interception KB2 2", Library.Providers.Interception, Library.Devices.Interception.DellKeyboard2, Library.Bindings.Interception.Keyboard.Two).Subscribe());
 
             Console.WriteLine($"Interception Keyboard tester ready");
         }

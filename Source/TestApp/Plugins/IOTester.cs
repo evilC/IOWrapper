@@ -50,6 +50,12 @@ namespace TestApp.Plugins
             return this;
         }
 
+        public IOTester SetBlock(bool blockState)
+        {
+            _input.Block = blockState;
+            return this;
+        }
+
         public IOTester Subscribe()
         {
             if (!IOW.Instance.SubscribeInput(_input))
