@@ -108,6 +108,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
         /// <returns>True if the update should be blocked, else false</returns>
         public virtual bool ProcessUpdate(TRawUpdate rawUpdate)
         {
+            var block = false;
             var bindMode = DetectionMode == DetectionMode.Bind;
 
             // Convert the raw Update Data from the Generic form into a consistent format
@@ -127,10 +128,10 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
                 var bindingUpdates = UpdateProcessors[GetUpdateProcessorKey(preprocessedUpdate.Binding)].Process(preprocessedUpdate);
 
                 // Route the processed updates to the appropriate place
-                _processUpdates(bindingUpdates);
+                block = _processUpdates(bindingUpdates);
             }
 
-            return false;   // Do not block by default
+            return block;
         }
 
         private bool ProcessBindModeUpdates(BindingUpdate[] bindingUpdates)
@@ -151,8 +152,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
             foreach (var bindingUpdate in bindingUpdates)
             {
                 if (!SubHandler.ContainsKey(bindingUpdate.Binding.Type, bindingUpdate.Binding.Index)) continue;
-                SubHandler.FireCallbacks(bindingUpdate.Binding, bindingUpdate.Value);
-                block = true;    // Block a bound input
+                block = SubHandler.FireCallbacks(bindingUpdate.Binding, bindingUpdate.Value);
             }
 
             return block;

@@ -464,7 +464,8 @@ namespace Core_Interception
                             //block = _monitoredKeyboards[i].Poll(stroke);
                             block = _monitoredKeyboards[i].ProcessUpdate(stroke);
                         }
-                        if (!(blockingEnabled && block))
+                        //if (!(blockingEnabled && block))
+                        if (!block)
                         {
                             ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
                         }
@@ -481,7 +482,8 @@ namespace Core_Interception
                         {
                             block = _monitoredMice[i].ProcessUpdate(stroke);
                         }
-                        if (!(blockingEnabled && block))
+                        //if (!(blockingEnabled && block))
+                        if (!block)
                         {
                             ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
                         }
