@@ -104,6 +104,8 @@ namespace HidWizards.IOWrapper.DataTransferObjects
         /// Contains information needed to subscribe to this Binding
         /// </summary>
         public BindingDescriptor BindingDescriptor { get; set; }
+
+        public bool Blockable { get; set; }
     }
     #endregion
 

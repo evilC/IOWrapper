@@ -16,7 +16,8 @@ namespace Core_Interception.DeviceLibrary
                 {
                     Index = 0,
                     Type = BindingType.Axis
-                }
+                },
+                Blockable = true
             },
             new BindingReport
             {
@@ -27,7 +28,8 @@ namespace Core_Interception.DeviceLibrary
                 {
                     Index = 1,
                     Type = BindingType.Axis
-                }
+                },
+                Blockable = true
             }};
 
         public static readonly DeviceReportNode MouseAxisList = new DeviceReportNode

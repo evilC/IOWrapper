@@ -244,7 +244,8 @@ namespace Core_Interception.DeviceLibrary
                 {
                     Index = i,
                     Type = BindingType.Button
-                }
+                },
+                Blockable = true
             };
         }
 
@@ -274,7 +275,8 @@ namespace Core_Interception.DeviceLibrary
                 Title = keyName,
                 Path = $"Key: {keyName}",
                 Category = BindingCategory.Momentary,
-                BindingDescriptor = bindingDescriptor
+                BindingDescriptor = bindingDescriptor,
+                Blockable = true
             };
         }
 
