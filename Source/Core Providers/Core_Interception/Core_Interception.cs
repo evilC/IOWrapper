@@ -461,11 +461,9 @@ namespace Core_Interception
                         var block = false;
                         if (isMonitoredKeyboard)
                         {
-                            //block = _monitoredKeyboards[i].Poll(stroke);
                             block = _monitoredKeyboards[i].ProcessUpdate(stroke);
                         }
-                        //if (!(blockingEnabled && block))
-                        if (!block)
+                        if (!(blockingEnabled && block))
                         {
                             ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
                         }
@@ -482,8 +480,7 @@ namespace Core_Interception
                         {
                             block = _monitoredMice[i].ProcessUpdate(stroke);
                         }
-                        //if (!(blockingEnabled && block))
-                        if (!block)
+                        if (!(blockingEnabled && block))
                         {
                             ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
                         }
