@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 ### Added
+- Added Block property to InputSubscriptionRequest
+- Interception now blocks inputs which have the block property set to true
 ### Changed 
 ### Deprecated
 ### Removed
