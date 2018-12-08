@@ -83,6 +83,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core_Midi", "Source\Core Pr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeviceHandlers", "Source\Provider Libraries\Device Update Handling\DeviceHandlers\DeviceHandlers.csproj", "{04FA4D8A-D5D2-4477-8AED-021239CE95AE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core_Arduino", "Source\Core Providers\Core_Arduino\Core_Arduino.csproj", "{B5D6FA6A-B621-4122-8617-A1DCD769D8BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -177,6 +179,10 @@ Global
 		{04FA4D8A-D5D2-4477-8AED-021239CE95AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04FA4D8A-D5D2-4477-8AED-021239CE95AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04FA4D8A-D5D2-4477-8AED-021239CE95AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5D6FA6A-B621-4122-8617-A1DCD769D8BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5D6FA6A-B621-4122-8617-A1DCD769D8BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5D6FA6A-B621-4122-8617-A1DCD769D8BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5D6FA6A-B621-4122-8617-A1DCD769D8BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -203,6 +209,7 @@ Global
 		{C133C60E-715B-4D4A-AAAB-3D2C8BDFF8B9} = {0F3E0065-6DC2-4310-A7C4-E81283247A48}
 		{14A5EFEB-8C98-47CD-BE5D-0046071BC628} = {0F3E0065-6DC2-4310-A7C4-E81283247A48}
 		{04FA4D8A-D5D2-4477-8AED-021239CE95AE} = {2B04244D-69F7-4580-B2BC-6E49061FA5D0}
+		{B5D6FA6A-B621-4122-8617-A1DCD769D8BE} = {0F3E0065-6DC2-4310-A7C4-E81283247A48}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F4D2648D-F5E6-45B2-A9B0-840758F3C6EB}
