@@ -82,7 +82,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
         /// <param name="update"></param>
         private void OnBindModeUpdate(BindingUpdate update)
         {
-            var bindModeUpdate = new BindModeUpdate { Device = DeviceDescriptor, Binding = GetInputBindingReport(update), Value = update.Value };
+            var bindModeUpdate = new BindModeUpdate { Device = DeviceDescriptor, Binding = GetInputBindingReport(update), Value = (short) update.Value };
             if (BindModeUpdate != null)
             {
                 ThreadPool.QueueUserWorkItem(cb => BindModeUpdate(this, bindModeUpdate));
@@ -152,7 +152,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
             foreach (var bindingUpdate in bindingUpdates)
             {
                 if (!SubHandler.ContainsKey(bindingUpdate.Binding.Type, bindingUpdate.Binding.Index)) continue;
-                block = SubHandler.FireCallbacks(bindingUpdate.Binding, bindingUpdate.Value);
+                block = SubHandler.FireCallbacks(bindingUpdate.Binding, (short) bindingUpdate.Value);
             }
 
             return block;

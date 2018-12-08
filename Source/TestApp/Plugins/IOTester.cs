@@ -23,7 +23,7 @@ namespace TestApp.Plugins
                 ProviderDescriptor = providerDescriptor,
                 DeviceDescriptor = deviceDescriptor,
                 BindingDescriptor = bindingDescriptor,
-                Callback = new Action<int>(value =>
+                Callback = new Action<short>(value =>
                 {
                     Console.WriteLine("{0} State: {1}", name, value);
                     if (_output != null)

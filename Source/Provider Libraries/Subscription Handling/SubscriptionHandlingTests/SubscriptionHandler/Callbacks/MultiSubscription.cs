@@ -34,7 +34,7 @@ namespace Tests.SubscriptionHandler.Callbacks
 
 
             [TestCaseSource(typeof(TestData))]
-            public void DoTests(InputSubReq sr, int value, int expectedCount)
+            public void DoTests(InputSubReq sr, short value, int expectedCount)
             {
                 _subHelper.SubHandler.FireCallbacks(sr.BindingDescriptor, value);
                 Assert.That(_subHelper.CallbackResults[sr.Name].Value, Is.EqualTo(value), "Value should be correct");
@@ -73,7 +73,7 @@ namespace Tests.SubscriptionHandler.Callbacks
 
 
             [TestCaseSource(typeof(TestData))]
-            public void DoTests(InputSubReq sr, int value, int expectedCount)
+            public void DoTests(InputSubReq sr, short value, int expectedCount)
             {
                 _subHelper.SubHandler.FireCallbacks(sr.BindingDescriptor, value);
                 Assert.That(_subHelper.CallbackResults[sr.Name].Value, Is.EqualTo(value), "Value should be correct");

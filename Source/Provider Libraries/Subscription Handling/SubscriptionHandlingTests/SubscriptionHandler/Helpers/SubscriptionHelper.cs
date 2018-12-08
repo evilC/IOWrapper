@@ -41,7 +41,7 @@ namespace Tests.SubscriptionHandler.Helpers
                 DeviceDescriptor = sr.DeviceDescriptor,
                 BindingDescriptor = sr.BindingDescriptor,
                 SubscriptionDescriptor = sr.SubscriptionDescriptor,
-                Callback = new Action<int>(value =>
+                Callback = new Action<short>(value =>
                 {
                     CallbackResults.Add(sr.Name , new CallbackResult {BindingDescriptor = sr.BindingDescriptor, Value = value});
                 })

@@ -351,7 +351,7 @@ namespace Core_DS4WindowsApi
                         var newState = currentGyroState.GetGyroValue(i);
                         foreach (var subscription in gyroAxisSubscriptions[i].Values)
                         {
-                            subscription.Callback(newState);
+                            subscription.Callback((short) newState);
                         }
                     }
                 }
@@ -367,7 +367,7 @@ namespace Core_DS4WindowsApi
                         var newState = currentState.GetAxisValue(i);
                         foreach (var subscription in axisSubscriptions[i].Values)
                         {
-                            subscription.Callback(newState);
+                            subscription.Callback((short) newState);
                         }
                     }
                 }
@@ -379,7 +379,7 @@ namespace Core_DS4WindowsApi
                         var newState = currentState.GetButtonValue(i);
                         foreach (var subscription in buttonSubscriptions[i].Values)
                         {
-                            subscription.Callback(newState);
+                            subscription.Callback((short) newState);
                         }
                     }
                 }
@@ -391,7 +391,7 @@ namespace Core_DS4WindowsApi
                         var newState = currentState.GetPovDirectionValue(i);
                         foreach (var subscription in povDirectionSubscriptions[i].Values)
                         {
-                            subscription.Callback(newState);
+                            subscription.Callback((short) newState);
                         }
                     }
                 }
@@ -410,7 +410,7 @@ namespace Core_DS4WindowsApi
                     int value = GetTouchAxisValue(touch, i);
                     foreach (var touchpadSubscription in touchpadSubscriptions[i].Values)
                     {
-                        touchpadSubscription.Callback(value);
+                        touchpadSubscription.Callback((short) value);
                     }
                 }
             }

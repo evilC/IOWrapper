@@ -11,7 +11,7 @@ namespace Hidwizards.IOWrapper.Libraries.SubscriptionHandlers
         {
         }
 
-        public bool FireCallbacks(BindingDescriptor bindingDescriptor, int value)
+        public bool FireCallbacks(BindingDescriptor bindingDescriptor, short value)
         {
             var block = false;
             foreach (var inputSubscriptionRequest in Dictionary.Values)

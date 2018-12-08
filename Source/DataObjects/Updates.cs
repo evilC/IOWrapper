@@ -28,6 +28,6 @@ namespace HidWizards.IOWrapper.DataTransferObjects
     {
         public DeviceDescriptor Device { get; set; }
         public BindingReport Binding { get; set; }
-        public int Value { get; set; }
+        public short Value { get; set; }
     }
 }

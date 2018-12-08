@@ -222,7 +222,7 @@ namespace Core_Tobii_Interaction
                 {
                     foreach (var subscription in subscriptions.Values)
                     {
-                        subscription.Callback(value);
+                        subscription.Callback((short) value);
                     }
                 }
             }
