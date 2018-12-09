@@ -10,7 +10,7 @@ namespace Tests.SubscriptionHandler.Helpers
     {
         public DeviceDescriptor Device;
         public ISubscriptionHandler SubHandler;
-        public Dictionary<string, CallbackResult> CallbackResults { get; private set; }
+        public Dictionary<Guid, CallbackResult> CallbackResults { get; private set; }
         public List<DeviceDescriptor> DeviceEmptyResults { get; private set; }
 
         public SubscriptionHelper(DeviceDescriptor? deviceDescriptor = null)
@@ -21,9 +21,19 @@ namespace Tests.SubscriptionHandler.Helpers
             }
 
             Device = (DeviceDescriptor)deviceDescriptor;
-            SubHandler = new Hidwizards.IOWrapper.Libraries.SubscriptionHandlers.SubscriptionHandler(Device, EmptyHandler);
-            CallbackResults = new Dictionary<string, CallbackResult>(StringComparer.OrdinalIgnoreCase);
+            SubHandler = new Hidwizards.IOWrapper.Libraries.SubscriptionHandlers.SubscriptionHandler(Device, EmptyHandler, CallbackHandler);
+            ClearCallbacks();
             DeviceEmptyResults = new List<DeviceDescriptor>();
+        }
+
+        public void ClearCallbacks()
+        {
+            CallbackResults = new Dictionary<Guid, CallbackResult>();
+        }
+
+        private void CallbackHandler(InputSubscriptionRequest sr, short value)
+        {
+            CallbackResults.Add(sr.SubscriptionDescriptor.SubscriberGuid, new CallbackResult { SubReq = sr, Value = value });
         }
 
         public SubscriptionDescriptor CreateSubscriptionDescriptor()
@@ -43,7 +53,7 @@ namespace Tests.SubscriptionHandler.Helpers
                 SubscriptionDescriptor = sr.SubscriptionDescriptor,
                 Callback = new Action<short>(value =>
                 {
-                    CallbackResults.Add(sr.Name , new CallbackResult {BindingDescriptor = sr.BindingDescriptor, Value = value});
+                    //CallbackResults.Add(sr.Name , new CallbackResult {BindingDescriptor = sr.BindingDescriptor, Value = value});
                 })
                 
             };
@@ -58,7 +68,8 @@ namespace Tests.SubscriptionHandler.Helpers
 
     public class CallbackResult
     {
-        public BindingDescriptor BindingDescriptor { get; set; }
+        public InputSubscriptionRequest SubReq { get; set; }
+        //public BindingDescriptor BindingDescriptor { get; set; }
         public int Value { get; set; }
     }
 

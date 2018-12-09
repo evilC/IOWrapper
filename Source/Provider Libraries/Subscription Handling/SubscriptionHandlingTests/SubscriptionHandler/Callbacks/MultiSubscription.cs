@@ -28,17 +28,17 @@ namespace Tests.SubscriptionHandler.Callbacks
                 public IEnumerator GetEnumerator()
                 {
                     yield return new TestCaseData(SubReqs.Button1, (short)100, 1).SetName("Subscriber to Button 1 should receive it's callback");
-                    yield return new TestCaseData(SubReqs.Button2, (short)200, 2).SetName("Subscriber to Button 2 should receive it's callback");
+                    yield return new TestCaseData(SubReqs.Button2, (short)200, 1).SetName("Subscriber to Button 2 should receive it's callback");
                 }
             }
-
 
             [TestCaseSource(typeof(TestData))]
             public void DoTests(InputSubReq sr, short value, int expectedCount)
             {
+                _subHelper.ClearCallbacks();
                 _subHelper.SubHandler.FireCallbacks(sr.BindingDescriptor, value);
-                Assert.That(_subHelper.CallbackResults[sr.Name].Value, Is.EqualTo(value), "Value should be correct");
-                Assert.That(_subHelper.CallbackResults[sr.Name].BindingDescriptor, Is.EqualTo(sr.BindingDescriptor), "BindingDescriptor should match binding");
+                Assert.That(_subHelper.CallbackResults[sr.SubscriptionDescriptor.SubscriberGuid].Value, Is.EqualTo(value), "Value should be correct");
+                Assert.That(_subHelper.CallbackResults[sr.SubscriptionDescriptor.SubscriberGuid].SubReq.BindingDescriptor, Is.EqualTo(sr.BindingDescriptor), "BindingDescriptor should match binding");
                 Assert.That(_subHelper.CallbackResults.Count, Is.EqualTo(expectedCount), "Number of callbacks should be correct");
             }
 
@@ -66,8 +66,8 @@ namespace Tests.SubscriptionHandler.Callbacks
                 public IEnumerator GetEnumerator()
                 {
                     yield return new TestCaseData(SubReqs.Button1, (short)100, 1).SetName("Subscriber to Button 1 should receive it's callback");
-                    yield return new TestCaseData(SubReqs.Axis1, (short)200, 2).SetName("Subscriber to Axis 1 should receive it's callback");
-                    yield return new TestCaseData(SubReqs.Pov1Up, (short)300, 3).SetName("Subscriber to POV 1 Up should receive it's callback");
+                    yield return new TestCaseData(SubReqs.Axis1, (short)200, 1).SetName("Subscriber to Axis 1 should receive it's callback");
+                    yield return new TestCaseData(SubReqs.Pov1Up, (short)300, 1).SetName("Subscriber to POV 1 Up should receive it's callback");
                 }
             }
 
@@ -75,9 +75,10 @@ namespace Tests.SubscriptionHandler.Callbacks
             [TestCaseSource(typeof(TestData))]
             public void DoTests(InputSubReq sr, short value, int expectedCount)
             {
+                _subHelper.ClearCallbacks();
                 _subHelper.SubHandler.FireCallbacks(sr.BindingDescriptor, value);
-                Assert.That(_subHelper.CallbackResults[sr.Name].Value, Is.EqualTo(value), "Value should be correct");
-                Assert.That(_subHelper.CallbackResults[sr.Name].BindingDescriptor, Is.EqualTo(sr.BindingDescriptor), "BindingDescriptor should match binding");
+                Assert.That(_subHelper.CallbackResults[sr.SubscriptionDescriptor.SubscriberGuid].Value, Is.EqualTo(value), "Value should be correct");
+                Assert.That(_subHelper.CallbackResults[sr.SubscriptionDescriptor.SubscriberGuid].SubReq.BindingDescriptor, Is.EqualTo(sr.BindingDescriptor), "BindingDescriptor should match binding");
                 Assert.That(_subHelper.CallbackResults.Count, Is.EqualTo(expectedCount), "Number of callbacks should be correct");
             }
 

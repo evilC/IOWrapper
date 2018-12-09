@@ -34,8 +34,8 @@ namespace Tests.SubscriptionHandler.Callbacks
         [TestCaseSource(typeof(TestData))]
         public void DoTests(InputSubReq sr, short value)
         {
-            Assert.That(_subHelper.CallbackResults[sr.Name].Value, Is.EqualTo(value), "Value should be correct");
-            Assert.That(_subHelper.CallbackResults[sr.Name].BindingDescriptor, Is.EqualTo(sr.BindingDescriptor), "BindingDescriptor should match binding");
+            Assert.That(_subHelper.CallbackResults[sr.SubscriptionDescriptor.SubscriberGuid].Value, Is.EqualTo(value), "Value should be correct");
+            Assert.That(_subHelper.CallbackResults[sr.SubscriptionDescriptor.SubscriberGuid].SubReq.BindingDescriptor, Is.EqualTo(sr.BindingDescriptor), "BindingDescriptor should match binding");
         }
     }
 }

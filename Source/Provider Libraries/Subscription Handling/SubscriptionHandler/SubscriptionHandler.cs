@@ -10,9 +10,11 @@ namespace Hidwizards.IOWrapper.Libraries.SubscriptionHandlers
         private readonly EmptyEventDictionary<BindingType,
             EmptyEventDictionary<int, EmptyEventDictionary<int, SubscriptionProcessor, BindingDescriptor>, BindingDescriptor>,
             DeviceDescriptor> _bindings;
+        private readonly SubscriptionProcessor.CallbackHandler _callbackHandler;
 
-        public SubscriptionHandler(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler)
+        public SubscriptionHandler(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, SubscriptionProcessor.CallbackHandler callbackHandler)
         {
+            _callbackHandler = callbackHandler;
             _bindings =
                 new EmptyEventDictionary<BindingType,
                     EmptyEventDictionary<int, EmptyEventDictionary<int, SubscriptionProcessor, BindingDescriptor>,
@@ -33,7 +35,7 @@ namespace Hidwizards.IOWrapper.Libraries.SubscriptionHandlers
                     new EmptyEventDictionary<int, SubscriptionProcessor, BindingDescriptor>(subReq.BindingDescriptor,
                         IndexEmptyHandler))
                 .GetOrAdd(subReq.BindingDescriptor.SubIndex,
-                    new SubscriptionProcessor(subReq.BindingDescriptor, SubIndexEmptyHandler))
+                    new SubscriptionProcessor(subReq.BindingDescriptor, SubIndexEmptyHandler, _callbackHandler))
                 .TryAdd(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
         }
 
