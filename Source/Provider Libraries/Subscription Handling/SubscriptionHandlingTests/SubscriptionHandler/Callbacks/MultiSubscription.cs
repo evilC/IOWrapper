@@ -27,8 +27,8 @@ namespace Tests.SubscriptionHandler.Callbacks
             {
                 public IEnumerator GetEnumerator()
                 {
-                    yield return new TestCaseData(SubReqs.Button1, 100, 1).SetName("Subscriber to Button 1 should receive it's callback");
-                    yield return new TestCaseData(SubReqs.Button2, 200, 2).SetName("Subscriber to Button 2 should receive it's callback");
+                    yield return new TestCaseData(SubReqs.Button1, (short)100, 1).SetName("Subscriber to Button 1 should receive it's callback");
+                    yield return new TestCaseData(SubReqs.Button2, (short)200, 2).SetName("Subscriber to Button 2 should receive it's callback");
                 }
             }
 
@@ -65,9 +65,9 @@ namespace Tests.SubscriptionHandler.Callbacks
             {
                 public IEnumerator GetEnumerator()
                 {
-                    yield return new TestCaseData(SubReqs.Button1, 100, 1).SetName("Subscriber to Button 1 should receive it's callback");
-                    yield return new TestCaseData(SubReqs.Axis1, 200, 2).SetName("Subscriber to Axis 1 should receive it's callback");
-                    yield return new TestCaseData(SubReqs.Pov1Up, 300, 3).SetName("Subscriber to POV 1 Up should receive it's callback");
+                    yield return new TestCaseData(SubReqs.Button1, (short)100, 1).SetName("Subscriber to Button 1 should receive it's callback");
+                    yield return new TestCaseData(SubReqs.Axis1, (short)200, 2).SetName("Subscriber to Axis 1 should receive it's callback");
+                    yield return new TestCaseData(SubReqs.Pov1Up, (short)300, 3).SetName("Subscriber to POV 1 Up should receive it's callback");
                 }
             }
 
