@@ -18,7 +18,7 @@ namespace SharpDX_DirectInput
         private readonly ConcurrentDictionary<DeviceDescriptor, IDeviceHandler<JoystickUpdate>> _activeDevices
             = new ConcurrentDictionary<DeviceDescriptor, IDeviceHandler<JoystickUpdate>>();
         private readonly IInputDeviceLibrary<Guid> _deviceLibrary;
-        private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
+        private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, short> _bindModeCallback;
         private readonly object _lockObj = new object();  // When changing mode (Bind / Sub) or adding / removing devices, lock this object
 
         public bool IsLive { get; } = true;
@@ -95,7 +95,7 @@ namespace SharpDX_DirectInput
             }
         }
 
-        public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> callback = null)
+        public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingReport, short> callback = null)
         {
             lock (_lockObj)
             {

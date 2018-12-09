@@ -21,7 +21,7 @@ namespace SharpDX_XInput
     {
         private readonly ConcurrentDictionary<DeviceDescriptor, IDeviceHandler<State>> _activeDevices
             = new ConcurrentDictionary<DeviceDescriptor, IDeviceHandler<State>>();
-        private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
+        private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, short> _bindModeCallback;
         private readonly IInputDeviceLibrary<UserIndex> _deviceLibrary;
         private readonly object _lockObj = new object();  // When changing mode (Bind / Sub) or adding / removing devices, lock this object
 
@@ -97,7 +97,7 @@ namespace SharpDX_XInput
             }
         }
 
-        public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> callback = null)
+        public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingReport, short> callback = null)
         {
             lock (_lockObj)
             {

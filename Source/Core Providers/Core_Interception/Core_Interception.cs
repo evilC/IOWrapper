@@ -20,7 +20,7 @@ namespace Core_Interception
     public class Core_Interception : IInputProvider, IOutputProvider, IBindModeProvider
     {
         private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
-        private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> _bindModeCallback;
+        private Action<ProviderDescriptor, DeviceDescriptor, BindingReport, short> _bindModeCallback;
         private readonly ProviderDescriptor _providerDescriptor;
         private readonly object _lockObj = new object();  // When changing mode (Bind / Sub) or adding / removing devices, lock this object
 
@@ -390,7 +390,7 @@ namespace Core_Interception
 
         #region Bind Mode
 
-        public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingReport, int> callback = null)
+        public void SetDetectionMode(DetectionMode detectionMode, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingReport, short> callback = null)
         {
             lock (_lockObj)
             {

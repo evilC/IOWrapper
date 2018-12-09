@@ -78,7 +78,7 @@ namespace TestApp
             IOW.Instance.Dispose();
         }
 
-        private static void BindModeHandler(ProviderDescriptor provider, DeviceDescriptor device, BindingReport binding, int value)
+        private static void BindModeHandler(ProviderDescriptor provider, DeviceDescriptor device, BindingReport binding, short value)
         {
             Console.WriteLine($"BIND MODE: Provider: {provider.ProviderName} | Device: {device.DeviceHandle}/{device.DeviceInstance} | Binding: {binding.BindingDescriptor.Type}/{binding.BindingDescriptor.Index}/{binding.BindingDescriptor.SubIndex} | Title: {binding.Title} | Path: {binding.Path} | Value: {value}");
         }
