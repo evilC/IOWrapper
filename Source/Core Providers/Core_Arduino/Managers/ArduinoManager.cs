@@ -84,8 +84,11 @@ namespace Core_Arduino.Managers
                 CurrentPort.RtsEnable = true;
                 CurrentPort.Open();
                 CurrentPort.Write(buffer, 0, 8);
-                while (CurrentPort.BytesToWrite > 0) { }
-                Thread.Sleep(1);
+                while (CurrentPort.BytesToWrite > 0)
+                {
+                    Thread.Sleep(1);
+                }
+                Thread.Sleep(10);
 
                 var returnMessage = "";
                 while (CurrentPort.BytesToRead > 0)

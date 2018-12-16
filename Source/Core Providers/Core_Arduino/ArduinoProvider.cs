@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using Core_Arduino.Managers;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
@@ -16,6 +18,9 @@ namespace Core_Arduino
         public bool IsLive => true;
 
         private readonly ArduinoManager _arduinoManager;
+        private Thread _feedbackThread;
+        private int _value = 0;
+        private bool _active;
 
         public ArduinoProvider()
         {
@@ -55,7 +60,7 @@ namespace Core_Arduino
 
         public DeviceReport GetOutputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
-            return new DeviceReport()
+            var deviceReport = new DeviceReport()
             {
                 DeviceName = "Arduino serial",
                 DeviceDescriptor = new DeviceDescriptor()
@@ -64,47 +69,78 @@ namespace Core_Arduino
                     DeviceInstance = 0
                 },
                 Nodes = new List<DeviceReportNode>()
-                {
-                    new DeviceReportNode()
-                    {
-                        Title = "Buttons",
-                        Bindings = new List<BindingReport>()
-                        {
-                            new BindingReport()
-                            {
-                                Title = "1",
-                                Category = BindingCategory.Momentary,
-                                BindingDescriptor = new BindingDescriptor()
-                                {
-                                    Index = 0,
-                                    SubIndex = 0,
-                                    Type = BindingType.Button
-                                }
-                            }
-                        }
-                    }
-                }
             };
+
+            deviceReport.Nodes.Add(GenerateDeviceReportNode("Axis", BindingCategory.Signed, BindingType.Axis, 8));
+            deviceReport.Nodes.Add(GenerateDeviceReportNode("Buttons", BindingCategory.Momentary, BindingType.Button, 32));
+
+            return deviceReport;
         }
 
-        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        private static DeviceReportNode GenerateDeviceReportNode(string title, BindingCategory category, BindingType type, int size)
         {
-            return _arduinoManager.ConnectToArduino();
-        }
+            var deviceReportNode = new DeviceReportNode()
+            {
+                Title = title,
+                Bindings = new List<BindingReport>()
+            };
 
-        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
-        {
-            return _arduinoManager.DisconnectFromArduino();
+            for (var i = 0; i < size; i++)
+            {
+                deviceReportNode.Bindings.Add(new BindingReport()
+                    {
+                        Title = (i+1).ToString(),
+                        Category = category,
+                        BindingDescriptor = new BindingDescriptor()
+                        {
+                            Index = i,
+                            SubIndex = 0,
+                            Type = type
+                        }
+                    }   
+                );
+            }
+
+            return deviceReportNode;
         }
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
-            _arduinoManager.SendButton(state);
+            _value = state;
             return true;
+        }
+
+        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        {
+            _active = true;
+            var success = true;
+
+            success &= _arduinoManager.ConnectToArduino();
+            var threadStart = new ThreadStart(FeedbackLoop);
+            _feedbackThread = new Thread(threadStart);
+            _feedbackThread.Start();
+            return success;
+        }
+
+        private void FeedbackLoop()
+        {
+            while (_active)
+            {
+                if (_arduinoManager.Connected) _arduinoManager.SendButton(_value);
+                Thread.Sleep(100);
+            }
+        }
+
+        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        {
+            _active = false;
+            _feedbackThread.Abort();
+            return _arduinoManager.DisconnectFromArduino();
         }
 
         public void Dispose()
         {
+            if (_feedbackThread != null && _feedbackThread.IsAlive) _feedbackThread.Abort();
             _arduinoManager.Dispose();
         }
     }
