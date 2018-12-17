@@ -1,6 +1,15 @@
 #include <Servo.h>
 
+#include "ArduinoDescriptor.pb.h"
+#include "pb.h"
+#include "pb_encode.h"
+#include "pb_decode.h"
+
 Servo myservo;  // create servo object to control a servo
+arduino_ArduinoDescriptor message = {};
+pb_istream_s pb_in;
+
+const int DEBUGPIN = 2;
 
 int pos = 0;    // variable to store the servo position
 
@@ -23,8 +32,6 @@ const char C_SPEAKER = 'S';
 const char C_DISCOVER = 'D';
 const char C_BRIGHTNESS = 'B';
 
-static float pulseVal = 4.712;
-
 // States (0 off, 1 on, 2 flashing)
 char lights[6];
 unsigned long lastUpdate;
@@ -32,20 +39,48 @@ static boolean connected = false;
 int brightness = 10;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(500000);
   myservo.attach(16);  // attaches the servo on pin 9 to the servo object
 
-  lastUpdate = millis();
-  resetLights();
+  pinMode(DEBUGPIN, OUTPUT);
+  
   myservo.write(180);
+  pb_in = as_pb_istream(Serial);
 }
 
 void loop() {
-  get_input();
+  //get_input();
 
-  updateLights();
+  //updateLights();
+  read_descriptor();
 
+  if (message.button != 0){
+    myservo.write(90);
+  } else {
+    myservo.write(1);
+  }
 }
+
+static bool pb_stream_read(pb_istream_t *stream, pb_byte_t *buf, size_t count) {
+    Stream* s = reinterpret_cast<Stream*>(stream->state);
+    size_t written = s->readBytes(buf, count);
+    return written == count;
+};
+
+pb_istream_s as_pb_istream(Stream& s) {
+    return {pb_stream_read, &s, SIZE_MAX, 0};
+};
+
+void read_descriptor(){
+  if (!Serial.available()) return;
+
+  digitalWrite(DEBUGPIN, HIGH);
+  pb_decode_delimited_noinit(&pb_in, arduino_ArduinoDescriptor_fields, &message);
+
+  Serial.write(C_DISCOVER);
+  digitalWrite(DEBUGPIN, LOW);
+}
+
 
 void get_input() {
   if (!Serial.available()) return;
@@ -105,10 +140,6 @@ void get_input() {
 
 void updateLights(){
   setLight(RED, lights[0]);
-  //setLight(YELLOW, lights[1]);
-  //setLight(GREEN, lights[2]);
-  //setLight(PEDRED, lights[3]);
-  //setLight(PEDGREEN, lights[4]);
 }
 
 void readEmptyPayload(){
@@ -135,19 +166,7 @@ void setLight(int light, char status){
     case '1':
       myservo.write(90);
       break;
-    case 2:
-    case '2':
-      pulseLed(light);
-      break;
   }
-}
-
-void pulseLed(float led){
-  float out;
-  pulseVal = pulseVal + 0.0002;
-  if (pulseVal > 10.995) pulseVal = 4.712;
-  out = sin(pulseVal) * 127.5 + 127.5;
-  analogWrite(led,out*1.0/6.0);
 }
 
 void resetLights(){

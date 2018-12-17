@@ -4,6 +4,7 @@ using System.ComponentModel.Composition;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Core_Arduino.Managers;
+using Core_Arduino.Model;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 
@@ -18,13 +19,14 @@ namespace Core_Arduino
         public bool IsLive => true;
 
         private readonly ArduinoManager _arduinoManager;
+        private ArduinoDescriptor _arduinoDescriptor;
         private Thread _feedbackThread;
-        private int _value = 0;
         private bool _active;
 
         public ArduinoProvider()
         {
             _arduinoManager = new ArduinoManager();
+            _arduinoDescriptor = new ArduinoDescriptor();
         }
 
         public void RefreshLiveState()
@@ -71,6 +73,7 @@ namespace Core_Arduino
                 Nodes = new List<DeviceReportNode>()
             };
 
+            // Arbitrary amount of inputs chosen until performance has been determined
             deviceReport.Nodes.Add(GenerateDeviceReportNode("Axis", BindingCategory.Signed, BindingType.Axis, 8));
             deviceReport.Nodes.Add(GenerateDeviceReportNode("Buttons", BindingCategory.Momentary, BindingType.Button, 32));
 
@@ -106,7 +109,7 @@ namespace Core_Arduino
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
-            _value = state;
+            _arduinoDescriptor.Button = state;
             return true;
         }
 
@@ -116,6 +119,8 @@ namespace Core_Arduino
             var success = true;
 
             success &= _arduinoManager.ConnectToArduino();
+            _arduinoDescriptor = new ArduinoDescriptor();
+
             var threadStart = new ThreadStart(FeedbackLoop);
             _feedbackThread = new Thread(threadStart);
             _feedbackThread.Start();
@@ -126,8 +131,9 @@ namespace Core_Arduino
         {
             while (_active)
             {
-                if (_arduinoManager.Connected) _arduinoManager.SendButton(_value);
-                Thread.Sleep(100);
+                if (_arduinoManager.Connected) _arduinoManager.SendDescriptor(_arduinoDescriptor);
+
+                Thread.Yield();
             }
         }
 

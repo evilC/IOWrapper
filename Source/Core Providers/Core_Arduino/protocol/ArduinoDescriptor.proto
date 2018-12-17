@@ -1,0 +1,8 @@
+syntax = "proto3";
+package arduino;
+
+option csharp_namespace = "Core_Arduino.Model";
+
+message ArduinoDescriptor {
+  int32 button = 1;
+}
