@@ -1,8 +1,12 @@
 syntax = "proto3";
 package arduino;
 
+import "nanopb.proto";
+
 option csharp_namespace = "Core_Arduino.Model";
 
 message ArduinoDescriptor {
-  int32 button = 1;
+  int32 sequence = 1;
+  repeated int32 axis = 2 [(nanopb).max_count=8, (nanopb).fixed_count=true];
+  repeated bool button = 3 [(nanopb).max_count=32, (nanopb).fixed_count=true];
 }

@@ -23,10 +23,18 @@ namespace Core_Arduino
         private Thread _feedbackThread;
         private bool _active;
 
+        // Arduino values
+        private static readonly int MAX_AXES = 8;
+        private static readonly int MAX_BUTTONS = 32;
+        private int _sequence;
+        private List<int> _axes;
+        private List<bool> _buttons;
+
         public ArduinoProvider()
         {
             _arduinoManager = new ArduinoManager();
             _arduinoDescriptor = new ArduinoDescriptor();
+            SetStartValues();
         }
 
         public void RefreshLiveState()
@@ -74,8 +82,8 @@ namespace Core_Arduino
             };
 
             // Arbitrary amount of inputs chosen until performance has been determined
-            deviceReport.Nodes.Add(GenerateDeviceReportNode("Axis", BindingCategory.Signed, BindingType.Axis, 8));
-            deviceReport.Nodes.Add(GenerateDeviceReportNode("Buttons", BindingCategory.Momentary, BindingType.Button, 32));
+            deviceReport.Nodes.Add(GenerateDeviceReportNode("Axis", BindingCategory.Signed, BindingType.Axis, MAX_AXES));
+            deviceReport.Nodes.Add(GenerateDeviceReportNode("Buttons", BindingCategory.Momentary, BindingType.Button, MAX_BUTTONS));
 
             return deviceReport;
         }
@@ -109,7 +117,19 @@ namespace Core_Arduino
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
-            _arduinoDescriptor.Button = state;
+            switch (bindingDescriptor.Type)
+            {
+                case BindingType.Axis:
+                    _axes[bindingDescriptor.Index] = state;
+                    break;
+                case BindingType.Button:
+                    _buttons[bindingDescriptor.Index] = state != 0;
+                    break;
+                case BindingType.POV:
+                default:
+                    return false;
+            }
+
             return true;
         }
 
@@ -118,6 +138,7 @@ namespace Core_Arduino
             _active = true;
             var success = true;
 
+            SetStartValues();
             success &= _arduinoManager.ConnectToArduino();
             _arduinoDescriptor = new ArduinoDescriptor();
 
@@ -127,11 +148,37 @@ namespace Core_Arduino
             return success;
         }
 
+        private void SetStartValues()
+        {
+            _sequence = 0;
+            _axes = new List<int>(MAX_AXES);
+            for (var i = 0; i < MAX_AXES; i++)
+            {
+                _axes.Add(0);
+            }
+
+            _buttons = new List<bool>(MAX_BUTTONS);
+            for (var i = 0; i < MAX_BUTTONS; i++)
+            {
+                _buttons.Add(false);
+            }
+        }
+
         private void FeedbackLoop()
         {
             while (_active)
             {
-                if (_arduinoManager.Connected) _arduinoManager.SendDescriptor(_arduinoDescriptor);
+                if (_arduinoManager.Connected)
+                {
+                    _arduinoDescriptor = new ArduinoDescriptor()
+                    {
+                        Sequence = _sequence++,
+                        Axis = { _axes },
+                        Button = { _buttons }
+                    };
+
+                    _arduinoManager.SendDescriptor(_arduinoDescriptor);
+                }
 
                 Thread.Yield();
             }

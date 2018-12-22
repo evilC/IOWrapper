@@ -24,13 +24,13 @@ namespace Core_Arduino.Model {
     static ArduinoDescriptorReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChdBcmR1aW5vRGVzY3JpcHRvci5wcm90bxIHYXJkdWlubyIjChFBcmR1aW5v",
-            "RGVzY3JpcHRvchIOCgZidXR0b24YASABKAVCFaoCEkNvcmVfQXJkdWluby5N",
-            "b2RlbGIGcHJvdG8z"));
+            "ChdBcmR1aW5vRGVzY3JpcHRvci5wcm90bxIHYXJkdWlubyJDChFBcmR1aW5v",
+            "RGVzY3JpcHRvchIQCghzZXF1ZW5jZRgBIAEoBRIMCgRheGlzGAIgAygFEg4K",
+            "BmJ1dHRvbhgDIAMoCEIVqgISQ29yZV9BcmR1aW5vLk1vZGVsYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Core_Arduino.Model.ArduinoDescriptor), global::Core_Arduino.Model.ArduinoDescriptor.Parser, new[]{ "Button" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Core_Arduino.Model.ArduinoDescriptor), global::Core_Arduino.Model.ArduinoDescriptor.Parser, new[]{ "Sequence", "Axis", "Button" }, null, null, null)
           }));
     }
     #endregion
@@ -62,7 +62,9 @@ namespace Core_Arduino.Model {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ArduinoDescriptor(ArduinoDescriptor other) : this() {
-      button_ = other.button_;
+      sequence_ = other.sequence_;
+      axis_ = other.axis_.Clone();
+      button_ = other.button_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -71,15 +73,35 @@ namespace Core_Arduino.Model {
       return new ArduinoDescriptor(this);
     }
 
-    /// <summary>Field number for the "button" field.</summary>
-    public const int ButtonFieldNumber = 1;
-    private int button_;
+    /// <summary>Field number for the "sequence" field.</summary>
+    public const int SequenceFieldNumber = 1;
+    private int sequence_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int Button {
-      get { return button_; }
+    public int Sequence {
+      get { return sequence_; }
       set {
-        button_ = value;
+        sequence_ = value;
       }
+    }
+
+    /// <summary>Field number for the "axis" field.</summary>
+    public const int AxisFieldNumber = 2;
+    private static readonly pb::FieldCodec<int> _repeated_axis_codec
+        = pb::FieldCodec.ForInt32(18);
+    private readonly pbc::RepeatedField<int> axis_ = new pbc::RepeatedField<int>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<int> Axis {
+      get { return axis_; }
+    }
+
+    /// <summary>Field number for the "button" field.</summary>
+    public const int ButtonFieldNumber = 3;
+    private static readonly pb::FieldCodec<bool> _repeated_button_codec
+        = pb::FieldCodec.ForBool(26);
+    private readonly pbc::RepeatedField<bool> button_ = new pbc::RepeatedField<bool>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<bool> Button {
+      get { return button_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -95,14 +117,18 @@ namespace Core_Arduino.Model {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Button != other.Button) return false;
+      if (Sequence != other.Sequence) return false;
+      if(!axis_.Equals(other.axis_)) return false;
+      if(!button_.Equals(other.button_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (Button != 0) hash ^= Button.GetHashCode();
+      if (Sequence != 0) hash ^= Sequence.GetHashCode();
+      hash ^= axis_.GetHashCode();
+      hash ^= button_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -116,10 +142,12 @@ namespace Core_Arduino.Model {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-
+      if (Sequence != 0) {
         output.WriteRawTag(8);
-        output.WriteInt32(Button);
-
+        output.WriteInt32(Sequence);
+      }
+      axis_.WriteTo(output, _repeated_axis_codec);
+      button_.WriteTo(output, _repeated_button_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -128,7 +156,11 @@ namespace Core_Arduino.Model {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      size += 1 + pb::CodedOutputStream.ComputeInt32Size(Button);
+      if (Sequence != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Sequence);
+      }
+      size += axis_.CalculateSize(_repeated_axis_codec);
+      size += button_.CalculateSize(_repeated_button_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -140,9 +172,11 @@ namespace Core_Arduino.Model {
       if (other == null) {
         return;
       }
-      if (other.Button != 0) {
-        Button = other.Button;
+      if (other.Sequence != 0) {
+        Sequence = other.Sequence;
       }
+      axis_.Add(other.axis_);
+      button_.Add(other.button_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -155,7 +189,17 @@ namespace Core_Arduino.Model {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            Button = input.ReadInt32();
+            Sequence = input.ReadInt32();
+            break;
+          }
+          case 18:
+          case 16: {
+            axis_.AddEntriesFrom(input, _repeated_axis_codec);
+            break;
+          }
+          case 26:
+          case 24: {
+            button_.AddEntriesFrom(input, _repeated_button_codec);
             break;
           }
         }
