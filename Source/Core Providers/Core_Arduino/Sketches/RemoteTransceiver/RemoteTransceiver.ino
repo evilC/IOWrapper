@@ -14,13 +14,14 @@
 #define SERVO_RANGE 364
 
 
-Servo myservo;  // create servo object to control a servo
+Servo steering;
+Servo accelerator;
 arduino_ArduinoDescriptor descriptor = {};
 pb_istream_s pb_in;
 pb_istream_s radio_pb_in;
 pb_ostream_s radio_pb_out;
 
-const int DEBUGPIN = 17;
+const int DEBUGPIN = 18;
 const int SERVERPIN = 2;
 const int CE_PIN = 9;
 const int CSN_PIN = 15;
@@ -32,10 +33,11 @@ const byte frame_start = 0x03;
 
 DFRobotDFPlayerMini myDFPlayer;
 
+unsigned long last_received_time;
+int32_t last_sequence = 0;
 
 void setup() {
   Serial.begin(500000);
-  Serial1.begin(9600);
 
   pinMode(DEBUGPIN, OUTPUT);
   digitalWrite(DEBUGPIN, HIGH);
@@ -43,22 +45,31 @@ void setup() {
   digitalWrite(SERVERPIN, HIGH);
   
   pb_in = as_pb_istream(Serial);
-
+  last_received_time = millis();
+  
   if (is_server()){
     radio.begin();
     radio.openWritingPipe(address);
     radio.setPALevel(RF24_PA_MAX);
     radio.stopListening();
   } else {
+    accelerator.attach(16);
+    // Required to arm the Traxxas ESC
+    accelerator.write(91);
+    delay(1000);
+    
+    steering.attach(17);
+    steering.write(90);
+    
     radio.begin();
     radio.openReadingPipe(0, address);
     radio.setPALevel(RF24_PA_MAX);
     radio.startListening();
 
-    myservo.attach(16);  // attaches the servo on pin 9 to the servo object
-
+    Serial1.begin(9600);
     if (myDFPlayer.begin(Serial1)) {
-      myDFPlayer.volume(25);
+      myDFPlayer.volume(30);
+      myDFPlayer.play(3);
     }
 
   }
@@ -70,14 +81,24 @@ void loop() {
     send_radio_message();
   } else {
     receive_radio_message();
-    myservo.write(axis_to_servo(descriptor.axis[0]));
-    if (descriptor.button[0] != 0){
-      myDFPlayer.play(1);
+    //if (is_connection_stable()){
+    if (true){
+      steering.write(map(descriptor.axis[0],AXIS_MIN,AXIS_MAX,35,145));
+      accelerator.write(map(descriptor.axis[1],AXIS_MIN,AXIS_MAX,0,180));
+      
+      if (descriptor.button[0] != 0){
+        myDFPlayer.play(1);
+      }
+    } else {
+      // Dead man switch
+      steering.write(90);
+      accelerator.write(91);
     }
   }
-  
-  //digitalWrite(DEBUGPIN, val % 2 == 0 ? LOW : HIGH);
-  
+}
+
+boolean is_connection_stable(){
+  return millis() < last_received_time + 200L;
 }
 
 void send_radio_message(){
@@ -113,6 +134,11 @@ void receive_radio_message(){
 
     if(pb_decode(&istream, arduino_ArduinoDescriptor_fields, &descriptor)){
       descriptor = message;
+      if (last_sequence < descriptor.sequence) {
+        last_sequence = descriptor.sequence;
+        last_received_time = millis();
+      }
+      
     }
     break;
   }
