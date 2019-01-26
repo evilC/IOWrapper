@@ -95,7 +95,7 @@ namespace Core_Midi.DeviceLibraries
                         var br = new BindingReport
                         {
                             Title = $"{noteName}",
-                            Path = $"CH{channel} {noteName}{octave}",
+                            Path = $"CH{channel + 1} {noteName}{octave}",
                             Category = BindingCategory.Signed,
                             BindingDescriptor = bd
                         };
