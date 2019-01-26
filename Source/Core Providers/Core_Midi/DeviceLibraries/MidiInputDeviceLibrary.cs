@@ -130,6 +130,23 @@ namespace Core_Midi.DeviceLibraries
                 }
                 channelInfo.Nodes.Add(controlChangeInfo);
 
+                // Pitch Wheel
+                var pwbd = new BindingDescriptor
+                {
+                    Index = (int) MidiCommandCode.PitchWheelChange,
+                    SubIndex = 0
+                };
+                var pwbr = new BindingReport
+                {
+                    Title = "Pitch Wheel",
+                    Path = $"CH{channel + 1} PW",
+                    Category = BindingCategory.Signed,
+                    BindingDescriptor = pwbd
+                };
+                _bindingReports.TryAdd(pwbd, pwbr);
+                channelInfo.Bindings.Add(pwbr);
+
+                // Add the channel
                 node.Nodes.Add(channelInfo);
             }
 
