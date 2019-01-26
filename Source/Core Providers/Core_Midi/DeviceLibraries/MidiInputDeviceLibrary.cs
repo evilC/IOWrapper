@@ -81,7 +81,7 @@ namespace Core_Midi.DeviceLibraries
                 {
                     Title = "Notes"
                 };
-                for (var octave = 0; octave < 10; octave++)
+                for (var octave = -2; octave < 9; octave++)
                 {
                     var octaveInfo = new DeviceReportNode
                     {
@@ -89,12 +89,13 @@ namespace Core_Midi.DeviceLibraries
                     };
                     for (var noteIndex = 0; noteIndex < NoteNames.Length; noteIndex++)
                     {
+                        if (octave == 8 && noteIndex > 7) continue; // MIDI ends at G8, Skip G# to B
                         var noteName = NoteNames[noteIndex];
                         var bd = BuildNoteDescriptor(channel, octave, noteIndex);
                         var br = new BindingReport
                         {
                             Title = $"{noteName}",
-                            Path = $"CH:{channel}, Note:{noteName}{octave}",
+                            Path = $"CH{channel} {noteName}{octave}",
                             Category = BindingCategory.Signed,
                             BindingDescriptor = bd
                         };
