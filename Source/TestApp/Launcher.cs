@@ -26,7 +26,7 @@ namespace TestApp
 
             //var spaceMouse = new SpaceMouseTester("SpaceMouse", Library.Devices.SpaceMouse.Pro);
             //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.SpaceMouse, Library.Devices.SpaceMouse.Pro, BindModeHandler);
-            //var motör49Tester = new MidiTester("MIDI", Library.Devices.Midi.Motör49Main);
+            var motör49Tester = new MidiTester("MIDI", Library.Devices.Midi.Motör49Main);
             //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.Midi, Library.Devices.Midi.Motör49Main, BindModeHandler);
             //var subReq = new OutputSubscriptionRequest
             //{
@@ -35,7 +35,7 @@ namespace TestApp
             //    SubscriptionDescriptor = new SubscriptionDescriptor(),
             //};
             //IOW.Instance.SubscribeOutput(subReq);
-            //IOW.Instance.SetOutputstate(subReq, Library.Bindings.Midi.Notes.C1FSharp5, 127);
+            //IOW.Instance.SetOutputstate(subReq, Library.Bindings.Midi.Notes.CH1CMinus2, 127);
             //IOW.Instance.SetOutputstate(subReq, Library.Bindings.Midi.ControlChange.MotorSliderF1, short.MaxValue);
 
             #region Interception

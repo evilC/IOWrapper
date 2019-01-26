@@ -163,8 +163,11 @@ namespace TestApp.Library
         {
             public static class Notes
             {
-                public static BindingDescriptor C1FSharp5 = new BindingDescriptor { Index = 144, SubIndex = 66, Type = BindingType.Axis };
-                public static BindingDescriptor C2FSharp5 = new BindingDescriptor { Index = 145, SubIndex = 66, Type = BindingType.Axis };
+                public static BindingDescriptor Ch1CMinus2 = new BindingDescriptor { Index = 144, SubIndex = 0, Type = BindingType.Axis };
+                public static BindingDescriptor Ch2CMinus2 = new BindingDescriptor { Index = 145, SubIndex = 0, Type = BindingType.Axis };
+                public static BindingDescriptor Ch1FSharp3 = new BindingDescriptor { Index = 144, SubIndex = 66, Type = BindingType.Axis };
+                public static BindingDescriptor Ch1C8 = new BindingDescriptor { Index = 144, SubIndex = 120, Type = BindingType.Axis }; // Highest available key on my keyboard
+                public static BindingDescriptor Ch1G8 = new BindingDescriptor { Index = 144, SubIndex = 127, Type = BindingType.Axis }; // Highest possible key in MIDI
             }
 
             public static class ControlChange
