@@ -51,7 +51,7 @@ namespace Core_Midi
                         SubIndex = note.NoteNumber
                     };
                     update.Value = e.MidiEvent.CommandCode == MidiCommandCode.NoteOn ? note.Velocity : 0;
-                    update.Value = ConvertAxis127(update.Value);
+                    update.Value = ConvertToUnsigned(update.Value);
                     break;
                 case MidiCommandCode.ControlChange:
                     var cc = (ControlChangeEvent)e.MidiEvent;
@@ -60,7 +60,7 @@ namespace Core_Midi
                         SubIndex = (int)cc.Controller
                     };
                     update.Value = cc.ControllerValue;
-                    update.Value = ConvertAxis127(update.Value);
+                    update.Value = ConvertToSigned(update.Value);
                     break;
                 case MidiCommandCode.PitchWheelChange:
                     bd = new BindingDescriptor
@@ -92,11 +92,17 @@ namespace Core_Midi
             _midiIn?.Dispose();
         }
 
-        // Converts an Axis in the range 0..127 to signed 16-bit int
-        private int ConvertAxis127(int value)
+        // Converts an Axis in the range 0..127 to positive only 16-bit int
+        // ToDo: While UCR does not support AxisToButton for Unsigned axes, just report as positive
+        private int ConvertToUnsigned(int value)
         {
-            return (int) (value * 258.00787401574803149606299212598);    // ToDo: While UCR does not support AxisToButton for Unsigned axes, just report as positive
-            //return (int) (value * 516.0236220472441) - 32768;
+            return (int) (value * 258.00787401574803149606299212598);
+        }
+
+        // Converts an Axis in the range 0..127 to signed 16-bit int
+        private int ConvertToSigned(int value)
+        {
+            return (int) (value * 516.0236220472441) - 32768;
         }
 
         private int ConvertPitch(int value)

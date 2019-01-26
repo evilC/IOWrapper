@@ -6,11 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 ### Changed 
+- [MIDI Provider] Note path shortened, now selected note displays better in UI
+- [MIDI Provider] CC now uses the full -32768..32767 range
 ### Deprecated
 ### Removed
 ### Fixed
 - [MIDI Provider] Note naming fixed. Now starts at Octave -2, and goes up to Octave 8, ending at G8
-- [MIDI Provider] Note path shortened, now selected note displays better in UI
 - [MIDI Provider] Pitch Wheel now works in Bind Mode
 - [MIDI Provider] Fix notes, CCs etc only reaching 32766 instead of 32767
 
