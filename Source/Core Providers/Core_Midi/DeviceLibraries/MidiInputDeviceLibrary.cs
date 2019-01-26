@@ -77,6 +77,9 @@ namespace Core_Midi.DeviceLibraries
                 {
                     Title = $"CH {channel + 1}"
                 };
+
+                // Notes - Keys, Pads
+
                 var notesInfo = new DeviceReportNode
                 {
                     Title = "Notes"
@@ -105,6 +108,8 @@ namespace Core_Midi.DeviceLibraries
                     notesInfo.Nodes.Add(octaveInfo);
                 }
                 channelInfo.Nodes.Add(notesInfo);
+
+                // ControlChange (CC) - Dials, Sliders etc
 
                 var controlChangeInfo = new DeviceReportNode
                 {
