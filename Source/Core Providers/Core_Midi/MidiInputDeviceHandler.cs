@@ -95,7 +95,7 @@ namespace Core_Midi
         // Converts an Axis in the range 0..127 to signed 16-bit int
         private int ConvertAxis127(int value)
         {
-            return (int)(value * 258.007874015748);    // ToDo: While UCR does not support AxisToButton for Unsigned axes, just report as positive
+            return (int) (value * 258.00787401574803149606299212598);    // ToDo: While UCR does not support AxisToButton for Unsigned axes, just report as positive
             //return (int) (value * 516.0236220472441) - 32768;
         }
 
