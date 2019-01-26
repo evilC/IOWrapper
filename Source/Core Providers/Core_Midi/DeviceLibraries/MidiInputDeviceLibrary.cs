@@ -121,7 +121,7 @@ namespace Core_Midi.DeviceLibraries
                     var br = new BindingReport
                     {
                         Title = $"ID {controllerId}",
-                        Path = $"CH:{channel}, CC:{controllerId}",
+                        Path = $"CH{channel} CC{controllerId}",
                         Category = BindingCategory.Signed,
                         BindingDescriptor = bd
                     };
