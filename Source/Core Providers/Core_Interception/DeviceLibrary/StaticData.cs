@@ -5,7 +5,7 @@ namespace Core_Interception.DeviceLibrary
 {
     public static class StaticData
     {
-        public static readonly List<string> MouseButtonNames = new List<string> { "Left Mouse", "Right Mouse", "Middle Mouse", "Side Button 1", "Side Button 2", "Wheel Up", "Wheel Down", "Wheel Left", "Wheel Right" };
+        public static readonly List<string> MouseButtonNames = new List<string> { "Left Mouse", "Right Mouse", "Middle Mouse", "Side Button 1", "Side Button 2", "Wheel Up", "Wheel Down", "Wheel Right", "Wheel Left" };
 
         public static readonly BindingReport[] MouseAxisBindingReports = { new BindingReport
             {
