@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [MIDI Provider] Note naming fixed. Now starts at Octave -2, and goes up to Octave 8, ending at G8
 - [MIDI Provider] Pitch Wheel now works in Bind Mode
 - [MIDI Provider] Fix notes, CCs etc only reaching 32766 instead of 32767
+- [MIDI Provider] ProcessUpdate no longer crashes if preProcessedUpdates is null
 
 ##0.10.0 - 2019-01-03
 ### Changed 

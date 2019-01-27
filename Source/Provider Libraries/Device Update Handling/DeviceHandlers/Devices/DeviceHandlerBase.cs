@@ -116,12 +116,14 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
         /// <returns>True if the update should be blocked, else false</returns>
         public virtual bool ProcessUpdate(TRawUpdate rawUpdate)
         {
-            var block = false;
             var bindMode = DetectionMode == DetectionMode.Bind;
 
             // Convert the raw Update Data from the Generic form into a consistent format
             // At this point, only physical input data is usually present
             var preProcessedUpdates = PreProcessUpdate(rawUpdate);
+
+            if (preProcessedUpdates == null || preProcessedUpdates.Length == 0) return false;
+            var block = false;
 
             foreach (var preprocessedUpdate in preProcessedUpdates)
             {
