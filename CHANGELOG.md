@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 ### Added
+- [DirectInput Provider] Duplicate devices now have #2, #3 etc after their name
 ### Changed 
 ### Deprecated
 ### Removed
