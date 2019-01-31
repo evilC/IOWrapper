@@ -33,7 +33,9 @@ const byte frame_start = 0x03;
 
 DFRobotDFPlayerMini myDFPlayer;
 
+unsigned long currentMillis;
 unsigned long last_received_time;
+const unsigned long timeout_period = 2000;
 int32_t last_sequence = 0;
 
 void setup() {
@@ -81,8 +83,7 @@ void loop() {
     send_radio_message();
   } else {
     receive_radio_message();
-    //if (is_connection_stable()){
-    if (true){
+    if (is_connection_stable()){
       steering.write(map(descriptor.axis[0],AXIS_MIN,AXIS_MAX,35,145));
       accelerator.write(map(descriptor.axis[1],AXIS_MIN,AXIS_MAX,0,180));
       
@@ -98,7 +99,8 @@ void loop() {
 }
 
 boolean is_connection_stable(){
-  return millis() < last_received_time + 200L;
+  currentMillis = millis();
+  return currentMillis - last_received_time <= timeout_period;
 }
 
 void send_radio_message(){
@@ -133,12 +135,12 @@ void receive_radio_message(){
     pb_istream_t istream = pb_istream_from_buffer(buffer, len); 
 
     if(pb_decode(&istream, arduino_ArduinoDescriptor_fields, &descriptor)){
-      descriptor = message;
-      if (last_sequence < descriptor.sequence) {
-        last_sequence = descriptor.sequence;
+      if (last_sequence < message.sequence) {
+        last_sequence = message.sequence;
         last_received_time = millis();
       }
-      
+
+      descriptor = message;
     }
     break;
   }
