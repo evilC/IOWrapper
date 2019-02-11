@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Deprecated
 ### Removed
 ### Fixed
+- [Interception Provider] Windows keys are now mappable. Previously, if the non-extended scancode did not have a key name, the extended version of the scancode was not checked
 
 ##0.10.1 - 2019-01-27
 ### Changed 
