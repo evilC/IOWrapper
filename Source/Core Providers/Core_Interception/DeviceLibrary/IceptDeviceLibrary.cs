@@ -219,6 +219,13 @@ namespace Core_Interception.DeviceLibrary
         public BindingReport GetInputBindingReport(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor)
         {
             var id = GetDeviceIdentifier(deviceDescriptor);
+            var dict = HelperFunctions.IsKeyboard(id)
+                ? _keyboardReports
+                : _mouseReports;
+            if (!dict.ContainsKey(bindingDescriptor))
+            {
+                throw new Exception($"Unknown Binding Index {bindingDescriptor.Index}, SubIndex {bindingDescriptor.SubIndex}, Type {bindingDescriptor.Type}");
+            }
             return HelperFunctions.IsKeyboard(id)
                 ? _keyboardReports[bindingDescriptor]
                 : _mouseReports[bindingDescriptor];
@@ -303,7 +310,6 @@ namespace Core_Interception.DeviceLibrary
                     _keyboardList.Bindings.Add(report);
                     _keyboardReports.TryAdd(bd, report);
                 }
-
                 // Check if this button has an extended (Right) variant
                 var altBd = new BindingDescriptor
                 {
