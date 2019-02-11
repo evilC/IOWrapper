@@ -290,16 +290,19 @@ namespace Core_Interception.DeviceLibrary
 
             for (var i = 0; i < 256; i++)
             {
+                BindingReport report = null;
                 var bd = new BindingDescriptor
                 {
                     Type = BindingType.Button,
                     Index = i,
                     SubIndex = 0
                 };
-                var report = BuildKeyboardBindingReport(bd);
-                if (report == null) continue;
-                _keyboardList.Bindings.Add(report);
-                _keyboardReports.TryAdd(bd, report);
+                report = BuildKeyboardBindingReport(bd);
+                if (report != null)
+                {
+                    _keyboardList.Bindings.Add(report);
+                    _keyboardReports.TryAdd(bd, report);
+                }
 
                 // Check if this button has an extended (Right) variant
                 var altBd = new BindingDescriptor
@@ -309,9 +312,11 @@ namespace Core_Interception.DeviceLibrary
                     SubIndex = 0
                 };
                 var altReport = BuildKeyboardBindingReport(altBd);
-                if (altReport == null || report.Title == altReport.Title) continue;
-                _keyboardList.Bindings.Add(altReport);
-                _keyboardReports.TryAdd(altBd, altReport);
+                if (altReport != null && (report == null || report.Title != altReport.Title)) // If the alReport is not null, and is not the same as the report (if it exists)
+                {
+                    _keyboardList.Bindings.Add(altReport);
+                    _keyboardReports.TryAdd(altBd, altReport);
+                }
             }
             _keyboardList.Bindings.Sort((x, y) => string.Compare(x.Title, y.Title, StringComparison.Ordinal));
         }
