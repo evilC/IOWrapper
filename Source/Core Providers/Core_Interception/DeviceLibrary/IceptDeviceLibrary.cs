@@ -258,25 +258,8 @@ namespace Core_Interception.DeviceLibrary
 
         public BindingReport BuildKeyboardBindingReport(BindingDescriptor bindingDescriptor)
         {
-            var i = bindingDescriptor.Index;
-            uint lParam;
-            if (i > 255)
-            {
-                i -= 256;
-                lParam = (0x100 | ((uint)i + 1 & 0xff)) << 16;
-            }
-            else
-            {
-                lParam = (uint)(i + 1) << 16;
-            }
-            
-            var sb = new StringBuilder(260);
-            if (ManagedWrapper.GetKeyNameTextW(lParam, sb, 260) == 0)
-            {
-                return null;
-            }
-            var keyName = sb.ToString().Trim();
-            if (keyName == "") return null;
+            var keyName = KeyNameHelper.GetNameFromScanCode(bindingDescriptor.Index + 1);
+            if (keyName == null) return null;
             return new BindingReport
             {
                 Title = keyName,
