@@ -318,9 +318,6 @@ namespace Core_Interception.Lib
         int INTERCEPTION_API interception_is_mouse(InterceptionDevice device);
         */
 
-        [DllImport("user32", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int GetKeyNameTextW(uint lParam, StringBuilder lpString, int nSize);
-
         #endregion
 
     }

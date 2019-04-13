@@ -219,6 +219,13 @@ namespace Core_Interception.DeviceLibrary
         public BindingReport GetInputBindingReport(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor)
         {
             var id = GetDeviceIdentifier(deviceDescriptor);
+            var dict = HelperFunctions.IsKeyboard(id)
+                ? _keyboardReports
+                : _mouseReports;
+            if (!dict.ContainsKey(bindingDescriptor))
+            {
+                throw new Exception($"Unknown Binding Index {bindingDescriptor.Index}, SubIndex {bindingDescriptor.SubIndex}, Type {bindingDescriptor.Type}");
+            }
             return HelperFunctions.IsKeyboard(id)
                 ? _keyboardReports[bindingDescriptor]
                 : _mouseReports[bindingDescriptor];
@@ -251,25 +258,8 @@ namespace Core_Interception.DeviceLibrary
 
         public BindingReport BuildKeyboardBindingReport(BindingDescriptor bindingDescriptor)
         {
-            var i = bindingDescriptor.Index;
-            uint lParam;
-            if (i > 255)
-            {
-                i -= 256;
-                lParam = (0x100 | ((uint)i + 1 & 0xff)) << 16;
-            }
-            else
-            {
-                lParam = (uint)(i + 1) << 16;
-            }
-            
-            var sb = new StringBuilder(260);
-            if (ManagedWrapper.GetKeyNameTextW(lParam, sb, 260) == 0)
-            {
-                return null;
-            }
-            var keyName = sb.ToString().Trim();
-            if (keyName == "") return null;
+            var keyName = KeyNameHelper.GetNameFromScanCode(bindingDescriptor.Index + 1);
+            if (keyName == null) return null;
             return new BindingReport
             {
                 Title = keyName,
@@ -290,17 +280,19 @@ namespace Core_Interception.DeviceLibrary
 
             for (var i = 0; i < 256; i++)
             {
+                BindingReport report = null;
                 var bd = new BindingDescriptor
                 {
                     Type = BindingType.Button,
                     Index = i,
                     SubIndex = 0
                 };
-                var report = BuildKeyboardBindingReport(bd);
-                if (report == null) continue;
-                _keyboardList.Bindings.Add(report);
-                _keyboardReports.TryAdd(bd, report);
-
+                report = BuildKeyboardBindingReport(bd);
+                if (report != null)
+                {
+                    _keyboardList.Bindings.Add(report);
+                    _keyboardReports.TryAdd(bd, report);
+                }
                 // Check if this button has an extended (Right) variant
                 var altBd = new BindingDescriptor
                 {
@@ -309,9 +301,11 @@ namespace Core_Interception.DeviceLibrary
                     SubIndex = 0
                 };
                 var altReport = BuildKeyboardBindingReport(altBd);
-                if (altReport == null || report.Title == altReport.Title) continue;
-                _keyboardList.Bindings.Add(altReport);
-                _keyboardReports.TryAdd(altBd, altReport);
+                if (altReport != null && (report == null || report.Title != altReport.Title)) // If the alReport is not null, and is not the same as the report (if it exists)
+                {
+                    _keyboardList.Bindings.Add(altReport);
+                    _keyboardReports.TryAdd(altBd, altReport);
+                }
             }
             _keyboardList.Bindings.Sort((x, y) => string.Compare(x.Title, y.Title, StringComparison.Ordinal));
         }
