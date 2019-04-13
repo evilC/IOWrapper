@@ -14,6 +14,7 @@
    limitations under the License.
 */
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
@@ -23,10 +24,8 @@ namespace HidWizards.IOWrapper.Core
 {
     public class GenericMEFPluginLoader<T>
     {
-        private CompositionContainer _Container;
-
         [ImportMany]
-        public IEnumerable<T> Plugins
+        public Lazy<T>[] Plugins
         {
             get;
             set;
@@ -46,8 +45,8 @@ namespace HidWizards.IOWrapper.Core
                 }
             }
 
-            _Container = new CompositionContainer(catalog);
-            _Container.ComposeParts(this);
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
         }
     }
 }

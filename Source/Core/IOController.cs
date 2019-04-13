@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System;
+using System.ComponentModel.Composition;
 using System.Diagnostics;
+using System.Linq;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
@@ -12,20 +14,30 @@ namespace HidWizards.IOWrapper.Core
     public class IOController : IDisposable
     {
         bool disposed;
-        private Dictionary<string, IProvider> _Providers;
-        private Dictionary<Guid, InputSubscriptionRequest> ActiveInputSubscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
-        private Dictionary<Guid, OutputSubscriptionRequest> ActiveOutputSubscriptions = new Dictionary<Guid, OutputSubscriptionRequest>();
+        private Dictionary<string, IProvider> _providers;
+        private readonly Dictionary<Guid, InputSubscriptionRequest> ActiveInputSubscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
+        private readonly Dictionary<Guid, OutputSubscriptionRequest> ActiveOutputSubscriptions = new Dictionary<Guid, OutputSubscriptionRequest>();
 
         public IOController()
         {
-            GenericMEFPluginLoader<IProvider> loader = new GenericMEFPluginLoader<IProvider>("Providers");
-            _Providers = new Dictionary<string, IProvider>();
-            IEnumerable<IProvider> providers = loader.Plugins;
+            var loader = new GenericMEFPluginLoader<IProvider>("Providers");
+            _providers = new Dictionary<string, IProvider>();
+            var providers = loader.Plugins;
             Log("Initializing...");
-            foreach (var provider in providers)
+            foreach (var lazyProvider in providers)
             {
-                _Providers[provider.ProviderName] = provider;
-                Log("Initialized Provider {0}", provider.ProviderName);
+                try
+                {
+                    var provider = lazyProvider.Value;
+                    _providers[provider.ProviderName] = provider;
+                    Log("Initialized Provider {0}", provider.ProviderName);
+                }
+                catch(CompositionException ex)
+                {
+                    // Plugin failed to load
+                    Log(ex.RootCauses.First().Message);
+                }
+                
             }
             Log("Initialization complete");
         }
@@ -46,11 +58,11 @@ namespace HidWizards.IOWrapper.Core
                 return;
             if (disposing)
             {
-                foreach (var provider in _Providers.Values)
+                foreach (var provider in _providers.Values)
                 {
                     provider.Dispose();
                 }
-                _Providers = null;
+                _providers = null;
             }
             disposed = true;
             Log("Disposed");
@@ -64,7 +76,7 @@ namespace HidWizards.IOWrapper.Core
         public SortedDictionary<string, ProviderReport> GetInputList()
         {
             var list = new SortedDictionary<string, ProviderReport>();
-            foreach (var provider in _Providers.Values)
+            foreach (var provider in _providers.Values)
             {
                 if (!(provider is IInputProvider prov)) continue;
                 var report = prov.GetInputList();
@@ -79,7 +91,7 @@ namespace HidWizards.IOWrapper.Core
         public SortedDictionary<string, ProviderReport> GetOutputList()
         {
             var list = new SortedDictionary<string, ProviderReport>();
-            foreach (var provider in _Providers.Values)
+            foreach (var provider in _providers.Values)
             {
                 if (!(provider is IOutputProvider prov)) continue;
                 var report = prov.GetOutputList();
@@ -245,7 +257,7 @@ namespace HidWizards.IOWrapper.Core
 
         public void RefreshDevices()
         {
-            foreach (var provider in _Providers.Values)
+            foreach (var provider in _providers.Values)
             {
                 provider.RefreshDevices();
             }
@@ -259,8 +271,8 @@ namespace HidWizards.IOWrapper.Core
 
         public IProvider GetProvider(string providerName)
         {
-            if (!_Providers.ContainsKey(providerName)) throw new Exception($"Provider {providerName} Not found");
-            return _Providers[providerName];
+            if (!_providers.ContainsKey(providerName)) throw new Exception($"Provider {providerName} Not found");
+            return _providers[providerName];
         }
 
         public TInterface GetProvider<TInterface>(IProvider provider)
