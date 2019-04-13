@@ -5,10 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 ### Added
-- [DirectInput Provider] Duplicate devices now have #2, #3 etc after their name
 ### Changed 
 ### Deprecated
 ### Removed
+### Fixed
+
+## 0.10.2 - 2019-03-13
+### Added
+- [DirectInput Provider] Duplicate devices now have #2, #3 etc after their name
 ### Fixed
 - If a provider crashes on load, it no longer stops IOWrapper from loading
 - [Interception Provider] Windows keys are now mappable. Previously, if the non-extended scancode did not have a key name, the extended version of the scancode was not checked
