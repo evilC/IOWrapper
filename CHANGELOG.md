@@ -10,8 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Deprecated
 ### Removed
 ### Fixed
+- If a provider crashes on load, it no longer stops IOWrapper from loading
+- [Interception Provider] Windows keys are now mappable. Previously, if the non-extended scancode did not have a key name, the extended version of the scancode was not checked
+- [Interception Provider] F13-F24 are now mappable.
 
-##0.10.1 - 2019-01-27
+## 0.10.1 - 2019-01-27
 ### Changed 
 - [MIDI Provider] Note path shortened, now selected note displays better in UI
 - [MIDI Provider] CC now uses the full -32768..32767 range
@@ -22,7 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [MIDI Provider] ProcessUpdate no longer crashes if preProcessedUpdates is null
 - [Interception Provider] Left/Right Mouse Wheel labels are no longer switched
 
-##0.10.0 - 2019-01-03
+## 0.10.0 - 2019-01-03
 ### Changed 
 - Subscription and Bind Mode callbacks are now executed as Tasks and are an Action<short> rather than dynamic
 - Default blocking to true while UCR GUI does  not support selecting block
