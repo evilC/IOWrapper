@@ -15,27 +15,44 @@ namespace Core_Interception.Helpers
             Debug.WriteLine("IOWrapper| Core_Interception | " + formatStr, arguments);
         }
 
+        private static Dictionary<int, ButtonState> _buttonStateLookupTable = new Dictionary<int, ButtonState>()
+        {
+            { 1, new ButtonState{Button = 0, State = 1} },
+            { 2, new ButtonState{Button = 0, State = 0} },
+            { 4, new ButtonState{Button = 1, State = 1} },
+            { 8, new ButtonState{Button = 1, State = 0} },
+            { 16, new ButtonState{Button = 2, State = 1} },
+            { 32, new ButtonState{Button = 2, State = 0} },
+            { 64, new ButtonState{Button = 3, State = 1} },
+            { 128, new ButtonState{Button = 3, State = 0} },
+            { 256, new ButtonState{Button = 4, State = 1} },
+            { 512, new ButtonState{Button = 4, State = 0} },
+        };
+
         public static ButtonState[] StrokeToMouseButtonAndState(ManagedWrapper.Stroke stroke)
         {
             int state = stroke.mouse.state;
             ushort btn = 0;
+            
+            // ToDo: Is it possible to have a wheel and button in same update?
             if (state < 0x400)
             {
+                var buttonStates = new List<ButtonState>();
                 while (state > 2)
                 {
                     state >>= 2;
                     btn++;
                 }
                 state = 2 - state; // 1 = Pressed, 0 = Released
-            }
-            else
-            {
-                if (state == 0x400) btn = (ushort) (stroke.mouse.rolling > 0 ? 5 : 6); // Vertical mouse wheel
-                else if (state == 0x800) btn = (ushort)(stroke.mouse.rolling > 0 ? 7 : 8); // Horizontal mouse wheel
-                //state = stroke.mouse.rolling < 0 ? -1 : 1;
-                state = 1;
+                buttonStates.Add(new ButtonState { Button = btn, State = state });
+                return buttonStates.ToArray();
             }
 
+            // Wheel
+            if (state == 0x400) btn = (ushort) (stroke.mouse.rolling > 0 ? 5 : 6); // Vertical mouse wheel
+            else if (state == 0x800) btn = (ushort)(stroke.mouse.rolling > 0 ? 7 : 8); // Horizontal mouse wheel
+            //state = stroke.mouse.rolling < 0 ? -1 : 1;
+            state = 1;
             return new ButtonState[1] { new ButtonState { Button = btn, State = state } };
         }
 
