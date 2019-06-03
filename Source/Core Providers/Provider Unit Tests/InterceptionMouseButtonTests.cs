@@ -26,7 +26,7 @@ namespace Provider_Unit_Tests
         }
 
         [TestMethod]
-        public void MultipleMouseButtons ()
+        public void ReleaseLeftAndRightMouse ()
         {
             var stroke = new ManagedWrapper.Stroke
             {
@@ -38,8 +38,8 @@ namespace Provider_Unit_Tests
 
             var res = HelperFunctions.StrokeToMouseButtonAndState(stroke);
             res.Should().BeEquivalentTo(
-                new HelperFunctions.ButtonState { Button = 0, State = 1 },
-                new HelperFunctions.ButtonState { Button = 1, State = 1 }
+                new HelperFunctions.ButtonState { Button = 0, State = 0 },
+                new HelperFunctions.ButtonState { Button = 1, State = 0 }
             );
         }
 
