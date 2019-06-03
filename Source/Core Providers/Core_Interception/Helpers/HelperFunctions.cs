@@ -15,7 +15,7 @@ namespace Core_Interception.Helpers
             Debug.WriteLine("IOWrapper| Core_Interception | " + formatStr, arguments);
         }
 
-        public static ButtonState StrokeToMouseButtonAndState(ManagedWrapper.Stroke stroke)
+        public static ButtonState[] StrokeToMouseButtonAndState(ManagedWrapper.Stroke stroke)
         {
             int state = stroke.mouse.state;
             ushort btn = 0;
@@ -35,7 +35,8 @@ namespace Core_Interception.Helpers
                 //state = stroke.mouse.rolling < 0 ? -1 : 1;
                 state = 1;
             }
-            return new ButtonState { Button = btn, State = state };
+
+            return new ButtonState[1] { new ButtonState { Button = btn, State = state } };
         }
 
         public class ButtonState

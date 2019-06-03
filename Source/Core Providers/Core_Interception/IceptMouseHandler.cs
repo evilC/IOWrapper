@@ -30,8 +30,18 @@ namespace Core_Interception
         {
             if (stroke.mouse.state > 0)
             {
-                var buttonAndState = HelperFunctions.StrokeToMouseButtonAndState(stroke);
-                return new[] { new BindingUpdate { Binding = new BindingDescriptor() { Type = BindingType.Button, Index = buttonAndState.Button }, Value = buttonAndState.State } };
+                var buttonsAndStates = HelperFunctions.StrokeToMouseButtonAndState(stroke);
+                var bindingUpdates = new BindingUpdate[buttonsAndStates.Length];
+
+                for (var i = 0; i < buttonsAndStates.Length; i++)
+                {
+                    bindingUpdates[i] = new BindingUpdate
+                    {
+                        Binding = new BindingDescriptor() { Type = BindingType.Button, Index = buttonsAndStates[i].Button },
+                        Value = buttonsAndStates[i].State
+                    };
+                }
+                return bindingUpdates;
             }
 
             try
