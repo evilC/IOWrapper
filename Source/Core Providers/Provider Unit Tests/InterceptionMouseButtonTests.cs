@@ -20,7 +20,6 @@ namespace Provider_Unit_Tests
             };
 
             var res = HelperFunctions.StrokeToMouseButtonAndState(stroke);
-            res.Length.Should().Be(1);
             res.Should().BeEquivalentTo(new HelperFunctions.ButtonState { Button = 0, State = 1 });
         }
 
@@ -36,7 +35,6 @@ namespace Provider_Unit_Tests
             };
 
             var res = HelperFunctions.StrokeToMouseButtonAndState(stroke);
-            res.Length.Should().Be(1);
             var bs = new object[2]
             {
                 new HelperFunctions.ButtonState { Button = 0, State = 1 },
