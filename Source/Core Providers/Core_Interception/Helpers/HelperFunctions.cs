@@ -15,7 +15,7 @@ namespace Core_Interception.Helpers
             Debug.WriteLine("IOWrapper| Core_Interception | " + formatStr, arguments);
         }
 
-        private static readonly Dictionary<int, ButtonState> _buttonStateLookupTable = new Dictionary<int, ButtonState>()
+        private static readonly Dictionary<int, ButtonState> ButtonStateLookupTable = new Dictionary<int, ButtonState>()
         {
             { 1, new ButtonState{Button = 0, State = 1} },
             { 2, new ButtonState{Button = 0, State = 0} },
@@ -32,31 +32,28 @@ namespace Core_Interception.Helpers
         public static ButtonState[] StrokeToMouseButtonAndState(ManagedWrapper.Stroke stroke)
         {
             int state = stroke.mouse.state;
-            ushort btn = 0;
             
-            // ToDo: Is it possible to have a wheel and button in same update?
-            if (state < 0x400)
+            // Buttons
+            var buttonStates = new List<ButtonState>();
+            foreach (var buttonState in ButtonStateLookupTable)
             {
-                var buttonStates = new List<ButtonState>();
-                foreach (var buttonState in _buttonStateLookupTable)
-                {
-                    if (state < buttonState.Key) break;
-                    if ((state & buttonState.Key) == buttonState.Key)
-                    {
-                        buttonStates.Add(buttonState.Value);
-                    }
+                if (state < buttonState.Key) break;
+                if ((state & buttonState.Key) != buttonState.Key) continue;
 
-                    state -= buttonState.Key;
-                }
-                return buttonStates.ToArray();
+                buttonStates.Add(buttonState.Value);
+                state -= buttonState.Key;
             }
 
             // Wheel
-            if (state == 0x400) btn = (ushort) (stroke.mouse.rolling > 0 ? 5 : 6); // Vertical mouse wheel
-            else if (state == 0x800) btn = (ushort)(stroke.mouse.rolling > 0 ? 7 : 8); // Horizontal mouse wheel
-            //state = stroke.mouse.rolling < 0 ? -1 : 1;
-            state = 1;
-            return new ButtonState[1] { new ButtonState { Button = btn, State = state } };
+            if ((state & 0x400) == 0x400)
+            {
+                buttonStates.Add(new ButtonState{Button = (ushort)(stroke.mouse.rolling > 0 ? 5 : 6), State = 1});
+            }
+            else if ((state & 0x800) == 0x800)
+            {
+                buttonStates.Add(new ButtonState { Button = (ushort)(stroke.mouse.rolling > 0 ? 7 : 8), State = 1});
+            }
+            return buttonStates.ToArray();
         }
 
         public class ButtonState
