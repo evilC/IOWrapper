@@ -15,7 +15,7 @@ namespace Core_Interception.Helpers
             Debug.WriteLine("IOWrapper| Core_Interception | " + formatStr, arguments);
         }
 
-        private static Dictionary<int, ButtonState> _buttonStateLookupTable = new Dictionary<int, ButtonState>()
+        private static readonly Dictionary<int, ButtonState> _buttonStateLookupTable = new Dictionary<int, ButtonState>()
         {
             { 1, new ButtonState{Button = 0, State = 1} },
             { 2, new ButtonState{Button = 0, State = 0} },
@@ -38,13 +38,16 @@ namespace Core_Interception.Helpers
             if (state < 0x400)
             {
                 var buttonStates = new List<ButtonState>();
-                while (state > 2)
+                foreach (var buttonState in _buttonStateLookupTable)
                 {
-                    state >>= 2;
-                    btn++;
+                    if (state < buttonState.Key) break;
+                    if ((state & buttonState.Key) == buttonState.Key)
+                    {
+                        buttonStates.Add(buttonState.Value);
+                    }
+
+                    state -= buttonState.Key;
                 }
-                state = 2 - state; // 1 = Pressed, 0 = Released
-                buttonStates.Add(new ButtonState { Button = btn, State = state });
                 return buttonStates.ToArray();
             }
 
