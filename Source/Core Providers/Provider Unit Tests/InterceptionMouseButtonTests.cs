@@ -20,7 +20,9 @@ namespace Provider_Unit_Tests
             };
 
             var res = HelperFunctions.StrokeToMouseButtonAndState(stroke);
-            res.Should().BeEquivalentTo(new HelperFunctions.ButtonState { Button = 0, State = 1 });
+            res.Should().BeEquivalentTo(
+                new HelperFunctions.ButtonState { Button = 0, State = 1 }
+            );
         }
 
         [TestMethod]
@@ -30,17 +32,15 @@ namespace Provider_Unit_Tests
             {
                 mouse = new ManagedWrapper.MouseStroke
                 {
-                    state = 1
+                    state = 10
                 }
             };
 
             var res = HelperFunctions.StrokeToMouseButtonAndState(stroke);
-            var bs = new object[2]
-            {
+            res.Should().BeEquivalentTo(
                 new HelperFunctions.ButtonState { Button = 0, State = 1 },
                 new HelperFunctions.ButtonState { Button = 1, State = 1 }
-            };
-            res.Should().BeEquivalentTo(bs);
+            );
         }
 
     }
