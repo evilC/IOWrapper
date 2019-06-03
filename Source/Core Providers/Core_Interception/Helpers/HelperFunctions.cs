@@ -45,13 +45,25 @@ namespace Core_Interception.Helpers
             }
 
             // Wheel
-            if ((state & 0x400) == 0x400)
+            if ((state & 0x400) == 0x400) // Wheel up / down
             {
-                buttonStates.Add(new ButtonState{Button = (ushort)(stroke.mouse.rolling > 0 ? 5 : 6), State = 1});
+                buttonStates.Add(
+                    new ButtonState
+                    {
+                        Button = 5,
+                        State = (stroke.mouse.rolling < 0 ? -1 : 1)
+                    }
+                );
             }
-            else if ((state & 0x800) == 0x800)
+            else if ((state & 0x800) == 0x800) // Wheel left / right
             {
-                buttonStates.Add(new ButtonState { Button = (ushort)(stroke.mouse.rolling > 0 ? 7 : 8), State = 1});
+                buttonStates.Add(
+                    new ButtonState
+                    {
+                        Button = 6,
+                        State = (stroke.mouse.rolling < 0 ? -1 : 1)
+                    }
+                );
             }
             return buttonStates.ToArray();
         }
