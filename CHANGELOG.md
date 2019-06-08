@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Deprecated
 ### Removed
 ### Fixed
+- [Interception Provider] Fix #30  
+When multiple mouse buttons changed state in one update of the mouse, only one event would be fired for one of the buttons
 
 ## 0.10.2 - 2019-03-13
 ### Added
