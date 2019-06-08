@@ -6,9 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 ### Changed 
-- [ViGEm Provider] Rename DS4 LT / RT to L2 (LT) and R2 (RT)
 ### Deprecated
 ### Removed
+### Fixed
+
+## 0.10.3 - 2019-06-08
+### Changed 
+- [ViGEm Provider] Rename DS4 LT / RT to L2 (LT) and R2 (RT)
 ### Fixed
 - [Interception Provider] Fix #30  
 When multiple mouse buttons changed state in one update of the mouse, only one event would be fired for one of the buttons
