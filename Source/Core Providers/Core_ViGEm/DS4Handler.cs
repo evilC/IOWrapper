@@ -25,7 +25,7 @@ namespace Core_ViGEm
 
             protected override List<string> axisNames { get; set; } = new List<string>
             {
-                "LX", "LY", "RX", "RY", "LT", "RT"
+                "LX", "LY", "RX", "RY", "L2 (LT)", "R2 (RT)"
             };
 
             private static readonly List<DualShock4Buttons> buttonIndexes = new List<DualShock4Buttons>

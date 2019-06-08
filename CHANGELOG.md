@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 ### Changed 
+- [ViGEm Provider] Rename DS4 LT / RT to L2 (LT) and R2 (RT)
 ### Deprecated
 ### Removed
 ### Fixed
