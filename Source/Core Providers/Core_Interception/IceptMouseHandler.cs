@@ -13,7 +13,7 @@ namespace Core_Interception
         private readonly DeviceDescriptor _deviceDescriptor;
         private readonly EventHandler<BindModeUpdate> _bindModeHandler;
         private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
-        private SubscriptionHandler SubHandler;
+        private readonly SubscriptionHandler _subHandler;
         private DetectionMode _detectionMode = DetectionMode.Subscription;
 
         public IceptMouseHandler(DeviceDescriptor deviceDescriptor, 
@@ -24,7 +24,7 @@ namespace Core_Interception
             _deviceDescriptor = deviceDescriptor;
             _bindModeHandler = bindModeHandler;
             _deviceLibrary = deviceLibrary;
-            SubHandler = new SubscriptionHandler(deviceDescriptor, deviceEmptyHandler, CallbackHandler);
+            _subHandler = new SubscriptionHandler(deviceDescriptor, deviceEmptyHandler, CallbackHandler);
         }
 
         private void CallbackHandler(InputSubscriptionRequest subreq, short value)
@@ -34,7 +34,7 @@ namespace Core_Interception
 
         public void SubscribeInput(InputSubscriptionRequest subReq)
         {
-            SubHandler.Subscribe(subReq);
+            _subHandler.Subscribe(subReq);
         }
 
         public void Dispose()
@@ -63,7 +63,7 @@ namespace Core_Interception
                     };
                     if (_detectionMode == DetectionMode.Subscription)
                     {
-                        if (SubHandler.FireCallbacks(bindingUpdate.Binding, (short)bindingUpdate.Value))
+                        if (_subHandler.FireCallbacks(bindingUpdate.Binding, (short)bindingUpdate.Value))
                         {
                             // Block requested
                             // Remove the event for this button from the stroke, leaving other button events intact
@@ -103,7 +103,7 @@ namespace Core_Interception
                     {
                         if (_detectionMode == DetectionMode.Subscription)
                         {
-                            if (SubHandler.FireCallbacks(bindingUpdate.Binding, (short)bindingUpdate.Value))
+                            if (_subHandler.FireCallbacks(bindingUpdate.Binding, (short)bindingUpdate.Value))
                             {
                                 if (bindingUpdate.Binding.Index == 0)
                                 {
