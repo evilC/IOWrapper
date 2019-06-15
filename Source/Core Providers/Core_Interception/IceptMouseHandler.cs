@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Core_Interception.Helpers;
 using Core_Interception.Lib;
-//using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandlers;
@@ -12,17 +10,18 @@ namespace Core_Interception
 {
     public class IceptMouseHandler : IDisposable
     {
-        //private readonly EventHandler<DeviceDescriptor> _deviceEmptyHandler;
+        private readonly DeviceDescriptor _deviceDescriptor;
         private readonly EventHandler<BindModeUpdate> _bindModeHandler;
         private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
         private SubscriptionHandler SubHandler;
+        private DetectionMode _detectionMode = DetectionMode.Subscription;
 
         public IceptMouseHandler(DeviceDescriptor deviceDescriptor, 
             EventHandler<DeviceDescriptor> deviceEmptyHandler, 
             EventHandler<BindModeUpdate> bindModeHandler,
             IInputOutputDeviceLibrary<int> deviceLibrary)
         {
-            //_deviceEmptyHandler = deviceEmptyHandler;
+            _deviceDescriptor = deviceDescriptor;
             _bindModeHandler = bindModeHandler;
             _deviceLibrary = deviceLibrary;
             SubHandler = new SubscriptionHandler(deviceDescriptor, deviceEmptyHandler, CallbackHandler);
@@ -45,7 +44,7 @@ namespace Core_Interception
 
         public void SetDetectionMode(DetectionMode detectionMode)
         {
-            throw new NotImplementedException();
+            _detectionMode = detectionMode;
         }
 
         public ManagedWrapper.Stroke ProcessUpdate(ManagedWrapper.Stroke stroke)
@@ -62,21 +61,33 @@ namespace Core_Interception
                         Binding = new BindingDescriptor() { Type = BindingType.Button, Index = btnState.Button },
                         Value = btnState.State
                     };
-                    if (SubHandler.FireCallbacks(bindingUpdate.Binding, (short)bindingUpdate.Value))
+                    if (_detectionMode == DetectionMode.Subscription)
                     {
-                        // Block requested
-                        // Remove the event for this button from the stroke, leaving other button events intact
-                        stroke.mouse.state -= btnState.Flag;
-                        // If we are removing a mouse wheel event, then set rolling to 0 if no mouse wheel event left
-                        if (btnState.Flag == 0x400 || btnState.Flag == 0x800)
+                        if (SubHandler.FireCallbacks(bindingUpdate.Binding, (short)bindingUpdate.Value))
                         {
-                            if ((stroke.mouse.state & 0x400) != 0x400 && (stroke.mouse.state & 0x800) != 0x800)
+                            // Block requested
+                            // Remove the event for this button from the stroke, leaving other button events intact
+                            stroke.mouse.state -= btnState.Flag;
+                            // If we are removing a mouse wheel event, then set rolling to 0 if no mouse wheel event left
+                            if (btnState.Flag == 0x400 || btnState.Flag == 0x800)
                             {
-                                //Debug.WriteLine("UCR| Removing rolling flag from stroke");
-                                stroke.mouse.rolling = 0;
+                                if ((stroke.mouse.state & 0x400) != 0x400 && (stroke.mouse.state & 0x800) != 0x800)
+                                {
+                                    //Debug.WriteLine("UCR| Removing rolling flag from stroke");
+                                    stroke.mouse.rolling = 0;
+                                }
                             }
+                            //Debug.WriteLine($"UCR| Removing flag {btnState.Flag} from stoke, leaving state {stroke.mouse.state}");
                         }
-                        //Debug.WriteLine($"UCR| Removing flag {btnState.Flag} from stoke, leaving state {stroke.mouse.state}");
+                    }
+                    else
+                    {
+                        _bindModeHandler?.Invoke(this, new BindModeUpdate
+                        {
+                            Device = _deviceDescriptor,
+                            Binding = _deviceLibrary.GetInputBindingReport(_deviceDescriptor, bindingUpdate.Binding),
+                            Value = (short)bindingUpdate.Value
+                        });
                     }
                 }
             }
@@ -90,16 +101,28 @@ namespace Core_Interception
                 {
                     foreach (var bindingUpdate in bindingUpdates)
                     {
-                        if (SubHandler.FireCallbacks(bindingUpdate.Binding, (short) bindingUpdate.Value))
+                        if (_detectionMode == DetectionMode.Subscription)
                         {
-                            if (bindingUpdate.Binding.Index == 0)
+                            if (SubHandler.FireCallbacks(bindingUpdate.Binding, (short)bindingUpdate.Value))
                             {
-                                stroke.mouse.x = 0;
+                                if (bindingUpdate.Binding.Index == 0)
+                                {
+                                    stroke.mouse.x = 0;
+                                }
+                                else
+                                {
+                                    stroke.mouse.y = 0;
+                                }
                             }
-                            else
+                        }
+                        else
+                        {
+                            _bindModeHandler?.Invoke(this, new BindModeUpdate
                             {
-                                stroke.mouse.y = 0;
-                            }
+                                Device = _deviceDescriptor,
+                                Binding = _deviceLibrary.GetInputBindingReport(_deviceDescriptor, bindingUpdate.Binding),
+                                Value = (short)bindingUpdate.Value
+                            });
                         }
                     }
                 }

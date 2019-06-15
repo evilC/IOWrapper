@@ -2,7 +2,6 @@
 using System.Threading;
 using HidWizards.IOWrapper.DataTransferObjects;
 
-/*
 namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
 {
     /// <summary>
@@ -31,4 +30,3 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
         }
     }
 }
-*/

@@ -1,7 +1,6 @@
 ﻿using System;
 using HidWizards.IOWrapper.DataTransferObjects;
 
-/*
 namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
 {
     /// <inheritdoc />
@@ -39,4 +38,3 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
         void UnsubscribeInput(InputSubscriptionRequest subReq);
     }
 }
-*/
