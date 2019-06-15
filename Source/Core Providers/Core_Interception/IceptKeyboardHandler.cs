@@ -6,6 +6,11 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Core_Interception
 {
+    class IceptKeyboardHandler
+    {
+
+    }
+
     /*
     class IceptKeyboardHandler : DeviceHandlerBase<ManagedWrapper.Stroke, (BindingType, int)>
     {

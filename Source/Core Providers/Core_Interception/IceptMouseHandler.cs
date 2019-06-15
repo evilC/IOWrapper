@@ -8,6 +8,43 @@ using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Core_Interception
 {
+    public class IceptMouseHandler : IDisposable
+    {
+        private readonly EventHandler<DeviceDescriptor> _deviceEmptyHandler;
+        private readonly EventHandler<BindModeUpdate> _bindModeHandler;
+        private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
+
+        public IceptMouseHandler(DeviceDescriptor deviceDescriptor, 
+            EventHandler<DeviceDescriptor> deviceEmptyHandler, 
+            EventHandler<BindModeUpdate> bindModeHandler,
+            IInputOutputDeviceLibrary<int> deviceLibrary)
+        {
+            _deviceEmptyHandler = deviceEmptyHandler;
+            _bindModeHandler = bindModeHandler;
+            _deviceLibrary = deviceLibrary;
+        }
+
+        public void SubscribeInput(InputSubscriptionRequest subReq)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            // ToDo: Implement
+        }
+
+        public void SetDetectionMode(DetectionMode detectionMode)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool ProcessUpdate(ManagedWrapper.Stroke stroke)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     /*
     public class IceptMouseHandler : DeviceHandlerBase<ManagedWrapper.Stroke, (BindingType, int)>
     {

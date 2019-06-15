@@ -57,7 +57,8 @@ namespace Core_Interception
 
         //private readonly ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>> _monitoredKeyboards = new ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>>();
         //private readonly ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>> _monitoredMice = new ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>>();
-
+        private readonly ConcurrentDictionary<int, IceptKeyboardHandler> _monitoredKeyboards = new ConcurrentDictionary<int, IceptKeyboardHandler>();
+        private readonly ConcurrentDictionary<int, IceptMouseHandler> _monitoredMice = new ConcurrentDictionary<int, IceptMouseHandler>();
 
         public Core_Interception()
         {
@@ -104,29 +105,29 @@ namespace Core_Interception
         /// Also controls which devices are filtered when filtering is on
         /// </summary>
         /// <param name="state">Set to true to turn filtering on</param>
-        //private void SetFilterState(bool state)
-        //{
-        //    if (state && !_filterState)
-        //    {
-        //        ManagedWrapper.SetFilter(_deviceContext, IsMonitoredKeyboard, ManagedWrapper.Filter.All);
-        //        ManagedWrapper.SetFilter(_deviceContext, IsMonitoredMouse, ManagedWrapper.Filter.All);
-        //    }
-        //    else if (!state && _filterState)
-        //    {
-        //        ManagedWrapper.SetFilter(_deviceContext, IsMonitoredKeyboard, ManagedWrapper.Filter.None);
-        //        ManagedWrapper.SetFilter(_deviceContext, IsMonitoredMouse, ManagedWrapper.Filter.None);
-        //    }
-        //}
+        private void SetFilterState(bool state)
+        {
+            if (state && !_filterState)
+            {
+                ManagedWrapper.SetFilter(_deviceContext, IsMonitoredKeyboard, ManagedWrapper.Filter.All);
+                ManagedWrapper.SetFilter(_deviceContext, IsMonitoredMouse, ManagedWrapper.Filter.All);
+            }
+            else if (!state && _filterState)
+            {
+                ManagedWrapper.SetFilter(_deviceContext, IsMonitoredKeyboard, ManagedWrapper.Filter.None);
+                ManagedWrapper.SetFilter(_deviceContext, IsMonitoredMouse, ManagedWrapper.Filter.None);
+            }
+        }
 
-        //private int IsMonitoredKeyboard(int device)
-        //{
-        //    return Convert.ToInt32(_monitoredKeyboards.ContainsKey(device));
-        //}
+        private int IsMonitoredKeyboard(int device)
+        {
+            return Convert.ToInt32(_monitoredKeyboards.ContainsKey(device));
+        }
 
-        //private int IsMonitoredMouse(int device)
-        //{
-        //    return Convert.ToInt32(_monitoredMice.ContainsKey(device));
-        //}
+        private int IsMonitoredMouse(int device)
+        {
+            return Convert.ToInt32(_monitoredMice.ContainsKey(device));
+        }
 
         private void SetPollThreadState(bool state)
         {
@@ -202,7 +203,7 @@ namespace Core_Interception
                     else
                     {
                         EnsureMonitoredMouseExists(devId, subReq.DeviceDescriptor);
-                        //_monitoredMice[devId].SubscribeInput(subReq);
+                        _monitoredMice[devId].SubscribeInput(subReq);
                         ret = true;
                     }
 
@@ -354,8 +355,8 @@ namespace Core_Interception
             var id = _deviceLibrary.GetInputDeviceIdentifier(e);
             if (_pollThreadRunning)
                 SetPollThreadState(false);
-            //_monitoredMice[id].Dispose();
-            //_monitoredMice.TryRemove(id, out _);
+            _monitoredMice[id].Dispose();
+            _monitoredMice.TryRemove(id, out _);
             if (_pollThreadDesired)
                 SetPollThreadState(true);
         }
@@ -429,12 +430,12 @@ namespace Core_Interception
                         EnsureMonitoredMouseExists(devId, deviceDescriptor);
                         _bindModeCallback = callback;
                     }
-                    //else if (!_monitoredMice.ContainsKey(devId))
-                    //{
-                    //    return;
-                    //}
+                    else if (!_monitoredMice.ContainsKey(devId))
+                    {
+                        return;
+                    }
 
-                    //_monitoredMice[devId].SetDetectionMode(detectionMode);
+                    _monitoredMice[devId].SetDetectionMode(detectionMode);
                 }
 
                 if (_pollThreadDesired)
@@ -472,19 +473,19 @@ namespace Core_Interception
                 }
                 for (var i = 11; i < 21; i++)
                 {
-                    //var isMonitoredMouse = _monitoredMice.ContainsKey(i);
+                    var isMonitoredMouse = _monitoredMice.ContainsKey(i);
 
                     while (ManagedWrapper.Receive(_deviceContext, i, ref stroke, 1) > 0)
                     {
                         var block = false;
-                        //if (isMonitoredMouse)
-                        //{
-                        //    block = _monitoredMice[i].ProcessUpdate(stroke);
-                        //}
-                        //if (!(blockingEnabled && block))
-                        //{
-                        //    ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
-                        //}
+                        if (isMonitoredMouse)
+                        {
+                            block = _monitoredMice[i].ProcessUpdate(stroke);
+                        }
+                        if (!(blockingEnabled && block))
+                        {
+                            ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
+                        }
                     }
                 }
                 Thread.Sleep(1);
@@ -503,8 +504,8 @@ namespace Core_Interception
 
         private void EnsureMonitoredMouseExists(int devId, DeviceDescriptor deviceDescriptor)
         {
-            //if (_monitoredMice.ContainsKey(devId)) return;
-            //_monitoredMice.TryAdd(devId, new IceptMouseHandler(deviceDescriptor, MouseEmptyHandler, BindModeHandler, _deviceLibrary));
+            if (_monitoredMice.ContainsKey(devId)) return;
+            _monitoredMice.TryAdd(devId, new IceptMouseHandler(deviceDescriptor, MouseEmptyHandler, BindModeHandler, _deviceLibrary));
         }
 
 
