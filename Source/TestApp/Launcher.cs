@@ -26,7 +26,7 @@ namespace TestApp
 
             //var spaceMouse = new SpaceMouseTester("SpaceMouse", Library.Devices.SpaceMouse.Pro);
             //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.SpaceMouse, Library.Devices.SpaceMouse.Pro, BindModeHandler);
-            var motör49Tester = new MidiTester("MIDI", Library.Devices.Midi.Motör49Main);
+            //var motör49Tester = new MidiTester("MIDI", Library.Devices.Midi.Motör49Main);
             //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.Midi, Library.Devices.Midi.Motör49Main, BindModeHandler);
             //var subReq = new OutputSubscriptionRequest
             //{
