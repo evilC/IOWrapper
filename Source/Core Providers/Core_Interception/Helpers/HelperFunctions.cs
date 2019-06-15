@@ -16,7 +16,7 @@ namespace Core_Interception.Helpers
             Debug.WriteLine("IOWrapper| Core_Interception | " + formatStr, arguments);
         }
 
-        private static readonly Dictionary<int, ButtonState> ButtonStateLookupTable = new Dictionary<int, ButtonState>()
+        public static readonly Dictionary<int, ButtonState> ButtonStateLookupTable = new Dictionary<int, ButtonState>()
         {
             { 1, new ButtonState{Button = 0, State = 1, Flag = 1} },        // LMB Press
             { 2, new ButtonState{Button = 0, State = 0, Flag = 2} },        // LMB Release

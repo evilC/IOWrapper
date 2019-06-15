@@ -21,7 +21,7 @@ namespace Provider_Unit_Tests
 
             var res = HelperFunctions.StrokeToMouseButtonAndState(stroke);
             res.Should().BeEquivalentTo(
-                new HelperFunctions.ButtonState { Button = 0, State = 1 }
+                HelperFunctions.ButtonStateLookupTable[1]
             );
         }
 
@@ -38,7 +38,7 @@ namespace Provider_Unit_Tests
 
             var res = HelperFunctions.StrokeToMouseButtonAndState(stroke);
             res.Should().BeEquivalentTo(
-                new HelperFunctions.ButtonState { Button = 0, State = 0 }
+                HelperFunctions.ButtonStateLookupTable[2]
             );
         }
 
@@ -55,7 +55,7 @@ namespace Provider_Unit_Tests
 
             var res = HelperFunctions.StrokeToMouseButtonAndState(stroke);
             res.Should().BeEquivalentTo(
-                new HelperFunctions.ButtonState { Button = 1, State = 1 }
+                HelperFunctions.ButtonStateLookupTable[4]
             );
         }
 
@@ -72,7 +72,7 @@ namespace Provider_Unit_Tests
 
             var res = HelperFunctions.StrokeToMouseButtonAndState(stroke);
             res.Should().BeEquivalentTo(
-                new HelperFunctions.ButtonState { Button = 1, State = 0 }
+                HelperFunctions.ButtonStateLookupTable[8]
             );
         }
 
@@ -89,7 +89,7 @@ namespace Provider_Unit_Tests
 
             var res = HelperFunctions.StrokeToMouseButtonAndState(stroke);
             res.Should().BeEquivalentTo(
-                new HelperFunctions.ButtonState { Button = 2, State = 1 }
+                HelperFunctions.ButtonStateLookupTable[16]
             );
         }
 
@@ -106,7 +106,7 @@ namespace Provider_Unit_Tests
 
             var res = HelperFunctions.StrokeToMouseButtonAndState(stroke);
             res.Should().BeEquivalentTo(
-                new HelperFunctions.ButtonState { Button = 2, State = 0 }
+                HelperFunctions.ButtonStateLookupTable[32]
             );
         }
 
@@ -123,7 +123,7 @@ namespace Provider_Unit_Tests
 
             var res = HelperFunctions.StrokeToMouseButtonAndState(stroke);
             res.Should().BeEquivalentTo(
-                new HelperFunctions.ButtonState { Button = 3, State = 1 }
+                HelperFunctions.ButtonStateLookupTable[64]
             );
         }
 
@@ -140,7 +140,7 @@ namespace Provider_Unit_Tests
 
             var res = HelperFunctions.StrokeToMouseButtonAndState(stroke);
             res.Should().BeEquivalentTo(
-                new HelperFunctions.ButtonState { Button = 3, State = 0 }
+                HelperFunctions.ButtonStateLookupTable[128]
             );
         }
 
@@ -157,7 +157,7 @@ namespace Provider_Unit_Tests
 
             var res = HelperFunctions.StrokeToMouseButtonAndState(stroke);
             res.Should().BeEquivalentTo(
-                new HelperFunctions.ButtonState { Button = 4, State = 1 }
+                HelperFunctions.ButtonStateLookupTable[256]
             );
         }
 
@@ -174,7 +174,7 @@ namespace Provider_Unit_Tests
 
             var res = HelperFunctions.StrokeToMouseButtonAndState(stroke);
             res.Should().BeEquivalentTo(
-                new HelperFunctions.ButtonState { Button = 4, State = 0 }
+                HelperFunctions.ButtonStateLookupTable[512]
             );
         }
 
@@ -263,8 +263,8 @@ namespace Provider_Unit_Tests
 
             var res = HelperFunctions.StrokeToMouseButtonAndState(stroke);
             res.Should().BeEquivalentTo(
-                new HelperFunctions.ButtonState { Button = 0, State = 0 },
-                new HelperFunctions.ButtonState { Button = 1, State = 0 }
+                HelperFunctions.ButtonStateLookupTable[2],
+                HelperFunctions.ButtonStateLookupTable[8]
             );
         }
 
@@ -281,7 +281,7 @@ namespace Provider_Unit_Tests
 
             var res = HelperFunctions.StrokeToMouseButtonAndState(stroke);
             res.Should().BeEquivalentTo(
-                new HelperFunctions.ButtonState { Button = 0, State = 1 },
+                HelperFunctions.ButtonStateLookupTable[1],
                 new HelperFunctions.ButtonState { Button = 5, State = 1 }
             );
         }
