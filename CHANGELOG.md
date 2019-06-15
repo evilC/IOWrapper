@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 ### Changed 
+- [DirectInput Provider] Fix #31 - Axis values are no longer inverted
 ### Deprecated
 ### Removed
 ### Fixed

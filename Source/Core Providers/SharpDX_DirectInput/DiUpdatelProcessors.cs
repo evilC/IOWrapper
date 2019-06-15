@@ -19,8 +19,14 @@ namespace SharpDX_DirectInput
     {
         public BindingUpdate[] Process(BindingUpdate update)
         {
-            update.Value = (65535 - update.Value) - 32768;
+            update.Value = UnsignedToSigned(update.Value);
             return new[] { update };
+        }
+
+        public int UnsignedToSigned(int inValue)
+        {
+            if (inValue == 32767) return 0;
+            return inValue - 32768;
         }
     }
 
