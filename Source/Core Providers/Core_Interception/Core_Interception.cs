@@ -9,7 +9,7 @@ using System.Xml;
 using Core_Interception.DeviceLibrary;
 using Core_Interception.Helpers;
 using Core_Interception.Lib;
-//using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
+using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
@@ -55,9 +55,7 @@ namespace Core_Interception
             }
         }
 
-        //private readonly ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>> _monitoredKeyboards = new ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>>();
-        //private readonly ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>> _monitoredMice = new ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>>();
-        private readonly ConcurrentDictionary<int, IceptKeyboardHandler> _monitoredKeyboards = new ConcurrentDictionary<int, IceptKeyboardHandler>();
+        private readonly ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>> _monitoredKeyboards = new ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>>();
         private readonly ConcurrentDictionary<int, IceptMouseHandler> _monitoredMice = new ConcurrentDictionary<int, IceptMouseHandler>();
 
         public Core_Interception()
@@ -232,7 +230,7 @@ namespace Core_Interception
                     if (HelperFunctions.IsKeyboard(devId))
                     {
                         ret = true;
-                        //_monitoredKeyboards[devId].UnsubscribeInput(subReq);
+                        _monitoredKeyboards[devId].UnsubscribeInput(subReq);
                     }
                     else
                     {
@@ -366,8 +364,8 @@ namespace Core_Interception
             var id = _deviceLibrary.GetInputDeviceIdentifier(e);
             if (_pollThreadRunning)
                 SetPollThreadState(false);
-            //_monitoredKeyboards[id].Dispose();
-            //_monitoredKeyboards.TryRemove(id, out _);
+            _monitoredKeyboards[id].Dispose();
+            _monitoredKeyboards.TryRemove(id, out _);
             if (_pollThreadDesired)
                 SetPollThreadState(true);
         }
@@ -456,19 +454,19 @@ namespace Core_Interception
             {
                 for (var i = 1; i < 11; i++)
                 {
-                    //var isMonitoredKeyboard = _monitoredKeyboards.ContainsKey(i);
+                    var isMonitoredKeyboard = _monitoredKeyboards.ContainsKey(i);
 
                     while (ManagedWrapper.Receive(_deviceContext, i, ref stroke, 1) > 0)
                     {
                         var block = false;
-                        //if (isMonitoredKeyboard)
-                        //{
-                        //    block = _monitoredKeyboards[i].ProcessUpdate(stroke);
-                        //}
-                        //if (!(blockingEnabled && block))
-                        //{
-                        //    ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
-                        //}
+                        if (isMonitoredKeyboard)
+                        {
+                            block = _monitoredKeyboards[i].ProcessUpdate(stroke);
+                        }
+                        if (!(blockingEnabled && block))
+                        {
+                            ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
+                        }
                     }
                 }
                 for (var i = 11; i < 21; i++)

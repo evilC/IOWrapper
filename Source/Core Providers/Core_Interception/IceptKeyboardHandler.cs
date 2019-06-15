@@ -1,17 +1,11 @@
 ﻿using System;
 using Core_Interception.Lib;
-//using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
+using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Core_Interception
 {
-    class IceptKeyboardHandler
-    {
-
-    }
-
-    /*
     class IceptKeyboardHandler : DeviceHandlerBase<ManagedWrapper.Stroke, (BindingType, int)>
     {
         private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
@@ -83,5 +77,4 @@ namespace Core_Interception
             
         }
     }
-    */
 }
