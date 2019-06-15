@@ -136,6 +136,11 @@ namespace Core_Interception
 
             return default(ManagedWrapper.Stroke);
         }
+
+        public void UnsubscribeInput(InputSubscriptionRequest subReq)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /*

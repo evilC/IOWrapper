@@ -237,7 +237,7 @@ namespace Core_Interception
                     else
                     {
                         ret = true;
-                        //_monitoredMice[devId].UnsubscribeInput(subReq);
+                        _monitoredMice[devId].UnsubscribeInput(subReq);
                     }
 
                     if (_pollThreadDesired)
