@@ -1,32 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Core_Interception.Helpers;
 using Core_Interception.Lib;
 //using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandlers;
 
 namespace Core_Interception
 {
     public class IceptMouseHandler : IDisposable
     {
-        private readonly EventHandler<DeviceDescriptor> _deviceEmptyHandler;
+        //private readonly EventHandler<DeviceDescriptor> _deviceEmptyHandler;
         private readonly EventHandler<BindModeUpdate> _bindModeHandler;
         private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
+        private SubscriptionHandler SubHandler;
 
         public IceptMouseHandler(DeviceDescriptor deviceDescriptor, 
             EventHandler<DeviceDescriptor> deviceEmptyHandler, 
             EventHandler<BindModeUpdate> bindModeHandler,
             IInputOutputDeviceLibrary<int> deviceLibrary)
         {
-            _deviceEmptyHandler = deviceEmptyHandler;
+            //_deviceEmptyHandler = deviceEmptyHandler;
             _bindModeHandler = bindModeHandler;
             _deviceLibrary = deviceLibrary;
+            SubHandler = new SubscriptionHandler(deviceDescriptor, deviceEmptyHandler, CallbackHandler);
+        }
+
+        private void CallbackHandler(InputSubscriptionRequest subreq, short value)
+        {
+            Task.Factory.StartNew(() => subreq.Callback(value));
         }
 
         public void SubscribeInput(InputSubscriptionRequest subReq)
         {
-            throw new NotImplementedException();
+            SubHandler.Subscribe(subReq);
         }
 
         public void Dispose()

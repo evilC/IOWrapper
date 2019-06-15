@@ -133,7 +133,7 @@ namespace Core_Interception
         {
             if (state && !_pollThreadRunning)
             {
-                //SetFilterState(true);
+                SetFilterState(true);
                 pollThreadStopRequested = false;
                 _pollThread = new Thread(() => PollThread(_blockingEnabled));
                 _pollThread.Start();
@@ -145,7 +145,7 @@ namespace Core_Interception
             }
             else if (!state && _pollThreadRunning)
             {
-                //SetFilterState(false);
+                SetFilterState(false);
                 pollThreadStopRequested = true;
                 while (_pollThreadRunning)
                 {
