@@ -17,16 +17,16 @@ namespace Core_Interception.Helpers
 
         private static readonly Dictionary<int, ButtonState> ButtonStateLookupTable = new Dictionary<int, ButtonState>()
         {
-            { 1, new ButtonState{Button = 0, State = 1} },
-            { 2, new ButtonState{Button = 0, State = 0} },
-            { 4, new ButtonState{Button = 1, State = 1} },
-            { 8, new ButtonState{Button = 1, State = 0} },
-            { 16, new ButtonState{Button = 2, State = 1} },
-            { 32, new ButtonState{Button = 2, State = 0} },
-            { 64, new ButtonState{Button = 3, State = 1} },
-            { 128, new ButtonState{Button = 3, State = 0} },
-            { 256, new ButtonState{Button = 4, State = 1} },
-            { 512, new ButtonState{Button = 4, State = 0} },
+            { 1, new ButtonState{Button = 0, State = 1, Flag = 1} },        // LMB Press
+            { 2, new ButtonState{Button = 0, State = 0, Flag = 2} },        // LMB Release
+            { 4, new ButtonState{Button = 1, State = 1, Flag = 4} },        // RMB Press
+            { 8, new ButtonState{Button = 1, State = 0, Flag = 8} },        // RMB Release
+            { 16, new ButtonState{Button = 2, State = 1, Flag = 16} },      // MMB Press
+            { 32, new ButtonState{Button = 2, State = 0, Flag = 32} },      // MMB Release
+            { 64, new ButtonState{Button = 3, State = 1, Flag = 64} },      // XB1 Press
+            { 128, new ButtonState{Button = 3, State = 0, Flag = 128} },    // XB1 Release
+            { 256, new ButtonState{Button = 4, State = 1, Flag = 256} },    // XB2 Press
+            { 512, new ButtonState{Button = 4, State = 0, Flag = 512} }     // XB2 Release
         };
 
         public static ButtonState[] StrokeToMouseButtonAndState(ManagedWrapper.Stroke stroke)
@@ -72,6 +72,7 @@ namespace Core_Interception.Helpers
         {
             public ushort Button { get; set; }
             public int State { get; set; }
+            public ushort Flag { get; set; } // Preserve original flag, so it can be removed from stroke
         }
 
         public static bool IsKeyboard(int devId)

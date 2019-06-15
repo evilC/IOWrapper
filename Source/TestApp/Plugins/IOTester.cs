@@ -15,7 +15,7 @@ namespace TestApp.Plugins
         private OutputSubscription _output;
         private BindingDescriptor _bindingDescriptor;
 
-        public IOTester(string name, ProviderDescriptor providerDescriptor, DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor)
+        public IOTester(string name, ProviderDescriptor providerDescriptor, DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor, bool block = false)
         {
             // Input
             _input = new InputSubscription
@@ -23,6 +23,7 @@ namespace TestApp.Plugins
                 ProviderDescriptor = providerDescriptor,
                 DeviceDescriptor = deviceDescriptor,
                 BindingDescriptor = bindingDescriptor,
+                Block = block,
                 Callback = new Action<short>(value =>
                 {
                     Console.WriteLine("{0} State: {1}", name, value);

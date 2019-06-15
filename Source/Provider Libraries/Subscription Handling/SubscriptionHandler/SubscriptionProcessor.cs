@@ -17,8 +17,7 @@ namespace Hidwizards.IOWrapper.Libraries.SubscriptionHandlers
 
         public bool FireCallbacks(BindingDescriptor bindingDescriptor, short value)
         {
-            //var block = false;
-            var block = true;   // ToDo: Blocking defaulted to true while UCR GUI does not support requesting blocking.
+            var block = false;
             foreach (var inputSubscriptionRequest in Dictionary.Values)
             {
                 _callbackHandler(inputSubscriptionRequest, value);

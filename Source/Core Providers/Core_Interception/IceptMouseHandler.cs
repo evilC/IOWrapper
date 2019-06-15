@@ -50,7 +50,39 @@ namespace Core_Interception
 
         public ManagedWrapper.Stroke ProcessUpdate(ManagedWrapper.Stroke stroke)
         {
-            throw new NotImplementedException();
+            //Debug.WriteLine($"UCR| Stroke Seen. State = {stroke.mouse.state}, Flags = {stroke.mouse.flags}, x={x}, y={y}");
+            // Process Mouse Buttons
+            if (stroke.mouse.state > 0)
+            {
+                var buttonsAndStates = HelperFunctions.StrokeToMouseButtonAndState(stroke);
+                //var bindingUpdates = new BindingUpdate[buttonsAndStates.Length];
+
+                foreach (var btnState in buttonsAndStates)
+                {
+                    var bindingUpdate = new BindingUpdate
+                    {
+                        Binding = new BindingDescriptor() { Type = BindingType.Button, Index = btnState.Button },
+                        Value = btnState.State
+                    };
+                    if (SubHandler.FireCallbacks(bindingUpdate.Binding, (short)bindingUpdate.Value))
+                    {
+                        // Block requested
+                        // Remove the event for this button from the stroke, leaving other button events intact
+                        stroke.mouse.state -= btnState.Flag;
+                        // If we are removing a mouse wheel event, then set rolling to 0 if no mouse wheel event left
+                        if (btnState.Flag == 0x400 || btnState.Flag == 0x800)
+                        {
+                            if ((stroke.mouse.state & 0x400) != 0x400 && (stroke.mouse.state & 0x800) != 0x800)
+                            {
+                                //Debug.WriteLine("UCR| Removing rolling flag from stroke");
+                                stroke.mouse.rolling = 0;
+                            }
+                        }
+                        //Debug.WriteLine($"UCR| Removing flag {btnState.Flag} from stoke, leaving state {stroke.mouse.state}");
+                    }
+                }
+            }
+            return stroke;
         }
     }
 
