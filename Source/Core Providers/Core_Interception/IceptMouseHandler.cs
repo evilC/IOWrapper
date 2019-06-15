@@ -139,7 +139,7 @@ namespace Core_Interception
 
         public void UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            throw new NotImplementedException();
+            _subHandler.Unsubscribe(subReq);
         }
     }
 
