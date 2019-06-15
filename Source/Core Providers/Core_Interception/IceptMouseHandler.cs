@@ -50,12 +50,10 @@ namespace Core_Interception
 
         public ManagedWrapper.Stroke ProcessUpdate(ManagedWrapper.Stroke stroke)
         {
-            //Debug.WriteLine($"UCR| Stroke Seen. State = {stroke.mouse.state}, Flags = {stroke.mouse.flags}, x={x}, y={y}");
             // Process Mouse Buttons
             if (stroke.mouse.state > 0)
             {
                 var buttonsAndStates = HelperFunctions.StrokeToMouseButtonAndState(stroke);
-                //var bindingUpdates = new BindingUpdate[buttonsAndStates.Length];
 
                 foreach (var btnState in buttonsAndStates)
                 {
@@ -82,7 +80,38 @@ namespace Core_Interception
                     }
                 }
             }
-            return stroke;
+
+            // Process Relative Mouse Move
+            if ((stroke.mouse.flags & (ushort)ManagedWrapper.MouseFlag.MouseMoveRelative) == (ushort)ManagedWrapper.MouseFlag.MouseMoveRelative)
+            {
+                var bindingUpdates = HelperFunctions.StrokeToMouseMove(stroke);
+
+                if (bindingUpdates.Count > 0)
+                {
+                    foreach (var bindingUpdate in bindingUpdates)
+                    {
+                        if (SubHandler.FireCallbacks(bindingUpdate.Binding, (short) bindingUpdate.Value))
+                        {
+                            if (bindingUpdate.Binding.Index == 0)
+                            {
+                                stroke.mouse.x = 0;
+                            }
+                            else
+                            {
+                                stroke.mouse.y = 0;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Forward on the stroke if required
+            if (stroke.mouse.x != 0 || stroke.mouse.y != 0 || stroke.mouse.state != 0)
+            {
+                return stroke;
+            }
+
+            return default(ManagedWrapper.Stroke);
         }
     }
 

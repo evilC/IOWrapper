@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Core_Interception.Lib;
+using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Core_Interception.Helpers
 {
@@ -66,6 +67,39 @@ namespace Core_Interception.Helpers
                 );
             }
             return buttonStates.ToArray();
+        }
+
+        public static List<BindingUpdate> StrokeToMouseMove(ManagedWrapper.Stroke stroke)
+        {
+            var bindingUpdates = new List<BindingUpdate>();
+
+            if (stroke.mouse.x != 0)
+            {
+                bindingUpdates.Add(new BindingUpdate
+                {
+                    Binding = new BindingDescriptor
+                    {
+                        Index = 0,
+                        SubIndex = 0
+                    },
+                    Value = stroke.mouse.x
+                });
+            }
+
+            if (stroke.mouse.y != 0)
+            {
+                bindingUpdates.Add(new BindingUpdate
+                {
+                    Binding = new BindingDescriptor
+                    {
+                        Index = 1,
+                        SubIndex = 0
+                    },
+                    Value = stroke.mouse.y
+                });
+            }
+
+            return bindingUpdates;
         }
 
         public class ButtonState
