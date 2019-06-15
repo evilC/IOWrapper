@@ -414,12 +414,12 @@ namespace Core_Interception
                         EnsureMonitoredKeyboardExists(devId, deviceDescriptor);
                         _bindModeCallback = callback;
                     }
-                    //else if (!_monitoredKeyboards.ContainsKey(devId))
-                    //{
-                    //    return;
-                    //}
+                    else if (!_monitoredKeyboards.ContainsKey(devId))
+                    {
+                        return;
+                    }
 
-                    //_monitoredKeyboards[devId].SetDetectionMode(detectionMode);
+                    _monitoredKeyboards[devId].SetDetectionMode(detectionMode);
                 }
                 else
                 {
@@ -492,8 +492,8 @@ namespace Core_Interception
 
         private void EnsureMonitoredKeyboardExists(int devId, DeviceDescriptor deviceDescriptor)
         {
-            //if (_monitoredKeyboards.ContainsKey(devId)) return;
-            //_monitoredKeyboards.TryAdd(devId, new IceptKeyboardHandler(deviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
+            if (_monitoredKeyboards.ContainsKey(devId)) return;
+            _monitoredKeyboards.TryAdd(devId, new IceptKeyboardHandler(deviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
         }
 
         private void EnsureMonitoredMouseExists(int devId, DeviceDescriptor deviceDescriptor)
