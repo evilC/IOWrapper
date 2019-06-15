@@ -39,7 +39,7 @@ namespace Core_Interception
             throw new NotImplementedException();
         }
 
-        public bool ProcessUpdate(ManagedWrapper.Stroke stroke)
+        public ManagedWrapper.Stroke ProcessUpdate(ManagedWrapper.Stroke stroke)
         {
             throw new NotImplementedException();
         }

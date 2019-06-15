@@ -477,15 +477,11 @@ namespace Core_Interception
 
                     while (ManagedWrapper.Receive(_deviceContext, i, ref stroke, 1) > 0)
                     {
-                        var block = false;
                         if (isMonitoredMouse)
                         {
-                            block = _monitoredMice[i].ProcessUpdate(stroke);
+                            stroke = _monitoredMice[i].ProcessUpdate(stroke);
                         }
-                        if (!(blockingEnabled && block))
-                        {
-                            ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
-                        }
+                        ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
                     }
                 }
                 Thread.Sleep(1);
