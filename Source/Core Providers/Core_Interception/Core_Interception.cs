@@ -195,7 +195,7 @@ namespace Core_Interception
                     if (HelperFunctions.IsKeyboard(devId))
                     {
                         EnsureMonitoredKeyboardExists(devId, subReq.DeviceDescriptor);
-                        //_monitoredKeyboards[devId].SubscribeInput(subReq);
+                        _monitoredKeyboards[devId].SubscribeInput(subReq);
                         ret = true;
                     }
                     else
