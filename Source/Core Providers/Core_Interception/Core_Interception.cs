@@ -9,7 +9,7 @@ using System.Xml;
 using Core_Interception.DeviceLibrary;
 using Core_Interception.Helpers;
 using Core_Interception.Lib;
-using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
+//using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
@@ -55,8 +55,9 @@ namespace Core_Interception
             }
         }
 
-        private readonly ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>> _monitoredKeyboards = new ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>>();
-        private readonly ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>> _monitoredMice = new ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>>();
+        //private readonly ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>> _monitoredKeyboards = new ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>>();
+        //private readonly ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>> _monitoredMice = new ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>>();
+
 
         public Core_Interception()
         {
@@ -103,35 +104,35 @@ namespace Core_Interception
         /// Also controls which devices are filtered when filtering is on
         /// </summary>
         /// <param name="state">Set to true to turn filtering on</param>
-        private void SetFilterState(bool state)
-        {
-            if (state && !_filterState)
-            {
-                ManagedWrapper.SetFilter(_deviceContext, IsMonitoredKeyboard, ManagedWrapper.Filter.All);
-                ManagedWrapper.SetFilter(_deviceContext, IsMonitoredMouse, ManagedWrapper.Filter.All);
-            }
-            else if (!state && _filterState)
-            {
-                ManagedWrapper.SetFilter(_deviceContext, IsMonitoredKeyboard, ManagedWrapper.Filter.None);
-                ManagedWrapper.SetFilter(_deviceContext, IsMonitoredMouse, ManagedWrapper.Filter.None);
-            }
-        }
+        //private void SetFilterState(bool state)
+        //{
+        //    if (state && !_filterState)
+        //    {
+        //        ManagedWrapper.SetFilter(_deviceContext, IsMonitoredKeyboard, ManagedWrapper.Filter.All);
+        //        ManagedWrapper.SetFilter(_deviceContext, IsMonitoredMouse, ManagedWrapper.Filter.All);
+        //    }
+        //    else if (!state && _filterState)
+        //    {
+        //        ManagedWrapper.SetFilter(_deviceContext, IsMonitoredKeyboard, ManagedWrapper.Filter.None);
+        //        ManagedWrapper.SetFilter(_deviceContext, IsMonitoredMouse, ManagedWrapper.Filter.None);
+        //    }
+        //}
 
-        private int IsMonitoredKeyboard(int device)
-        {
-            return Convert.ToInt32(_monitoredKeyboards.ContainsKey(device));
-        }
+        //private int IsMonitoredKeyboard(int device)
+        //{
+        //    return Convert.ToInt32(_monitoredKeyboards.ContainsKey(device));
+        //}
 
-        private int IsMonitoredMouse(int device)
-        {
-            return Convert.ToInt32(_monitoredMice.ContainsKey(device));
-        }
+        //private int IsMonitoredMouse(int device)
+        //{
+        //    return Convert.ToInt32(_monitoredMice.ContainsKey(device));
+        //}
 
         private void SetPollThreadState(bool state)
         {
             if (state && !_pollThreadRunning)
             {
-                SetFilterState(true);
+                //SetFilterState(true);
                 pollThreadStopRequested = false;
                 _pollThread = new Thread(() => PollThread(_blockingEnabled));
                 _pollThread.Start();
@@ -143,7 +144,7 @@ namespace Core_Interception
             }
             else if (!state && _pollThreadRunning)
             {
-                SetFilterState(false);
+                //SetFilterState(false);
                 pollThreadStopRequested = true;
                 while (_pollThreadRunning)
                 {
@@ -195,13 +196,13 @@ namespace Core_Interception
                     if (HelperFunctions.IsKeyboard(devId))
                     {
                         EnsureMonitoredKeyboardExists(devId, subReq.DeviceDescriptor);
-                        _monitoredKeyboards[devId].SubscribeInput(subReq);
+                        //_monitoredKeyboards[devId].SubscribeInput(subReq);
                         ret = true;
                     }
                     else
                     {
                         EnsureMonitoredMouseExists(devId, subReq.DeviceDescriptor);
-                        _monitoredMice[devId].SubscribeInput(subReq);
+                        //_monitoredMice[devId].SubscribeInput(subReq);
                         ret = true;
                     }
 
@@ -230,12 +231,12 @@ namespace Core_Interception
                     if (HelperFunctions.IsKeyboard(devId))
                     {
                         ret = true;
-                        _monitoredKeyboards[devId].UnsubscribeInput(subReq);
+                        //_monitoredKeyboards[devId].UnsubscribeInput(subReq);
                     }
                     else
                     {
                         ret = true;
-                        _monitoredMice[devId].UnsubscribeInput(subReq);
+                        //_monitoredMice[devId].UnsubscribeInput(subReq);
                     }
 
                     if (_pollThreadDesired)
@@ -353,8 +354,8 @@ namespace Core_Interception
             var id = _deviceLibrary.GetInputDeviceIdentifier(e);
             if (_pollThreadRunning)
                 SetPollThreadState(false);
-            _monitoredMice[id].Dispose();
-            _monitoredMice.TryRemove(id, out _);
+            //_monitoredMice[id].Dispose();
+            //_monitoredMice.TryRemove(id, out _);
             if (_pollThreadDesired)
                 SetPollThreadState(true);
         }
@@ -364,8 +365,8 @@ namespace Core_Interception
             var id = _deviceLibrary.GetInputDeviceIdentifier(e);
             if (_pollThreadRunning)
                 SetPollThreadState(false);
-            _monitoredKeyboards[id].Dispose();
-            _monitoredKeyboards.TryRemove(id, out _);
+            //_monitoredKeyboards[id].Dispose();
+            //_monitoredKeyboards.TryRemove(id, out _);
             if (_pollThreadDesired)
                 SetPollThreadState(true);
         }
@@ -414,12 +415,12 @@ namespace Core_Interception
                         EnsureMonitoredKeyboardExists(devId, deviceDescriptor);
                         _bindModeCallback = callback;
                     }
-                    else if (!_monitoredKeyboards.ContainsKey(devId))
-                    {
-                        return;
-                    }
+                    //else if (!_monitoredKeyboards.ContainsKey(devId))
+                    //{
+                    //    return;
+                    //}
 
-                    _monitoredKeyboards[devId].SetDetectionMode(detectionMode);
+                    //_monitoredKeyboards[devId].SetDetectionMode(detectionMode);
                 }
                 else
                 {
@@ -428,12 +429,12 @@ namespace Core_Interception
                         EnsureMonitoredMouseExists(devId, deviceDescriptor);
                         _bindModeCallback = callback;
                     }
-                    else if (!_monitoredMice.ContainsKey(devId))
-                    {
-                        return;
-                    }
+                    //else if (!_monitoredMice.ContainsKey(devId))
+                    //{
+                    //    return;
+                    //}
 
-                    _monitoredMice[devId].SetDetectionMode(detectionMode);
+                    //_monitoredMice[devId].SetDetectionMode(detectionMode);
                 }
 
                 if (_pollThreadDesired)
@@ -454,36 +455,36 @@ namespace Core_Interception
             {
                 for (var i = 1; i < 11; i++)
                 {
-                    var isMonitoredKeyboard = _monitoredKeyboards.ContainsKey(i);
+                    //var isMonitoredKeyboard = _monitoredKeyboards.ContainsKey(i);
 
                     while (ManagedWrapper.Receive(_deviceContext, i, ref stroke, 1) > 0)
                     {
                         var block = false;
-                        if (isMonitoredKeyboard)
-                        {
-                            block = _monitoredKeyboards[i].ProcessUpdate(stroke);
-                        }
-                        if (!(blockingEnabled && block))
-                        {
-                            ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
-                        }
+                        //if (isMonitoredKeyboard)
+                        //{
+                        //    block = _monitoredKeyboards[i].ProcessUpdate(stroke);
+                        //}
+                        //if (!(blockingEnabled && block))
+                        //{
+                        //    ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
+                        //}
                     }
                 }
                 for (var i = 11; i < 21; i++)
                 {
-                    var isMonitoredMouse = _monitoredMice.ContainsKey(i);
+                    //var isMonitoredMouse = _monitoredMice.ContainsKey(i);
 
                     while (ManagedWrapper.Receive(_deviceContext, i, ref stroke, 1) > 0)
                     {
                         var block = false;
-                        if (isMonitoredMouse)
-                        {
-                            block = _monitoredMice[i].ProcessUpdate(stroke);
-                        }
-                        if (!(blockingEnabled && block))
-                        {
-                            ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
-                        }
+                        //if (isMonitoredMouse)
+                        //{
+                        //    block = _monitoredMice[i].ProcessUpdate(stroke);
+                        //}
+                        //if (!(blockingEnabled && block))
+                        //{
+                        //    ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
+                        //}
                     }
                 }
                 Thread.Sleep(1);
@@ -496,14 +497,14 @@ namespace Core_Interception
 
         private void EnsureMonitoredKeyboardExists(int devId, DeviceDescriptor deviceDescriptor)
         {
-            if (_monitoredKeyboards.ContainsKey(devId)) return;
-            _monitoredKeyboards.TryAdd(devId, new IceptKeyboardHandler(deviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
+            //if (_monitoredKeyboards.ContainsKey(devId)) return;
+            //_monitoredKeyboards.TryAdd(devId, new IceptKeyboardHandler(deviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
         }
 
         private void EnsureMonitoredMouseExists(int devId, DeviceDescriptor deviceDescriptor)
         {
-            if (_monitoredMice.ContainsKey(devId)) return;
-            _monitoredMice.TryAdd(devId, new IceptMouseHandler(deviceDescriptor, MouseEmptyHandler, BindModeHandler, _deviceLibrary));
+            //if (_monitoredMice.ContainsKey(devId)) return;
+            //_monitoredMice.TryAdd(devId, new IceptMouseHandler(deviceDescriptor, MouseEmptyHandler, BindModeHandler, _deviceLibrary));
         }
 
 

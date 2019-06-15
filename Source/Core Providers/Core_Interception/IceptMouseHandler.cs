@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using Core_Interception.Helpers;
 using Core_Interception.Lib;
-using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
+//using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Core_Interception
 {
+    /*
     public class IceptMouseHandler : DeviceHandlerBase<ManagedWrapper.Stroke, (BindingType, int)>
     {
         private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
@@ -70,4 +71,5 @@ namespace Core_Interception
             
         }
     }
+    */
 }
