@@ -42,12 +42,12 @@ namespace TestApp
 
             //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.Interception, Library.Devices.Interception.DellKeyboard1, BindModeHandler);
             //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, Library.Providers.Interception, Library.Devices.Interception.DellKeyboard1);
-            //var interceptionKeyboardInputTester = new InterceptionKeyboardInputTester();
-            //interceptionKeyboardInputTester.Dispose();
+            var interceptionKeyboardInputTester = new InterceptionKeyboardInputTester();
             //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, Library.Providers.Interception, Library.Devices.Interception.DellKeyboard1);
             var interceptionMouseInputTester = new InterceptionMouseInputTester();
-            Console.WriteLine("Press ENTER to unsubscribe mouse...");
+            Console.WriteLine("Press ENTER to unsubscribe...");
             Console.ReadLine();
+            interceptionKeyboardInputTester.Dispose();
             interceptionMouseInputTester.Dispose();
             //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, BindModeHandler);
 
