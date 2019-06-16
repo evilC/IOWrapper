@@ -6,11 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 ### Changed 
-- [DirectInput Provider] Fix #31 - Axis values are no longer inverted
-- [Interception Provider] Mouse now supports per-mapping blocking (Block one button, but not another)
 ### Deprecated
 ### Removed
 ### Fixed
+
+## 0.10.4 - 2019-06-16 (PRE-RELEASE)
+### Changed 
+- [DirectInput Provider] Fix #31 - Axis values are no longer inverted
+- [Interception Provider] Mouse now supports per-mapping blocking (Block one button, but not another)
 
 ## 0.10.3 - 2019-06-08
 ### Changed 
