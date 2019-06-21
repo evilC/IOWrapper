@@ -31,7 +31,7 @@ namespace Core_Interception
         //private ProviderReport providerReport;
 
         // The thread which handles input detection
-        private Thread _pollThread;
+        //private Thread _pollThread;
         // Is the thread currently running? This is set by the thread itself.
         private volatile bool _pollThreadRunning;
         // Do we want the thread to be on or off?
@@ -57,6 +57,7 @@ namespace Core_Interception
 
         private readonly ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>> _monitoredKeyboards = new ConcurrentDictionary<int, IDeviceHandler<ManagedWrapper.Stroke>>();
         private readonly ConcurrentDictionary<int, IceptMouseHandler> _monitoredMice = new ConcurrentDictionary<int, IceptMouseHandler>();
+        private MultimediaTimer _timer;
 
         public Core_Interception()
         {
@@ -71,6 +72,8 @@ namespace Core_Interception
             _deviceContext = ManagedWrapper.CreateContext();
 
             _pollThreadDesired = true;
+            _timer = new MultimediaTimer() { Interval = 1 };
+            _timer.Elapsed += DoPoll;
         }
 
         ~Core_Interception()
@@ -129,30 +132,35 @@ namespace Core_Interception
 
         private void SetPollThreadState(bool state)
         {
-            if (state && !_pollThreadRunning)
+            //if (state && !_pollThreadRunning)
+            if (state && !_timer.IsRunning)
             {
                 SetFilterState(true);
                 pollThreadStopRequested = false;
-                _pollThread = new Thread(() => PollThread(_blockingEnabled));
-                _pollThread.Start();
-                while (!_pollThreadRunning)
-                {
-                    Thread.Sleep(10);
-                }
+                //_pollThread = new Thread(() => PollThread(_blockingEnabled));
+                _timer.Start();
+                //_pollThread.Start();
+                //while (!_pollThreadRunning)
+                //{
+                //    Thread.Sleep(10);
+                //}
                 HelperFunctions.Log("Started PollThread for {0}", ProviderName);
             }
-            else if (!state && _pollThreadRunning)
+            //else if (!state && _pollThreadRunning)
+            else if (!state && _timer.IsRunning)
             {
                 SetFilterState(false);
                 pollThreadStopRequested = true;
+                _timer.Stop();
                 while (_pollThreadRunning)
                 {
                     Thread.Sleep(10);
                 }
-                _pollThread = null;
+                //_pollThread = null;
                 HelperFunctions.Log("Stopped PollThread for {0}", ProviderName);
             }
         }
+
         #endregion
 
         #region Querying
@@ -444,6 +452,44 @@ namespace Core_Interception
         #endregion
 
         #region PollThread
+        private void DoPoll(object sender, EventArgs e)
+        {
+            _pollThreadRunning = true;
+            var stroke = new ManagedWrapper.Stroke();
+            for (var i = 1; i < 11; i++)
+            {
+                var isMonitoredKeyboard = _monitoredKeyboards.ContainsKey(i);
+
+                while (ManagedWrapper.Receive(_deviceContext, i, ref stroke, 1) > 0)
+                {
+                    var block = false;
+                    if (isMonitoredKeyboard)
+                    {
+                        block = _monitoredKeyboards[i].ProcessUpdate(stroke);
+                    }
+                    if (!block)
+                    {
+                        ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
+                    }
+                }
+            }
+            for (var i = 11; i < 21; i++)
+            {
+                var isMonitoredMouse = _monitoredMice.ContainsKey(i);
+
+                while (ManagedWrapper.Receive(_deviceContext, i, ref stroke, 1) > 0)
+                {
+                    if (isMonitoredMouse)
+                    {
+                        stroke = _monitoredMice[i].ProcessUpdate(stroke);
+                    }
+                    ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
+                }
+            }
+            _pollThreadRunning = false;
+        }
+
+        /*
         private void PollThread(bool blockingEnabled)
         {
             _pollThreadRunning = true;
@@ -486,6 +532,7 @@ namespace Core_Interception
             }
             _pollThreadRunning = false;
         }
+        */
         #endregion
 
         #region Dictionary management

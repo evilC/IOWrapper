@@ -18,7 +18,7 @@ namespace TestApp.Testers
             _testers.Add(new IOTester("Interception Mouse 3", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.MButton).Subscribe());
             _testers.Add(new IOTester("Interception Mouse Wheel Up", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.WheelUp).Subscribe());
             _testers.Add(new IOTester("Interception Mouse Wheel Down", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseButton.WheelDown).Subscribe());
-            //_testers.Add(new IOTester("Interception Mouse X", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseAxis.X, block: true).Subscribe());
+            _testers.Add(new IOTester("Interception Mouse X", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseAxis.X, block: true).Subscribe());
             //_testers.Add(new IOTester("Interception Mouse Y", Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, Library.Bindings.Interception.MouseAxis.Y).Subscribe());
 
             Console.WriteLine($"Interception Mouse tester ready");
