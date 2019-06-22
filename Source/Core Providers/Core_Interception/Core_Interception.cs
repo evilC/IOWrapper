@@ -44,6 +44,8 @@ namespace Core_Interception
         private bool _filterState = false;
 
         private bool _blockingEnabled;
+        private int _pollRate;
+
         public static string AssemblyDirectory
         {
             get
@@ -72,7 +74,7 @@ namespace Core_Interception
             _deviceContext = ManagedWrapper.CreateContext();
 
             _pollThreadDesired = true;
-            _timer = new MultimediaTimer() { Interval = 1 };
+            _timer = new MultimediaTimer() { Interval = _pollRate };
             _timer.Elapsed += DoPoll;
         }
 
@@ -557,6 +559,7 @@ namespace Core_Interception
         {
             var settingsFile = Path.Combine(AssemblyDirectory, "Settings.xml");
             _blockingEnabled = false;
+            _pollRate = 10;
             if (File.Exists(settingsFile))
             {
                 var doc = new XmlDocument();
@@ -572,8 +575,19 @@ namespace Core_Interception
                 {
                     // ignored
                 }
+                try
+                {
+                    _pollRate = Convert.ToInt32(doc.SelectSingleNode("/Settings/Setting[Name = \"PollRate\"]")
+                        ?.SelectSingleNode("Value")
+                        ?.InnerText);
+                }
+                catch
+                {
+                    // ignored
+                }
             }
             HelperFunctions.Log("Blocking Enabled: {0}", _blockingEnabled);
+            HelperFunctions.Log("Poll Rate: {0}", _pollRate);
         }
         #endregion
     }

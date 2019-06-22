@@ -1,7 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Settings>
   <Setting>
+	<!--
+		Whether Block option in UI is observed.
+		READ WARNING IN WIKI before enabling!
+		https://github.com/Snoothy/UCR/wiki/Core_Interception
+	-->
     <Name>BlockingEnabled</Name>
     <Value>False</Value>
+  </Setting>
+  <Setting>
+	<!--
+		Poll Rate, in ms
+		Lowering this is only really of use for mouse movement
+		if your mouse polls at a high rate, eg 1000hz
+	-->
+    <Name>PollRate</Name>
+    <Value>10</Value>
   </Setting>
 </Settings>
