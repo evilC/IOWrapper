@@ -18,15 +18,21 @@ namespace Core_Interception
         private readonly IInputOutputDeviceLibrary<int> _deviceLibrary;
         private readonly SubscriptionHandler _subHandler;
         private DetectionMode _detectionMode = DetectionMode.Subscription;
+        private readonly bool _blockingEnabled;
+        private readonly bool _blockingControlledByUi;
 
-        public IceptMouseHandler(DeviceDescriptor deviceDescriptor, 
-            EventHandler<DeviceDescriptor> deviceEmptyHandler, 
+        public IceptMouseHandler(DeviceDescriptor deviceDescriptor,
+            EventHandler<DeviceDescriptor> deviceEmptyHandler,
             EventHandler<BindModeUpdate> bindModeHandler,
-            IInputOutputDeviceLibrary<int> deviceLibrary)
+            IInputOutputDeviceLibrary<int> deviceLibrary,
+            bool blockingEnabled,
+            bool blockingControlledByUi)
         {
             _deviceDescriptor = deviceDescriptor;
             _bindModeHandler = bindModeHandler;
             _deviceLibrary = deviceLibrary;
+            _blockingEnabled = blockingEnabled;
+            _blockingControlledByUi = blockingControlledByUi;
             _subHandler = new SubscriptionHandler(deviceDescriptor, deviceEmptyHandler, CallbackHandler);
         }
 
@@ -66,21 +72,26 @@ namespace Core_Interception
                     };
                     if (_detectionMode == DetectionMode.Subscription)
                     {
-                        if (_subHandler.FireCallbacks(bindingUpdate.Binding, (short)bindingUpdate.Value))
+                        var blockingRequestedByUi = _subHandler.FireCallbacks(bindingUpdate.Binding, (short)bindingUpdate.Value);
+                        if (_blockingEnabled)
                         {
-                            // Block requested
-                            // Remove the event for this button from the stroke, leaving other button events intact
-                            stroke.mouse.state -= btnState.Flag;
-                            // If we are removing a mouse wheel event, then set rolling to 0 if no mouse wheel event left
-                            if (btnState.Flag == 0x400 || btnState.Flag == 0x800)
+                            // Block enabled
+                            if (!_blockingControlledByUi || (_blockingControlledByUi && blockingRequestedByUi))
                             {
-                                if ((stroke.mouse.state & 0x400) != 0x400 && (stroke.mouse.state & 0x800) != 0x800)
+                                // Blocking controlled by UI and requested by UI, OR blocking not controlled by UI
+                                // Remove the event for this button from the stroke, leaving other button events intact
+                                stroke.mouse.state -= btnState.Flag;
+                                // If we are removing a mouse wheel event, then set rolling to 0 if no mouse wheel event left
+                                if (btnState.Flag == 0x400 || btnState.Flag == 0x800)
                                 {
-                                    //Debug.WriteLine("UCR| Removing rolling flag from stroke");
-                                    stroke.mouse.rolling = 0;
+                                    if ((stroke.mouse.state & 0x400) != 0x400 && (stroke.mouse.state & 0x800) != 0x800)
+                                    {
+                                        //Debug.WriteLine("UCR| Removing rolling flag from stroke");
+                                        stroke.mouse.rolling = 0;
+                                    }
                                 }
+                                //Debug.WriteLine($"UCR| Removing flag {btnState.Flag} from stoke, leaving state {stroke.mouse.state}");
                             }
-                            //Debug.WriteLine($"UCR| Removing flag {btnState.Flag} from stoke, leaving state {stroke.mouse.state}");
                         }
                     }
                     else
@@ -106,15 +117,19 @@ namespace Core_Interception
                     {
                         if (_detectionMode == DetectionMode.Subscription)
                         {
-                            if (_subHandler.FireCallbacks(bindingUpdate.Binding, (short)bindingUpdate.Value))
+                            var blockingRequestedByUi = _subHandler.FireCallbacks(bindingUpdate.Binding, (short)bindingUpdate.Value);
+                            if (_blockingEnabled)
                             {
-                                if (bindingUpdate.Binding.Index == 0)
+                                if (!_blockingControlledByUi || (_blockingControlledByUi && blockingRequestedByUi))
                                 {
-                                    stroke.mouse.x = 0;
-                                }
-                                else
-                                {
-                                    stroke.mouse.y = 0;
+                                    if (bindingUpdate.Binding.Index == 0)
+                                    {
+                                        stroke.mouse.x = 0;
+                                    }
+                                    else
+                                    {
+                                        stroke.mouse.y = 0;
+                                    }
                                 }
                             }
                         }

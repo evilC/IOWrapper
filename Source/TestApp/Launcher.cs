@@ -48,6 +48,13 @@ namespace TestApp
             Console.WriteLine("Press ENTER to unsubscribe...");
             Console.ReadLine();
             //interceptionKeyboardInputTester.Dispose();
+            //interceptionMouseInputTester.Dispose();
+            interceptionMouseInputTester.Unsubscribe();
+            Console.WriteLine("Press ENTER to re-subscribe...");
+            Console.ReadLine();
+            interceptionMouseInputTester.Subscribe();
+            Console.WriteLine("Press ENTER to Dispose...");
+            Console.ReadLine();
             interceptionMouseInputTester.Dispose();
             //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, BindModeHandler);
 

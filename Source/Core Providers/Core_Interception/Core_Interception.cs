@@ -37,9 +37,9 @@ namespace Core_Interception
         // Do we want the thread to be on or off?
         // This is independent of whether or not the thread is running...
         // ... for example, we may be updating bindings, so the thread may be temporarily stopped
-        private bool _pollThreadDesired;
+        //private bool _pollThreadDesired;
         // Set to true to cause the thread to stop running. When it stops, it will set pollThreadRunning to false
-        private volatile bool pollThreadStopRequested;
+        //private volatile bool pollThreadStopRequested;
 
         private bool _filterState = false;
 
@@ -47,6 +47,7 @@ namespace Core_Interception
         private bool _blockingEnabled;
         private int _pollRate;
         private bool _fireStrokeOnThread;
+        private bool _blockingControlledByUi;
         #endregion
 
         public static string AssemblyDirectory
@@ -76,7 +77,8 @@ namespace Core_Interception
 
             _deviceContext = ManagedWrapper.CreateContext();
 
-            _pollThreadDesired = true;
+            StartPollingIfNeeded();
+            //_pollThreadDesired = true;
             _timer = new MultimediaTimer() { Interval = _pollRate };
             _timer.Elapsed += DoPoll;
         }
@@ -115,13 +117,17 @@ namespace Core_Interception
         {
             if (state && !_filterState)
             {
+                HelperFunctions.Log("Enabling Interception filter");
                 ManagedWrapper.SetFilter(_deviceContext, IsMonitoredKeyboard, ManagedWrapper.Filter.All);
                 ManagedWrapper.SetFilter(_deviceContext, IsMonitoredMouse, ManagedWrapper.Filter.All);
+                _filterState = true;
             }
             else if (!state && _filterState)
             {
+                HelperFunctions.Log("Disabling Interception filter");
                 ManagedWrapper.SetFilter(_deviceContext, IsMonitoredKeyboard, ManagedWrapper.Filter.None);
                 ManagedWrapper.SetFilter(_deviceContext, IsMonitoredMouse, ManagedWrapper.Filter.None);
+                _filterState = false;
             }
         }
 
@@ -141,7 +147,7 @@ namespace Core_Interception
             if (state && !_timer.IsRunning)
             {
                 SetFilterState(true);
-                pollThreadStopRequested = false;
+                //pollThreadStopRequested = false;
                 //_pollThread = new Thread(() => PollThread(_blockingEnabled));
                 _timer.Start();
                 //_pollThread.Start();
@@ -155,11 +161,11 @@ namespace Core_Interception
             else if (!state && _timer.IsRunning)
             {
                 SetFilterState(false);
-                pollThreadStopRequested = true;
+                //pollThreadStopRequested = true;
                 _timer.Stop();
-                while (_pollThreadRunning)
+                while (_pollThreadRunning) // Are we mid-poll?
                 {
-                    Thread.Sleep(10);
+                    Thread.Sleep(10); // Wait until poll ends
                 }
                 //_pollThread = null;
                 HelperFunctions.Log("Stopped PollThread for {0}", ProviderName);
@@ -201,8 +207,7 @@ namespace Core_Interception
                 var ret = false;
                 try
                 {
-                    if (_pollThreadRunning)
-                        SetPollThreadState(false);
+                    SetPollThreadState(false);
 
                     var devId = _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor);
                     if (HelperFunctions.IsKeyboard(devId))
@@ -223,8 +228,10 @@ namespace Core_Interception
                 {
                     ret = false;
                 }
-                if (_pollThreadDesired)
-                    SetPollThreadState(true);
+                //SetPollThreadDesiredState();
+                StartPollingIfNeeded();
+                //if (_pollThreadDesired)
+                //    SetPollThreadState(true);
                 return ret;
             }
         }
@@ -237,8 +244,7 @@ namespace Core_Interception
                 try
                 {
                     var devId = _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor);
-                    if (_pollThreadRunning)
-                        SetPollThreadState(false);
+                    SetPollThreadState(false);
 
                     if (HelperFunctions.IsKeyboard(devId))
                     {
@@ -251,8 +257,9 @@ namespace Core_Interception
                         _monitoredMice[devId].UnsubscribeInput(subReq);
                     }
 
-                    if (_pollThreadDesired)
-                        SetPollThreadState(true);
+                    StartPollingIfNeeded();
+                    //if (_pollThreadDesired)
+                    //    SetPollThreadState(true);
 
                 }
                 catch
@@ -354,6 +361,21 @@ namespace Core_Interception
 
         #endregion
 
+        private void StartPollingIfNeeded()
+        {
+            if (!(_monitoredMice.IsEmpty && _monitoredKeyboards.IsEmpty))
+            {
+                SetPollThreadState(true);
+            }
+        }
+
+        /*
+        private void SetPollThreadDesiredState()
+        {
+            _pollThreadDesired = !(_monitoredMice.IsEmpty && _monitoredKeyboards.IsEmpty);
+        }
+        */
+
         #region Event Handlers
 
         private void BindModeHandler(object sender, BindModeUpdate e)
@@ -364,23 +386,25 @@ namespace Core_Interception
         private void MouseEmptyHandler(object sender, DeviceDescriptor e)
         {
             var id = _deviceLibrary.GetInputDeviceIdentifier(e);
-            if (_pollThreadRunning)
-                SetPollThreadState(false);
+            SetPollThreadState(false);
             _monitoredMice[id].Dispose();
             _monitoredMice.TryRemove(id, out _);
-            if (_pollThreadDesired)
-                SetPollThreadState(true);
+            StartPollingIfNeeded();
+            //SetPollThreadDesiredState();
+            //if (_pollThreadDesired)
+            //    SetPollThreadState(true);
         }
 
         private void KeyboardEmptyHandler(object sender, DeviceDescriptor e)
         {
             var id = _deviceLibrary.GetInputDeviceIdentifier(e);
-            if (_pollThreadRunning)
-                SetPollThreadState(false);
+            SetPollThreadState(false);
             _monitoredKeyboards[id].Dispose();
             _monitoredKeyboards.TryRemove(id, out _);
-            if (_pollThreadDesired)
-                SetPollThreadState(true);
+            StartPollingIfNeeded();
+            //SetPollThreadDesiredState();
+            //if (_pollThreadDesired)
+            //    SetPollThreadState(true);
         }
         #endregion
 
@@ -407,8 +431,7 @@ namespace Core_Interception
         {
             lock (_lockObj)
             {
-                if (_pollThreadRunning)
-                    SetPollThreadState(false);
+                SetPollThreadState(false);
 
                 int devId;
                 try
@@ -449,8 +472,9 @@ namespace Core_Interception
                     _monitoredMice[devId].SetDetectionMode(detectionMode);
                 }
 
-                if (_pollThreadDesired)
-                    SetPollThreadState(true);
+                StartPollingIfNeeded();
+                //if (_pollThreadDesired)
+                //    SetPollThreadState(true);
             }
         }
 
@@ -499,7 +523,8 @@ namespace Core_Interception
                     if (_fireStrokeOnThread)
                     {
                         var threadStroke = stroke;
-                        ThreadPool.QueueUserWorkItem(cb => ManagedWrapper.Send(_deviceContext, i, ref threadStroke, 1));
+                        var deviceId = i;
+                        ThreadPool.QueueUserWorkItem(cb => ManagedWrapper.Send(_deviceContext, deviceId, ref threadStroke, 1));
                     }
                     else
                     {
@@ -568,7 +593,7 @@ namespace Core_Interception
         private void EnsureMonitoredMouseExists(int devId, DeviceDescriptor deviceDescriptor)
         {
             if (_monitoredMice.ContainsKey(devId)) return;
-            _monitoredMice.TryAdd(devId, new IceptMouseHandler(deviceDescriptor, MouseEmptyHandler, BindModeHandler, _deviceLibrary));
+            _monitoredMice.TryAdd(devId, new IceptMouseHandler(deviceDescriptor, MouseEmptyHandler, BindModeHandler, _deviceLibrary, _blockingEnabled, _blockingControlledByUi));
         }
 
 
@@ -581,6 +606,7 @@ namespace Core_Interception
             _blockingEnabled = false;
             _pollRate = 10;
             _fireStrokeOnThread = false;
+            _blockingControlledByUi = false;
             if (File.Exists(settingsFile))
             {
                 var doc = new XmlDocument();
@@ -590,6 +616,16 @@ namespace Core_Interception
                 try
                 {
                     _blockingEnabled = Convert.ToBoolean(doc.SelectSingleNode("/Settings/Setting[Name = \"BlockingEnabled\"]")
+                        ?.SelectSingleNode("Value")
+                        ?.InnerText);
+                }
+                catch
+                {
+                    // ignored
+                }
+                try
+                {
+                    _blockingControlledByUi = Convert.ToBoolean(doc.SelectSingleNode("/Settings/Setting[Name = \"BlockingControlledByUi\"]")
                         ?.SelectSingleNode("Value")
                         ?.InnerText);
                 }
@@ -623,6 +659,7 @@ namespace Core_Interception
                 }
             }
             HelperFunctions.Log("Blocking Enabled: {0}", _blockingEnabled);
+            HelperFunctions.Log("Blocking Controlled by UI: {0}", _blockingControlledByUi);
             HelperFunctions.Log("Poll Rate: {0}", _pollRate);
             HelperFunctions.Log("Fire Strokes on thread: {0}", _fireStrokeOnThread);
         }

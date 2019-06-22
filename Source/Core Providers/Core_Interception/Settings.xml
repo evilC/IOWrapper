@@ -2,12 +2,20 @@
 <Settings>
   <Setting>
 	<!--
-		Whether Block option in UI is observed.
+		Whether Blocking is allowed or not
 		READ WARNING IN WIKI before enabling!
 		https://github.com/Snoothy/UCR/wiki/Core_Interception
 	-->
     <Name>BlockingEnabled</Name>
-    <Value>False</Value>
+    <Value>true</Value>
+  </Setting>
+  <Setting>
+	<!--
+		Whether Block option is controlled by UI
+		This option is purely for developers of UCR
+	-->
+    <Name>BlockingControlledByUi</Name>
+    <Value>true</Value>
   </Setting>
   <Setting>
 	<!--
@@ -16,7 +24,7 @@
 		if your mouse polls at a high rate, eg 1000hz
 	-->
     <Name>PollRate</Name>
-    <Value>10</Value>
+    <Value>20</Value>
   </Setting>
   <Setting>
 	<!--
@@ -24,6 +32,6 @@
 		Setting to true may stop crashes etc with low PollRate setting
 	-->
     <Name>StrokeOnThread</Name>
-    <Value>false</Value>
+    <Value>true</Value>
   </Setting>
 </Settings>
