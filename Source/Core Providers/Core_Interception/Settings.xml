@@ -18,4 +18,12 @@
     <Name>PollRate</Name>
     <Value>10</Value>
   </Setting>
+  <Setting>
+	<!--
+		Controls whether strokes which are not blocked are fired on a thread
+		Setting to true may stop crashes etc with low PollRate setting
+	-->
+    <Name>StrokeOnThread</Name>
+    <Value>false</Value>
+  </Setting>
 </Settings>

@@ -43,8 +43,11 @@ namespace Core_Interception
 
         private bool _filterState = false;
 
+        #region XML controlled settings
         private bool _blockingEnabled;
         private int _pollRate;
+        private bool _fireStrokeOnThread;
+        #endregion
 
         public static string AssemblyDirectory
         {
@@ -471,7 +474,15 @@ namespace Core_Interception
                     }
                     if (!block)
                     {
-                        ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
+                        if (_fireStrokeOnThread)
+                        {
+                            var threadStroke = stroke;
+                            ThreadPool.QueueUserWorkItem(cb => ManagedWrapper.Send(_deviceContext, i, ref threadStroke, 1));
+                        }
+                        else
+                        {
+                            ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
+                        }
                     }
                 }
             }
@@ -485,7 +496,16 @@ namespace Core_Interception
                     {
                         stroke = _monitoredMice[i].ProcessUpdate(stroke);
                     }
-                    ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
+                    if (_fireStrokeOnThread)
+                    {
+                        var threadStroke = stroke;
+                        ThreadPool.QueueUserWorkItem(cb => ManagedWrapper.Send(_deviceContext, i, ref threadStroke, 1));
+                    }
+                    else
+                    {
+                        ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
+                    }
+
                 }
             }
             _pollThreadRunning = false;
@@ -560,11 +580,13 @@ namespace Core_Interception
             var settingsFile = Path.Combine(AssemblyDirectory, "Settings.xml");
             _blockingEnabled = false;
             _pollRate = 10;
+            _fireStrokeOnThread = false;
             if (File.Exists(settingsFile))
             {
                 var doc = new XmlDocument();
                 doc.Load(settingsFile);
 
+                // Blocking Settings
                 try
                 {
                     _blockingEnabled = Convert.ToBoolean(doc.SelectSingleNode("/Settings/Setting[Name = \"BlockingEnabled\"]")
@@ -575,6 +597,8 @@ namespace Core_Interception
                 {
                     // ignored
                 }
+
+                // Poll Rate Settings
                 try
                 {
                     _pollRate = Convert.ToInt32(doc.SelectSingleNode("/Settings/Setting[Name = \"PollRate\"]")
@@ -585,9 +609,22 @@ namespace Core_Interception
                 {
                     // ignored
                 }
+
+                // Callback Settings
+                try
+                {
+                    _fireStrokeOnThread = Convert.ToBoolean(doc.SelectSingleNode("/Settings/Setting[Name = \"StrokeOnThread\"]")
+                        ?.SelectSingleNode("Value")
+                        ?.InnerText);
+                }
+                catch
+                {
+                    // ignored
+                }
             }
             HelperFunctions.Log("Blocking Enabled: {0}", _blockingEnabled);
             HelperFunctions.Log("Poll Rate: {0}", _pollRate);
+            HelperFunctions.Log("Fire Strokes on thread: {0}", _fireStrokeOnThread);
         }
         #endregion
     }
