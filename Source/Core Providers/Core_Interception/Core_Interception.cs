@@ -485,31 +485,40 @@ namespace Core_Interception
         {
             _pollThreadRunning = true;
             var stroke = new ManagedWrapper.Stroke();
+            // Process Keyboard input
             for (var i = 1; i < 11; i++)
             {
                 var isMonitoredKeyboard = _monitoredKeyboards.ContainsKey(i);
 
                 while (ManagedWrapper.Receive(_deviceContext, i, ref stroke, 1) > 0)
                 {
-                    var block = false;
                     if (isMonitoredKeyboard)
                     {
-                        block = _monitoredKeyboards[i].ProcessUpdate(stroke);
+                        var blockingRequestedByUi = _monitoredKeyboards[i].ProcessUpdate(stroke);
+
+                        // Block for keyboard either blocks whole stroke or allows whole stroke through
+                        if (_blockingEnabled && (!_blockingControlledByUi || blockingRequestedByUi))
+                        {
+                            continue; // Block input
+                        }
                     }
-                    if (!block)
+
+                    // Pass through stroke
+                    if (_fireStrokeOnThread)
                     {
-                        if (_fireStrokeOnThread)
-                        {
-                            var threadStroke = stroke;
-                            ThreadPool.QueueUserWorkItem(cb => ManagedWrapper.Send(_deviceContext, i, ref threadStroke, 1));
-                        }
-                        else
-                        {
-                            ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
-                        }
+                        var threadStroke = stroke;
+                        ThreadPool.QueueUserWorkItem(cb => ManagedWrapper.Send(_deviceContext, i, ref threadStroke, 1));
+                    }
+                    else
+                    {
+                        ManagedWrapper.Send(_deviceContext, i, ref stroke, 1);
                     }
                 }
             }
+
+            // Process Mouse input
+            // As a mouse stroke can contain multiple updates (buttons, movement etc) per stroke...
+            // ...blocking is handled in ProcessUpdate, so if part of the stroke is blocked, it will be removed from the stroke
             for (var i = 11; i < 21; i++)
             {
                 var isMonitoredMouse = _monitoredMice.ContainsKey(i);
@@ -519,7 +528,11 @@ namespace Core_Interception
                     if (isMonitoredMouse)
                     {
                         stroke = _monitoredMice[i].ProcessUpdate(stroke);
+                        // Handle blocking - if all updates have been removed from stroke, do not bother to pass the stroke through
+                        if (stroke.mouse.x == 0 && stroke.mouse.y == 0 && stroke.mouse.state == 0) continue;
                     }
+
+                    // Pass through stroke
                     if (_fireStrokeOnThread)
                     {
                         var threadStroke = stroke;
