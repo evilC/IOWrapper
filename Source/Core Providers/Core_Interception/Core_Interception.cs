@@ -507,7 +507,8 @@ namespace Core_Interception
                     if (_fireStrokeOnThread)
                     {
                         var threadStroke = stroke;
-                        ThreadPool.QueueUserWorkItem(cb => ManagedWrapper.Send(_deviceContext, i, ref threadStroke, 1));
+                        var deviceId = i;
+                        ThreadPool.QueueUserWorkItem(cb => ManagedWrapper.Send(_deviceContext, deviceId, ref threadStroke, 1));
                     }
                     else
                     {
