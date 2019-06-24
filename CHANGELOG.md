@@ -6,13 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 ### Changed 
+### Deprecated
+### Removed
+### Fixed
+
+## 0.10.5 - 2019-06-24
+### Changed 
 - [Interception Provider] Polling now uses Multimedia Timer, allowing poll rates down to 1ms. Controlled via Settings.xml
 - [Interception Provider] (Dev Option) Allowing selecting block via UI is controlled via Settings.xml
 - [Interception Provider] (Tester Option) Allowing selecting threaded or non-threaded pass-through of stroke is controlled via Settings.xml
 - [Interception Provider] Keyboard now supports per-mapping blocking (Block one button, but not another)
-### Deprecated
-### Removed
-### Fixed
 
 ## 0.10.4 - 2019-06-16 (PRE-RELEASE)
 ### Changed 
