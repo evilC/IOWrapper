@@ -48,7 +48,7 @@ namespace Core_Interception
 
         public void Dispose()
         {
-            // ToDo: Implement
+            // Nothing to do
         }
 
         public void SetDetectionMode(DetectionMode detectionMode)
