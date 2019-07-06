@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Core_Interception.Helpers;
 using Core_Interception.Lib;
+using HidWizards.IOWrapper.Core.Exceptions;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.HidDeviceHelper;
 using HidWizards.IOWrapper.DataTransferObjects;
@@ -44,8 +45,7 @@ namespace Core_Interception.DeviceLibrary
                     return _deviceHandleToId[deviceDescriptor.DeviceHandle][deviceDescriptor.DeviceInstance];
                 }
             }
-
-            throw new ArgumentOutOfRangeException($"Unknown Device: {deviceDescriptor}");
+            throw new DeviceLibraryExceptions.DeviceDescriptorNotFoundException(deviceDescriptor);
         }
 
         public int GetInputDeviceIdentifier(DeviceDescriptor deviceDescriptor)

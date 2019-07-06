@@ -210,7 +210,16 @@ namespace Core_Interception
                 {
                     SetPollThreadState(false);
 
-                    var devId = _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor);
+                    int devId;
+                    try
+                    {
+                        devId = _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor);
+                    }
+                    catch (DeviceLibraryExceptions.DeviceDescriptorNotFoundException ex)
+                    {
+                        throw new ProviderExceptions.DeviceDescriptorNotFoundException(this, ex.DeviceDescriptor);
+                    }
+                    
                     if (HelperFunctions.IsKeyboard(devId))
                     {
                         EnsureMonitoredKeyboardExists(devId, subReq.DeviceDescriptor);
