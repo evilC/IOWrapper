@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Core_SpaceMouse.DeviceLibrary;
 using HidLibrary;
+using HidWizards.IOWrapper.Core.Exceptions;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.SubscriptionHandlers;
@@ -106,7 +107,7 @@ namespace Core_SpaceMouse
             }
         }
 
-        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
+        public void UnsubscribeInput(InputSubscriptionRequest subReq)
         {
             lock (_lockObj)
             {
@@ -114,7 +115,10 @@ namespace Core_SpaceMouse
                 {
                     deviceHandler.UnsubscribeInput(subReq);
                 }
-                return true;
+                else
+                {
+                    throw new ProviderExceptions.DeviceDescriptorNotFoundException(this, subReq.DeviceDescriptor);
+                }
             }
         }
 

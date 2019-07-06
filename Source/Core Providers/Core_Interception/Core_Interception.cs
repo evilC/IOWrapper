@@ -245,7 +245,7 @@ namespace Core_Interception
             }
         }
 
-        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
+        public void UnsubscribeInput(InputSubscriptionRequest subReq)
         {
             lock (_lockObj)
             {
@@ -271,11 +271,10 @@ namespace Core_Interception
                     //    SetPollThreadState(true);
 
                 }
-                catch
+                catch(DeviceLibraryExceptions.DeviceDescriptorNotFoundException)
                 {
-                    ret = false;
+                    throw new ProviderExceptions.DeviceDescriptorNotFoundException(this, subReq.DeviceDescriptor);
                 }
-                return ret;
             }
         }
 

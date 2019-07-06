@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using HidWizards.IOWrapper.Core.Exceptions;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using Hidwizards.IOWrapper.Libraries.ProviderLogger;
@@ -83,7 +84,7 @@ namespace SharpDX_DirectInput
             }
         }
 
-        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
+        public void UnsubscribeInput(InputSubscriptionRequest subReq)
         {
             lock (_lockObj)
             {
@@ -91,7 +92,10 @@ namespace SharpDX_DirectInput
                 {
                     deviceHandler.UnsubscribeInput(subReq);
                 }
-                return true;
+                else
+                {
+                    throw new ProviderExceptions.DeviceDescriptorNotFoundException(this, subReq.DeviceDescriptor);
+                }
             }
         }
 

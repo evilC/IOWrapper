@@ -77,9 +77,16 @@ namespace Core_Tobii_Interaction
             }
         }
 
-        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
+        public void UnsubscribeInput(InputSubscriptionRequest subReq)
         {
-            return false;
+            if (streamHandlers.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
+            {
+                streamHandlers[subReq.DeviceDescriptor.DeviceHandle].UnsubscribeInput(subReq);
+            }
+            else
+            {
+                throw new ProviderExceptions.DeviceDescriptorNotFoundException(this, subReq.DeviceDescriptor);
+            }
         }
 
         public void RefreshLiveState()
@@ -202,14 +209,18 @@ namespace Core_Tobii_Interaction
             protected Host host;
             protected Dictionary<int, AxisMonitor> axisMonitors = new Dictionary<int, AxisMonitor>();
 
-            public virtual bool SubscribeInput(InputSubscriptionRequest subReq)
+            public void SubscribeInput(InputSubscriptionRequest subReq)
             {
                 if (!axisMonitors.ContainsKey(subReq.BindingDescriptor.Index))
                 {
                     axisMonitors.Add(subReq.BindingDescriptor.Index, new AxisMonitor());
                 }
                 axisMonitors[subReq.BindingDescriptor.Index].Add(subReq);
-                return true;
+            }
+
+            public void UnsubscribeInput(InputSubscriptionRequest subReq)
+            {
+                axisMonitors.Remove(subReq.BindingDescriptor.Index);
             }
 
             protected class AxisMonitor

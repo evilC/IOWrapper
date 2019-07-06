@@ -5,6 +5,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HidWizards.IOWrapper.Core.Exceptions;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
@@ -110,7 +111,7 @@ namespace Core_Midi
             _bindModeCallback?.Invoke(new ProviderDescriptor { ProviderName = ProviderName }, e.Device, e.Binding, e.Value);
         }
 
-        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
+        public void UnsubscribeInput(InputSubscriptionRequest subReq)
         {
             lock (_lockObj)
             {
@@ -118,7 +119,10 @@ namespace Core_Midi
                 {
                     deviceHandler.UnsubscribeInput(subReq);
                 }
-                return true;
+                else
+                {
+                    throw new ProviderExceptions.DeviceDescriptorNotFoundException(this, subReq.DeviceDescriptor);
+                }
             }
         }
 

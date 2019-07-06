@@ -643,13 +643,16 @@ namespace Core_DS4WindowsApi
             }
         }
 
-        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
+        public void UnsubscribeInput(InputSubscriptionRequest subReq)
         {
             if (connectedControllers[subReq.DeviceDescriptor.DeviceInstance] != null)
             {
-                return connectedControllers[subReq.DeviceDescriptor.DeviceInstance].UnsubscribeInput(subReq);
+                connectedControllers[subReq.DeviceDescriptor.DeviceInstance].UnsubscribeInput(subReq);
             }
-            return false;
+            else
+            {
+                throw new DeviceDescriptorNotFoundException(this, subReq.DeviceDescriptor);
+            }
         }
 
         public void RefreshLiveState()
