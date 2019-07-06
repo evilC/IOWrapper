@@ -12,7 +12,7 @@ namespace CoreUnitTests.Exceptions
     [TestFixture(TestName = "Exception Tests")]
     public class IOControllerExceptions
     {
-        public IOController _ioController = new IOController();
+        private readonly IOController _ioController = new IOController();
 
         [TestCase]
         public void ProviderNotFound()
