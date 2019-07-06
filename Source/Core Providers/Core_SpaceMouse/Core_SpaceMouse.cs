@@ -92,7 +92,7 @@ namespace Core_SpaceMouse
             return _deviceLibrary.GetInputDeviceReport(deviceDescriptor);
         }
 
-        public bool SubscribeInput(InputSubscriptionRequest subReq)
+        public void SubscribeInput(InputSubscriptionRequest subReq)
         {
             lock (_lockObj)
             {
@@ -102,7 +102,7 @@ namespace Core_SpaceMouse
                     _activeDevices.TryAdd(subReq.DeviceDescriptor, deviceHandler);
                 }
                 deviceHandler.SubscribeInput(subReq);
-                return true;
+                // ToDo: Should throw if device not connected?
             }
         }
 

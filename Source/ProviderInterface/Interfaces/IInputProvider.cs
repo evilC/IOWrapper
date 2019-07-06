@@ -10,7 +10,7 @@ namespace HidWizards.IOWrapper.ProviderInterface.Interfaces
     {
         ProviderReport GetInputList();
         DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor);
-        bool SubscribeInput(InputSubscriptionRequest subReq);
+        void SubscribeInput(InputSubscriptionRequest subReq);
         bool UnsubscribeInput(InputSubscriptionRequest subReq);
     }
 }

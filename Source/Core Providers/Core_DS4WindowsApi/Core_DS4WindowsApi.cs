@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
+using static HidWizards.IOWrapper.Core.Exceptions.ProviderExceptions;
 
 namespace Core_DS4WindowsApi
 {
@@ -630,13 +631,16 @@ namespace Core_DS4WindowsApi
             };
         }
 
-        public bool SubscribeInput(InputSubscriptionRequest subReq)
+        public void SubscribeInput(InputSubscriptionRequest subReq)
         {
             if (connectedControllers[subReq.DeviceDescriptor.DeviceInstance] != null)
             {
-                return connectedControllers[subReq.DeviceDescriptor.DeviceInstance].SubscribeInput(subReq);
+                connectedControllers[subReq.DeviceDescriptor.DeviceInstance].SubscribeInput(subReq);
             }
-            return false;
+            else
+            {
+                throw new DeviceDescriptorNotFoundException(this, subReq.DeviceDescriptor);
+            }
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)

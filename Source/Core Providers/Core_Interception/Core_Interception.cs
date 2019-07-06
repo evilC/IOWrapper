@@ -201,7 +201,7 @@ namespace Core_Interception
 
         #region Input Subscriptions
 
-        public bool SubscribeInput(InputSubscriptionRequest subReq)
+        public void SubscribeInput(InputSubscriptionRequest subReq)
         {
             lock (_lockObj)
             {
@@ -233,7 +233,6 @@ namespace Core_Interception
                 StartPollingIfNeeded();
                 //if (_pollThreadDesired)
                 //    SetPollThreadState(true);
-                return ret;
             }
         }
 
@@ -603,12 +602,14 @@ namespace Core_Interception
         {
             if (_monitoredKeyboards.ContainsKey(devId)) return;
             _monitoredKeyboards.TryAdd(devId, new IceptKeyboardHandler(deviceDescriptor, KeyboardEmptyHandler, BindModeHandler, _deviceLibrary));
+            // ToDo: Should throw if device not connected?
         }
 
         private void EnsureMonitoredMouseExists(int devId, DeviceDescriptor deviceDescriptor)
         {
             if (_monitoredMice.ContainsKey(devId)) return;
             _monitoredMice.TryAdd(devId, new IceptMouseHandler(deviceDescriptor, MouseEmptyHandler, BindModeHandler, _deviceLibrary, _blockingEnabled, _blockingControlledByUi));
+            // ToDo: Should throw if device not connected?
         }
 
 

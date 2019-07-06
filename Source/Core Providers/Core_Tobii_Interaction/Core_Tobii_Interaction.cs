@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HidWizards.IOWrapper.Core.Exceptions;
 using Tobii.Interaction;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
@@ -64,14 +65,16 @@ namespace Core_Tobii_Interaction
             return null;
         }
 
-        public bool SubscribeInput(InputSubscriptionRequest subReq)
+        public void SubscribeInput(InputSubscriptionRequest subReq)
         {
             if (streamHandlers.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
             {
                 streamHandlers[subReq.DeviceDescriptor.DeviceHandle].SubscribeInput(subReq);
-                return true;
             }
-            return false;
+            else
+            {
+                throw new ProviderExceptions.DeviceDescriptorNotFoundException(this, subReq.DeviceDescriptor);
+            }
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest subReq)

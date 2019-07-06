@@ -15,7 +15,7 @@ using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 namespace Core_TitanOne
 {
     [Export(typeof(IProvider))]
-    public class Core_TitanOne : IInputProvider, IOutputProvider
+    public class Core_TitanOne : IOutputProvider
     {
         sbyte[] outputState = new sbyte[GCMAPIConstants.Output];
         private Dictionary<string, OutputHandler> outputHandlers = new Dictionary<string, OutputHandler>(StringComparer.OrdinalIgnoreCase)
@@ -49,16 +49,6 @@ namespace Core_TitanOne
         bool disposed;
 
         public string ProviderName { get { return typeof(Core_TitanOne).Namespace; } }
-
-        public DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor)
-        {
-            return null;
-        }
-
-        public ProviderReport GetInputList()
-        {
-            return null;
-        }
 
         public ProviderReport GetOutputList()
         {
@@ -111,19 +101,9 @@ namespace Core_TitanOne
             return false;
         }
 
-        public bool SubscribeInput(InputSubscriptionRequest subReq)
-        {
-            return false;
-        }
-
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
             return true;    // No subscription required
-        }
-
-        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
-        {
-            return false;
         }
 
         public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
