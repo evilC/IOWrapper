@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\IOControllerExceptions.cs" />
     <Compile Include="GenericMEFPluginLoader.cs" />
     <Compile Include="IOController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -63,7 +64,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not exist "$(SolutionDir)Artifacts" mkdir "$(SolutionDir)Artifacts
+    <PostBuildEvent>if not exist "$(SolutionDir)Artifacts" mkdir "$(SolutionDir)Artifacts"
 xcopy /Y /i "$(TargetDir)*.dll" "$(SolutionDir)Artifacts\IOWrapper"
 
 

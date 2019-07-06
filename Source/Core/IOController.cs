@@ -2,7 +2,10 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using HidWizards.IOWrapper.Core.Exceptions;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
@@ -20,7 +23,9 @@ namespace HidWizards.IOWrapper.Core
 
         public IOController()
         {
-            var loader = new GenericMEFPluginLoader<IProvider>("Providers");
+            var executingFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var providerFolder = Path.Combine(executingFolder ?? throw new InvalidOperationException(), "Providers");
+            var loader = new GenericMEFPluginLoader<IProvider>($"{providerFolder}");
             _providers = new Dictionary<string, IProvider>();
             var providers = loader.Plugins;
             Log("Initializing...");
@@ -105,24 +110,14 @@ namespace HidWizards.IOWrapper.Core
 
         public DeviceReport GetInputDeviceReport(ProviderDescriptor providerDescriptor, DeviceDescriptor deviceDescriptor)
         {
-            var provider = GetProvider(providerDescriptor.ProviderName);
-            if (provider != null)
-            {
-                if (!(provider is IInputProvider prov)) return null;
-                return prov.GetInputDeviceReport(deviceDescriptor);
-            }
-            return null;
+            return GetProvider<IInputProvider>(providerDescriptor.ProviderName)
+                .GetInputDeviceReport(deviceDescriptor);
         }
 
         public DeviceReport GetOutputDeviceReport(ProviderDescriptor providerDescriptor, DeviceDescriptor deviceDescriptor)
         {
-            var provider = GetProvider(providerDescriptor.ProviderName);
-            if (provider != null)
-            {
-                if (!(provider is IOutputProvider prov)) return null;
-                return prov.GetOutputDeviceReport(deviceDescriptor);
-            }
-            return null;
+            return GetProvider<IOutputProvider>(providerDescriptor.ProviderName)
+                .GetOutputDeviceReport(deviceDescriptor);
         }
 
         public bool SubscribeInput(InputSubscriptionRequest _subReq)
@@ -169,14 +164,6 @@ namespace HidWizards.IOWrapper.Core
             var provider = GetProvider<IBindModeProvider>(providerDescriptor.ProviderName);
             provider.SetDetectionMode(detectionMode, deviceDescriptor, callback);
         }
-
-        //public void EnableBindMode(Action<ProviderDescriptor, DeviceDescriptor, BindingDescriptor, int> callback)
-        //{
-        //    var di = GetProvider("SharpDX_DirectInput");
-        //    di.EnableBindMode(callback);
-        //    var xi = GetProvider("SharpDX_XInput");
-        //    xi.EnableBindMode(callback);
-        //}
 
         private void LogInputSubReq(string title, InputSubscriptionRequest subReq)
         {
@@ -271,7 +258,7 @@ namespace HidWizards.IOWrapper.Core
 
         public IProvider GetProvider(string providerName)
         {
-            if (!_providers.ContainsKey(providerName)) throw new Exception($"Provider {providerName} Not found");
+            if (!_providers.ContainsKey(providerName)) throw new ProviderNotFoundException($"Provider {providerName} Not found");
             return _providers[providerName];
         }
 
@@ -281,7 +268,7 @@ namespace HidWizards.IOWrapper.Core
             {
                 return returnedProvider;
             }
-            throw new Exception($"Provider {provider.ProviderName} does not support interface {typeof(TInterface)}");
+            throw new ProviderDoesNotSupportInterfaceException($"Provider {provider.ProviderName} does not support interface {typeof(TInterface)}");
         }
 
         public TInterface GetProvider<TInterface>(string providerName)

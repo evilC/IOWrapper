@@ -34,8 +34,8 @@ namespace HidWizards.IOWrapper.Core
         public GenericMEFPluginLoader(string basePath)
         {
             var catalog = new AggregateCatalog();
-
-            foreach (var path in Directory.EnumerateDirectories($@".\{basePath}", "*", SearchOption.TopDirectoryOnly))
+            var pluginFolders = Directory.EnumerateDirectories($@"{basePath}", "*", SearchOption.TopDirectoryOnly);
+            foreach (var path in pluginFolders)
             {
                 var folderName = path.Remove(0, path.LastIndexOf(Path.DirectorySeparatorChar) + 1);
                 var dllName = $"{folderName}.dll";
