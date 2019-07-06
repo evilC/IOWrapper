@@ -6,7 +6,6 @@ using HidWizards.IOWrapper.Core;
 using HidWizards.IOWrapper.Core.Exceptions;
 using HidWizards.IOWrapper.DataTransferObjects;
 using NUnit.Framework;
-using HidWizards.IOWrapper.Core.Exceptions;
 
 namespace CoreUnitTests.Exceptions
 {
