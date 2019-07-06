@@ -6,11 +6,12 @@ using HidWizards.IOWrapper.Core;
 using HidWizards.IOWrapper.Core.Exceptions;
 using HidWizards.IOWrapper.DataTransferObjects;
 using NUnit.Framework;
+using HidWizards.IOWrapper.Core.Exceptions;
 
 namespace CoreUnitTests.Exceptions
 {
     [TestFixture(TestName = "Exception Tests")]
-    public class IOControllerExceptions
+    public class IOControllerExceptionTests
     {
         private readonly IOController _ioController = new IOController();
 
@@ -25,7 +26,7 @@ namespace CoreUnitTests.Exceptions
                 SubscriptionDescriptor = new SubscriptionDescriptor { SubscriberGuid = Guid.NewGuid()}
             };
 
-            Assert.Throws<ProviderNotFoundException>(
+            Assert.Throws<IOControllerExceptions.ProviderNotFoundException>(
                 delegate
                 {
                     _ioController.SubscribeInput(isr);
@@ -44,7 +45,7 @@ namespace CoreUnitTests.Exceptions
                 SubscriptionDescriptor = new SubscriptionDescriptor { SubscriberGuid = Guid.NewGuid() }
             };
 
-            Assert.Throws<ProviderDoesNotSupportInterfaceException>(
+            Assert.Throws<IOControllerExceptions.ProviderDoesNotSupportInterfaceException>(
                 delegate
                 {
                     _ioController.SubscribeInput(isr);
