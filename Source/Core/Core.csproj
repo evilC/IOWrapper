@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\DeviceLibraryExceptions.cs" />
     <Compile Include="Exceptions\IOControllerExceptions.cs" />
     <Compile Include="Exceptions\ProviderExceptions.cs" />
     <Compile Include="GenericMEFPluginLoader.cs" />

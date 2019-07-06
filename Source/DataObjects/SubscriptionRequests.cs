@@ -25,6 +25,11 @@ namespace HidWizards.IOWrapper.DataTransferObjects
         /// Identifies which (Provider-specific) Device that this subscription is for
         /// </summary>
         public DeviceDescriptor DeviceDescriptor { get; set; }
+
+        public override string ToString()
+        {
+            return $"Subscriber GUID {SubscriptionDescriptor.SubscriberGuid}, Profile GUID {SubscriptionDescriptor.ProfileGuid}";
+        }
     }
 
     /// <summary>

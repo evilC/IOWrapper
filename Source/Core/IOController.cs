@@ -138,21 +138,20 @@ namespace HidWizards.IOWrapper.Core
             ActiveInputSubscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
         }
 
-        public bool UnsubscribeInput(InputSubscriptionRequest _subReq)
+        public void UnsubscribeInput(InputSubscriptionRequest _subReq)
         {
             var subReq = _subReq.Clone();
             LogInputSubReq("UnsubscribeInput", subReq);
-            var ret = false;
             if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriptionDescriptor.SubscriberGuid))
             {
                 var provider = GetProvider<IInputProvider>(subReq.ProviderDescriptor.ProviderName);
-                ret = provider.UnsubscribeInput(ActiveInputSubscriptions[subReq.SubscriptionDescriptor.SubscriberGuid]);
-                if (ret)
-                {
-                    ActiveInputSubscriptions.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
-                }
+                provider.UnsubscribeInput(ActiveInputSubscriptions[subReq.SubscriptionDescriptor.SubscriberGuid]);
+                ActiveInputSubscriptions.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
             }
-            return ret;
+            else
+            {
+                throw new IOControllerExceptions.SubscriptionNotFoundException(subReq);
+            }
         }
 
         public void SetDetectionMode(DetectionMode detectionMode, ProviderDescriptor providerDescriptor, DeviceDescriptor deviceDescriptor, Action<ProviderDescriptor, DeviceDescriptor, BindingReport, short> callback = null)

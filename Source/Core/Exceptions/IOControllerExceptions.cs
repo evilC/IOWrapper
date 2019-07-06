@@ -1,4 +1,5 @@
 ﻿using System;
+using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace HidWizards.IOWrapper.Core.Exceptions
 {
@@ -19,6 +20,17 @@ namespace HidWizards.IOWrapper.Core.Exceptions
         public class ProviderDoesNotSupportInterfaceException : Exception
         {
             public ProviderDoesNotSupportInterfaceException(string message) : base(message)
+            {
+
+            }
+        }
+
+        // Thrown on unsubscribe if subscription not found
+        [Serializable]
+        public class SubscriptionNotFoundException : Exception
+        {
+            public SubscriptionNotFoundException(SubscriptionRequest subReq)
+                : base($"Input Subscription {subReq.SubscriptionDescriptor} not found")
             {
 
             }

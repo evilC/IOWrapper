@@ -65,10 +65,7 @@ namespace TestApp.Plugins
 
         public bool Unsubscribe()
         {
-            if (!IOW.Instance.UnsubscribeInput(_input))
-            {
-                throw new Exception("Could not Unsubscribe SubReq");
-            }
+            IOW.Instance.UnsubscribeInput(_input);
             return true;
         }
 
