@@ -258,7 +258,7 @@ namespace HidWizards.IOWrapper.Core
 
         public IProvider GetProvider(string providerName)
         {
-            if (!_providers.ContainsKey(providerName)) throw new ProviderNotFoundException($"Provider {providerName} Not found");
+            if (!_providers.ContainsKey(providerName)) throw new IOControllerExceptions.ProviderNotFoundException($"Provider {providerName} Not found");
             return _providers[providerName];
         }
 
@@ -268,7 +268,7 @@ namespace HidWizards.IOWrapper.Core
             {
                 return returnedProvider;
             }
-            throw new ProviderDoesNotSupportInterfaceException($"Provider {provider.ProviderName} does not support interface {typeof(TInterface)}");
+            throw new IOControllerExceptions.ProviderDoesNotSupportInterfaceException($"Provider {provider.ProviderName} does not support interface {typeof(TInterface)}");
         }
 
         public TInterface GetProvider<TInterface>(string providerName)
