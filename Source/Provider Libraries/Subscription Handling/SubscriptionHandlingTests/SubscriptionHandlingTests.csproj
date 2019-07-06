@@ -9,7 +9,7 @@
     <ProjectGuid>{8B96520E-4A73-4CC0-BBAB-5F8E34FA8326}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tests</RootNamespace>
+    <RootNamespace>SubscriptionHandlingTests</RootNamespace>
     <AssemblyName>SubscriptionHandlingTests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

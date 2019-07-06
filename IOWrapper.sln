@@ -61,7 +61,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HidDeviceHelper", "Source\P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PovHelper", "Source\Provider Libraries\Device Update Handling\PovHelper\PovHelper.csproj", "{9E4C03D5-58D8-4369-A7FA-BB4C307AF905}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Source\Provider Libraries\Subscription Handling\SubscriptionHandlingTests\Tests.csproj", "{8B96520E-4A73-4CC0-BBAB-5F8E34FA8326}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubscriptionHandlingTests", "Source\Provider Libraries\Subscription Handling\SubscriptionHandlingTests\SubscriptionHandlingTests.csproj", "{8B96520E-4A73-4CC0-BBAB-5F8E34FA8326}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeviceHandlers", "Source\Provider Libraries\Device Update Handling\DeviceHandlers\DeviceHandlers.csproj", "{04FA4D8A-D5D2-4477-8AED-021239CE95AE}"
 EndProject
@@ -85,7 +85,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpDX_DirectInput", "Sour
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpDX_XInput", "Source\Core Providers\SharpDX_XInput\SharpDX_XInput.csproj", "{2072B5A7-8069-433C-B4DB-E150C26E9A49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IOController Tests", "IOController Tests\IOController Tests.csproj", "{8EDF4429-251A-416D-BB68-93F227191BCF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core Unit Tests", "Core Unit Tests\Core Unit Tests.csproj", "{8EDF4429-251A-416D-BB68-93F227191BCF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

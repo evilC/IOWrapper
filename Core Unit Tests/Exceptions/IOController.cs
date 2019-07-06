@@ -2,17 +2,15 @@
 // See documentation : https://github.com/nunit/docs/wiki/NUnit-Documentation
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using HidWizards.IOWrapper.Core;
 using HidWizards.IOWrapper.Core.Exceptions;
 using HidWizards.IOWrapper.DataTransferObjects;
 using NUnit.Framework;
 
-namespace IOController_Tests
+namespace CoreUnitTests.Exceptions
 {
-    [TestFixture]
-    public class ExceptionTests
+    [TestFixture(TestName = "Exception Tests")]
+    public class IOControllerExceptions
     {
         public IOController _ioController = new IOController();
 

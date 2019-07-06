@@ -1,4 +1,4 @@
-﻿namespace Tests.SubscriptionHandler.Lookups
+﻿namespace SubscriptionHandlingTests.SubscriptionHandler.Lookups
 {
     public enum SubscriptionType
     {

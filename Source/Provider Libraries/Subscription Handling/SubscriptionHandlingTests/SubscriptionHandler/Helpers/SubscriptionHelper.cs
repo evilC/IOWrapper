@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hidwizards.IOWrapper.Libraries.SubscriptionHandlers;
 using HidWizards.IOWrapper.DataTransferObjects;
-using Tests.SubscriptionHandler.Lookups;
+using Hidwizards.IOWrapper.Libraries.SubscriptionHandlers;
+using SubscriptionHandlingTests.SubscriptionHandler.Lookups;
 
-namespace Tests.SubscriptionHandler.Helpers
+namespace SubscriptionHandlingTests.SubscriptionHandler.Helpers
 {
     public class SubscriptionHelper
     {

@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Linq;
 using NUnit.Framework;
-using Tests.SubscriptionHandler.Helpers;
-using Tests.SubscriptionHandler.Lookups;
+using SubscriptionHandlingTests.SubscriptionHandler.Helpers;
+using SubscriptionHandlingTests.SubscriptionHandler.Lookups;
 
-namespace Tests.SubscriptionHandler.EmptyHandler
+namespace SubscriptionHandlingTests.SubscriptionHandler.EmptyHandler
 {
     /// <summary>
     /// Given I add a number of subscriptions to a SubscriptionHandler

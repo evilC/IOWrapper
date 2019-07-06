@@ -9,8 +9,8 @@
     <ProjectGuid>{8EDF4429-251A-416D-BB68-93F227191BCF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IOController_Tests</RootNamespace>
-    <AssemblyName>IOController Tests</AssemblyName>
+    <RootNamespace>CoreUnitTests</RootNamespace>
+    <AssemblyName>CoreUnitTests</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -40,7 +40,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExceptionTests.cs" />
+    <Compile Include="Exceptions\IOController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
