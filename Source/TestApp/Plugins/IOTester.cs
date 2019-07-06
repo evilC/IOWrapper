@@ -59,10 +59,7 @@ namespace TestApp.Plugins
 
         public IOTester Subscribe()
         {
-            if (!IOW.Instance.SubscribeInput(_input))
-            {
-                throw new Exception("Could not subscribe to input");
-            }
+            IOW.Instance.SubscribeInput(_input);
             return this;    // allow chaining
         }
 

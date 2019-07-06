@@ -120,7 +120,7 @@ namespace HidWizards.IOWrapper.Core
                 .GetOutputDeviceReport(deviceDescriptor);
         }
 
-        public bool SubscribeInput(InputSubscriptionRequest _subReq)
+        public void SubscribeInput(InputSubscriptionRequest _subReq)
         {
             // Clone subreq before passing to provider, so if it gets altered outside, it does not affect the copy
             var subReq = _subReq.Clone();
@@ -134,12 +134,8 @@ namespace HidWizards.IOWrapper.Core
                 UnsubscribeInput(oldSub);
             }
             var provider = GetProvider<IInputProvider>(subReq.ProviderDescriptor.ProviderName);
-            var ret = provider.SubscribeInput(subReq);
-            if (ret)
-            {
-                ActiveInputSubscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
-            }
-            return ret;
+            provider.SubscribeInput(subReq);
+            ActiveInputSubscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
         }
 
         public bool UnsubscribeInput(InputSubscriptionRequest _subReq)
