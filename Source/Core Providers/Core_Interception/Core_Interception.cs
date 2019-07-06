@@ -9,6 +9,7 @@ using System.Xml;
 using Core_Interception.DeviceLibrary;
 using Core_Interception.Helpers;
 using Core_Interception.Lib;
+using HidWizards.IOWrapper.Core.Exceptions;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
