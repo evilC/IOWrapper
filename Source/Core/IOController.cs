@@ -120,7 +120,13 @@ namespace HidWizards.IOWrapper.Core
                 .GetOutputDeviceReport(deviceDescriptor);
         }
 
-        public void SubscribeInput(InputSubscriptionRequest _subReq)
+        public bool SubscribeInput(InputSubscriptionRequest _subReq)
+        {
+            SubscribeInputWithExceptions(_subReq);
+            return true;
+        }
+
+        public void SubscribeInputWithExceptions(InputSubscriptionRequest _subReq)
         {
             // Clone subreq before passing to provider, so if it gets altered outside, it does not affect the copy
             var subReq = _subReq.Clone();
@@ -145,7 +151,13 @@ namespace HidWizards.IOWrapper.Core
             }
         }
 
-        public void UnsubscribeInput(InputSubscriptionRequest _subReq)
+        public bool UnsubscribeInput(InputSubscriptionRequest _subReq)
+        {
+            UnsubscribeInputWithExceptions(_subReq);
+            return true;
+        }
+
+        public void UnsubscribeInputWithExceptions(InputSubscriptionRequest _subReq)
         {
             var subReq = _subReq.Clone();
             LogInputSubReq("UnsubscribeInput", subReq);
@@ -186,7 +198,13 @@ namespace HidWizards.IOWrapper.Core
                 subReq.SubscriptionDescriptor.SubscriberGuid);
         }
 
-        public void SubscribeOutput(OutputSubscriptionRequest _subReq)
+        public bool SubscribeOutput(OutputSubscriptionRequest _subReq)
+        {
+            SubscribeOutputWithExceptions(_subReq);
+            return true;
+        }
+
+        public void SubscribeOutputWithExceptions(OutputSubscriptionRequest _subReq)
         {
             var subReq = _subReq.Clone();
             LogOutputSubReq("SubscribeOutput", subReq);
@@ -209,7 +227,13 @@ namespace HidWizards.IOWrapper.Core
             }
         }
 
-        public void UnsubscribeOutput(OutputSubscriptionRequest _subReq)
+        public bool UnsubscribeOutput(OutputSubscriptionRequest _subReq)
+        {
+            UnsubscribeOutputWithExceptions(_subReq);
+            return true;
+        }
+
+        public void UnsubscribeOutputWithExceptions(OutputSubscriptionRequest _subReq)
         {
             var subReq = _subReq.Clone();
             LogOutputSubReq("UnsubscribeOutput", subReq);
@@ -237,7 +261,14 @@ namespace HidWizards.IOWrapper.Core
                 subReq.SubscriptionDescriptor.SubscriberGuid);
         }
 
-        public void SetOutputstate(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
+        // ToDo: Renaame to SetOutputState
+        public bool SetOutputstate(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
+        {
+            SetOutputStateWithExceptions(subReq, bindingDescriptor, state);
+            return true;
+        }
+
+        public void SetOutputStateWithExceptions(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
             var provider = GetProvider<IOutputProvider>(subReq.ProviderDescriptor.ProviderName);
             try
