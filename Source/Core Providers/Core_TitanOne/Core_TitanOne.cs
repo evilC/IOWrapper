@@ -101,9 +101,9 @@ namespace Core_TitanOne
             return false;
         }
 
-        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        public void SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            return true;    // No subscription required
+            // ToDo: Throw if device does not exist
         }
 
         public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)

@@ -145,7 +145,7 @@ namespace Core_Midi
             return _deviceLibrary.GetOutputDeviceReport(deviceDescriptor);
         }
 
-        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        public void SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
             if (!_activeOutputDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
@@ -154,7 +154,7 @@ namespace Core_Midi
             }
 
             _activeOutputDevices[subReq.DeviceDescriptor].SubscribeOutput(subReq);
-            return true;
+            // ToDo: Throw if device does not exist
         }
 
         private void OutputDeviceEmptyHandler(object sender, DeviceDescriptor e)

@@ -122,12 +122,12 @@ namespace Core_vJoyInterfaceWrap
             return false;
         }
 
-        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        public void SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
             var devId = DevIdFromHandle(subReq.DeviceDescriptor.DeviceHandle);
             vJoyDevices[devId].Add(subReq);
             subscriptionToDevice.Add(subReq.SubscriptionDescriptor.SubscriberGuid, devId);
-            return true;
+            // ToDo: Throw if device does not exist
         }
 
         public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)

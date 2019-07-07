@@ -67,6 +67,19 @@ namespace HidWizards.IOWrapper.Core.Exceptions
             }
         }
 
+        // Thrown on error during Subscribe Output Device
+        [Serializable]
+        public class SubscribeOutputDeviceFailedException : Exception
+        {
+            public OutputSubscriptionRequest SubReq { get; set; }
+            public IProvider Provider { get; set; }
 
+            public SubscribeOutputDeviceFailedException(Exception inner, IProvider provider, OutputSubscriptionRequest subReq)
+                : base($"Input Subscription failed", inner)
+            {
+                Provider = provider;
+                SubReq = subReq;
+            }
+        }
     }
 }

@@ -246,9 +246,9 @@ namespace Core_Interception
 
         #region Output Subscriptions
 
-        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        public void SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            return true;
+            // ToDo: Throw if device does not exist
         }
 
         public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)

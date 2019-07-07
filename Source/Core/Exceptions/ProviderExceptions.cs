@@ -21,5 +21,14 @@ namespace HidWizards.IOWrapper.Core.Exceptions
                 DeviceDescriptor = deviceDescriptor;
             }
         }
+
+        [Serializable]
+        public class ProviderNotLiveException : Exception
+        {
+            public ProviderNotLiveException()
+                : base($"Provider is not Live")
+            {
+            }
+        }
     }
 }

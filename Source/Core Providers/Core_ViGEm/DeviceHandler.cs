@@ -48,13 +48,12 @@ namespace Core_ViGEm
                 return false;
             }
 
-            public bool AddSubscription(OutputSubscriptionRequest subReq)
+            public void AddSubscription(OutputSubscriptionRequest subReq)
             {
                 subscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
                 logger.Log("Adding subscription to controller # {0}", subReq.DeviceDescriptor.DeviceInstance);
                 IsRequested = true;
                 SetAcquireState();
-                return true;
             }
 
             public bool RemoveSubscription(OutputSubscriptionRequest subReq)

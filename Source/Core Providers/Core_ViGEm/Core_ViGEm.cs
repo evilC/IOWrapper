@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HidWizards.IOWrapper.Core.Exceptions;
 using Hidwizards.IOWrapper.Libraries.ProviderLogger;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
@@ -80,11 +81,11 @@ namespace Core_ViGEm
             return devicesHandler.SetOutputState(subReq, bindingDescriptor, state);
         }
 
-        public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        public void SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
             if (!isLive)
-                return false;
-            return devicesHandler.SubscribeOutput(subReq);
+                throw new ProviderExceptions.ProviderNotLiveException();
+            devicesHandler.SubscribeOutput(subReq);
         }
 
         public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)

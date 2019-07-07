@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using HidWizards.IOWrapper.Core.Exceptions;
 using HidWizards.IOWrapper.DataTransferObjects;
 
 namespace Core_ViGEm
@@ -27,13 +28,16 @@ namespace Core_ViGEm
                 }
             }
 
-            public bool SubscribeOutput(OutputSubscriptionRequest subReq)
+            public void SubscribeOutput(OutputSubscriptionRequest subReq)
             {
                 if (HasHandler(subReq.DeviceDescriptor))
                 {
-                    return deviceHandlers[subReq.DeviceDescriptor.DeviceHandle][subReq.DeviceDescriptor.DeviceInstance].AddSubscription(subReq);
+                    deviceHandlers[subReq.DeviceDescriptor.DeviceHandle][subReq.DeviceDescriptor.DeviceInstance].AddSubscription(subReq);
                 }
-                return false;
+                else
+                {
+                    throw new ProviderExceptions.DeviceDescriptorNotFoundException(subReq.DeviceDescriptor);
+                }
             }
 
             public bool UnsubscribeOutput(OutputSubscriptionRequest subReq)

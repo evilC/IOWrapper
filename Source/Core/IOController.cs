@@ -186,7 +186,7 @@ namespace HidWizards.IOWrapper.Core
                 subReq.SubscriptionDescriptor.SubscriberGuid);
         }
 
-        public bool SubscribeOutput(OutputSubscriptionRequest _subReq)
+        public void SubscribeOutput(OutputSubscriptionRequest _subReq)
         {
             var subReq = _subReq.Clone();
             LogOutputSubReq("SubscribeOutput", subReq);
@@ -198,13 +198,15 @@ namespace HidWizards.IOWrapper.Core
                 UnsubscribeOutput(ActiveOutputSubscriptions[subReq.SubscriptionDescriptor.SubscriberGuid]);
             }
             var provider = GetProvider<IOutputProvider>(subReq.ProviderDescriptor.ProviderName);
-            bool ret = false;
-            ret = provider.SubscribeOutputDevice(subReq);
-            if (ret)
+            try
             {
+                provider.SubscribeOutputDevice(subReq);
                 ActiveOutputSubscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
             }
-            return ret;
+            catch (Exception ex)
+            {
+                throw new IOControllerExceptions.SubscribeOutputDeviceFailedException(ex, provider, subReq);
+            }
         }
 
         public bool UnsubscribeOutput(OutputSubscriptionRequest _subReq)
