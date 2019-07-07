@@ -5,7 +5,7 @@ using HidWizards.IOWrapper.Core.Exceptions;
 using HidWizards.IOWrapper.DataTransferObjects;
 using NUnit.Framework;
 
-namespace CoreUnitTests.Exceptions.Provider.Input
+namespace Core_Unit_Tests.Exceptions.Provider.Input
 {
     [TestFixture]
     public class ProviderInputExceptionTests

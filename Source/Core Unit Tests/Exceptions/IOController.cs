@@ -2,15 +2,13 @@
 // See documentation : https://github.com/nunit/docs/wiki/NUnit-Documentation
 
 using System;
-using System.IO;
-using System.Reflection;
 using FluentAssertions;
 using HidWizards.IOWrapper.Core;
 using HidWizards.IOWrapper.Core.Exceptions;
 using HidWizards.IOWrapper.DataTransferObjects;
 using NUnit.Framework;
 
-namespace CoreUnitTests.Exceptions
+namespace Core_Unit_Tests.Exceptions
 {
     [TestFixture]
     public class IOControllerExceptionTests
