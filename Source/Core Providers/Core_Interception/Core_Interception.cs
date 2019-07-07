@@ -251,9 +251,9 @@ namespace Core_Interception
             // ToDo: Throw if device does not exist
         }
 
-        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        public void UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            return true;
+            // ToDo: Throw if device does not exist
         }
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)

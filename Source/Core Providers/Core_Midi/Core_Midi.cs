@@ -163,14 +163,16 @@ namespace Core_Midi
             _activeOutputDevices.TryRemove(e, out _);
         }
 
-        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        public void UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
             if (_activeOutputDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
                 deviceHandler.UnsubscribeOutput(subReq);
-                return true;
             }
-            return false;
+            else
+            {
+                throw new ProviderExceptions.DeviceDescriptorNotFoundException(subReq.DeviceDescriptor);
+            }
         }
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)

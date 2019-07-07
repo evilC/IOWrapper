@@ -44,10 +44,7 @@ namespace TestApp.Plugins
                 DeviceDescriptor = deviceDescriptor
             };
             _bindingDescriptor = bindingDescriptor;
-            if (!IOW.Instance.SubscribeOutput(_output))
-            {
-                throw new Exception("Could not subscribe to output");
-            }
+            IOW.Instance.SubscribeOutput(_output);
             return this;
         }
 

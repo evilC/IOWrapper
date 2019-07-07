@@ -88,11 +88,11 @@ namespace Core_ViGEm
             devicesHandler.SubscribeOutput(subReq);
         }
 
-        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        public void UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
             if (!isLive)
-                return false;
-            return devicesHandler.UnsubscribeOutput(subReq);
+                throw new ProviderExceptions.ProviderNotLiveException();
+            devicesHandler.UnsubscribeOutput(subReq);
         }
 
         public void RefreshLiveState()

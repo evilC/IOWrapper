@@ -209,21 +209,23 @@ namespace HidWizards.IOWrapper.Core
             }
         }
 
-        public bool UnsubscribeOutput(OutputSubscriptionRequest _subReq)
+        public void UnsubscribeOutput(OutputSubscriptionRequest _subReq)
         {
             var subReq = _subReq.Clone();
             LogOutputSubReq("UnsubscribeOutput", subReq);
-            var ret = false;
             if (ActiveOutputSubscriptions.ContainsKey(subReq.SubscriptionDescriptor.SubscriberGuid))
             {
                 var provider = GetProvider<IOutputProvider>(subReq.ProviderDescriptor.ProviderName);
-                ret = provider.UnSubscribeOutputDevice(subReq);
-                if (ret)
+                try
                 {
+                    provider.UnSubscribeOutputDevice(subReq);
                     ActiveOutputSubscriptions.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
                 }
+                catch (Exception ex)
+                {
+                    throw new IOControllerExceptions.UnsubscribeOutputDeviceFailedException(ex, provider, subReq);
+                }
             }
-            return ret;
         }
 
         private void LogOutputSubReq(string title, OutputSubscriptionRequest subReq)

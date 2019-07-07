@@ -40,13 +40,16 @@ namespace Core_ViGEm
                 }
             }
 
-            public bool UnsubscribeOutput(OutputSubscriptionRequest subReq)
+            public void UnsubscribeOutput(OutputSubscriptionRequest subReq)
             {
                 if (HasHandler(subReq.DeviceDescriptor))
                 {
-                    return deviceHandlers[subReq.DeviceDescriptor.DeviceHandle][subReq.DeviceDescriptor.DeviceInstance].RemoveSubscription(subReq);
+                    deviceHandlers[subReq.DeviceDescriptor.DeviceHandle][subReq.DeviceDescriptor.DeviceInstance].RemoveSubscription(subReq);
                 }
-                return false;
+                else
+                {
+                    throw new ProviderExceptions.DeviceDescriptorNotFoundException(subReq.DeviceDescriptor);
+                }
             }
 
             public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)

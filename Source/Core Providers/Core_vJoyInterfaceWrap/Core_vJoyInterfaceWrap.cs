@@ -130,12 +130,12 @@ namespace Core_vJoyInterfaceWrap
             // ToDo: Throw if device does not exist
         }
 
-        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        public void UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            uint devId = subscriptionToDevice[subReq.SubscriptionDescriptor.SubscriberGuid];
+            var devId = subscriptionToDevice[subReq.SubscriptionDescriptor.SubscriberGuid];
             vJoyDevices[devId].Remove(subReq);
             subscriptionToDevice.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
-            return true;
+            // ToDo: Throw if device does not exist
         }
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)

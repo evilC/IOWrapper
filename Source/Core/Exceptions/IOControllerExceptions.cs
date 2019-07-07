@@ -75,7 +75,22 @@ namespace HidWizards.IOWrapper.Core.Exceptions
             public IProvider Provider { get; set; }
 
             public SubscribeOutputDeviceFailedException(Exception inner, IProvider provider, OutputSubscriptionRequest subReq)
-                : base($"Input Subscription failed", inner)
+                : base($"Output Device Subscription failed", inner)
+            {
+                Provider = provider;
+                SubReq = subReq;
+            }
+        }
+
+        // Thrown on error during Subscribe Output Device
+        [Serializable]
+        public class UnsubscribeOutputDeviceFailedException : Exception
+        {
+            public OutputSubscriptionRequest SubReq { get; set; }
+            public IProvider Provider { get; set; }
+
+            public UnsubscribeOutputDeviceFailedException(Exception inner, IProvider provider, OutputSubscriptionRequest subReq)
+                : base($"Output Device Unsubscription failed", inner)
             {
                 Provider = provider;
                 SubReq = subReq;
