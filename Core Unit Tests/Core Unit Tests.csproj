@@ -65,7 +65,7 @@
   </Target>
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(TargetDir)Providers" mkdir "$(TargetDir)Providers"
-xcopy /Y /i /s "$(SolutionDir)Artifacts\Providers" "$(TargetDir)Providers"
+xcopy /Y /i /s "$(SolutionDir)TestArtifacts\Providers" "$(TargetDir)Providers"
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

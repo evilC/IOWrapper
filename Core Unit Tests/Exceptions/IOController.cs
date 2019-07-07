@@ -2,6 +2,8 @@
 // See documentation : https://github.com/nunit/docs/wiki/NUnit-Documentation
 
 using System;
+using System.IO;
+using System.Reflection;
 using HidWizards.IOWrapper.Core;
 using HidWizards.IOWrapper.Core.Exceptions;
 using HidWizards.IOWrapper.DataTransferObjects;
@@ -9,7 +11,7 @@ using NUnit.Framework;
 
 namespace CoreUnitTests.Exceptions
 {
-    [TestFixture(TestName = "Exception Tests")]
+    [TestFixture]
     public class IOControllerExceptionTests
     {
         private readonly IOController _ioController = new IOController();
@@ -39,7 +41,7 @@ namespace CoreUnitTests.Exceptions
             var isr = new InputSubscriptionRequest
             {
                 DeviceDescriptor = new DeviceDescriptor { DeviceHandle = "DoesNotExist" },
-                ProviderDescriptor = new ProviderDescriptor { ProviderName = "Core_ViGEm" },
+                ProviderDescriptor = new ProviderDescriptor { ProviderName = "TestOutputOnlyProvider" },
                 BindingDescriptor = new BindingDescriptor(),
                 SubscriptionDescriptor = new SubscriptionDescriptor { SubscriberGuid = Guid.NewGuid() }
             };

@@ -25,7 +25,8 @@ namespace HidWizards.IOWrapper.Core
         {
             var executingFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var providerFolder = Path.Combine(executingFolder ?? throw new InvalidOperationException(), "Providers");
-            var loader = new GenericMEFPluginLoader<IProvider>($"{providerFolder}");
+            var pluginFolders = Directory.EnumerateDirectories($@"{providerFolder}", "*", SearchOption.TopDirectoryOnly);
+            var loader = new GenericMEFPluginLoader<IProvider>(pluginFolders);
             _providers = new Dictionary<string, IProvider>();
             var providers = loader.Plugins;
             Log("Initializing...");
@@ -34,7 +35,7 @@ namespace HidWizards.IOWrapper.Core
                 try
                 {
                     var provider = lazyProvider.Value;
-                    _providers[provider.ProviderName] = provider;
+                    _providers[provider.ProviderName] = provider; // ToDo: This goes boom if ctor of provider does not access ProviderName
                     Log("Initialized Provider {0}", provider.ProviderName);
                 }
                 catch(CompositionException ex)

@@ -1,16 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D9447B59-4B62-4BD8-BE91-5F5AB1D8F1BD}</ProjectGuid>
+    <ProjectGuid>{D83C54B3-8710-4186-AAF5-97395BEE791F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HidWizards.IOWrapper.Core</RootNamespace>
-    <AssemblyName>IOWrapper.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <RootNamespace>TestInputOnlyProvider</RootNamespace>
+    <AssemblyName>TestInputOnlyProvider</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,9 +30,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -44,43 +42,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Exceptions\IOControllerExceptions.cs" />
-    <Compile Include="Exceptions\ProviderExceptions.cs" />
-    <Compile Include="GenericMEFPluginLoader.cs" />
-    <Compile Include="IOController.cs" />
+    <Compile Include="TestInputOnlyProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataObjects\DTOs.csproj">
-      <Project>{81851977-0421-4ebd-b066-0fe03f02589e}</Project>
+    <ProjectReference Include="..\..\DataObjects\DTOs.csproj">
+      <Project>{81851977-0421-4EBD-B066-0FE03F02589E}</Project>
       <Name>DTOs</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ProviderInterface\ProviderInterface.csproj">
-      <Project>{f6eaf2bc-f362-4ecd-94e5-617ca37a4210}</Project>
+    <ProjectReference Include="..\..\Provider Libraries\ProviderLogger\ProviderLogger.csproj">
+      <Project>{996ECB47-004C-4216-BBDF-AE023DA3DF1F}</Project>
+      <Name>ProviderLogger</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ProviderInterface\ProviderInterface.csproj">
+      <Project>{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}</Project>
       <Name>ProviderInterface</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="README.md" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not exist "$(SolutionDir)Artifacts" mkdir "$(SolutionDir)Artifacts"
-if not exist "$(SolutionDir)TestArtifacts" mkdir "$(SolutionDir)TestArtifacts"
-xcopy /Y /i "$(TargetDir)*.dll" "$(SolutionDir)Artifacts\IOWrapper"
-
-
+    <PostBuildEvent>if exist "$(SolutionDir)TestArtifacts\Providers\$(ProjectName)" rmdir "$(SolutionDir)TestArtifacts\Providers\$(ProjectName)" /s /q
+xcopy /Y /i "$(TargetDir)*.dll" "$(SolutionDir)TestArtifacts\Providers\$(ProjectName)"
 </PostBuildEvent>
   </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

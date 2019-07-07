@@ -31,10 +31,9 @@ namespace HidWizards.IOWrapper.Core
             set;
         }
 
-        public GenericMEFPluginLoader(string basePath)
+        public GenericMEFPluginLoader(IEnumerable<string> pluginFolders)
         {
             var catalog = new AggregateCatalog();
-            var pluginFolders = Directory.EnumerateDirectories($@"{basePath}", "*", SearchOption.TopDirectoryOnly);
             foreach (var path in pluginFolders)
             {
                 var folderName = path.Remove(0, path.LastIndexOf(Path.DirectorySeparatorChar) + 1);
