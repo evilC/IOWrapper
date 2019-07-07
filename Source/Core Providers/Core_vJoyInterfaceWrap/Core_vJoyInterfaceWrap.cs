@@ -118,11 +118,6 @@ namespace Core_vJoyInterfaceWrap
             return null;
         }
 
-        public bool UnsubscribeInput(InputSubscriptionRequest subReq)
-        {
-            return false;
-        }
-
         public void SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
             var devId = DevIdFromHandle(subReq.DeviceDescriptor.DeviceHandle);

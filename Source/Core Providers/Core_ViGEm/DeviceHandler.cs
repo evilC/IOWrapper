@@ -1,6 +1,7 @@
 ﻿using Nefarius.ViGEm.Client;
 using System;
 using System.Collections.Generic;
+using HidWizards.IOWrapper.Core.Exceptions;
 using Hidwizards.IOWrapper.Libraries.ProviderLogger;
 using HidWizards.IOWrapper.DataTransferObjects;
 
@@ -56,16 +57,19 @@ namespace Core_ViGEm
                 SetAcquireState();
             }
 
-            public bool RemoveSubscription(OutputSubscriptionRequest subReq)
+            public void RemoveSubscription(OutputSubscriptionRequest subReq)
             {
                 if (subscriptions.ContainsKey(subReq.SubscriptionDescriptor.SubscriberGuid))
                 {
                     subscriptions.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
                 }
+                else
+                {
+                    throw new ProviderExceptions.DeviceDescriptorNotFoundException(subReq.DeviceDescriptor);
+                }
                 logger.Log("Removing subscription to controller # {0}", subReq.DeviceDescriptor.DeviceInstance);
                 IsRequested = HasSubscriptions();
                 SetAcquireState();
-                return true;
             }
 
             public bool HasSubscriptions()
@@ -87,7 +91,7 @@ namespace Core_ViGEm
                 }
             }
 
-            public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
+            public void SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
             {
                 switch (bindingDescriptor.Type)
                 {
@@ -101,7 +105,6 @@ namespace Core_ViGEm
                         SetPovState(bindingDescriptor, state);
                         break;
                 }
-                return false;
             }
 
             public DeviceReport GetDeviceReport()

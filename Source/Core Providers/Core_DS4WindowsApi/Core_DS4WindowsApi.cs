@@ -11,6 +11,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HidWizards.IOWrapper.Core.Exceptions;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 using static HidWizards.IOWrapper.Core.Exceptions.ProviderExceptions;
@@ -213,37 +214,35 @@ namespace Core_DS4WindowsApi
 
             }
 
-            public bool SubscribeInput(InputSubscriptionRequest subReq)
+            public void SubscribeInput(InputSubscriptionRequest subReq)
             {
-                bool ret = false;
                 switch (subReq.BindingDescriptor.Type)
                 {
                     case BindingType.Axis:
                         switch (subReq.BindingDescriptor.SubIndex)
                         {
                             case 0:
-                                ret = AddSubscription(axisSubscriptions, subReq);
+                                AddSubscription(axisSubscriptions, subReq);
                                 break;
                             case 1:
-                                ret = AddSubscription(touchpadSubscriptions, subReq);
+                                AddSubscription(touchpadSubscriptions, subReq);
                                 break;
                             case 2:
-                                ret = AddSubscription(gyroAxisSubscriptions, subReq);
+                                AddSubscription(gyroAxisSubscriptions, subReq);
                                 break;
                         }
                         break;
                     case BindingType.Button:
-                        ret = AddSubscription(buttonSubscriptions, subReq);
+                        AddSubscription(buttonSubscriptions, subReq);
                         break;
                     case BindingType.POV:
-                        ret = AddSubscription(povDirectionSubscriptions, subReq);
+                        AddSubscription(povDirectionSubscriptions, subReq);
                         break;
                 }
                 SetCallbackState();
-                return ret;
             }
 
-            private bool AddSubscription(Dictionary<Guid, InputSubscriptionRequest>[] dict, InputSubscriptionRequest subReq)
+            private void AddSubscription(Dictionary<Guid, InputSubscriptionRequest>[] dict, InputSubscriptionRequest subReq)
             {
                 var inputIndex = subReq.BindingDescriptor.Index;
                 if (dict[inputIndex] == null)
@@ -251,39 +250,37 @@ namespace Core_DS4WindowsApi
                     dict[inputIndex] = new Dictionary<Guid, InputSubscriptionRequest>();
                 }
                 dict[inputIndex][subReq.SubscriptionDescriptor.SubscriberGuid] = subReq;
-                return true;
+                // ToDo: Throw if Device not found
             }
 
-            public bool UnsubscribeInput(InputSubscriptionRequest subReq)
+            public void UnsubscribeInput(InputSubscriptionRequest subReq)
             {
-                bool ret = false;
                 switch (subReq.BindingDescriptor.Type)
                 {
                     case BindingType.Axis:
                         switch (subReq.BindingDescriptor.SubIndex)
                         {
                             case 0:
-                                ret = RemoveSubscription(axisSubscriptions, subReq);
+                                RemoveSubscription(axisSubscriptions, subReq);
                                 break;
                             case 1:
-                                ret = RemoveSubscription(touchpadSubscriptions, subReq);
+                                RemoveSubscription(touchpadSubscriptions, subReq);
                                 break;
                             case 2:
-                                ret = RemoveSubscription(gyroAxisSubscriptions, subReq);
+                                RemoveSubscription(gyroAxisSubscriptions, subReq);
                                 break;
                         }
                         break;
                     case BindingType.Button:
-                        ret = RemoveSubscription(buttonSubscriptions, subReq);
+                        RemoveSubscription(buttonSubscriptions, subReq);
                         break;
                     case BindingType.POV:
                         break;
                 }
                 SetCallbackState();
-                return ret;
             }
 
-            private bool RemoveSubscription(Dictionary<Guid, InputSubscriptionRequest>[] dict, InputSubscriptionRequest subReq)
+            private void RemoveSubscription(Dictionary<Guid, InputSubscriptionRequest>[] dict, InputSubscriptionRequest subReq)
             {
                 var axisIndex = subReq.BindingDescriptor.Index;
                 if (dict[axisIndex] != null)
@@ -293,9 +290,11 @@ namespace Core_DS4WindowsApi
                     {
                         dict[axisIndex] = null;
                     }
-                    return true;
                 }
-                return false;
+                else
+                {
+                    throw new ProviderExceptions.DeviceDescriptorNotFoundException(subReq.DeviceDescriptor);
+                }
             }
 
             public bool HasReportSubscriptions()

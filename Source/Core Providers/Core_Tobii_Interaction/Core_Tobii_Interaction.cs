@@ -226,10 +226,9 @@ namespace Core_Tobii_Interaction
             protected class AxisMonitor
             {
                 private Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
-                public bool Add(InputSubscriptionRequest subReq)
+                public void Add(InputSubscriptionRequest subReq)
                 {
                     subscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
-                    return true;
                 }
 
                 public void Poll(int value)
