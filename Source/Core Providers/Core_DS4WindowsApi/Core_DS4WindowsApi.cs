@@ -639,7 +639,7 @@ namespace Core_DS4WindowsApi
             }
             else
             {
-                throw new DeviceDescriptorNotFoundException(this, subReq.DeviceDescriptor);
+                throw new DeviceDescriptorNotFoundException(subReq.DeviceDescriptor);
             }
         }
 
@@ -651,7 +651,7 @@ namespace Core_DS4WindowsApi
             }
             else
             {
-                throw new UnsubscribeInputFailedException(this, subReq);
+                throw new DeviceDescriptorNotFoundException(subReq.DeviceDescriptor);
             }
         }
 

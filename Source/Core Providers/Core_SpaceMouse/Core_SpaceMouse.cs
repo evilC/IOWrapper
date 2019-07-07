@@ -117,7 +117,7 @@ namespace Core_SpaceMouse
                 }
                 else
                 {
-                    throw new ProviderExceptions.UnsubscribeInputFailedException(this, subReq);
+                    throw new ProviderExceptions.DeviceDescriptorNotFoundException(subReq.DeviceDescriptor);
                 }
             }
         }

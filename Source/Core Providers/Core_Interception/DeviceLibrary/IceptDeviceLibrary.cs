@@ -45,7 +45,8 @@ namespace Core_Interception.DeviceLibrary
                     return _deviceHandleToId[deviceDescriptor.DeviceHandle][deviceDescriptor.DeviceInstance];
                 }
             }
-            throw new DeviceLibraryExceptions.DeviceDescriptorNotFoundException(deviceDescriptor);
+
+            throw new ProviderExceptions.DeviceDescriptorNotFoundException(deviceDescriptor);
         }
 
         public int GetInputDeviceIdentifier(DeviceDescriptor deviceDescriptor)

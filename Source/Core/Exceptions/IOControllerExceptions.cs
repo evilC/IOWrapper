@@ -1,5 +1,6 @@
 ﻿using System;
 using HidWizards.IOWrapper.DataTransferObjects;
+using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 
 namespace HidWizards.IOWrapper.Core.Exceptions
 {
@@ -22,6 +23,21 @@ namespace HidWizards.IOWrapper.Core.Exceptions
             public ProviderDoesNotSupportInterfaceException(string message) : base(message)
             {
 
+            }
+        }
+
+        // Thrown on error during Subscribe Input
+        [Serializable]
+        public class SubscribeInputFailedException : Exception
+        {
+            public InputSubscriptionRequest SubReq { get; set; }
+            public IProvider Provider { get; set; }
+
+            public SubscribeInputFailedException(Exception inner, IProvider provider, InputSubscriptionRequest subReq)
+                : base($"Input Subscription failed", inner)
+            {
+                Provider = provider;
+                SubReq = subReq;
             }
         }
 

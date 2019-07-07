@@ -125,17 +125,24 @@ namespace HidWizards.IOWrapper.Core
             // Clone subreq before passing to provider, so if it gets altered outside, it does not affect the copy
             var subReq = _subReq.Clone();
             LogInputSubReq("SubscribeInput", subReq);
-            if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriptionDescriptor.SubscriberGuid))
-            {
-                // If this Subscriber has an existing subscription...
-                // ... then remove the old subscription first.
-                Log("Existing subscription found, removing...");
-                var oldSub = ActiveInputSubscriptions[subReq.SubscriptionDescriptor.SubscriberGuid];
-                UnsubscribeInput(oldSub);
-            }
             var provider = GetProvider<IInputProvider>(subReq.ProviderDescriptor.ProviderName);
-            provider.SubscribeInput(subReq);
-            ActiveInputSubscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
+            try
+            {
+                if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriptionDescriptor.SubscriberGuid))
+                {
+                    // If this Subscriber has an existing subscription...
+                    // ... then remove the old subscription first.
+                    Log("Existing subscription found, removing...");
+                    var oldSub = ActiveInputSubscriptions[subReq.SubscriptionDescriptor.SubscriberGuid];
+                    UnsubscribeInput(oldSub);
+                }
+                provider.SubscribeInput(subReq);
+                ActiveInputSubscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
+            }
+            catch (Exception ex)
+            {
+                throw new IOControllerExceptions.SubscribeInputFailedException(ex, provider, subReq); 
+            }
         }
 
         public void UnsubscribeInput(InputSubscriptionRequest _subReq)

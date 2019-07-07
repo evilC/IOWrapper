@@ -205,43 +205,21 @@ namespace Core_Interception
         {
             lock (_lockObj)
             {
-                var ret = false;
-                try
-                {
-                    SetPollThreadState(false);
+                SetPollThreadState(false);
 
-                    int devId;
-                    try
-                    {
-                        devId = _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor);
-                    }
-                    catch (DeviceLibraryExceptions.DeviceDescriptorNotFoundException ex)
-                    {
-                        throw new ProviderExceptions.DeviceDescriptorNotFoundException(this, ex.DeviceDescriptor);
-                    }
-                    
-                    if (HelperFunctions.IsKeyboard(devId))
-                    {
-                        EnsureMonitoredKeyboardExists(devId, subReq.DeviceDescriptor);
-                        _monitoredKeyboards[devId].SubscribeInput(subReq);
-                        ret = true;
-                    }
-                    else
-                    {
-                        EnsureMonitoredMouseExists(devId, subReq.DeviceDescriptor);
-                        _monitoredMice[devId].SubscribeInput(subReq);
-                        ret = true;
-                    }
-
-                }
-                catch
+                var devId = _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor);
+                
+                if (HelperFunctions.IsKeyboard(devId))
                 {
-                    ret = false;
+                    EnsureMonitoredKeyboardExists(devId, subReq.DeviceDescriptor);
+                    _monitoredKeyboards[devId].SubscribeInput(subReq);
                 }
-                //SetPollThreadDesiredState();
+                else
+                {
+                    EnsureMonitoredMouseExists(devId, subReq.DeviceDescriptor);
+                    _monitoredMice[devId].SubscribeInput(subReq);
+                }
                 StartPollingIfNeeded();
-                //if (_pollThreadDesired)
-                //    SetPollThreadState(true);
             }
         }
 
@@ -249,32 +227,18 @@ namespace Core_Interception
         {
             lock (_lockObj)
             {
-                var ret = false;
-                try
+                var devId = _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor);
+                SetPollThreadState(false);
+
+                if (HelperFunctions.IsKeyboard(devId))
                 {
-                    var devId = _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor);
-                    SetPollThreadState(false);
-
-                    if (HelperFunctions.IsKeyboard(devId))
-                    {
-                        ret = true;
-                        _monitoredKeyboards[devId].UnsubscribeInput(subReq);
-                    }
-                    else
-                    {
-                        ret = true;
-                        _monitoredMice[devId].UnsubscribeInput(subReq);
-                    }
-
-                    StartPollingIfNeeded();
-                    //if (_pollThreadDesired)
-                    //    SetPollThreadState(true);
-
+                    _monitoredKeyboards[devId].UnsubscribeInput(subReq);
                 }
-                catch(DeviceLibraryExceptions.DeviceDescriptorNotFoundException)
+                else
                 {
-                    throw new ProviderExceptions.UnsubscribeInputFailedException(this, subReq);
+                    _monitoredMice[devId].UnsubscribeInput(subReq);
                 }
+                StartPollingIfNeeded();
             }
         }
 

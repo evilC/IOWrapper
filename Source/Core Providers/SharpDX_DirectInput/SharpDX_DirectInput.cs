@@ -94,7 +94,7 @@ namespace SharpDX_DirectInput
                 }
                 else
                 {
-                    throw new ProviderExceptions.UnsubscribeInputFailedException(this, subReq);
+                    throw new ProviderExceptions.DeviceDescriptorNotFoundException(subReq.DeviceDescriptor);
                 }
             }
         }
