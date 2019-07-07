@@ -243,6 +243,7 @@ namespace HidWizards.IOWrapper.Core
                 var provider = GetProvider<IOutputProvider>(subReq.ProviderDescriptor.ProviderName);
                 try
                 {
+                    // ToDo: Should we maybe use the SubReq stored in active subscriptions, to ensure it has not changed?
                     provider.UnSubscribeOutputDevice(subReq);
                     ActiveOutputSubscriptions.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
                 }

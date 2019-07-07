@@ -67,6 +67,7 @@
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(SolutionDir)Artifacts" mkdir "$(SolutionDir)Artifacts"
 if not exist "$(SolutionDir)TestArtifacts" mkdir "$(SolutionDir)TestArtifacts"
+if exist "$(SolutionDir)TestArtifacts\Providers" rmdir "$(SolutionDir)Artifacts\Providers" /s /q
 xcopy /Y /i "$(TargetDir)*.dll" "$(SolutionDir)Artifacts\IOWrapper"
 
 

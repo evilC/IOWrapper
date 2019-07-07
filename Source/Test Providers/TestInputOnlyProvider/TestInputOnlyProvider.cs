@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HidWizards.IOWrapper.Core.Exceptions;
 using Hidwizards.IOWrapper.Libraries.ProviderLogger;
 
 namespace TestInputOnlyProvider
@@ -49,7 +50,10 @@ namespace TestInputOnlyProvider
 
         public void SubscribeInput(InputSubscriptionRequest subReq)
         {
-            
+            if (subReq.DeviceDescriptor.DeviceHandle == "DoesNotExist")
+            {
+                throw new ProviderExceptions.DeviceDescriptorNotFoundException(subReq.DeviceDescriptor);
+            }
         }
 
         public DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor)

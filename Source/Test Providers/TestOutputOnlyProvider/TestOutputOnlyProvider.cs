@@ -4,6 +4,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HidWizards.IOWrapper.Core.Exceptions;
 using HidWizards.IOWrapper.DataTransferObjects;
 using Hidwizards.IOWrapper.Libraries.ProviderLogger;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
@@ -50,17 +51,30 @@ namespace TestOutputOnlyProvider
 
         public void SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            
+            if (subReq.DeviceDescriptor.DeviceHandle == "DoesNotExist")
+            {
+                throw new ProviderExceptions.DeviceDescriptorNotFoundException(subReq.DeviceDescriptor);
+            }
+            else if (subReq.DeviceDescriptor.DeviceHandle == "NotLiveProvider")
+            {
+                throw new ProviderExceptions.ProviderNotLiveException();
+            }
         }
 
         public void UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            
+            if (subReq.DeviceDescriptor.DeviceHandle == "DoesNotExist")
+            {
+                throw new ProviderExceptions.DeviceDescriptorNotFoundException(subReq.DeviceDescriptor);
+            }
         }
 
         public void SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
-            
+            if (subReq.DeviceDescriptor.DeviceHandle == "DoesNotExist")
+            {
+                throw new ProviderExceptions.DeviceDescriptorNotFoundException(subReq.DeviceDescriptor);
+            }
         }
     }
 }

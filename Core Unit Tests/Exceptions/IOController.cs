@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using FluentAssertions;
 using HidWizards.IOWrapper.Core;
 using HidWizards.IOWrapper.Core.Exceptions;
 using HidWizards.IOWrapper.DataTransferObjects;
@@ -16,10 +17,10 @@ namespace CoreUnitTests.Exceptions
     {
         private readonly IOController _ioController = new IOController();
 
-        [TestCase]
+        [TestCase(TestName = "Invalid provider name should throw")]
         public void ProviderNotFound()
         {
-            var isr = new InputSubscriptionRequest
+            var sr = new InputSubscriptionRequest
             {
                 DeviceDescriptor = new DeviceDescriptor { DeviceHandle = "DoesNotExist" },
                 ProviderDescriptor = new ProviderDescriptor { ProviderName = "DoesNotExist" },
@@ -27,18 +28,15 @@ namespace CoreUnitTests.Exceptions
                 SubscriptionDescriptor = new SubscriptionDescriptor { SubscriberGuid = Guid.NewGuid()}
             };
 
-            Assert.Throws<IOControllerExceptions.ProviderNotFoundException>(
-                delegate
-                {
-                    _ioController.SubscribeInput(isr);
-                }
-            );
+            Action act = () => _ioController.SubscribeInput(sr);
+
+            act.Should().Throw<IOControllerExceptions.ProviderNotFoundException>();
         }
 
-        [TestCase]
+        [TestCase(TestName = "Trying to subscribe input to output provider should throw")]
         public void ProviderDoesNotSupportInterface()
         {
-            var isr = new InputSubscriptionRequest
+            var sr = new InputSubscriptionRequest
             {
                 DeviceDescriptor = new DeviceDescriptor { DeviceHandle = "DoesNotExist" },
                 ProviderDescriptor = new ProviderDescriptor { ProviderName = "TestOutputOnlyProvider" },
@@ -46,12 +44,10 @@ namespace CoreUnitTests.Exceptions
                 SubscriptionDescriptor = new SubscriptionDescriptor { SubscriberGuid = Guid.NewGuid() }
             };
 
-            Assert.Throws<IOControllerExceptions.ProviderDoesNotSupportInterfaceException>(
-                delegate
-                {
-                    _ioController.SubscribeInput(isr);
-                }
-            );
+            Action act = () => _ioController.SubscribeInput(sr);
+
+            act.Should().Throw<IOControllerExceptions.ProviderDoesNotSupportInterfaceException>();
         }
+
     }
 }

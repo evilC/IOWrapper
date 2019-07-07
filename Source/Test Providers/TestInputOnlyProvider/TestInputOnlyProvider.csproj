@@ -46,6 +46,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Core\Core.csproj">
+      <Project>{D9447B59-4B62-4BD8-BE91-5F5AB1D8F1BD}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\DataObjects\DTOs.csproj">
       <Project>{81851977-0421-4EBD-B066-0FE03F02589E}</Project>
       <Name>DTOs</Name>
