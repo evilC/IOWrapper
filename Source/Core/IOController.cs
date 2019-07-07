@@ -288,7 +288,7 @@ namespace HidWizards.IOWrapper.Core
             {
                 return returnedProvider;
             }
-            throw new IOControllerExceptions.ProviderDoesNotSupportInterfaceException($"Provider {provider.ProviderName} does not support interface {typeof(TInterface)}");
+            throw new IOControllerExceptions.ProviderDoesNotSupportInterfaceException(provider, typeof(TInterface));
         }
 
         public TInterface GetProvider<TInterface>(string providerName)

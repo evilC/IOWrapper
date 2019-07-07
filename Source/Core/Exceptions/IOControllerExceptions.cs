@@ -20,7 +20,8 @@ namespace HidWizards.IOWrapper.Core.Exceptions
         [Serializable]
         public class ProviderDoesNotSupportInterfaceException : Exception
         {
-            public ProviderDoesNotSupportInterfaceException(string message) : base(message)
+            public ProviderDoesNotSupportInterfaceException(IProvider provider, Type interfaceType) 
+                : base($"Provider {provider.ProviderName} does not support interface {interfaceType}")
             {
 
             }
