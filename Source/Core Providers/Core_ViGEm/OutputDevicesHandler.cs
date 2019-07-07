@@ -52,14 +52,10 @@ namespace Core_ViGEm
                 }
             }
 
-            public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
+            public void SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
             {
                 var handler = GetHandler(subReq.DeviceDescriptor);
-                if (handler != null)
-                {
-                    return handler.SetOutputState(subReq, bindingDescriptor, state);
-                }
-                return false;
+                handler.SetOutputState(subReq, bindingDescriptor, state);
             }
 
             public List<DeviceReport> GetDeviceList()
@@ -102,7 +98,8 @@ namespace Core_ViGEm
                 {
                     return deviceHandlers[deviceDescriptor.DeviceHandle][deviceDescriptor.DeviceInstance];
                 }
-                return null;
+
+                throw new ProviderExceptions.DeviceDescriptorNotFoundException(deviceDescriptor);
             }
 
             private DeviceHandler[] GetHandlers(string deviceHandler)

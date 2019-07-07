@@ -74,11 +74,11 @@ namespace Core_ViGEm
             return devicesHandler.GetOutputDeviceReport(deviceDescriptor);
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
+        public void SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
             if (!isLive)
-                return false;
-            return devicesHandler.SetOutputState(subReq, bindingDescriptor, state);
+                throw new ProviderExceptions.ProviderNotLiveException();
+            devicesHandler.SetOutputState(subReq, bindingDescriptor, state);
         }
 
         public void SubscribeOutputDevice(OutputSubscriptionRequest subReq)

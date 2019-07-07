@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HidWizards.IOWrapper.Core.Exceptions;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 
@@ -138,32 +139,28 @@ namespace Core_vJoyInterfaceWrap
             // ToDo: Throw if device does not exist
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
+        public void SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
             var devId = subscriptionToDevice[subReq.SubscriptionDescriptor.SubscriberGuid];
             if (!vJoyDevices[devId].IsAcquired)
             {
-                return false;
+                throw new ProviderExceptions.DeviceDescriptorNotFoundException(subReq.DeviceDescriptor);
             }
             switch (bindingDescriptor.Type)
             {
                 case BindingType.Axis:
-                    return vJ.SetAxis((state + 32768) / 2, devId + 1, AxisIdToUsage[bindingDescriptor.Index]);
-
+                    vJ.SetAxis((state + 32768) / 2, devId + 1, AxisIdToUsage[bindingDescriptor.Index]);
+                    break;
                 case BindingType.Button:
-                    return vJ.SetBtn(state == 1, devId + 1, (uint)(bindingDescriptor.Index + 1));
-
+                    vJ.SetBtn(state == 1, devId + 1, (uint)(bindingDescriptor.Index + 1));
+                    break;
                 case BindingType.POV:
-                    int pov = (int)(Math.Floor((decimal)(bindingDescriptor.Index / 4)));
-                    int dir = bindingDescriptor.Index % 4;
+                    var pov = (int)(Math.Floor((decimal)(bindingDescriptor.Index / 4)));
+                    var dir = bindingDescriptor.Index % 4;
                     //Log("vJoy POV output requested - POV {0}, Dir {1}, State {2}", pov, dir, state);
                     vJoyDevices[devId].SetPovState(pov, dir, state);
                     break;
-
-                default:
-                    break;
             }
-            return false;
         }
 
         public void RefreshLiveState()

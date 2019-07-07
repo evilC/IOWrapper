@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using HidWizards.IOWrapper.Core.Exceptions;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
 
@@ -85,7 +86,7 @@ namespace Core_TitanOne
 
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
+        public void SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
             if (outputHandlers.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
             {
@@ -95,10 +96,12 @@ namespace Core_TitanOne
                     var value = OutputHandler.GetValue(bindingDescriptor, state);
                     outputState[(int)slot] = value;
                     Write(outputState);
-                    return true;
                 }
             }
-            return false;
+            else
+            {
+                throw new ProviderExceptions.DeviceDescriptorNotFoundException(subReq.DeviceDescriptor);
+            }
         }
 
         public void SubscribeOutputDevice(OutputSubscriptionRequest subReq)

@@ -12,6 +12,6 @@ namespace HidWizards.IOWrapper.ProviderInterface.Interfaces
         DeviceReport GetOutputDeviceReport(DeviceDescriptor deviceDescriptor);
         void SubscribeOutputDevice(OutputSubscriptionRequest subReq);
         void UnSubscribeOutputDevice(OutputSubscriptionRequest subReq);
-        bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state);
+        void SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state);
     }
 }

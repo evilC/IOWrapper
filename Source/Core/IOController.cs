@@ -237,10 +237,17 @@ namespace HidWizards.IOWrapper.Core
                 subReq.SubscriptionDescriptor.SubscriberGuid);
         }
 
-        public bool SetOutputstate(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
+        public void SetOutputstate(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
             var provider = GetProvider<IOutputProvider>(subReq.ProviderDescriptor.ProviderName);
-            return provider.SetOutputState(subReq, bindingDescriptor, state);
+            try
+            {
+                provider.SetOutputState(subReq, bindingDescriptor, state);
+            }
+            catch (Exception ex)
+            {
+                throw new IOControllerExceptions.SetOutputStateFailedException(ex, provider, subReq, bindingDescriptor);
+            }
         }
 
         public void RefreshProviderLiveState(string providerName)

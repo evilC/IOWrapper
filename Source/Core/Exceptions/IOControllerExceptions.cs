@@ -96,5 +96,22 @@ namespace HidWizards.IOWrapper.Core.Exceptions
                 SubReq = subReq;
             }
         }
+
+        // Thrown on error during SetOutputState
+        [Serializable]
+        public class SetOutputStateFailedException : Exception
+        {
+            public OutputSubscriptionRequest SubReq { get; set; }
+            public BindingDescriptor BindingDescriptor { get; set; }
+            public IProvider Provider { get; set; }
+
+            public SetOutputStateFailedException(Exception inner, IProvider provider, OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor)
+                : base($"Failed to set state of Output Device", inner)
+            {
+                Provider = provider;
+                SubReq = subReq;
+                BindingDescriptor = bindingDescriptor;
+            }
+        }
     }
 }

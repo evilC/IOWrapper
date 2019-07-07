@@ -175,14 +175,16 @@ namespace Core_Midi
             }
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
+        public void SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
             if (_activeOutputDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
             {
                 deviceHandler.SetOutputState(subReq, bindingDescriptor, state);
-                return true;
             }
-            return false;
+            else
+            {
+                throw new ProviderExceptions.DeviceDescriptorNotFoundException(subReq.DeviceDescriptor);
+            }
         }
 
         #endregion

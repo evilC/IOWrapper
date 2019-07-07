@@ -256,17 +256,9 @@ namespace Core_Interception
             // ToDo: Throw if device does not exist
         }
 
-        public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
+        public void SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
-            int devId;
-            try
-            {
-                devId = _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor);
-            }
-            catch
-            {
-                return false;
-            }
+            var devId = _deviceLibrary.GetInputDeviceIdentifier(subReq.DeviceDescriptor);
             //Log("SetOutputState. Type: {0}, Index: {1}, State: {2}, Device: {3}", inputType, inputIndex, state, devId);
             var stroke = new ManagedWrapper.Stroke();
             if (HelperFunctions.IsKeyboard(devId))
@@ -327,7 +319,6 @@ namespace Core_Interception
                 }
             }
             ManagedWrapper.Send(_deviceContext, devId, ref stroke, 1);
-            return true;
         }
 
 
