@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 ### Changed 
+- IOController endpoints that returned bool to reflect success or fail are now void, and throw exceptions on fail
 ### Deprecated
 ### Removed
 ### Fixed
