@@ -152,8 +152,15 @@ namespace HidWizards.IOWrapper.Core
             if (ActiveInputSubscriptions.ContainsKey(subReq.SubscriptionDescriptor.SubscriberGuid))
             {
                 var provider = GetProvider<IInputProvider>(subReq.ProviderDescriptor.ProviderName);
-                provider.UnsubscribeInput(ActiveInputSubscriptions[subReq.SubscriptionDescriptor.SubscriberGuid]);
-                ActiveInputSubscriptions.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
+                try
+                {
+                    provider.UnsubscribeInput(ActiveInputSubscriptions[subReq.SubscriptionDescriptor.SubscriberGuid]);
+                    ActiveInputSubscriptions.Remove(subReq.SubscriptionDescriptor.SubscriberGuid);
+                }
+                catch (Exception ex)
+                {
+                    throw new IOControllerExceptions.UnsubscribeInputFailedException(ex, provider, subReq);
+                }
             }
             else
             {

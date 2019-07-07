@@ -51,5 +51,22 @@ namespace HidWizards.IOWrapper.Core.Exceptions
 
             }
         }
+
+        // Thrown if provider throws during UnSubscribe Input
+        [Serializable]
+        public class UnsubscribeInputFailedException : Exception
+        {
+            public InputSubscriptionRequest SubReq { get; set; }
+            public IProvider Provider { get; set; }
+
+            public UnsubscribeInputFailedException(Exception inner, IProvider provider, InputSubscriptionRequest subReq)
+                : base($"Input Unsubscription failed", inner)
+            {
+                Provider = provider;
+                SubReq = subReq;
+            }
+        }
+
+
     }
 }
