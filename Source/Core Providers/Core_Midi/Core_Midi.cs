@@ -121,7 +121,7 @@ namespace Core_Midi
                 }
                 else
                 {
-                    throw new ProviderExceptions.DeviceDescriptorNotFoundException(this, subReq.DeviceDescriptor);
+                    throw new ProviderExceptions.UnsubscribeInputFailedException(this, subReq);
                 }
             }
         }

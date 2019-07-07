@@ -33,5 +33,17 @@ namespace HidWizards.IOWrapper.Core.Exceptions
                 DeviceDescriptor = deviceDescriptor;
             }
         }
+
+        [Serializable]
+        public class UnsubscribeInputFailedException : ProviderExceptionBase
+        {
+            public InputSubscriptionRequest SubReq { get; set; }
+
+            public UnsubscribeInputFailedException(IProvider provider, InputSubscriptionRequest subReq)
+                : base($"Unsubscribe Failed for SubReq {subReq.ToString()}", provider)
+            {
+                SubReq = subReq;
+            }
+        }
     }
 }

@@ -273,7 +273,7 @@ namespace Core_Interception
                 }
                 catch(DeviceLibraryExceptions.DeviceDescriptorNotFoundException)
                 {
-                    throw new ProviderExceptions.DeviceDescriptorNotFoundException(this, subReq.DeviceDescriptor);
+                    throw new ProviderExceptions.UnsubscribeInputFailedException(this, subReq);
                 }
             }
         }
