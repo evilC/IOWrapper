@@ -71,6 +71,7 @@ namespace TestApp.Library
             public static BindingDescriptor Button10 = new BindingDescriptor { Index = (int)JoystickOffset.Buttons9, Type = BindingType.Button };
             public static BindingDescriptor Axis1 = new BindingDescriptor { Index = (int)JoystickOffset.X, Type = BindingType.Axis };
             public static BindingDescriptor Axis2 = new BindingDescriptor { Index = (int)JoystickOffset.Y, Type = BindingType.Axis };
+            public static BindingDescriptor Axis3 = new BindingDescriptor { Index = (int)JoystickOffset.RotationZ, Type = BindingType.Axis };
             public static BindingDescriptor AxisX = Axis1;
             public static BindingDescriptor AxisY = Axis2;
         }

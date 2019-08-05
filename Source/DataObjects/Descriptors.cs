@@ -35,6 +35,11 @@ namespace HidWizards.IOWrapper.DataTransferObjects
         public string DeviceHandle { get; set; }
 
         public int DeviceInstance { get; set; }
+
+        public override string ToString()
+        {
+            return $"Handle {DeviceHandle}, Instance {DeviceInstance}";
+        }
     }
 
     /// <summary>

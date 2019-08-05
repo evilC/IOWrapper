@@ -49,6 +49,7 @@ namespace TestApp.Library
             public static DeviceDescriptor vJoy_2 = new DeviceDescriptor { DeviceHandle = "VID_1234&PID_BEAD", DeviceInstance = 1 };
             // Thrustmaster T16000M Stick
             public static DeviceDescriptor T16000M = new DeviceDescriptor { DeviceHandle = "VID_044F&PID_B10A" };
+            public static DeviceDescriptor TWCS = new DeviceDescriptor { DeviceHandle = "VID_044F&PID_B687" };
             // Wireless DS4 controller
             public static DeviceDescriptor DS4_1 = new DeviceDescriptor { DeviceHandle = "VID_054C&PID_09CC" };
             public static DeviceDescriptor DS4_2 = new DeviceDescriptor { DeviceHandle = "VID_054C&PID_09CC", DeviceInstance = 1};

@@ -28,13 +28,13 @@ namespace SharpDX_XInput
         public bool IsLive { get { return isLive; } }
         private bool isLive = true;
 
-        private Logger logger;
+        private readonly Logger _logger;
 
         bool disposed;
 
         public SharpDX_XInput()
         {
-            logger = new Logger(ProviderName);
+            _logger = new Logger(ProviderName);
             _deviceLibrary = new XiDeviceLibrary(new ProviderDescriptor{ProviderName = ProviderName});
         }
 
@@ -55,7 +55,7 @@ namespace SharpDX_XInput
                 }
             }
             disposed = true;
-            logger.Log("Disposed");
+            _logger.Log("Disposed");
         }
 
         #region IProvider Members
@@ -78,6 +78,7 @@ namespace SharpDX_XInput
                 if (!_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
                 {
                     deviceHandler = new XiDeviceHandler(subReq.DeviceDescriptor, DeviceEmptyHandler, BindModeHandler, _deviceLibrary);
+                    deviceHandler.Init();
                     _activeDevices.TryAdd(subReq.DeviceDescriptor, deviceHandler);
                 }
                 deviceHandler.SubscribeInput(subReq);
@@ -114,6 +115,7 @@ namespace SharpDX_XInput
                     if (!deviceExists)
                     {
                         deviceHandler = new XiDeviceHandler(deviceDescriptor, DeviceEmptyHandler, BindModeHandler, _deviceLibrary);
+                        deviceHandler.Init();
                         _activeDevices.TryAdd(deviceDescriptor, deviceHandler);
                     }
 
@@ -138,10 +140,16 @@ namespace SharpDX_XInput
             _deviceLibrary.RefreshConnectedDevices();
         }
 
-        private void DeviceEmptyHandler(object sender, DeviceDescriptor e)
+        private void DeviceEmptyHandler(object sender, DeviceDescriptor deviceDescriptor)
         {
-            _activeDevices[e].Dispose();
-            _activeDevices.TryRemove(e, out _);
+            if (_activeDevices.TryRemove(deviceDescriptor, out var device))
+            {
+                device.Dispose();
+            }
+            else
+            {
+                throw new Exception($"Remove device {deviceDescriptor.ToString()} failed");
+            }
         }
         #endregion
     }

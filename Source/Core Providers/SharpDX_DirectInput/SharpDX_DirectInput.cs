@@ -23,7 +23,7 @@ namespace SharpDX_DirectInput
 
         public bool IsLive { get; } = true;
 
-        private Logger _logger;
+        private readonly Logger _logger;
 
         private bool _disposed;
 
@@ -31,12 +31,13 @@ namespace SharpDX_DirectInput
 
         public SharpDX_DirectInput()
         {
-            _deviceLibrary = new DiDeviceLibrary(new ProviderDescriptor {ProviderName = ProviderName});
             _logger = new Logger(ProviderName);
+            _deviceLibrary = new DiDeviceLibrary(new ProviderDescriptor {ProviderName = ProviderName});
         }
 
         public void Dispose()
         {
+            _logger.Log($"Disposing provider...");
             Dispose(true);
         }
 
@@ -46,9 +47,10 @@ namespace SharpDX_DirectInput
                 return;
             if (disposing)
             {
-                foreach (var device in _activeDevices.Values)
+                foreach (var device in _activeDevices)
                 {
-                    device.Dispose();
+                    _logger.Log($"Disposing device {device.Key}");
+                    device.Value.Dispose();
                 }
             }
             _disposed = true;
@@ -76,6 +78,7 @@ namespace SharpDX_DirectInput
                 if (!_activeDevices.TryGetValue(subReq.DeviceDescriptor, out var deviceHandler))
                 {
                     deviceHandler = new DiDeviceHandler(subReq.DeviceDescriptor, DeviceEmptyHandler, BindModeHandler, _deviceLibrary);
+                    deviceHandler.Init();
                     _activeDevices.TryAdd(subReq.DeviceDescriptor, deviceHandler);
                 }
                 deviceHandler.SubscribeInput(subReq);
@@ -112,6 +115,7 @@ namespace SharpDX_DirectInput
                     if (!deviceExists)
                     {
                         deviceHandler = new DiDeviceHandler(deviceDescriptor, DeviceEmptyHandler, BindModeHandler, _deviceLibrary);
+                        deviceHandler.Init();
                         _activeDevices.TryAdd(deviceDescriptor, deviceHandler);
                     }
 
@@ -121,10 +125,17 @@ namespace SharpDX_DirectInput
             }
         }
 
-        private void DeviceEmptyHandler(object sender, DeviceDescriptor e)
+        private void DeviceEmptyHandler(object sender, DeviceDescriptor deviceDescriptor)
         {
-            _activeDevices[e].Dispose();
-            _activeDevices.TryRemove(e, out _);
+            _logger.Log($"Device {deviceDescriptor.DeviceHandle} instance {deviceDescriptor.DeviceInstance} is empty, disposing...");
+            if (_activeDevices.TryRemove(deviceDescriptor, out var device))
+            {
+                device.Dispose();
+            }
+            else
+            {
+                throw new Exception($"Remove device {deviceDescriptor.ToString()} failed");
+            }
         }
 
         private void BindModeHandler(object sender, BindModeUpdate e)

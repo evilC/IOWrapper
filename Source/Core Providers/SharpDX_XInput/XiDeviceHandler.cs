@@ -4,6 +4,7 @@ using System.Threading;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
+using Hidwizards.IOWrapper.Libraries.ProviderLogger;
 using SharpDX.XInput;
 
 namespace SharpDX_XInput
@@ -14,6 +15,7 @@ namespace SharpDX_XInput
         private readonly IInputDeviceLibrary<UserIndex> _deviceLibrary;
         private State _lastState;
         private readonly Controller _controller;
+        private readonly Logger _logger = new Logger("SharpDX_XInput DeviceHandler");
 
         public XiDeviceHandler(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler, IInputDeviceLibrary<UserIndex> deviceLibrary)
             : base(deviceDescriptor, deviceEmptyHandler, bindModeHandler)
@@ -81,14 +83,18 @@ namespace SharpDX_XInput
 
         protected override void PollThread()
         {
-            while (true)
+            PollThreadPolling = true;
+            _logger.Log($"PollThread started for device {DeviceDescriptor.ToString()}");
+            while (PollThreadDesired)
             {
                 if (_controller.IsConnected)
                 {
+                    _logger.Log("Polling XI");
                     ProcessUpdate(_controller.GetState());
                 }
                 Thread.Sleep(10);
             }
+            _logger.Log($"PollThread ended for device {DeviceDescriptor.ToString()}");
         }
     }
 }

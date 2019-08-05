@@ -79,6 +79,7 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
             {
                 _processUpdates = ProcessSubscriptionModeUpdates;
             }
+            // If switching from Bind Mode back to Subscription mode and there are no Bindings, fire the empty handler (eg to kill the PollThread)
             if (mode == DetectionMode.Subscription && SubHandler.Count() == 0) OnDeviceEmpty(this, DeviceDescriptor);
         }
 
@@ -108,6 +109,11 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
         /// <returns></returns>
         protected abstract BindingReport GetInputBindingReport(BindingUpdate bindingUpdate);
 
+
+        public virtual void Init()
+        {
+            
+        }
 
         /// <inheritdoc />
         /// <summary>

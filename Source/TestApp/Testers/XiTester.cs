@@ -42,5 +42,13 @@ namespace TestApp.Testers
                 ioTester.Unsubscribe();
             }
         }
+
+        public void Subscribe()
+        {
+            foreach (var ioTester in _ioTesters)
+            {
+                ioTester.Subscribe();
+            }
+        }
     }
 }

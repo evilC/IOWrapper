@@ -3,6 +3,7 @@ using System.Threading;
 using Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices;
 using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
+using Hidwizards.IOWrapper.Libraries.ProviderLogger;
 using SharpDX.DirectInput;
 
 namespace SharpDX_DirectInput
@@ -11,8 +12,9 @@ namespace SharpDX_DirectInput
     public class DiDeviceHandler : PollingDeviceHandlerBase<JoystickUpdate, (BindingType, int)>
     {
         private readonly IInputDeviceLibrary<Guid> _deviceLibrary;
-        public static DirectInput DiInstance { get; } = new DirectInput();
+        private readonly DirectInput _diInstance = new DirectInput();
         private readonly Guid _instanceGuid;
+        private readonly Logger _logger = new Logger("SharpDX_DirectInput DeviceHandler");
 
         public DiDeviceHandler(DeviceDescriptor deviceDescriptor, EventHandler<DeviceDescriptor> deviceEmptyHandler, EventHandler<BindModeUpdate> bindModeHandler, IInputDeviceLibrary<Guid> deviceLibrary) 
             : base(deviceDescriptor, deviceEmptyHandler, bindModeHandler)
@@ -53,53 +55,49 @@ namespace SharpDX_DirectInput
         protected override void PollThread()
         {
             Joystick joystick = null;
-            while (true)
+            _logger.Log($"Starting PollThread for device {DeviceDescriptor.ToString()}");
+            while (PollThreadDesired)
             {
-                //JoystickUpdate[] data = null;
                 try
                 {
-                    while (true) // Main poll loop
+                    PollThreadPolling = false;
+                    while (PollThreadDesired) // Not Acquired loop
                     {
-                        while (true) // Not Acquired loop
+                        while (!_diInstance.IsDeviceAttached(_instanceGuid))
                         {
-                            while (!DiInstance.IsDeviceAttached(_instanceGuid))
-                            {
-                                Thread.Sleep(100);
-                            }
-
-                            joystick = new Joystick(DiInstance, _instanceGuid);
-                            joystick.Properties.BufferSize = 128;
-                            joystick.Acquire();
-                            break;
+                            Thread.Sleep(100);
                         }
 
-                        while (true) // Acquired loop
-                        {
-                            var data = joystick.GetBufferedData();
-                            foreach (var state in data)
-                            {
-                                ProcessUpdate(state);
-                            }
-
-                            Thread.Sleep(10);
-                        }
+                        joystick = new Joystick(_diInstance, _instanceGuid);
+                        joystick.Properties.BufferSize = 128;
+                        joystick.Acquire();
+                        break;
                     }
 
+                    PollThreadPolling = true;
+                    while (PollThreadDesired)  // Acquired loop
+                    {
+                        if (joystick == null)
+                        {
+                            throw new Exception("Joystick null while polling");
+                        }
+                        var data = joystick.GetBufferedData();
+                        foreach (var state in data)
+                        {
+                            ProcessUpdate(state);
+                        }
+
+                        Thread.Sleep(10);
+                    }
                 }
-                catch
+                catch (Exception pollException)
                 {
-                    try
-                    {
-                        joystick?.Dispose();
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
-
-                    joystick = null;
+                    _logger.Log($"Exception while polling device {DeviceDescriptor.ToString()}: {pollException.Message}");
+                    joystick?.Dispose(); // Dispose the old joystick ready for re-acquire
                 }
             }
+            joystick?.Dispose();
+            _logger.Log($"PollThread for device {DeviceDescriptor.ToString()} ended");
         }
     }
 }

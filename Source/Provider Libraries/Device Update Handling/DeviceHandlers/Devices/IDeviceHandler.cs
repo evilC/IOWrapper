@@ -11,6 +11,11 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
     public interface IDeviceHandler<TRawUpdate> : IDisposable
     {
         /// <summary>
+        /// After creating a new DeviceHandler, call this method to eg start PollThreads
+        /// </summary>
+        void Init();
+
+        /// <summary>
         /// Process an update from a device
         /// </summary>
         /// <param name="rawUpdate">The raw update from the device</param>

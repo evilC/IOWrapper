@@ -44,18 +44,18 @@ namespace TestApp
             //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, Library.Providers.Interception, Library.Devices.Interception.DellKeyboard1);
             //var interceptionKeyboardInputTester = new InterceptionKeyboardInputTester();
             //IOW.Instance.SetDetectionMode(DetectionMode.Subscription, Library.Providers.Interception, Library.Devices.Interception.DellKeyboard1);
-            var interceptionMouseInputTester = new InterceptionMouseInputTester();
-            Console.WriteLine("Press ENTER to unsubscribe...");
-            Console.ReadLine();
+            //var interceptionMouseInputTester = new InterceptionMouseInputTester();
+            //Console.WriteLine("Press ENTER to unsubscribe...");
+            //Console.ReadLine();
             //interceptionKeyboardInputTester.Dispose();
             //interceptionMouseInputTester.Dispose();
-            interceptionMouseInputTester.Unsubscribe();
-            Console.WriteLine("Press ENTER to re-subscribe...");
-            Console.ReadLine();
-            interceptionMouseInputTester.Subscribe();
-            Console.WriteLine("Press ENTER to Dispose...");
-            Console.ReadLine();
-            interceptionMouseInputTester.Dispose();
+            //interceptionMouseInputTester.Unsubscribe();
+            //Console.WriteLine("Press ENTER to re-subscribe...");
+            //Console.ReadLine();
+            //interceptionMouseInputTester.Subscribe();
+            //Console.WriteLine("Press ENTER to Dispose...");
+            //Console.ReadLine();
+            //interceptionMouseInputTester.Dispose();
             //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.Interception, Library.Devices.Interception.LogitechWeelMouseUSB, BindModeHandler);
 
             //var interceptionMouseOutputTester = new InterceptionMouseOutputTester();
@@ -63,9 +63,22 @@ namespace TestApp
 
             #endregion
 
-
             #region Bind Mode Testing
-            //var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
+            var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
+            var genericStick_2 = new GenericDiTester("TWCS", Library.Devices.DirectInput.TWCS);
+            while (true)
+            {
+                Console.WriteLine("Press Enter to Unsubscribe");
+                Console.ReadLine();
+                genericStick_1.Unsubscribe();
+                genericStick_2.Unsubscribe();
+                Console.WriteLine("Unsubscribed, press Enter to re-subscribe");
+                Console.ReadLine();
+                genericStick_1.Subscribe();
+                genericStick_2.Subscribe();
+            }
+            //genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
+            //genericStick_2 = new GenericDiTester("TWCS", Library.Devices.DirectInput.TWCS);
             //var vj1 = new VJoyTester(1, false);
             //var vj2 = new VJoyTester(2, false);
             //var xInputPad_1 = new XiTester(1);
