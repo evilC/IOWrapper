@@ -55,17 +55,10 @@ namespace Hidwizards.IOWrapper.Libraries.DeviceHandlers.Devices
 
         public override void Dispose()
         {
-            Debug.WriteLine("IOWrapper| Entering Dispose");
             if (_pollThread == null) return;
-            Debug.WriteLine("IOWrapper| Signalling thread to stop...");
-            PollThreadDesired = false;
-            //Debug.WriteLine("IOWrapper| Aborting thread...");
-            //_pollThread.Abort();
-            Debug.WriteLine("IOWrapper| Joining thread...");
-            _pollThread.Join();
-            Debug.WriteLine("IOWrapper| Nulling out var");
+            PollThreadDesired = false;  // Signal PollThread to stop
+            _pollThread.Join();         // Wait for PollThread to end
             _pollThread = null;
-            Debug.WriteLine("IOWrapper| Dispose done");
         }
     }
 }
