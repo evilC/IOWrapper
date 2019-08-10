@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Deprecated
 ### Removed
 ### Fixed
+- Fix for IOWrapper Issue #33 / UCR issue #98  
+DirectInput should no longer freeze when PollThreads are started or stopped
 
 ## 0.10.5 - 2019-06-24
 ### Changed 
