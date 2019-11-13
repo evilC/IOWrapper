@@ -10,51 +10,29 @@ using System.Threading.Tasks;
 using Hidwizards.IOWrapper.Libraries.ProviderLogger;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
+using HidWizards.IOWrapper.Core.Devcon;
 
 namespace Core_ViGEm
 {
     [Export(typeof(IProvider))]
     public partial class Core_ViGEm : IOutputProvider
-    //public class Core_ViGEm
     {
-        public bool IsLive { get { return isLive; } }
-        private bool isLive;
+        public bool IsLive => _isLive;
+        private bool _isLive;
 
         private Logger logger;
 
-        private static ViGEmClient client;
-        Xbox360Controller[] xboxControllers = new Xbox360Controller[4];
-        private OutputDevicesHandler devicesHandler = new OutputDevicesHandler();
+        private static ViGEmClient _client;
+        private readonly OutputDevicesHandler devicesHandler = new OutputDevicesHandler();
 
-        private ProviderReport providerReport;
+        private readonly ProviderReport _providerReport;
+
+        private static Guid InterfaceGuid => Guid.Parse("{96E42B22-F5E9-42F8-B043-ED0F932F014F}");
 
         public Core_ViGEm()
         {
             logger = new Logger(ProviderName);
-            InitLibrary();
-        }
-
-        private void InitLibrary()
-        {
-            if (client == null)
-            {
-                try
-                {
-                    client = new ViGEmClient();
-                }
-                catch { }
-            }
-            isLive = (client != null);
-            logger.Log("ViGem Client is {0}!", (isLive ? "Loaded" : "NOT Loaded"));
-        }
-
-        #region IProvider Members
-        // ToDo: Need better way to handle this. MEF meta-data?
-        public string ProviderName { get { return typeof(Core_ViGEm).Namespace; } }
-
-        public ProviderReport GetOutputList()
-        {
-            providerReport = new ProviderReport
+            _providerReport = new ProviderReport
             {
                 Title = "ViGEm",
                 API = "ViGEm",
@@ -64,8 +42,46 @@ namespace Core_ViGEm
                     ProviderName = ProviderName
                 }
             };
-            providerReport.Devices = devicesHandler.GetDeviceList();
-            return providerReport;
+
+            InitLibrary();
+        }
+
+        private void InitLibrary()
+        {
+            string msg;
+            var busFound = Devcon.FindDeviceByInterfaceId(InterfaceGuid, out var path, out _);
+            if (busFound)
+            {
+                try
+                {
+                    _client = new ViGEmClient();
+                    _isLive = true;
+                    msg = "ViGem Client Loaded OK";
+                }
+                catch
+                {
+                    _isLive = false;
+                    msg = "ViGem Bus driver does seems to be present, but initialization of ViGEm Client failed";
+                    _providerReport.ErrorMessage = msg;
+                }
+            }
+            else
+            {
+                _isLive = false;
+                msg = "ViGem Bus driver does not seem to be installed";
+                _providerReport.ErrorMessage = msg;
+            }
+            logger.Log(msg);
+        }
+
+        #region IProvider Members
+        // ToDo: Need better way to handle this. MEF meta-data?
+        public string ProviderName { get { return typeof(Core_ViGEm).Namespace; } }
+
+        public ProviderReport GetOutputList()
+        {
+            _providerReport.Devices = _isLive ? devicesHandler.GetDeviceList() : null;
+            return _providerReport;
         }
 
         public DeviceReport GetOutputDeviceReport(DeviceDescriptor deviceDescriptor)
@@ -75,21 +91,21 @@ namespace Core_ViGEm
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
-            if (!isLive)
+            if (!_isLive)
                 return false;
             return devicesHandler.SetOutputState(subReq, bindingDescriptor, state);
         }
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            if (!isLive)
+            if (!_isLive)
                 return false;
             return devicesHandler.SubscribeOutput(subReq);
         }
 
         public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            if (!isLive)
+            if (!_isLive)
                 return false;
             return devicesHandler.UnsubscribeOutput(subReq);
         }

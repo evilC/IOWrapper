@@ -41,6 +41,8 @@ namespace HidWizards.IOWrapper.DataTransferObjects
         public string API { get; set; }
 
         public List<DeviceReport> Devices { get; set; } = new List<DeviceReport>();
+
+        public string ErrorMessage { get; set; }
     }
 
     #endregion
