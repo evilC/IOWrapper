@@ -70,9 +70,9 @@ namespace Core_Interception
             {
                 ProviderName = ProviderName
             };
-            _deviceLibrary = new IceptDeviceLibrary(_providerDescriptor);
-
             ProcessSettingsFile();
+
+            _deviceLibrary = new IceptDeviceLibrary(_providerDescriptor, _blockingEnabled);
 
             _deviceContext = ManagedWrapper.CreateContext();
 
