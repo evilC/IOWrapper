@@ -6,12 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 ### Changed 
+### Deprecated
+### Removed
+### Fixed
+
+## 0.10.7 - 2019-12-12
+### Changed 
 - [Interception Provider] Blockable property of BindingDescriptor now indicates if input is blockable or not  
 This is controlled by whether BlockingEnabled in the settings file is true or not
 ### Deprecated
 ### Removed
 - [Interception Provider] BlockingControlledByUi setting removed
-### Fixed
 
 ## 0.10.6 - 2019-08-10
 ### Fixed
