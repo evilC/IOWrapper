@@ -47,7 +47,6 @@ namespace Core_Interception
         private bool _blockingEnabled;
         private int _pollRate;
         private bool _fireStrokeOnThread;
-        private bool _blockingControlledByUi;
         #endregion
 
         public static string AssemblyDirectory
@@ -497,7 +496,7 @@ namespace Core_Interception
                         var blockingRequestedByUi = _monitoredKeyboards[i].ProcessUpdate(stroke);
 
                         // Block for keyboard either blocks whole stroke or allows whole stroke through
-                        if (_blockingEnabled && (!_blockingControlledByUi || blockingRequestedByUi))
+                        if (_blockingEnabled && blockingRequestedByUi)
                         {
                             continue; // Block input
                         }
@@ -607,7 +606,7 @@ namespace Core_Interception
         private void EnsureMonitoredMouseExists(int devId, DeviceDescriptor deviceDescriptor)
         {
             if (_monitoredMice.ContainsKey(devId)) return;
-            _monitoredMice.TryAdd(devId, new IceptMouseHandler(deviceDescriptor, MouseEmptyHandler, BindModeHandler, _deviceLibrary, _blockingEnabled, _blockingControlledByUi));
+            _monitoredMice.TryAdd(devId, new IceptMouseHandler(deviceDescriptor, MouseEmptyHandler, BindModeHandler, _deviceLibrary, _blockingEnabled));
         }
 
 
@@ -620,7 +619,6 @@ namespace Core_Interception
             _blockingEnabled = false;
             _pollRate = 10;
             _fireStrokeOnThread = false;
-            _blockingControlledByUi = false;
             if (File.Exists(settingsFile))
             {
                 var doc = new XmlDocument();
@@ -630,16 +628,6 @@ namespace Core_Interception
                 try
                 {
                     _blockingEnabled = Convert.ToBoolean(doc.SelectSingleNode("/Settings/Setting[Name = \"BlockingEnabled\"]")
-                        ?.SelectSingleNode("Value")
-                        ?.InnerText);
-                }
-                catch
-                {
-                    // ignored
-                }
-                try
-                {
-                    _blockingControlledByUi = Convert.ToBoolean(doc.SelectSingleNode("/Settings/Setting[Name = \"BlockingControlledByUi\"]")
                         ?.SelectSingleNode("Value")
                         ?.InnerText);
                 }
@@ -673,7 +661,6 @@ namespace Core_Interception
                 }
             }
             HelperFunctions.Log("Blocking Enabled: {0}", _blockingEnabled);
-            HelperFunctions.Log("Blocking Controlled by UI: {0}", _blockingControlledByUi);
             HelperFunctions.Log("Poll Rate: {0}", _pollRate);
             HelperFunctions.Log("Fire Strokes on thread: {0}", _fireStrokeOnThread);
         }

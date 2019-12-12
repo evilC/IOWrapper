@@ -19,20 +19,17 @@ namespace Core_Interception
         private readonly SubscriptionHandler _subHandler;
         private DetectionMode _detectionMode = DetectionMode.Subscription;
         private readonly bool _blockingEnabled;
-        private readonly bool _blockingControlledByUi;
 
         public IceptMouseHandler(DeviceDescriptor deviceDescriptor,
             EventHandler<DeviceDescriptor> deviceEmptyHandler,
             EventHandler<BindModeUpdate> bindModeHandler,
             IInputOutputDeviceLibrary<int> deviceLibrary,
-            bool blockingEnabled,
-            bool blockingControlledByUi)
+            bool blockingEnabled)
         {
             _deviceDescriptor = deviceDescriptor;
             _bindModeHandler = bindModeHandler;
             _deviceLibrary = deviceLibrary;
             _blockingEnabled = blockingEnabled;
-            _blockingControlledByUi = blockingControlledByUi;
             _subHandler = new SubscriptionHandler(deviceDescriptor, deviceEmptyHandler, CallbackHandler);
         }
 
@@ -76,7 +73,7 @@ namespace Core_Interception
                         if (_blockingEnabled)
                         {
                             // Block enabled
-                            if (!_blockingControlledByUi || (_blockingControlledByUi && blockingRequestedByUi))
+                            if (blockingRequestedByUi)
                             {
                                 // Blocking controlled by UI and requested by UI, OR blocking not controlled by UI
                                 // Remove the event for this button from the stroke, leaving other button events intact
@@ -120,7 +117,7 @@ namespace Core_Interception
                             var blockingRequestedByUi = _subHandler.FireCallbacks(bindingUpdate.Binding, (short)bindingUpdate.Value);
                             if (_blockingEnabled)
                             {
-                                if (!_blockingControlledByUi || (_blockingControlledByUi && blockingRequestedByUi))
+                                if (blockingRequestedByUi)
                                 {
                                     if (bindingUpdate.Binding.Index == 0)
                                     {
