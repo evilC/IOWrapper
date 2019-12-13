@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [XInput Provider] Only show Xinput devices in ProviderReport that are currently connected
 - [DS4WindowsApi Provider] Only show DS4 devices in ProviderReport that are currently connected
 - [SpaceMouse Provider] Only show SpaceMouse devices in ProviderReport that are currently connected
+- [Tobii Provider] IsLive now reflects state of driver
+- [Tobii Provider] Only show Tobii devices in ProviderReport that are currently connected
 ### Deprecated
 ### Removed
 ### Fixed
