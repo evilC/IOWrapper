@@ -48,12 +48,15 @@ namespace Core_Tobii_Interaction
                 }
             };
 
-            foreach (var deviceReport in _deviceReports)
+            if (_isLive)
             {
-                var report = GetDeviceReport(deviceReport.Key);
-                if (report != null)
+                foreach (var deviceReport in _deviceReports)
                 {
-                    providerReport.Devices.Add(report);
+                    var report = GetDeviceReport(deviceReport.Key);
+                    if (report != null)
+                    {
+                        providerReport.Devices.Add(report);
+                    }
                 }
             }
             return providerReport;
@@ -61,7 +64,7 @@ namespace Core_Tobii_Interaction
 
         public DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
-            if (deviceDescriptor.DeviceInstance != 0) return null; // Tobii API only supports one device per PC
+            if (deviceDescriptor.DeviceInstance != 0 || !_isLive) return null; // Tobii API only supports one device per PC
             return GetDeviceReport(deviceDescriptor.DeviceHandle);
         }
 
