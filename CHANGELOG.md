@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 ### Changed 
+- [XInput Provider] Only show Xinput devices in ProviderReport that are currently connected
 ### Deprecated
 ### Removed
 ### Fixed
