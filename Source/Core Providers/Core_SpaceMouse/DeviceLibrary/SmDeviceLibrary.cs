@@ -22,8 +22,6 @@ namespace Core_SpaceMouse.DeviceLibrary
             {0, "Menu" }, {1, "FIT"}, {2, "[T]op"}, {4, "[R]ight"}, {5, "[F]ront"}, {8, "Roll +"}, {12, "1"}, {13, "2"}, {14, "3"}, {15, "4"},
             {22, "ESC" }, {23, "ALT"}, {24, "SHIFT"}, {25, "CTRL"}, {26, "Rot Lock"}
         };
-        private readonly DeviceDescriptor _spaceMouseProDescriptor =
-            new DeviceDescriptor { DeviceHandle = "VID_046D&PID_C62B", DeviceInstance = 0 };
 
         public SmDeviceLibrary(ProviderDescriptor providerDescriptor)
         {
@@ -106,7 +104,10 @@ namespace Core_SpaceMouse.DeviceLibrary
                 API = "HidLibrary",
                 ProviderDescriptor = _providerDescriptor
             };
-            providerReport.Devices.Add(GetInputDeviceReport(_spaceMouseProDescriptor));
+            for (var i = 0; i < _connectedDevices.Count; i++)
+            {
+                providerReport.Devices.Add(GetInputDeviceReport(BuildDeviceDescriptor(i)));
+            }
 
             return providerReport;
         }
@@ -115,7 +116,7 @@ namespace Core_SpaceMouse.DeviceLibrary
         {
             var deviceReport = new DeviceReport
             {
-                DeviceDescriptor = _spaceMouseProDescriptor,
+                DeviceDescriptor = deviceDescriptor,
                 DeviceName = "SpaceMouse Pro"
             };
 
@@ -161,6 +162,11 @@ namespace Core_SpaceMouse.DeviceLibrary
         public BindingReport GetInputBindingReport(DeviceDescriptor deviceDescriptor, BindingDescriptor bindingDescriptor)
         {
             return _bindingReports[bindingDescriptor];
+        }
+
+        private DeviceDescriptor BuildDeviceDescriptor(int id)
+        {
+            return new DeviceDescriptor { DeviceHandle = "VID_046D&PID_C62B", DeviceInstance = id };
         }
     }
 }
