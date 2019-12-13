@@ -38,7 +38,7 @@ namespace TestApp
             //IOW.Instance.SetOutputstate(subReq, Library.Bindings.Midi.Notes.CH1CMinus2, 127);
             //IOW.Instance.SetOutputstate(subReq, Library.Bindings.Midi.ControlChange.MotorSliderF1, short.MaxValue);
 
-            var tobiiTester = new TobiiTester("Gaze Point X", Library.Devices.Tobii.GazePoint);
+            //var tobiiTester = new TobiiTester("Gaze Point X", Library.Devices.Tobii.GazePoint);
 
             #region Interception
 
