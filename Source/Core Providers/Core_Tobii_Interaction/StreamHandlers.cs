@@ -10,7 +10,7 @@ namespace Core_Tobii_Interaction
     #region Stream Handlers
     internal abstract class StreamHandler : IDisposable
     {
-        protected Host host;
+        protected Host Host;
         protected Dictionary<int, AxisMonitor> AxisMonitors = new Dictionary<int, AxisMonitor>();
 
         public virtual bool SubscribeInput(InputSubscriptionRequest subReq)
@@ -50,7 +50,7 @@ namespace Core_Tobii_Interaction
             {
                 if (disposing)
                 {
-                    host.DisableConnection();
+                    Host.DisableConnection();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
@@ -77,15 +77,15 @@ namespace Core_Tobii_Interaction
 
         public GazePointHandler()
         {
-            host = new Host();
-            _gazePointDataStream = host.Streams.CreateGazePointDataStream(Tobii.Interaction.Framework.GazePointDataMode.LightlyFiltered);
+            Host = new Host();
+            _gazePointDataStream = Host.Streams.CreateGazePointDataStream(Tobii.Interaction.Framework.GazePointDataMode.LightlyFiltered);
 
             double x = 0, y = 0;
             var watch = new Stopwatch();
             watch.Start();
             while ((x == 0 || y == 0) && watch.ElapsedMilliseconds < 100)
             {
-                var max = host.States.GetScreenBoundsAsync().Result;
+                var max = Host.States.GetScreenBoundsAsync().Result;
                 x = max.Value.Width;
                 y = max.Value.Height;
             }
@@ -128,8 +128,8 @@ namespace Core_Tobii_Interaction
 
         public HeadPoseHandler()
         {
-            host = new Host();
-            _headPoseStream = host.Streams.CreateHeadPoseStream();
+            Host = new Host();
+            _headPoseStream = Host.Streams.CreateHeadPoseStream();
             _headPoseStream.Next += OnNextHeadPose;
         }
 
