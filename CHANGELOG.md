@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 ### Changed 
 - [XInput Provider] Only show Xinput devices in ProviderReport that are currently connected
+- [DS4WindowsApi Provider] Only show DS4 devices in ProviderReport that are currently connected
 ### Deprecated
 ### Removed
 ### Fixed

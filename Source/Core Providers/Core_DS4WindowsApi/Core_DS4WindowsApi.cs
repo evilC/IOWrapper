@@ -19,7 +19,8 @@ namespace Core_DS4WindowsApi
     [Export(typeof(IProvider))]
     public class Core_DS4WindowsApi : IInputProvider
     {
-        DS4ControllerHandler[] connectedControllers = new DS4ControllerHandler[4];
+        //DS4ControllerHandler[] connectedControllers = new DS4ControllerHandler[4];
+        List<DS4ControllerHandler> connectedControllers = new List<DS4ControllerHandler>();
 
         private static List<string> axisNames = new List<string>
         {
@@ -493,7 +494,10 @@ namespace Core_DS4WindowsApi
                     ProviderName = ProviderName
                 }
             };
-            providerReport.Devices.Add(GetInputDeviceReport(0));
+            for (var i = 0; i < connectedControllers.Count; i++)
+            {
+                providerReport.Devices.Add(GetInputDeviceReport(i));
+            }
             return providerReport;
         }
 
@@ -656,10 +660,11 @@ namespace Core_DS4WindowsApi
         public void RefreshDevices()
         {
             DS4Devices.findControllers();
-            DS4Device[] devs = DS4Devices.getDS4Controllers().ToArray();
-            for (int i = 0; i < devs.Length; i++)
+            var devs = DS4Devices.getDS4Controllers().ToArray();
+            for (var i = 0; i < devs.Length; i++)
             {
-                connectedControllers[i] = new DS4ControllerHandler(i, devs[i]);
+                var dev = new DS4ControllerHandler(i, devs[i]);
+                connectedControllers.Add(dev);
             }
         }
         #endregion
