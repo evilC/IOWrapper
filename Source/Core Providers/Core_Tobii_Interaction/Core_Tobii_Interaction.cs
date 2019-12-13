@@ -9,14 +9,15 @@ using System.Threading.Tasks;
 using Tobii.Interaction;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
+using Tobii.Interaction.Client;
 
 namespace Core_Tobii_Interaction
 {
     [Export(typeof(IProvider))]
     public class Core_Tobii_Interaction : IInputProvider
     {
-        public bool IsLive { get { return isLive; } }
-        private bool isLive = false;
+        public bool IsLive { get { return _isLive; } }
+        private bool _isLive = false;
 
         //private GazePointHander gazePointHandler = new GazePointHander();
         private Dictionary<string, StreamHandler> streamHandlers = new Dictionary<string, StreamHandler>(StringComparer.OrdinalIgnoreCase);
@@ -26,6 +27,7 @@ namespace Core_Tobii_Interaction
 
         public Core_Tobii_Interaction()
         {
+            RefreshLiveState();
             QueryDevices();
             streamHandlers.Add("GazePoint", new GazePointHandler());
             streamHandlers.Add("HeadPose", new HeadPoseHandler());
@@ -81,9 +83,27 @@ namespace Core_Tobii_Interaction
 
         public void RefreshLiveState()
         {
-
+            var engineAvailable = Host.EyeXAvailability;
+            switch (engineAvailable)
+            {
+                case EyeXAvailability.Running:
+                    // Driver installed and app running
+                    _isLive = true;
+                    break;
+                case EyeXAvailability.NotRunning:
+                    // Driver installed, but app not running
+                    _isLive = false;
+                    break;
+                case EyeXAvailability.NotAvailable:
+                    // Driver not installed
+                    _isLive = false;
+                    break;
+                default:
+                    // Unknown state
+                    _isLive = false;
+                    break;
+            }
         }
-
         public void RefreshDevices()
         {
 

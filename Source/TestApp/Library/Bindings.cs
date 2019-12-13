@@ -178,5 +178,17 @@ namespace TestApp.Library
         }
 
         #endregion
+
+        #region Tobii
+
+        public static class Tobii
+        {
+            public static class GazePoint
+            {
+                public static BindingDescriptor X = new BindingDescriptor { Index = 0, SubIndex = 0, Type = BindingType.Axis };
+            }
+        }
+
+        #endregion
     }
 }
