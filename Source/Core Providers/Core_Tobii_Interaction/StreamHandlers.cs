@@ -2,41 +2,39 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HidWizards.IOWrapper.DataTransferObjects;
 using Tobii.Interaction;
 
 namespace Core_Tobii_Interaction
 {
     #region Stream Handlers
-    abstract class StreamHandler : IDisposable
+    internal abstract class StreamHandler : IDisposable
     {
         protected Host host;
-        protected Dictionary<int, AxisMonitor> axisMonitors = new Dictionary<int, AxisMonitor>();
+        protected Dictionary<int, AxisMonitor> AxisMonitors = new Dictionary<int, AxisMonitor>();
 
         public virtual bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            if (!axisMonitors.ContainsKey(subReq.BindingDescriptor.Index))
+            if (!AxisMonitors.ContainsKey(subReq.BindingDescriptor.Index))
             {
-                axisMonitors.Add(subReq.BindingDescriptor.Index, new AxisMonitor());
+                AxisMonitors.Add(subReq.BindingDescriptor.Index, new AxisMonitor());
             }
-            axisMonitors[subReq.BindingDescriptor.Index].Add(subReq);
+            AxisMonitors[subReq.BindingDescriptor.Index].Add(subReq);
             return true;
         }
 
         protected class AxisMonitor
         {
-            private Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
+            private readonly Dictionary<Guid, InputSubscriptionRequest> _subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
             public bool Add(InputSubscriptionRequest subReq)
             {
-                subscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
+                _subscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
                 return true;
             }
 
             public void Poll(int value)
             {
-                foreach (var subscription in subscriptions.Values)
+                foreach (var subscription in _subscriptions.Values)
                 {
                     subscription.Callback((short)value);
                 }
@@ -44,11 +42,11 @@ namespace Core_Tobii_Interaction
         }
 
         #region IDisposable Support
-        private bool disposedValue; // To detect redundant calls
+        private bool _disposedValue; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
@@ -58,7 +56,7 @@ namespace Core_Tobii_Interaction
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
                 // TODO: set large fields to null.
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 
@@ -72,15 +70,15 @@ namespace Core_Tobii_Interaction
         #endregion
     }
 
-    class GazePointHandler : StreamHandler
+    internal class GazePointHandler : StreamHandler
     {
-        GazePointDataStream gazePointDataStream;
-        private double[] scaleFactors = new double[2];
+        private readonly GazePointDataStream _gazePointDataStream;
+        private readonly double[] _scaleFactors = new double[2];
 
         public GazePointHandler()
         {
             host = new Host();
-            gazePointDataStream = host.Streams.CreateGazePointDataStream(Tobii.Interaction.Framework.GazePointDataMode.LightlyFiltered);
+            _gazePointDataStream = host.Streams.CreateGazePointDataStream(Tobii.Interaction.Framework.GazePointDataMode.LightlyFiltered);
 
             double x = 0, y = 0;
             var watch = new Stopwatch();
@@ -94,13 +92,13 @@ namespace Core_Tobii_Interaction
 
             if (x == 0 || y == 0)
             {
-                var msg = "Tobii GazePoint handler unable to get screen size within 100 ms, not starting watcher";
+                const string msg = "Tobii GazePoint handler unable to get screen size within 100 ms, not starting watcher";
                 Logger.Log($"WARNING: {msg}");
                 throw new Exception(msg);
             }
-            scaleFactors[0] = 65535 / x;
-            scaleFactors[1] = 65535 / y;
-            gazePointDataStream.Next += GPCallback;
+            _scaleFactors[0] = 65535 / x;
+            _scaleFactors[1] = 65535 / y;
+            _gazePointDataStream.Next += GPCallback;
 
         }
 
@@ -111,28 +109,28 @@ namespace Core_Tobii_Interaction
 
             for (int i = 0; i < 2; i++)
             {
-                if (!axisMonitors.Keys.Contains(i))
+                if (!AxisMonitors.Keys.Contains(i))
                     continue;
-                int value = (int)(axisData[i] * scaleFactors[i]);
+                int value = (int)(axisData[i] * _scaleFactors[i]);
                 if (value > 65535)
                     value = 65535;
                 else if (value < 0)
                     value = 0;
                 value -= 32768;
-                axisMonitors[i].Poll(value);
+                AxisMonitors[i].Poll(value);
             }
         }
     }
 
-    class HeadPoseHandler : StreamHandler
+    internal class HeadPoseHandler : StreamHandler
     {
-        private HeadPoseStream headPoseStream;
+        private readonly HeadPoseStream _headPoseStream;
 
         public HeadPoseHandler()
         {
             host = new Host();
-            headPoseStream = host.Streams.CreateHeadPoseStream();
-            headPoseStream.Next += OnNextHeadPose;
+            _headPoseStream = host.Streams.CreateHeadPoseStream();
+            _headPoseStream.Next += OnNextHeadPose;
         }
 
         private void OnNextHeadPose(object sender, StreamData<HeadPoseData> headPose)
@@ -143,14 +141,14 @@ namespace Core_Tobii_Interaction
 
                 for (int i = 0; i < 2; i++)
                 {
-                    if (!axisMonitors.Keys.Contains(i))
+                    if (!AxisMonitors.Keys.Contains(i))
                         continue;
                     int value = (int)(axisData[i] * 163.84);
                     if (value > 32768)
                         value = 32768;
                     else if (value < -32767)
                         value = -32767;
-                    axisMonitors[i].Poll(value);
+                    AxisMonitors[i].Poll(value);
                 }
             }
 

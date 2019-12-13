@@ -1,12 +1,7 @@
-﻿using HidWizards.IOWrapper.ProviderInterface;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tobii.Interaction;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
@@ -17,16 +12,13 @@ namespace Core_Tobii_Interaction
     [Export(typeof(IProvider))]
     public class Core_Tobii_Interaction : IInputProvider
     {
-        public bool IsLive { get { return _isLive; } }
+        public bool IsLive => _isLive;
         private bool _isLive = false;
 
-        //private GazePointHander gazePointHandler = new GazePointHander();
-        private Dictionary<string, StreamHandler> streamHandlers = new Dictionary<string, StreamHandler>(StringComparer.OrdinalIgnoreCase);
-        private List<string> sixDofAxisNames = new List<string> { "X", "Y", "Z", "Rx", "Ry", "Rz" };
-        //private ProviderReport providerReport;
-        //private List<DeviceReport> deviceReports;
-        private ConcurrentDictionary<string, DeviceReport> deviceReports = new ConcurrentDictionary<string, DeviceReport>();
-        private Dictionary<string, bool> _activeDevices = new Dictionary<string, bool>
+        private readonly Dictionary<string, StreamHandler> _streamHandlers = new Dictionary<string, StreamHandler>(StringComparer.OrdinalIgnoreCase);
+        private readonly List<string> _sixDofAxisNames = new List<string> { "X", "Y", "Z", "Rx", "Ry", "Rz" };
+        private readonly ConcurrentDictionary<string, DeviceReport> _deviceReports = new ConcurrentDictionary<string, DeviceReport>();
+        private readonly Dictionary<string, bool> _activeDevices = new Dictionary<string, bool>
         {
             {"GazePoint", false }, {"HeadPose", false}
         };
@@ -56,7 +48,7 @@ namespace Core_Tobii_Interaction
                 }
             };
 
-            foreach (var deviceReport in deviceReports)
+            foreach (var deviceReport in _deviceReports)
             {
                 var report = GetDeviceReport(deviceReport.Key);
                 if (report != null)
@@ -75,7 +67,7 @@ namespace Core_Tobii_Interaction
 
         private DeviceReport GetDeviceReport(string name)
         {
-            if (_activeDevices[name] && deviceReports.TryGetValue(name, out var report))
+            if (_activeDevices[name] && _deviceReports.TryGetValue(name, out var report))
             {
                 return report;
             }
@@ -85,9 +77,9 @@ namespace Core_Tobii_Interaction
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            if (streamHandlers.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
+            if (_streamHandlers.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
             {
-                streamHandlers[subReq.DeviceDescriptor.DeviceHandle].SubscribeInput(subReq);
+                _streamHandlers[subReq.DeviceDescriptor.DeviceHandle].SubscribeInput(subReq);
                 return true;
             }
             return false;
@@ -123,14 +115,14 @@ namespace Core_Tobii_Interaction
         }
         public void RefreshDevices()
         {
-            if (streamHandlers.TryGetValue("GazePoint", out var gazeHandler))
+            if (_streamHandlers.TryGetValue("GazePoint", out var gazeHandler))
             {
                 gazeHandler.Dispose();
-                streamHandlers.Remove("GazePoint");
+                _streamHandlers.Remove("GazePoint");
             }
             try
             {
-                streamHandlers.Add("GazePoint", new GazePointHandler());
+                _streamHandlers.Add("GazePoint", new GazePointHandler());
                 _activeDevices["GazePoint"] = true;
             }
             catch
@@ -138,14 +130,14 @@ namespace Core_Tobii_Interaction
                 _activeDevices["GazePoint"] = false;
             }
 
-            if (streamHandlers.TryGetValue("HeadPose", out var poseHandler))
+            if (_streamHandlers.TryGetValue("HeadPose", out var poseHandler))
             {
                 poseHandler.Dispose();
-                streamHandlers.Remove("HeadPose");
+                _streamHandlers.Remove("HeadPose");
             }
             try
             {
-                streamHandlers.Add("HeadPose", new HeadPoseHandler());
+                _streamHandlers.Add("HeadPose", new HeadPoseHandler());
                 _activeDevices["HeadPose"] = true;
             }
             catch
@@ -166,7 +158,7 @@ namespace Core_Tobii_Interaction
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects).
-                    foreach (var streamHandler in streamHandlers.Values)
+                    foreach (var streamHandler in _streamHandlers.Values)
                     {
                         streamHandler.Dispose();
                     }
@@ -211,7 +203,7 @@ namespace Core_Tobii_Interaction
             {
                 gazeNode.Bindings.Add(new BindingReport
                 {
-                    Title = sixDofAxisNames[i],
+                    Title = _sixDofAxisNames[i],
                     Category = BindingCategory.Signed,
                     BindingDescriptor = new BindingDescriptor
                     {
@@ -221,7 +213,7 @@ namespace Core_Tobii_Interaction
                 });
             }
             gazeDevice.Nodes.Add(gazeNode);
-            deviceReports.TryAdd("GazePoint", gazeDevice);
+            _deviceReports.TryAdd("GazePoint", gazeDevice);
 
 
             var poseDevice = new DeviceReport
@@ -238,7 +230,7 @@ namespace Core_Tobii_Interaction
             {
                 poseNode.Bindings.Add(new BindingReport
                 {
-                    Title = sixDofAxisNames[i],
+                    Title = _sixDofAxisNames[i],
                     Category = BindingCategory.Signed,
                     BindingDescriptor = new BindingDescriptor
                     {
@@ -248,7 +240,7 @@ namespace Core_Tobii_Interaction
                 });
             }
             poseDevice.Nodes.Add(poseNode);
-            deviceReports.TryAdd("HeadPose", poseDevice);
+            _deviceReports.TryAdd("HeadPose", poseDevice);
 
         }
     }

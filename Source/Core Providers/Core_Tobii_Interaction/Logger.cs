@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Core_Tobii_Interaction
 {
-    public static class Logger
+    internal static class Logger
     {
         public static void Log(string formatStr, params object[] arguments)
         {
