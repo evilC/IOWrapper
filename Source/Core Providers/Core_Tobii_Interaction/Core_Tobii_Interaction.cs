@@ -35,27 +35,7 @@ namespace Core_Tobii_Interaction
         {
             BuildDeviceReports();
             RefreshLiveState();
-            // ToDo: Move into RefreshDevices
-            try
-            {
-                streamHandlers.Add("GazePoint", new GazePointHandler());
-                _activeDevices["GazePoint"] = true;
-            }
-            catch
-            {
-                _activeDevices["GazePoint"] = false;
-            }
-
-            try
-            {
-                streamHandlers.Add("HeadPose", new HeadPoseHandler());
-                _activeDevices["HeadPose"] = true;
-            }
-            catch
-            {
-                _activeDevices["HeadPose"] = false;
-            }
-            
+            RefreshDevices();
         }
 
 
@@ -146,6 +126,35 @@ namespace Core_Tobii_Interaction
         }
         public void RefreshDevices()
         {
+            if (streamHandlers.TryGetValue("GazePoint", out var gazeHandler))
+            {
+                gazeHandler.Dispose();
+                streamHandlers.Remove("GazePoint");
+            }
+            try
+            {
+                streamHandlers.Add("GazePoint", new GazePointHandler());
+                _activeDevices["GazePoint"] = true;
+            }
+            catch
+            {
+                _activeDevices["GazePoint"] = false;
+            }
+
+            if (streamHandlers.TryGetValue("HeadPose", out var poseHandler))
+            {
+                poseHandler.Dispose();
+                streamHandlers.Remove("HeadPose");
+            }
+            try
+            {
+                streamHandlers.Add("HeadPose", new HeadPoseHandler());
+                _activeDevices["HeadPose"] = true;
+            }
+            catch
+            {
+                _activeDevices["HeadPose"] = false;
+            }
 
         }
         #endregion
