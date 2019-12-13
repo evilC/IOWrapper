@@ -6,20 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 ### Changed 
-- [XInput Provider] Only show Xinput devices in ProviderReport that are currently connected
-- [DS4WindowsApi Provider] Only show DS4 devices in ProviderReport that are currently connected
-- [SpaceMouse Provider] Only show SpaceMouse devices in ProviderReport that are currently connected
 - [Tobii Provider] IsLive now reflects state of driver
 - [Tobii Provider] Only show Tobii devices in ProviderReport that are currently connected
 ### Deprecated
 ### Removed
 ### Fixed
 
+## 0.10.8 - 2019-12-13
+### Changed 
+- [XInput Provider] Only show Xinput devices in ProviderReport that are currently connected
+- [DS4WindowsApi Provider] Only show DS4 devices in ProviderReport that are currently connected
+- [SpaceMouse Provider] Only show SpaceMouse devices in ProviderReport that are currently connected
+
 ## 0.10.7 - 2019-12-12
 ### Changed 
 - [Interception Provider] Blockable property of BindingDescriptor now indicates if input is blockable or not  
 This is controlled by whether BlockingEnabled in the settings file is true or not
-### Deprecated
 ### Removed
 - [Interception Provider] BlockingControlledByUi setting removed
 
