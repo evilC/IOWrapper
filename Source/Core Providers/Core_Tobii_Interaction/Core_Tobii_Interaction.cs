@@ -55,6 +55,7 @@ namespace Core_Tobii_Interaction
                     ProviderName = ProviderName
                 }
             };
+
             foreach (var deviceReport in deviceReports)
             {
                 var report = GetDeviceReport(deviceReport.Key);
@@ -74,13 +75,9 @@ namespace Core_Tobii_Interaction
 
         private DeviceReport GetDeviceReport(string name)
         {
-            if (_activeDevices.TryGetValue(name, out _))
+            if (_activeDevices[name] && deviceReports.TryGetValue(name, out var report))
             {
-                if (deviceReports.TryGetValue(name, out var report))
-                {
-                    return report;
-                }
-
+                return report;
             }
 
             return null;
@@ -342,6 +339,7 @@ namespace Core_Tobii_Interaction
                     x = max.Value.Width;
                     y = max.Value.Height;
                 }
+
                 if (x == 0 || y == 0)
                 {
                     var msg = "Tobii GazePoint handler unable to get screen size within 100 ms, not starting watcher";
