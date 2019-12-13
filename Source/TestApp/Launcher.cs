@@ -38,6 +38,8 @@ namespace TestApp
             //IOW.Instance.SetOutputstate(subReq, Library.Bindings.Midi.Notes.CH1CMinus2, 127);
             //IOW.Instance.SetOutputstate(subReq, Library.Bindings.Midi.ControlChange.MotorSliderF1, short.MaxValue);
 
+            //var tobiiTester = new TobiiTester("Gaze Point X", Library.Devices.Tobii.GazePoint);
+
             #region Interception
 
             //IOW.Instance.SetDetectionMode(DetectionMode.Bind, Library.Providers.Interception, Library.Devices.Interception.DellKeyboard1, BindModeHandler);
@@ -64,19 +66,19 @@ namespace TestApp
             #endregion
 
             #region Bind Mode Testing
-            var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
-            var genericStick_2 = new GenericDiTester("TWCS", Library.Devices.DirectInput.TWCS);
-            while (true)
-            {
-                Console.WriteLine("Press Enter to Unsubscribe");
-                Console.ReadLine();
-                genericStick_1.Unsubscribe();
-                genericStick_2.Unsubscribe();
-                Console.WriteLine("Unsubscribed, press Enter to re-subscribe");
-                Console.ReadLine();
-                genericStick_1.Subscribe();
-                genericStick_2.Subscribe();
-            }
+            //var genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
+            //var genericStick_2 = new GenericDiTester("TWCS", Library.Devices.DirectInput.TWCS);
+            //while (true)
+            //{
+            //    Console.WriteLine("Press Enter to Unsubscribe");
+            //    Console.ReadLine();
+            //    genericStick_1.Unsubscribe();
+            //    genericStick_2.Unsubscribe();
+            //    Console.WriteLine("Unsubscribed, press Enter to re-subscribe");
+            //    Console.ReadLine();
+            //    genericStick_1.Subscribe();
+            //    genericStick_2.Subscribe();
+            //}
             //genericStick_1 = new GenericDiTester("T16K", Library.Devices.DirectInput.T16000M);
             //genericStick_2 = new GenericDiTester("TWCS", Library.Devices.DirectInput.TWCS);
             //var vj1 = new VJoyTester(1, false);

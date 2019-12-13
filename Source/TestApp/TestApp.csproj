@@ -64,6 +64,7 @@
     <Compile Include="Testers\InterceptionKeyboardOutputTester.cs" />
     <Compile Include="Testers\InterceptionMouseInputTester.cs" />
     <Compile Include="Testers\InterceptionMouseOutputTester.cs" />
+    <Compile Include="Testers\TobiiTester.cs" />
     <Compile Include="Testers\VigemDs4OutputTester.cs" />
     <Compile Include="Testers\VJoyTester.cs" />
     <Compile Include="Testers\XiTester.cs" />

@@ -1,34 +1,33 @@
-﻿using HidWizards.IOWrapper.ProviderInterface;
-using System;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tobii.Interaction;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
+using Tobii.Interaction.Client;
 
 namespace Core_Tobii_Interaction
 {
     [Export(typeof(IProvider))]
     public class Core_Tobii_Interaction : IInputProvider
     {
-        public bool IsLive { get { return isLive; } }
-        private bool isLive = false;
+        public bool IsLive => _isLive;
+        private bool _isLive = false;
 
-        //private GazePointHander gazePointHandler = new GazePointHander();
-        private Dictionary<string, StreamHandler> streamHandlers = new Dictionary<string, StreamHandler>(StringComparer.OrdinalIgnoreCase);
-        private List<string> sixDofAxisNames = new List<string> { "X", "Y", "Z", "Rx", "Ry", "Rz" };
-        //private ProviderReport providerReport;
-        private List<DeviceReport> deviceReports;
+        private readonly Dictionary<string, StreamHandler> _streamHandlers = new Dictionary<string, StreamHandler>(StringComparer.OrdinalIgnoreCase);
+        private readonly List<string> _sixDofAxisNames = new List<string> { "X", "Y", "Z", "Rx", "Ry", "Rz" };
+        private readonly ConcurrentDictionary<string, DeviceReport> _deviceReports = new ConcurrentDictionary<string, DeviceReport>();
+        private readonly Dictionary<string, bool> _activeDevices = new Dictionary<string, bool>
+        {
+            {"GazePoint", false }, {"HeadPose", false}
+        };
 
         public Core_Tobii_Interaction()
         {
-            QueryDevices();
-            streamHandlers.Add("GazePoint", new GazePointHandler());
-            streamHandlers.Add("HeadPose", new HeadPoseHandler());
+            BuildDeviceReports();
+            RefreshLiveState();
+            RefreshDevices();
         }
 
 
@@ -46,29 +45,41 @@ namespace Core_Tobii_Interaction
                 ProviderDescriptor = new ProviderDescriptor
                 {
                     ProviderName = ProviderName
-                },
-                Devices = deviceReports
+                }
             };
+
+            foreach (var deviceReport in _deviceReports)
+            {
+                var report = GetDeviceReport(deviceReport.Key);
+                if (report != null)
+                {
+                    providerReport.Devices.Add(report);
+                }
+            }
             return providerReport;
         }
 
         public DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
-            foreach (var deviceReport in deviceReports)
+            if (deviceDescriptor.DeviceInstance != 0) return null; // Tobii API only supports one device per PC
+            return GetDeviceReport(deviceDescriptor.DeviceHandle);
+        }
+
+        private DeviceReport GetDeviceReport(string name)
+        {
+            if (_activeDevices[name] && _deviceReports.TryGetValue(name, out var report))
             {
-                if (deviceReport.DeviceDescriptor.DeviceHandle == deviceDescriptor.DeviceHandle && deviceReport.DeviceDescriptor.DeviceInstance == deviceDescriptor.DeviceInstance)
-                {
-                    return deviceReport;
-                }
+                return report;
             }
+
             return null;
         }
 
         public bool SubscribeInput(InputSubscriptionRequest subReq)
         {
-            if (streamHandlers.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
+            if (_streamHandlers.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
             {
-                streamHandlers[subReq.DeviceDescriptor.DeviceHandle].SubscribeInput(subReq);
+                _streamHandlers[subReq.DeviceDescriptor.DeviceHandle].SubscribeInput(subReq);
                 return true;
             }
             return false;
@@ -81,11 +92,58 @@ namespace Core_Tobii_Interaction
 
         public void RefreshLiveState()
         {
-
+            var engineAvailable = Host.EyeXAvailability;
+            switch (engineAvailable)
+            {
+                case EyeXAvailability.Running:
+                    // Driver installed and app running
+                    _isLive = true;
+                    break;
+                case EyeXAvailability.NotRunning:
+                    // Driver installed, but app not running
+                    _isLive = false;
+                    break;
+                case EyeXAvailability.NotAvailable:
+                    // Driver not installed
+                    _isLive = false;
+                    break;
+                default:
+                    // Unknown state
+                    _isLive = false;
+                    break;
+            }
         }
-
         public void RefreshDevices()
         {
+            if (_streamHandlers.TryGetValue("GazePoint", out var gazeHandler))
+            {
+                gazeHandler.Dispose();
+                _streamHandlers.Remove("GazePoint");
+            }
+            try
+            {
+                _streamHandlers.Add("GazePoint", new GazePointHandler());
+                _activeDevices["GazePoint"] = true;
+            }
+            catch
+            {
+                _activeDevices["GazePoint"] = false;
+            }
+
+            if (_streamHandlers.TryGetValue("HeadPose", out var poseHandler))
+            {
+                poseHandler.Dispose();
+                _streamHandlers.Remove("HeadPose");
+            }
+            try
+            {
+                _streamHandlers.Add("HeadPose", new HeadPoseHandler());
+                _activeDevices["HeadPose"] = true;
+            }
+            catch
+            {
+                _activeDevices["HeadPose"] = false;
+            }
 
         }
         #endregion
@@ -100,7 +158,7 @@ namespace Core_Tobii_Interaction
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects).
-                    foreach (var streamHandler in streamHandlers.Values)
+                    foreach (var streamHandler in _streamHandlers.Values)
                     {
                         streamHandler.Dispose();
                     }
@@ -129,15 +187,8 @@ namespace Core_Tobii_Interaction
         }
         #endregion
 
-        private static void Log(string formatStr, params object[] arguments)
+        private void BuildDeviceReports()
         {
-            Debug.WriteLine("IOWrapper| " + formatStr, arguments);
-        }
-
-        private void QueryDevices()
-        {
-            deviceReports = new List<DeviceReport>();
-
             var gazeDevice = new DeviceReport
             {
                 DeviceName = "Tobii Gaze Point",
@@ -152,7 +203,7 @@ namespace Core_Tobii_Interaction
             {
                 gazeNode.Bindings.Add(new BindingReport
                 {
-                    Title = sixDofAxisNames[i],
+                    Title = _sixDofAxisNames[i],
                     Category = BindingCategory.Signed,
                     BindingDescriptor = new BindingDescriptor
                     {
@@ -162,7 +213,7 @@ namespace Core_Tobii_Interaction
                 });
             }
             gazeDevice.Nodes.Add(gazeNode);
-            deviceReports.Add(gazeDevice);
+            _deviceReports.TryAdd("GazePoint", gazeDevice);
 
 
             var poseDevice = new DeviceReport
@@ -179,7 +230,7 @@ namespace Core_Tobii_Interaction
             {
                 poseNode.Bindings.Add(new BindingReport
                 {
-                    Title = sixDofAxisNames[i],
+                    Title = _sixDofAxisNames[i],
                     Category = BindingCategory.Signed,
                     BindingDescriptor = new BindingDescriptor
                     {
@@ -189,157 +240,8 @@ namespace Core_Tobii_Interaction
                 });
             }
             poseDevice.Nodes.Add(poseNode);
-            deviceReports.Add(poseDevice);
+            _deviceReports.TryAdd("HeadPose", poseDevice);
 
         }
-
-        #region Stream Handlers
-        abstract class StreamHandler : IDisposable
-        {
-            protected Host host;
-            protected Dictionary<int, AxisMonitor> axisMonitors = new Dictionary<int, AxisMonitor>();
-
-            public virtual bool SubscribeInput(InputSubscriptionRequest subReq)
-            {
-                if (!axisMonitors.ContainsKey(subReq.BindingDescriptor.Index))
-                {
-                    axisMonitors.Add(subReq.BindingDescriptor.Index, new AxisMonitor());
-                }
-                axisMonitors[subReq.BindingDescriptor.Index].Add(subReq);
-                return true;
-            }
-
-            protected class AxisMonitor
-            {
-                private Dictionary<Guid, InputSubscriptionRequest> subscriptions = new Dictionary<Guid, InputSubscriptionRequest>();
-                public bool Add(InputSubscriptionRequest subReq)
-                {
-                    subscriptions.Add(subReq.SubscriptionDescriptor.SubscriberGuid, subReq);
-                    return true;
-                }
-
-                public void Poll(int value)
-                {
-                    foreach (var subscription in subscriptions.Values)
-                    {
-                        subscription.Callback((short) value);
-                    }
-                }
-            }
-
-            #region IDisposable Support
-            private bool disposedValue; // To detect redundant calls
-
-            protected virtual void Dispose(bool disposing)
-            {
-                if (!disposedValue)
-                {
-                    if (disposing)
-                    {
-                        host.DisableConnection();
-                    }
-
-                    // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                    // TODO: set large fields to null.
-
-                    disposedValue = true;
-                }
-            }
-
-            public virtual void Dispose()
-            {
-                // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-                Dispose(true);
-                // TODO: uncomment the following line if the finalizer is overridden above.
-                // GC.SuppressFinalize(this);
-            }
-            #endregion
-        }
-
-        class GazePointHandler : StreamHandler
-        {
-            GazePointDataStream gazePointDataStream;
-            private double[] scaleFactors = new double[2];
-
-            public GazePointHandler()
-            {
-                host = new Host();
-                gazePointDataStream = host.Streams.CreateGazePointDataStream(Tobii.Interaction.Framework.GazePointDataMode.LightlyFiltered);
-
-                double x = 0, y = 0;
-                var watch = new Stopwatch();
-                watch.Start();
-                while ((x == 0 || y == 0) && watch.ElapsedMilliseconds < 100)
-                {
-                    var max = host.States.GetScreenBoundsAsync().Result;
-                    x = max.Value.Width;
-                    y = max.Value.Height;
-                }
-                if (x == 0 || y == 0)
-                {
-                    Log("WARNING: Tobii GazePoint handler unable to get screen size within 100 ms, not starting watcher");
-                    return;
-                }
-                scaleFactors[0] = 65535 / x;
-                scaleFactors[1] = 65535 / y;
-                gazePointDataStream.Next += GPCallback;
-
-            }
-
-            private void GPCallback(object sender, StreamData<GazePointData> streamData)
-            {
-                //Console.WriteLine("Unfiltered: Timestamp: {0}\t X: {1} Y:{2}", streamData.Data.Timestamp, streamData.Data.X, streamData.Data.Y);
-                var axisData = new[] { streamData.Data.X, streamData.Data.Y };
-
-                for (int i = 0; i < 2; i++)
-                {
-                    if (!axisMonitors.Keys.Contains(i))
-                        continue;
-                    int value = (int)(axisData[i] * scaleFactors[i]);
-                    if (value > 65535)
-                        value = 65535;
-                    else if (value < 0)
-                        value = 0;
-                    value -= 32768;
-                    axisMonitors[i].Poll(value);
-                }
-            }
-        }
-
-        class HeadPoseHandler : StreamHandler
-        {
-            private HeadPoseStream headPoseStream;
-
-            public HeadPoseHandler()
-            {
-                host = new Host();
-                headPoseStream = host.Streams.CreateHeadPoseStream();
-                headPoseStream.Next += OnNextHeadPose;
-            }
-
-            private void OnNextHeadPose(object sender, StreamData<HeadPoseData> headPose)
-            {
-                if (headPose.Data.HasHeadPosition)
-                {
-                    var axisData = new[] { headPose.Data.HeadPosition.X, headPose.Data.HeadPosition.Y, headPose.Data.HeadPosition.Z, headPose.Data.HeadRotation.X, headPose.Data.HeadRotation.Y, headPose.Data.HeadRotation.Z };
-
-                    for (int i = 0; i < 2; i++)
-                    {
-                        if (!axisMonitors.Keys.Contains(i))
-                            continue;
-                        int value = (int)(axisData[i] * 163.84);
-                        if (value > 32768)
-                            value = 32768;
-                        else if (value < -32767)
-                            value = -32767;
-                        axisMonitors[i].Poll(value);
-                    }
-                }
-
-            }
-        }
-        #endregion
-
     }
-
 }

@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 ### Changed 
+- [Tobii Provider] IsLive now reflects state of driver
+- [Tobii Provider] Only show Tobii devices in ProviderReport that are currently connected
 ### Deprecated
 ### Removed
 ### Fixed
