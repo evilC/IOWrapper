@@ -40,7 +40,7 @@ namespace Core_SpaceMouse
         }
 
         public string ProviderName { get; } = "Core_SpaceMouse";
-        public bool IsLive { get; }
+        public bool IsLive { get; } = true;
         public void RefreshLiveState()
         {
             // HID always live

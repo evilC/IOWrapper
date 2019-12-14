@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 - [Tobii Provider] If IsLive is false, now reports reason in ErrorMessage
+- [SpaceMouse provider] IsLive is always true, as HID is always present
 ### Changed 
 ### Deprecated
 ### Removed
