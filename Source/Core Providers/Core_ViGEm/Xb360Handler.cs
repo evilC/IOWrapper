@@ -50,7 +50,7 @@ namespace Core_ViGEm
 
             protected override void AcquireTarget()
             {
-                target = new Xbox360Controller(client);
+                target = new Xbox360Controller(_client);
                 target.Connect();
             }
 

@@ -44,6 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Devcon\Devcon.cs" />
+    <Compile Include="Devcon\Devcon.Native.cs" />
     <Compile Include="GenericMEFPluginLoader.cs" />
     <Compile Include="IOController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
