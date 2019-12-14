@@ -24,7 +24,7 @@ namespace Core_Interception
         private readonly ProviderDescriptor _providerDescriptor;
         private readonly object _lockObj = new object();  // When changing mode (Bind / Sub) or adding / removing devices, lock this object
 
-        public bool IsLive { get; } = false;
+        public bool IsLive { get; } = true; // ToDo: Detect if driver is installed and report as appropriate
 
         private bool _disposed;
         private readonly IntPtr _deviceContext;
