@@ -19,6 +19,9 @@ namespace TestApp
             Debug.WriteLine("DBGVIEWCLEAR");
             var inputList = IOW.Instance.GetInputList();
             var outputList = IOW.Instance.GetOutputList();
+
+            ProviderStatus.LogProviderStatuses();
+
             //var bindModeTester = new BindModeTester();
 
             //var vigemDs4OutputTester = new VigemDs4OutputTester();

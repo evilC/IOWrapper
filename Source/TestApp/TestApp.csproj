@@ -56,6 +56,7 @@
     <Compile Include="Library\Devices.cs" />
     <Compile Include="Library\Profiles.cs" />
     <Compile Include="Plugins\IOTester.cs" />
+    <Compile Include="ProviderStatus.cs" />
     <Compile Include="Testers\BindModeTester.cs" />
     <Compile Include="Testers\MidiTester.cs" />
     <Compile Include="Testers\SpaceMouseTester.cs" />
@@ -86,6 +87,10 @@
     <ProjectReference Include="..\DataObjects\DTOs.csproj">
       <Project>{81851977-0421-4ebd-b066-0fe03f02589e}</Project>
       <Name>DTOs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ProviderInterface\ProviderInterface.csproj">
+      <Project>{F6EAF2BC-F362-4ECD-94E5-617CA37A4210}</Project>
+      <Name>ProviderInterface</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
