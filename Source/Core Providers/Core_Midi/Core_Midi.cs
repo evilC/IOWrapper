@@ -43,7 +43,7 @@ namespace Core_Midi
         }
 
         public string ProviderName { get; } = "Core_Midi";
-        public bool IsLive { get; }
+        public bool IsLive { get; } = true;
         public void RefreshLiveState()
         {
             
