@@ -112,3 +112,16 @@ If you wish to support multiple identical devices, you need to use the `DeviceIn
 In order for the provider to play nice, it **must** properly implement `IDisposable`. When the provider is Disposed, **kill all threads**. If you do not do this, UCR may well hang on exit.
 
 Try to consider performance, especially if working with high frequency data (eg mouse movement).
+
+## Procedure for targetting a new IOWrapper version in UCR  
+1. Make an IOWrapper release, tag it with a version number  
+1. Create a new branch in UCR called `feature/iowrapper-<version number>`  
+eg `feature/iowrapper-1.2.3.4`  
+1. Open a powershell prompt to `<UCR folder>\submodules\IOWrapper`
+1. `git fetch`  
+1. `git checkout -q <hash of new IOWrapper version>`  
+eg `git checkout -q a621ada`  
+1. Commit changes to UCR branch  
+1. `cd ..\..`
+1. `.\build.ps1 Clean`  
+1. `.\build.ps1`
