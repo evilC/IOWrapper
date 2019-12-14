@@ -5,13 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 ### Added
+### Changed 
+### Deprecated
+### Removed
+### Fixed
+
+## 0.11.0 - 2019-12-14
+### Added
 - Provider Report now contains `ErrorMessage` property
 If the provider is not live, this should contain a string indicating why
 ### Changed 
 - [ViGEm Provider] Do not show devices if Bus Driver not installed
-### Deprecated
-### Removed
-### Fixed
 
 ## 0.10.11 - 2019-12-13
 ### Changed 
