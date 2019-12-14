@@ -17,8 +17,9 @@ namespace Core_TitanOne
     [Export(typeof(IProvider))]
     public class Core_TitanOne : IInputProvider, IOutputProvider
     {
-        sbyte[] outputState = new sbyte[GCMAPIConstants.Output];
-        private Dictionary<string, OutputHandler> outputHandlers = new Dictionary<string, OutputHandler>(StringComparer.OrdinalIgnoreCase)
+        private string _errorMessage = string.Empty;
+        private readonly sbyte[] _outputState = new sbyte[GCMAPIConstants.Output];
+        private readonly Dictionary<string, OutputHandler> _outputHandlers = new Dictionary<string, OutputHandler>(StringComparer.OrdinalIgnoreCase)
         {
             {"ds4", new DS4OutputHandler() },
             {"xb360", new Xb360OutputHandler() }
@@ -34,17 +35,14 @@ namespace Core_TitanOne
             Dispose(true);
         }
 
-        #region Querying
-
-        #endregion
-
         #region Output SubscribedDevices
 
         #endregion
 
         #region IProvider memebers
-        public bool IsLive { get { return isLive; } }
-        private bool isLive;
+
+        public bool IsLive => _isLive;
+        private bool _isLive;
 
         bool disposed;
 
@@ -70,19 +68,23 @@ namespace Core_TitanOne
                 ProviderDescriptor = new ProviderDescriptor
                 {
                     ProviderName = "Core_TitanOne"
-                }
+                },
+                ErrorMessage = _errorMessage
             };
 
-            foreach (var deviceClass in outputHandlers)
+            if (_isLive)
             {
-                providerReport.Devices.Add(deviceClass.Value.GetOutputReport());
+                foreach (var deviceClass in _outputHandlers)
+                {
+                    providerReport.Devices.Add(deviceClass.Value.GetOutputReport());
+                }
             }
             return providerReport;
         }
 
         public DeviceReport GetOutputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
-            return outputHandlers[deviceDescriptor.DeviceHandle].GetOutputReport();
+            return _outputHandlers[deviceDescriptor.DeviceHandle].GetOutputReport();
         }
 
         public void RefreshLiveState()
@@ -97,14 +99,14 @@ namespace Core_TitanOne
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
-            if (outputHandlers.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
+            if (_outputHandlers.ContainsKey(subReq.DeviceDescriptor.DeviceHandle))
             {
-                var slot = outputHandlers[subReq.DeviceDescriptor.DeviceHandle].GetSlot(bindingDescriptor);
+                var slot = _outputHandlers[subReq.DeviceDescriptor.DeviceHandle].GetSlot(bindingDescriptor);
                 if (slot != null)
                 {
                     var value = OutputHandler.GetValue(bindingDescriptor, state);
-                    outputState[(int)slot] = value;
-                    Write(outputState);
+                    _outputState[(int)slot] = value;
+                    Write(_outputState);
                     return true;
                 }
             }
@@ -198,7 +200,18 @@ namespace Core_TitanOne
             CalcPressTime = GetFunction<GCAPI_CalcPressTime>(hModule, "gcapi_CalcPressTime");
             //Console.WriteLine((CalcPressTime == null ? "Failed to obtain function '" : "Obtained function '") + "GCAPI_CalcPressTime" + "'");
 
-            isLive = Load();
+            Load();
+            var fwVer = GetFWVer();
+            if (fwVer != 0)
+            {
+                _isLive = true;
+                _errorMessage = string.Empty;
+            }
+            else
+            {
+                _isLive = false;
+                _errorMessage = "Titan One device not present or PC Link cable not connected";
+            }
         }
 
 
