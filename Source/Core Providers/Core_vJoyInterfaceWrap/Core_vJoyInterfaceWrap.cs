@@ -15,7 +15,7 @@ namespace Core_vJoyInterfaceWrap
     public class Core_vJoyInterfaceWrap : IOutputProvider
     {
         public bool IsLive { get { return isLive; } }
-        private bool isLive = false;
+        private bool isLive = true; // ToDo: Detect if driver is present and report as appropriate
 
         bool disposed;
         public static vJoyInterfaceWrap.vJoy vJ = new vJoyInterfaceWrap.vJoy();
