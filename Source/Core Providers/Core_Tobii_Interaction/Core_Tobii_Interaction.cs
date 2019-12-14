@@ -14,6 +14,7 @@ namespace Core_Tobii_Interaction
     {
         public bool IsLive => _isLive;
         private bool _isLive = false;
+        private string _providerError = string.Empty;
 
         private readonly Dictionary<string, StreamHandler> _streamHandlers = new Dictionary<string, StreamHandler>(StringComparer.OrdinalIgnoreCase);
         private readonly List<string> _sixDofAxisNames = new List<string> { "X", "Y", "Z", "Rx", "Ry", "Rz" };
@@ -45,7 +46,8 @@ namespace Core_Tobii_Interaction
                 ProviderDescriptor = new ProviderDescriptor
                 {
                     ProviderName = ProviderName
-                }
+                },
+                ErrorMessage = _providerError
             };
 
             if (_isLive)
@@ -105,14 +107,17 @@ namespace Core_Tobii_Interaction
                 case EyeXAvailability.NotRunning:
                     // Driver installed, but app not running
                     _isLive = false;
+                    _providerError = "Tobii EyeX driver is installed, but app is not running";
                     break;
                 case EyeXAvailability.NotAvailable:
                     // Driver not installed
                     _isLive = false;
+                    _providerError = "Tobii EyeX driver is not installed";
                     break;
                 default:
                     // Unknown state
                     _isLive = false;
+                    _providerError = "Unknown error";
                     break;
             }
         }
