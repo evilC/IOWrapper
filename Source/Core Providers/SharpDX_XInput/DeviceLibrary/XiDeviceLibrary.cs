@@ -150,11 +150,18 @@ namespace SharpDX_XInput.DeviceLibrary
             _deviceReports = new List<DeviceReport>();
             for (var i = 0; i < 4; i++)
             {
-                var ctrlr = new Controller((UserIndex)i);
-                //if (ctrlr.IsConnected)
-                //{
-                _deviceReports.Add(BuildXInputDevice(i));
-                //}
+                try
+                {
+                    var ctrlr = new Controller((UserIndex) i);
+                    if (ctrlr.IsConnected)
+                    {
+                        _deviceReports.Add(BuildXInputDevice(i));
+                    }
+                }
+                catch
+                {
+                    // ignore
+                }
             }
         }
 

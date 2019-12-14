@@ -11,14 +11,6 @@
   </Setting>
   <Setting>
 	<!--
-		Whether Block option is controlled by UI
-		This option is purely for developers of UCR
-	-->
-    <Name>BlockingControlledByUi</Name>
-    <Value>false</Value>
-  </Setting>
-  <Setting>
-	<!--
 		Poll Rate, in ms
 		Lowering this is only really of use for mouse movement
 		if your mouse polls at a high rate, eg 1000hz

@@ -22,12 +22,14 @@ namespace Core_Interception.DeviceLibrary
         private static DeviceReportNode _mouseButtonList;
         private ConcurrentDictionary<BindingDescriptor, BindingReport> _keyboardReports;
         private ConcurrentDictionary<BindingDescriptor, BindingReport> _mouseReports;
+        private bool _blockingEnabled;
 
 
-        public IceptDeviceLibrary(ProviderDescriptor providerDescriptor)
+        public IceptDeviceLibrary(ProviderDescriptor providerDescriptor, bool blockingEnabled)
         {
             _providerDescriptor = providerDescriptor;
             _deviceContext = ManagedWrapper.CreateContext();
+            _blockingEnabled = blockingEnabled;
 
             InitKeyReports();
             InitMouseReports();
@@ -192,6 +194,8 @@ namespace Core_Interception.DeviceLibrary
 
         private void InitMouseReports()
         {
+            StaticData.MouseAxisBindingReports[0].Blockable = _blockingEnabled;
+            StaticData.MouseAxisBindingReports[1].Blockable = _blockingEnabled;
             _mouseReports = new ConcurrentDictionary<BindingDescriptor, BindingReport>();
             _mouseButtonList = new DeviceReportNode
             {
@@ -252,7 +256,7 @@ namespace Core_Interception.DeviceLibrary
                     Index = i,
                     Type = BindingType.Button
                 },
-                Blockable = true
+                Blockable = _blockingEnabled
             };
         }
 
@@ -266,7 +270,7 @@ namespace Core_Interception.DeviceLibrary
                 Path = $"Key: {keyName}",
                 Category = BindingCategory.Momentary,
                 BindingDescriptor = bindingDescriptor,
-                Blockable = true
+                Blockable = _blockingEnabled
             };
         }
 

@@ -13,6 +13,24 @@ If the provider is not live, this should contain a string indicating why
 ### Removed
 ### Fixed
 
+## 0.10.11 - 2019-12-13
+### Changed 
+- [Tobii Provider] IsLive now reflects state of driver
+- [Tobii Provider] Only show Tobii devices in ProviderReport that are currently connected
+
+## 0.10.8 - 2019-12-13
+### Changed 
+- [XInput Provider] Only show Xinput devices in ProviderReport that are currently connected
+- [DS4WindowsApi Provider] Only show DS4 devices in ProviderReport that are currently connected
+- [SpaceMouse Provider] Only show SpaceMouse devices in ProviderReport that are currently connected
+
+## 0.10.7 - 2019-12-12
+### Changed 
+- [Interception Provider] Blockable property of BindingDescriptor now indicates if input is blockable or not  
+This is controlled by whether BlockingEnabled in the settings file is true or not
+### Removed
+- [Interception Provider] BlockingControlledByUi setting removed
+
 ## 0.10.6 - 2019-08-10
 ### Fixed
 - Fix for IOWrapper Issue #33 / UCR issue #98  
