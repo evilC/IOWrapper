@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 ### Added
+### Changed 
+### Deprecated
+### Removed
+### Fixed
+
+## 0.11.1 - 2019-12-15
+### Added
 - [Tobii Provider] If IsLive is false, now reports reason in ErrorMessage
 - [SpaceMouse provider] IsLive is always true, as HID is always present
 - [MIDI provider] IsLive is always true, as MIDI is always present
@@ -12,10 +19,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [TitanOne Provider] Reports 0 devices if IsLive is false
 - [vJoy Provider] IsLive now reflects whether driver is installed
 - [Interception Provider] IsLive is false if no devices are found, assumes driver is not installed
-### Changed 
-### Deprecated
-### Removed
-### Fixed
 
 ## 0.11.0 - 2019-12-14
 ### Added
