@@ -129,16 +129,6 @@ namespace Core_Interception.DeviceLibrary
                     }
                 });
                 //Log(String.Format("{0} (Keyboard) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
-
-                _providerReport = new ProviderReport
-                {
-                    Title = "Interception (Core)",
-                    Description = "Supports per-device Keyboard and Mouse Input/Output, with blocking\nRequires custom driver from http://oblita.com/interception",
-                    API = "Interception",
-                    ProviderDescriptor = _providerDescriptor,
-                    Devices = _deviceReports
-                };
-
             }
 
             for (var i = 11; i < 21; i++)
@@ -190,6 +180,14 @@ namespace Core_Interception.DeviceLibrary
                 //Log(String.Format("{0} (Mouse) = VID: {1}, PID: {2}, Name: {3}", i, vid, pid, name));
             }
 
+            _providerReport = new ProviderReport
+            {
+                Title = "Interception (Core)",
+                Description = "Supports per-device Keyboard and Mouse Input/Output, with blocking\nRequires custom driver from http://oblita.com/interception",
+                API = "Interception",
+                ProviderDescriptor = _providerDescriptor,
+                Devices = _deviceReports
+            };
         }
 
         private void InitMouseReports()

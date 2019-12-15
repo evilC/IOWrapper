@@ -24,7 +24,9 @@ namespace Core_Interception
         private readonly ProviderDescriptor _providerDescriptor;
         private readonly object _lockObj = new object();  // When changing mode (Bind / Sub) or adding / removing devices, lock this object
 
-        public bool IsLive { get; } = true; // ToDo: Detect if driver is installed and report as appropriate
+        public bool IsLive => _isLive;
+        private bool _isLive;
+        private string _errorMessage;
 
         private bool _disposed;
         private readonly IntPtr _deviceContext;
@@ -73,6 +75,16 @@ namespace Core_Interception
             ProcessSettingsFile();
 
             _deviceLibrary = new IceptDeviceLibrary(_providerDescriptor, _blockingEnabled);
+            if (_deviceLibrary.GetInputList().Devices?.Count > 0)
+            {
+                _isLive = true;
+                _errorMessage = string.Empty;
+            }
+            else
+            {
+                _isLive = false;
+                _errorMessage = "No Interception devices found, driver assumed to not be installed";
+            }
 
             _deviceContext = ManagedWrapper.CreateContext();
 
@@ -177,12 +189,16 @@ namespace Core_Interception
 
         public ProviderReport GetInputList()
         {
-            return _deviceLibrary.GetInputList();
+            var report = _deviceLibrary.GetInputList();
+            report.ErrorMessage = _errorMessage;
+            return report;
         }
 
         public ProviderReport GetOutputList()
         {
-            return _deviceLibrary.GetOutputList();
+            var report = _deviceLibrary.GetOutputList();
+            report.ErrorMessage = _errorMessage;
+            return report;
         }
 
         public DeviceReport GetInputDeviceReport(DeviceDescriptor deviceDescriptor)

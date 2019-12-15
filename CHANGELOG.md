@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [TitanOne Provider] IsLive now reflects connected status of device
 - [TitanOne Provider] Reports 0 devices if IsLive is false
 - [vJoy Provider] IsLive now reflects whether driver is installed
+- [Interception Provider] IsLive is false if no devices are found, assumes driver is not installed
 ### Changed 
 ### Deprecated
 ### Removed
