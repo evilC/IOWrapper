@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Deprecated
 ### Removed
 ### Fixed
+
+## 0.11.2 - 2019-12-18
+### Fixed
 - [ViGEm Provider] Fix Issue #41  
 No longer crashes if ViGEm not installed
 
