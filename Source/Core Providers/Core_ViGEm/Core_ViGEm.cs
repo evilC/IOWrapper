@@ -2,6 +2,7 @@
 using Nefarius.ViGEm.Client.Targets;
 using HidWizards.IOWrapper.ProviderInterface;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
@@ -80,7 +81,7 @@ namespace Core_ViGEm
 
         public ProviderReport GetOutputList()
         {
-            _providerReport.Devices = _isLive ? devicesHandler.GetDeviceList() : null;
+            if (_isLive) _providerReport.Devices = devicesHandler.GetDeviceList();
             return _providerReport;
         }
 
