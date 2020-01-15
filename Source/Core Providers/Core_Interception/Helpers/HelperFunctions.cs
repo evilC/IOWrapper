@@ -51,8 +51,8 @@ namespace Core_Interception.Helpers
                 buttonStates.Add(
                     new ButtonState
                     {
-                        Button = 5,
-                        State = (stroke.mouse.rolling < 0 ? -1 : 1)
+                        Button = (ushort) (stroke.mouse.rolling > 0 ? 5 : 6),
+                        State = 1
                     }
                 );
             }
@@ -61,8 +61,8 @@ namespace Core_Interception.Helpers
                 buttonStates.Add(
                     new ButtonState
                     {
-                        Button = 6,
-                        State = (stroke.mouse.rolling < 0 ? -1 : 1)
+                        Button = (ushort) (stroke.mouse.rolling > 0 ? 8 : 7),
+                        State = 1
                     }
                 );
             }

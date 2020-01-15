@@ -243,7 +243,7 @@ namespace Core_Interception.DeviceLibrary
             var i = bindingDescriptor.Index;
             var category = i > 4 ? BindingCategory.Event : BindingCategory.Momentary;
             var name = StaticData.MouseButtonNames[i];
-            var path = category == BindingCategory.Event ? $"Button: {name}" : $"Event: {name}";
+            var path = category == BindingCategory.Momentary ? $"Button: {name}" : $"Event: {name}";
             return new BindingReport
             {
                 Title = name,
