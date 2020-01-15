@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - [DS4WindowsApi Provider] Target DS4WindowsApi v0.0.2  
 Fixes NullRef if exiting UCR while ViGEm DS4 is being emulated
+- [Interception Provider] Mouse Wheel Up / Down / Left / Right subscriptions fire correct subscription with correct value  
+A binding to Wheel Up was firing +1 on wheel up but also -1 on wheel down  
+- [Interception Provider] Mouse Buttons now correctly labelled (Path for Buttons was "Event: ..." and path for events was "Button: ...")
 
 ## 0.11.2 - 2019-12-18
 ### Fixed
