@@ -71,6 +71,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreEsp8266.cs" />
+    <Compile Include="EspUtility.cs" />
+    <Compile Include="Managers\DiscoveryManager.cs" />
+    <Compile Include="Managers\UdpManager.cs" />
+    <Compile Include="Model\Message\DataMessage.cs" />
+    <Compile Include="Model\Message\DescriptorMessage.cs" />
+    <Compile Include="Model\Message\HeartbeatMessage.cs" />
+    <Compile Include="Model\Message\IOData.cs" />
+    <Compile Include="Model\Message\IODescriptor.cs" />
+    <Compile Include="Model\Message\MessageBase.cs" />
+    <Compile Include="Model\ServiceAgent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -87,9 +97,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\Message\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>IF EXIST "$(ProjectDir)Dependencies\*" xcopy /Y "$(ProjectDir)Dependencies\*" "$(TargetDir)"</PreBuildEvent>
