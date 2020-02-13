@@ -21,6 +21,12 @@ namespace Core_ESP8266.Managers
             };
         }
 
+        public void SendDataMessage(ServiceAgent serviceAgent, DataMessage dataMessage)
+        {
+            // TODO Should each device have its own UDPClient?
+            SendUdpPacket(serviceAgent, dataMessage);
+        }
+
         public DescriptorMessage RequestDescriptor(ServiceAgent serviceAgent)
         {
             var descriptorMessage = new DescriptorMessage();

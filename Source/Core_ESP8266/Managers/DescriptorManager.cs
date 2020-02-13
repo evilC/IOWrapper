@@ -46,7 +46,7 @@ namespace Core_ESP8266.Managers
 
         public bool StartOutputDevice(DeviceInfo deviceInfo)
         {
-            var subscribedDevice = new SubscribedDevice()
+            var subscribedDevice = new SubscribedDevice(_udpManager)
             {
                 DeviceInfo = deviceInfo,
                 DataMessage = BuildDescriptor(deviceInfo)

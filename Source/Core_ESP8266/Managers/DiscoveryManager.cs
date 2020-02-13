@@ -37,6 +37,7 @@ namespace Core_ESP8266.Managers
 
         public DeviceInfo FindDeviceInfo(string name)
         {
+            if (!DeviceInfos.ContainsKey(name)) return null;
             return DeviceInfos[name];
         }
 
@@ -74,7 +75,8 @@ namespace Core_ESP8266.Managers
         private bool BuildDeviceReport(ServiceAgent serviceAgent, out DeviceReport deviceReport, out DescriptorMessage requestDescriptor)
         {
             requestDescriptor = _udpManager.RequestDescriptor(serviceAgent);
-            if (requestDescriptor == null)
+
+            if (requestDescriptor == null || !MessageBase.MessageType.Descriptor.Equals(requestDescriptor.Type))
             {
                 deviceReport = null;
                 return false;

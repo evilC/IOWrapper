@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Timers;
+using Core_ESP8266.Managers;
 using Core_ESP8266.Model.Message;
 
 namespace Core_ESP8266.Model
@@ -13,19 +10,31 @@ namespace Core_ESP8266.Model
         public DeviceInfo DeviceInfo { get; set; }
         public DataMessage DataMessage { get; set; }
 
-        public SubscribedDevice()
-        {
+        private readonly UdpManager _udpManager;
+        private readonly Timer _timer;
 
+        public SubscribedDevice(UdpManager udpManager)
+        {
+            _udpManager = udpManager;
+            _timer = new Timer(5.0);
+            _timer.Elapsed += TimerOnElapsed;
+        }
+
+        private void TimerOnElapsed(object sender, ElapsedEventArgs e)
+        {
+            _udpManager.SendDataMessage(DeviceInfo.ServiceAgent, DataMessage);
+            DataMessage.Events.ForEach(io => io.Value = 0);
         }
 
         public void StartSubscription()
         {
-
+            _timer.Start();
         }
 
         public void StopSubscription()
         {
-
+            _timer.Stop();
+            _timer.Dispose();
         }
     }
 }

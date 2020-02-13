@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using Core_ESP8266.Managers;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
@@ -42,7 +43,7 @@ namespace Core_ESP8266
                 Title = "Core ESP8266",
                 API = ProviderName,
                 Description = "Connect to external ESP8266 modules",
-                Devices = (List<DeviceReport>)DiscoveryManager.DeviceInfos.Select(di => di.Value.DeviceReport),
+                Devices = DiscoveryManager.DeviceInfos.Select(di => di.Value.DeviceReport).ToList(),
                 ProviderDescriptor = new ProviderDescriptor()
                 {
                     ProviderName = ProviderName
@@ -59,12 +60,14 @@ namespace Core_ESP8266
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
             var deviceInfo = DiscoveryManager.FindDeviceInfo(subReq.DeviceDescriptor.DeviceHandle);
+            if (deviceInfo == null) return false;
             return DescriptorManager.StartOutputDevice(deviceInfo);
         }
         
         public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
             var deviceInfo = DiscoveryManager.FindDeviceInfo(subReq.DeviceDescriptor.DeviceHandle);
+            if (deviceInfo == null) return false;
             return DescriptorManager.StopOutputDevice(deviceInfo);
         }
 
