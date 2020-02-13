@@ -15,8 +15,8 @@ namespace Core_ESP8266.Managers
     public class DiscoveryManager
     {
         private const string ServiceType = "_ucr._udp";
-        public List<DeviceReport> DeviceReports { get; set; } 
-        private List<ServiceAgent> ServiceAgents { get; set; }
+
+        public Dictionary<string, DeviceInfo> DeviceInfos { get; set; }
 
         private ServiceBrowser _serviceBrowser;
         private UdpManager _udpManager;
@@ -24,8 +24,7 @@ namespace Core_ESP8266.Managers
         public DiscoveryManager(UdpManager udpManager)
         {
             _udpManager = udpManager;
-            DeviceReports = new List<DeviceReport>();
-            ServiceAgents = new List<ServiceAgent>();
+            DeviceInfos = new Dictionary<string, DeviceInfo>();
 
             _serviceBrowser = new ServiceBrowser();
             _serviceBrowser.ServiceAdded += OnServiceAdded;
@@ -36,6 +35,11 @@ namespace Core_ESP8266.Managers
             _serviceBrowser.StartBrowse(ServiceType);
         }
 
+        public DeviceInfo FindDeviceInfo(string name)
+        {
+            return DeviceInfos[name];
+        }
+
         private void OnServiceChanged(object sender, ServiceAnnouncementEventArgs e)
         {
             // Not handled
@@ -43,11 +47,8 @@ namespace Core_ESP8266.Managers
 
         private void OnServiceRemoved(object sender, ServiceAnnouncementEventArgs e)
         {
-            var serviceAgent = ServiceAgents.Find(a => a.FullName.Equals(e.Announcement.Hostname));
-            if (serviceAgent != null) ServiceAgents.Remove(serviceAgent);
-
-            var deviceReport = DeviceReports.Find(d => d.DeviceName.Equals(e.Announcement.Hostname));
-            if (deviceReport != null) DeviceReports.Remove(deviceReport);
+            var deviceInfo = FindDeviceInfo(e.Announcement.Hostname);
+            if (deviceInfo != null) DeviceInfos.Remove(deviceInfo.DeviceReport.DeviceName);
         }
 
         private void OnServiceAdded(object sender, ServiceAnnouncementEventArgs e)
@@ -58,14 +59,21 @@ namespace Core_ESP8266.Managers
                 Ip = e.Announcement.Addresses[0],
                 Port = e.Announcement.Port
             };
-            ServiceAgents.Add(serviceAgent);
 
-            if (BuildDeviceReport(serviceAgent, out var report)) DeviceReports.Add(report);
+            if (BuildDeviceReport(serviceAgent, out var report, out var descriptorMessage))
+            {
+                DeviceInfos.Add(e.Announcement.Hostname, new DeviceInfo()
+                {
+                    ServiceAgent = serviceAgent,
+                    DeviceReport = report,
+                    DescriptorMessage = descriptorMessage
+                });
+            }
         }
 
-        private bool BuildDeviceReport(ServiceAgent serviceAgent, out DeviceReport deviceReport)
+        private bool BuildDeviceReport(ServiceAgent serviceAgent, out DeviceReport deviceReport, out DescriptorMessage requestDescriptor)
         {
-            var requestDescriptor = _udpManager.RequestDescriptor(serviceAgent);
+            requestDescriptor = _udpManager.RequestDescriptor(serviceAgent);
             if (requestDescriptor == null)
             {
                 deviceReport = null;
@@ -112,7 +120,7 @@ namespace Core_ESP8266.Managers
             return new DeviceReportNode()
             {
                 Title = name,
-                Bindings = bindings,
+                Bindings = bindings
             };
         }
     }

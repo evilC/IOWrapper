@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using Core_ESP8266.Managers;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
@@ -13,13 +15,14 @@ namespace Core_ESP8266
         public bool IsLive => true;
 
         private UdpManager UdpManager { get; set; }
-        private DiscoveryManager DiscoveryManager { get; set; }
-
+        private DiscoveryManager DiscoveryManager { get; }
+        private DescriptorManager DescriptorManager { get; }
 
         public CoreEsp8266()
         {
             UdpManager = new UdpManager();
             DiscoveryManager = new DiscoveryManager(UdpManager);
+            DescriptorManager = new DescriptorManager(UdpManager);
         }
 
         public void RefreshLiveState()
@@ -39,7 +42,7 @@ namespace Core_ESP8266
                 Title = "Core ESP8266",
                 API = ProviderName,
                 Description = "Connect to external ESP8266 modules",
-                Devices = DiscoveryManager.DeviceReports,
+                Devices = (List<DeviceReport>)DiscoveryManager.DeviceInfos.Select(di => di.Value.DeviceReport),
                 ProviderDescriptor = new ProviderDescriptor()
                 {
                     ProviderName = ProviderName
@@ -49,24 +52,26 @@ namespace Core_ESP8266
 
         public bool SetOutputState(OutputSubscriptionRequest subReq, BindingDescriptor bindingDescriptor, int state)
         {
-            return true;
-        }
-
-        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
-        {
+            DescriptorManager.WriteOutput(subReq, bindingDescriptor, state);
             return true;
         }
 
         public bool SubscribeOutputDevice(OutputSubscriptionRequest subReq)
         {
-            return true;
+            var deviceInfo = DiscoveryManager.FindDeviceInfo(subReq.DeviceDescriptor.DeviceHandle);
+            return DescriptorManager.StartOutputDevice(deviceInfo);
         }
+        
+        public bool UnSubscribeOutputDevice(OutputSubscriptionRequest subReq)
+        {
+            var deviceInfo = DiscoveryManager.FindDeviceInfo(subReq.DeviceDescriptor.DeviceHandle);
+            return DescriptorManager.StopOutputDevice(deviceInfo);
+        }
+
 
         public DeviceReport GetOutputDeviceReport(DeviceDescriptor deviceDescriptor)
         {
-            return DiscoveryManager.DeviceReports.Find(d =>
-                    d.DeviceDescriptor.DeviceHandle.Equals(deviceDescriptor.DeviceHandle)
-                );
+            return DiscoveryManager.FindDeviceInfo(deviceDescriptor.DeviceHandle).DeviceReport;
         }
 
         public void Dispose()
