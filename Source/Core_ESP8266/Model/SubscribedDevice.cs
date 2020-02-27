@@ -16,7 +16,7 @@ namespace Core_ESP8266.Model
         public SubscribedDevice(UdpManager udpManager)
         {
             _udpManager = udpManager;
-            _timer = new Timer(5.0);
+            _timer = new Timer(20.0);
             _timer.Elapsed += TimerOnElapsed;
         }
 
