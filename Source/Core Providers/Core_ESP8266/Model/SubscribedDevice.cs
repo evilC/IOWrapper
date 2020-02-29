@@ -23,6 +23,7 @@ namespace Core_ESP8266.Model
         private void TimerOnElapsed(object sender, ElapsedEventArgs e)
         {
             _udpManager.SendDataMessage(DeviceInfo.ServiceAgent, DataMessage);
+            DataMessage.Deltas.ForEach(io => io.Value = 0);
             DataMessage.Events.ForEach(io => io.Value = 0);
         }
 

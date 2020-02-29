@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using Core_ESP8266.Managers;
 using HidWizards.IOWrapper.DataTransferObjects;
 using HidWizards.IOWrapper.ProviderInterface.Interfaces;
@@ -28,7 +26,7 @@ namespace Core_ESP8266
 
         public void RefreshLiveState()
         {
-            throw new NotImplementedException();
+
         }
 
         public void RefreshDevices()

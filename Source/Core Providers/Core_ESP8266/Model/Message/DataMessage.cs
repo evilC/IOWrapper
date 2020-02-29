@@ -76,7 +76,7 @@ namespace Core_ESP8266.Model.Message
 
         public void SetDelta(int index, short value)
         {
-            _deltasLookup[index].Value = value;
+            _deltasLookup[index].Value += value;
         }
 
         public void SetEvent(int index, short value)
