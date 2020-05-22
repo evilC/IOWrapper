@@ -9,6 +9,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Deprecated
 ### Removed
 ### Fixed
+
+## 0.11.3 - 2020-05-22
+### Added
+- Added Core ESP8266 provider
+### Fixed
 - [DS4WindowsApi Provider] Target DS4WindowsApi v0.0.2  
 Fixes NullRef if exiting UCR while ViGEm DS4 is being emulated
 - [Interception Provider] Mouse Wheel Up / Down / Left / Right subscriptions fire correct subscription with correct value  
