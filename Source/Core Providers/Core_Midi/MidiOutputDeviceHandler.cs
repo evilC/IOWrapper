@@ -31,8 +31,23 @@ namespace Core_Midi
             switch (commandCode)
             {
                 case MidiCommandCode.ControlChange:
-                    var value = (int)((state + 32768) / 516.0236220472441);
-                    evt = new ControlChangeEvent(0, channel, (MidiController)bindingDescriptor.SubIndex, value);
+                    if (state >> 8 == 0) return;
+                    evt = new ControlChangeEvent(0, channel, (MidiController)bindingDescriptor.SubIndex, state & 0xFF);
+                    break;
+                case MidiCommandCode.NoteOn:
+                    evt = new NoteEvent(0, channel, state >> 8 == 1 ? MidiCommandCode.NoteOn : MidiCommandCode.NoteOff, bindingDescriptor.SubIndex, state & 0xFF);
+                    break;
+                case MidiCommandCode.PatchChange:
+                    evt = new PatchChangeEvent(0, channel, state & 0xFF);
+                    break;
+                case MidiCommandCode.KeyAfterTouch:
+                    evt = new NoteEvent(0, channel, MidiCommandCode.KeyAfterTouch, bindingDescriptor.SubIndex, state & 0xFF);
+                    break;
+                case MidiCommandCode.ChannelAfterTouch:
+                    evt = new ChannelAfterTouchEvent(0, channel, state & 0xFF);
+                    break;
+                case MidiCommandCode.PitchWheelChange:
+                    evt = new PitchWheelChangeEvent(0, channel, state & 0xFF);
                     break;
                 default:
                     return;

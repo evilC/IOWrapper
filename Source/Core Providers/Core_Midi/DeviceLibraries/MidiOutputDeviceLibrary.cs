@@ -1,5 +1,4 @@
 ﻿using System;
-using Hidwizards.IOWrapper.Libraries.DeviceLibrary;
 using HidWizards.IOWrapper.DataTransferObjects;
 using NAudio.Midi;
 
@@ -71,45 +70,99 @@ namespace Core_Midi.DeviceLibraries
                 {
                     Title = $"CH {channel + 1}"
                 };
-                //var notesInfo = new DeviceReportNode
-                //{
-                //    Title = "Notes"
-                //};
-                //for (var octave = 0; octave < 10; octave++)
-                //{
-                //    var octaveInfo = new DeviceReportNode
-                //    {
-                //        Title = $"Octave {octave}"
-                //    };
-                //    for (var noteIndex = 0; noteIndex < NoteNames.Length; noteIndex++)
-                //    {
-                //        var noteName = NoteNames[noteIndex];
-                //        octaveInfo.Bindings.Add(new BindingReport
-                //        {
-                //            Title = $"{noteName}",
-                //            Category = BindingCategory.Signed,
-                //            BindingDescriptor = BuildNoteDescriptor(channel, octave, noteIndex)
-                //        });
-                //    }
-                //    notesInfo.Nodes.Add(octaveInfo);
-                //}
-                //channelInfo.Nodes.Add(notesInfo);
+                var notesInfo = new DeviceReportNode
+                {
+                    Title = "Notes"
+                };
+                var keyAftertouchInfo = new DeviceReportNode
+                {
+                    Title = "Key Aftertouch"
+                };
+                for (var octave = 0; octave < 10; octave++)
+                {
+                    var octaveInfo = new DeviceReportNode
+                    {
+                        Title = $"Octave {octave}"
+                    };
+                    var octaveAftertouchInfo = new DeviceReportNode
+                    {
+                        Title = $"Octave {octave}"
+                    };
+                    for (var noteIndex = 0; noteIndex < NoteNames.Length; noteIndex++)
+                    {
+                        var noteName = NoteNames[noteIndex];
+                        octaveInfo.Bindings.Add(new BindingReport
+                        {
+                            Title = $"{noteName}",
+                            Category = BindingCategory.Signed,
+                            BindingDescriptor = BuildNoteDescriptor(channel, octave, noteIndex)
+                        });
+                        octaveAftertouchInfo.Bindings.Add(new BindingReport
+                        {
+                            Title = $"{noteName}",
+                            Category = BindingCategory.Signed,
+                            BindingDescriptor = new BindingDescriptor
+                            {
+                                Type = BindingType.Axis,
+                                Index = channel + (int)MidiCommandCode.KeyAfterTouch,
+                                SubIndex = ((octave + 2) * 12) + noteIndex
+                            }
+                        });
+                    }
+                    notesInfo.Nodes.Add(octaveInfo);
+                    keyAftertouchInfo.Nodes.Add(octaveAftertouchInfo);
+                }
+                channelInfo.Nodes.Add(notesInfo);
+                channelInfo.Nodes.Add(keyAftertouchInfo);
 
                 var controlChangeInfo = new DeviceReportNode
                 {
                     Title = "CtrlChange"
                 };
-                for (var controllerId = 0; controllerId < 128; controllerId++)
+                for (var controllerId = 0; controllerId < CtrlNames.Length; controllerId++)
                 {
                     controlChangeInfo.Bindings.Add(new BindingReport
                     {
-                        Title = $"ID {controllerId}",
+                        //Title = $"ID {controllerId}",
+                        Title = $"{controllerId}: {CtrlNames[controllerId]}",
                         Category = BindingCategory.Signed,
                         Path = $"CH:{channel}, CC:{controllerId}",
                         BindingDescriptor = BuildControlChangeDescriptor(channel, controllerId)
                     });
                 }
                 channelInfo.Nodes.Add(controlChangeInfo);
+                channelInfo.Bindings.Add(new BindingReport
+                {
+                    Title = "Programs/Instruments",
+                    Category = BindingCategory.Signed,
+                    BindingDescriptor = new BindingDescriptor {
+                        Type = BindingType.Axis,
+                        Index = channel + (int)MidiCommandCode.PatchChange,
+                        SubIndex = 0
+                    }
+                });
+                channelInfo.Bindings.Add(new BindingReport
+                {
+                    Title = "Channel Aftertouch",
+                    Category = BindingCategory.Signed,
+                    BindingDescriptor = new BindingDescriptor
+                    {
+                        Type = BindingType.Axis,
+                        Index = channel + (int)MidiCommandCode.ChannelAfterTouch,
+                        SubIndex = 0
+                    }
+                });
+                channelInfo.Bindings.Add(new BindingReport
+                {
+                    Title = "Pitch Wheel",
+                    Category = BindingCategory.Signed,
+                    BindingDescriptor = new BindingDescriptor
+                    {
+                        Type = BindingType.Axis,
+                        Index = channel + (int)MidiCommandCode.PitchWheelChange,
+                        SubIndex = 0
+                    }
+                });
 
                 node.Nodes.Add(channelInfo);
             }
