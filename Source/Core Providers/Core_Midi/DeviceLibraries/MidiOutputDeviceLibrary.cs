@@ -94,13 +94,13 @@ namespace Core_Midi.DeviceLibraries
                         octaveInfo.Bindings.Add(new BindingReport
                         {
                             Title = $"{noteName}",
-                            Category = BindingCategory.Signed,
+                            Category = BindingCategory.Midi,
                             BindingDescriptor = BuildNoteDescriptor(channel, octave, noteIndex)
                         });
                         octaveAftertouchInfo.Bindings.Add(new BindingReport
                         {
                             Title = $"{noteName}",
-                            Category = BindingCategory.Signed,
+                            Category = BindingCategory.Midi,
                             BindingDescriptor = new BindingDescriptor
                             {
                                 Type = BindingType.Axis,
@@ -125,7 +125,7 @@ namespace Core_Midi.DeviceLibraries
                     {
                         //Title = $"ID {controllerId}",
                         Title = $"{controllerId}: {CtrlNames[controllerId]}",
-                        Category = BindingCategory.Signed,
+                        Category = BindingCategory.Midi,
                         Path = $"CH:{channel}, CC:{controllerId}",
                         BindingDescriptor = BuildControlChangeDescriptor(channel, controllerId)
                     });
@@ -134,7 +134,7 @@ namespace Core_Midi.DeviceLibraries
                 channelInfo.Bindings.Add(new BindingReport
                 {
                     Title = "Programs/Instruments",
-                    Category = BindingCategory.Signed,
+                    Category = BindingCategory.Midi,
                     BindingDescriptor = new BindingDescriptor {
                         Type = BindingType.Axis,
                         Index = channel + (int)MidiCommandCode.PatchChange,
@@ -144,7 +144,7 @@ namespace Core_Midi.DeviceLibraries
                 channelInfo.Bindings.Add(new BindingReport
                 {
                     Title = "Channel Aftertouch",
-                    Category = BindingCategory.Signed,
+                    Category = BindingCategory.Midi,
                     BindingDescriptor = new BindingDescriptor
                     {
                         Type = BindingType.Axis,
@@ -155,7 +155,7 @@ namespace Core_Midi.DeviceLibraries
                 channelInfo.Bindings.Add(new BindingReport
                 {
                     Title = "Pitch Wheel",
-                    Category = BindingCategory.Signed,
+                    Category = BindingCategory.Midi,
                     BindingDescriptor = new BindingDescriptor
                     {
                         Type = BindingType.Axis,
