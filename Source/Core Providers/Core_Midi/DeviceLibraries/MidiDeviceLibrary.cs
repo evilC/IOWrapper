@@ -60,7 +60,7 @@ namespace Core_Midi.DeviceLibraries
             {
                 Type = BindingType.Axis,
                 Index = channel + (int)MidiCommandCode.NoteOn,
-                SubIndex = ((octave + 2) * 12) + noteIndex
+                SubIndex = ((octave + 1) * 12) + noteIndex
             };
             return bindingDescriptor;
         }
