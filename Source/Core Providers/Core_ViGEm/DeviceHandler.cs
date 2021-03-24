@@ -1,4 +1,5 @@
 ﻿using Nefarius.ViGEm.Client;
+using Nefarius.ViGEm.Client;
 using System;
 using System.Collections.Generic;
 using Hidwizards.IOWrapper.Libraries.ProviderLogger;
@@ -23,7 +24,7 @@ namespace Core_ViGEm
             protected DeviceClassDescriptor deviceClassDescriptor;
             protected int deviceId;
             protected bool isAcquired;
-            protected ViGEmTarget target;
+            protected IVirtualGamepad target;
 
             protected abstract List<string> axisNames { get; set; }
             protected static readonly List<BindingCategory> axisCategories = new List<BindingCategory>
@@ -41,6 +42,12 @@ namespace Core_ViGEm
                 logger = new Logger(string.Format("Core_ViGEm ({0})", descriptor.classIdentifier));
                 deviceId = index;
                 deviceClassDescriptor = descriptor;
+            }
+
+            protected bool SubscribeFeedback(EventArgs e)
+            {
+                // TODO: send feedback to main IOWrapper
+                return false;
             }
 
             protected bool SubscribeOutput(OutputSubscriptionRequest subReq)
@@ -95,6 +102,9 @@ namespace Core_ViGEm
                     case BindingType.Axis:
                         SetAxisState(bindingDescriptor, state);
                         break;
+                    /*case BindingType.Slider:
+                        SetSliderState(bindingDescriptor, state);
+                        break;*/
                     case BindingType.Button:
                         SetButtonState(bindingDescriptor, state);
                         break;
@@ -189,9 +199,12 @@ namespace Core_ViGEm
                 return report;
             }
 
+            protected abstract void FeedbackEventHandler(object sender, EventArgs e);
+
             protected abstract void AcquireTarget();
             protected abstract void RelinquishTarget();
             protected abstract void SetAxisState(BindingDescriptor bindingDescriptor, int state);
+            // protected abstract void SetSliderState(BindingDescriptor bindingDescriptor, int state);
             protected abstract void SetButtonState(BindingDescriptor bindingDescriptor, int state);
             protected abstract void SetPovState(BindingDescriptor bindingDescriptor, int state);
 

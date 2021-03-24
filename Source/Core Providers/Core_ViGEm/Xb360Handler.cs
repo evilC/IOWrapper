@@ -13,12 +13,16 @@ namespace Core_ViGEm
         /// </summary>
         private class Xb360Handler : DeviceHandler
         {
-            private Xbox360Report report = new Xbox360Report();
+            // private Xbox360Report report = new Xbox360Report();
 
-            private static readonly List<Xbox360Axes> axisIndexes = new List<Xbox360Axes>
+            private static readonly List<Xbox360Axis> axisIndexes = new List<Xbox360Axis>
             {
-                Xbox360Axes.LeftThumbX, Xbox360Axes.LeftThumbY, Xbox360Axes.RightThumbX, Xbox360Axes.RightThumbY,
-                Xbox360Axes.LeftTrigger, Xbox360Axes.RightTrigger
+                Xbox360Axis.LeftThumbX, Xbox360Axis.LeftThumbY, Xbox360Axis.RightThumbX, Xbox360Axis.RightThumbY
+            };
+
+            private static readonly List<Xbox360Slider> sliderIndexes = new List<Xbox360Slider>
+            {
+                Xbox360Slider.LeftTrigger, Xbox360Slider.RightTrigger
             };
 
             protected override List<string> axisNames { get; set; } = new List<string>
@@ -26,11 +30,11 @@ namespace Core_ViGEm
                 "LX", "LY", "RX", "RY", "LT", "RT"
             };
 
-            private static readonly List<Xbox360Buttons> buttonIndexes = new List<Xbox360Buttons>
+            private static readonly List<Xbox360Button> buttonIndexes = new List<Xbox360Button>
             {
-                Xbox360Buttons.A, Xbox360Buttons.B, Xbox360Buttons.X, Xbox360Buttons.Y,
-                Xbox360Buttons.LeftShoulder, Xbox360Buttons.RightShoulder, Xbox360Buttons.LeftThumb, Xbox360Buttons.RightThumb,
-                Xbox360Buttons. Back, Xbox360Buttons.Start
+                Xbox360Button.A, Xbox360Button.B, Xbox360Button.X, Xbox360Button.Y,
+                Xbox360Button.LeftShoulder, Xbox360Button.RightShoulder, Xbox360Button.LeftThumb, Xbox360Button.RightThumb,
+                Xbox360Button. Back, Xbox360Button.Start
             };
 
             protected override List<string> buttonNames { get; set; } = new List<string>
@@ -38,9 +42,9 @@ namespace Core_ViGEm
                 "A", "B", "X", "Y", "LB", "RB", "LS", "RS", "Back", "Start"
             };
 
-            private static readonly List<Xbox360Buttons> povIndexes = new List<Xbox360Buttons>
+            private static readonly List<Xbox360Button> povIndexes = new List<Xbox360Button>
             {
-                Xbox360Buttons.Up, Xbox360Buttons.Right, Xbox360Buttons.Down, Xbox360Buttons.Left
+                Xbox360Button.Up, Xbox360Button.Right, Xbox360Button.Down, Xbox360Button.Left
             };
 
             public Xb360Handler(DeviceClassDescriptor descriptor, int index) : base(descriptor, index)
@@ -50,7 +54,8 @@ namespace Core_ViGEm
 
             protected override void AcquireTarget()
             {
-                target = new Xbox360Controller(_client);
+                target = _client.CreateXbox360Controller();
+                ((IXbox360Controller)target).FeedbackReceived += new Xbox360FeedbackReceivedEventHandler(FeedbackEventHandler);
                 target.Connect();
             }
 
@@ -63,31 +68,49 @@ namespace Core_ViGEm
             protected override void SetAxisState(BindingDescriptor bindingDescriptor, int state)
             {
                 var inputId = bindingDescriptor.Index;
-                var outState = bindingDescriptor.Index > 3      // If Index is 4 or 5 (Triggers)...
-                    ? (short)((state / 256) + 128)              // Xbox Triggers are shorts, but 0..255
-                    : (short) state;                            // Other axes are regular shorts
-                report.SetAxis(axisIndexes[inputId], outState);
-                SendReport();
+                if (bindingDescriptor.Index > 3)
+                {
+                    SetSliderState(bindingDescriptor, state);
+                } else
+                {
+                    var outState = (short)state;                            // Other axes are regular shorts
+                    ((IXbox360Controller)target).SetAxisValue(axisIndexes[inputId], outState);
+                    /*SendReport();*/
+                }
+            }
+
+            protected void SetSliderState(BindingDescriptor bindingDescriptor, int state)
+            {
+                var inputId = bindingDescriptor.Index;
+                //var outState = (short)((state / 256) + 128);              // Xbox Triggers are shorts, but 0..255
+                var outState = (byte)(state);              // Xbox Triggers are shorts, but 0..255
+                ((IXbox360Controller)target).SetSliderValue(sliderIndexes[inputId], outState);
+                /*SendReport();*/
             }
 
             protected override void SetButtonState(BindingDescriptor bindingDescriptor, int state)
             {
                 var inputId = bindingDescriptor.Index;
-                report.SetButtonState(buttonIndexes[inputId], state != 0);
-                SendReport();
+                ((IXbox360Controller)target).SetButtonState(buttonIndexes[inputId], state != 0);
+                /*SendReport();*/
             }
 
             protected override void SetPovState(BindingDescriptor bindingDescriptor, int state)
             {
                 var inputId = bindingDescriptor.Index;
-                report.SetButtonState(povIndexes[inputId], state != 0);
-                SendReport();
+                ((IXbox360Controller)target).SetButtonState(povIndexes[inputId], state != 0);
+                /*SendReport();*/
             }
 
-            private void SendReport()
+            protected void FeedbackEventHandler(object sender, Xbox360FeedbackReceivedEventArgs e)
             {
-                ((Xbox360Controller)target).SendReport(report);
+                SubscribeFeedback(e);
             }
+
+            /*private void SendReport()
+            {
+                ((IXbox360Controller)target).SendReport(report);
+            }*/
         }
     }
 }
