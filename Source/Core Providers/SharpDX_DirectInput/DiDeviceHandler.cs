@@ -41,7 +41,7 @@ namespace SharpDX_DirectInput
         {
             var type = Utilities.OffsetToType(update.Offset);
             var index = type == BindingType.POV
-                ? update.Offset - JoystickOffset.PointOfViewControllers0
+                ? (update.Offset - JoystickOffset.PointOfViewControllers0) / 4
                 : (int) update.Offset;
             return new[] {new BindingUpdate {Binding = new BindingDescriptor() {Type = type, Index = index}, Value = update.Value}};
         }
