@@ -191,48 +191,47 @@ namespace SharpDX_DirectInput.DeviceLibrary
                 }
 
                 deviceReport.Nodes.Add(axisInfo);
+            }
 
-                // ----- Buttons -----
-                var length = joystick.Capabilities.ButtonCount;
-                if (length > 0)
+            // ----- Buttons -----
+            var length = joystick.Capabilities.ButtonCount;
+            if (length > 0)
+            {
+                var buttonInfo = new DeviceReportNode
                 {
-                    var buttonInfo = new DeviceReportNode
+                    Title = "Buttons"
+                };
+                for (var btn = 0; btn < length; btn++)
+                {
+                    buttonInfo.Bindings.Add(GetInputBindingReport(deviceDescriptor, new BindingDescriptor
                     {
-                        Title = "Buttons"
-                    };
-                    for (var btn = 0; btn < length; btn++)
-                    {
-                        buttonInfo.Bindings.Add(GetInputBindingReport(deviceDescriptor, new BindingDescriptor
-                        {
-                            //Index = btn,
-                            Index = (int)Utilities.OffsetsByType[BindingType.Button][btn],
-                            Type = BindingType.Button
-                        }));
-                    }
-
-                    deviceReport.Nodes.Add(buttonInfo);
+                        //Index = btn,
+                        Index = (int)Utilities.OffsetsByType[BindingType.Button][btn],
+                        Type = BindingType.Button
+                    }));
                 }
 
-                // ----- POVs -----
-                var povCount = joystick.Capabilities.PovCount;
-                if (povCount > 0)
-                {
-                    var povsInfo = new DeviceReportNode
-                    {
-                        Title = "POVs"
-                    };
-                    for (var p = 0; p < povCount; p++)
-                    {
-                        var povInfo = new DeviceReportNode
-                        {
-                            Title = "POV #" + (p + 1),
-                            Bindings = PovBindingInfos[p]
-                        };
-                        povsInfo.Nodes.Add(povInfo);
-                    }
-                    deviceReport.Nodes.Add(povsInfo);
-                }
+                deviceReport.Nodes.Add(buttonInfo);
+            }
 
+            // ----- POVs -----
+            var povCount = joystick.Capabilities.PovCount;
+            if (povCount > 0)
+            {
+                var povsInfo = new DeviceReportNode
+                {
+                    Title = "POVs"
+                };
+                for (var p = 0; p < povCount; p++)
+                {
+                    var povInfo = new DeviceReportNode
+                    {
+                        Title = "POV #" + (p + 1),
+                        Bindings = PovBindingInfos[p]
+                    };
+                    povsInfo.Nodes.Add(povInfo);
+                }
+                deviceReport.Nodes.Add(povsInfo);
             }
 
             return deviceReport;
